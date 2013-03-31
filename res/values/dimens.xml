@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- <integer name="scrollbarStyle">0x02000000</integer> -->
+    <dimen name="preference_padding">15dp</dimen>
+    <dimen name="tablet_icon_size">58dp</dimen>
+    <dimen name="tablet_details_size">29dp</dimen>
+</resources>

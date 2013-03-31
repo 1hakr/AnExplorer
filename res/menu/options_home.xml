@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_overflow"
+        android:icon="@drawable/ic_menu_overflow"
+        android:showAsAction="always"
+        android:title="@string/menu_select">
+        <menu>
+            <item
+                android:id="@+id/menu_setting"
+                android:showAsAction="never"
+                android:title="@string/menu_setting"/>
+            <item
+                android:id="@+id/menu_help"
+                android:showAsAction="never"
+                android:title="@string/menu_help"/>
+            <item
+                android:id="@+id/menu_about"
+                android:showAsAction="never"
+                android:title="@string/menu_about"/>
+        </menu>
+    </item>
+
+</menu>

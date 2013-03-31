@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="create_options">
+        <item>nový soubor</item>
+        <item>Nová složka</item>
+    </string-array>
+    <string-array name="compress_options">
+        <item>Zip</item>
+    </string-array>
+    <string-array name="uncompress_options">
+        <item>Uncompress Here</item>
+    </string-array>
+    <string-array name="sorting_options">
+        <item>abecední</item>
+        <item>typ</item>
+        <item>velikost</item>
+        <item>Datum poslední změny</item>
+    </string-array>
+    <string-array name="sorting_order_options">
+        <item>Vzestupně</item>
+        <item>klesající</item>
+    </string-array>
+    <string-array name="theme_options">
+        <item>tmavý</item>
+        <item>světlo</item>
+        <item>příjemný</item>
+    </string-array>
+    <string-array name="view_options">
+        <item>seznam</item>
+        <item>mřížka</item>
+    </string-array>
+    <string-array name="lang_options">
+        <item>Default</item>
+        <item>English</item>
+        <item>čeština</item>
+        <item>Deutsch</item>
+        <item>日本語</item>
+        <item>русский</item>
+    </string-array>
+    <string-array name="frequency_options">
+        <item>12 hodin</item>
+        <item>denně</item>
+        <item>týdně</item>
+        <item>měsíčně</item>
+    </string-array>
+    <string-array name="option_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+</resources>

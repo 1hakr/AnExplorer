@@ -1,0 +1,109 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeFragment" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@android:id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" >
+
+            <ProgressBar
+                android:id="@+android:id/progress"
+                style="@style/Widget.Sherlock.ProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true" />
+
+            <TextView
+                android:id="@+id/listempty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:text="No Data"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/BlueColor"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/title_pane"
+                android:layout_width="fill_parent"
+                android:layout_height="20dp"
+                android:background="@color/greyColor"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/pathTitle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingLeft="4dp"
+                    android:ellipsize="marquee"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textIsSelectable="true"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#ffffffff" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" >
+
+                <ListView
+                    android:id="@android:id/list"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:listSelector="@drawable/abs__list_selector_holo_dark"
+                    android:scrollbarStyle="outsideOverlay"
+                    tools:listitem="@layout/row_item"
+                    android:visibility="visible" />
+
+                <GridView
+                    android:id="@+id/grid_explorer"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:stretchMode="columnWidth"
+                    android:numColumns="auto_fit"
+                    android:visibility="gone"
+                    android:listSelector="@drawable/abs__list_selector_holo_dark"
+                    android:drawSelectorOnTop="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <com.google.ads.AdView
+                    android:id="@+id/adView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    ads:adSize="SMART_BANNER"
+                    ads:adUnitId="a14e25123e38970"
+                    ads:loadAdOnCreate="false" />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+    
+</FrameLayout>

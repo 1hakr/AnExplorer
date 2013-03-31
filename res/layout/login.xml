@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:id="@+id/login_layout"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
+                android:paddingTop="50dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:drawableTop="@drawable/logo_login"
+                    android:gravity="center_horizontal"
+                    android:text="@string/welcome"
+                    style="@style/Title" />
+
+                <TextView
+                    android:id="@+id/login_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:text="@string/msg_login"
+                    android:visibility="gone"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <EditText
+                    style="@style/EditTextAppTheme"
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/login_pwd"
+                    android:inputType="textPassword"
+                    android:singleLine="true" >
+                </EditText>
+
+                <EditText
+                    style="@style/EditTextAppTheme"
+                    android:id="@+id/password_repeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/login_pwd_retype"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:visibility="gone" />
+
+                <CheckBox
+                    android:id="@+id/dont_show_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/msg_dont_show" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <Button
+                        android:id="@+id/cancel_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/menu_cancel" />
+
+                    <Button
+                        android:id="@+id/login_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/msg_login" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.ads.AdView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                ads:adSize="IAB_MRECT"
+                ads:adUnitId="a14e25123e38970"
+                ads:loadAdOnCreate="true" />
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

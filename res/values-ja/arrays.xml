@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="create_options">
+        <item>新規ファイル</item>
+        <item>新規フォルダ</item>
+    </string-array>
+    <string-array name="compress_options">
+        <item>Zip</item>
+    </string-array>
+    <string-array name="uncompress_options">
+        <item>ここで解凍します。</item>
+    </string-array>
+    <string-array name="sorting_options">
+        <item>アルファベットの</item>
+        <item>タイプ</item>
+        <item>サイズ</item>
+        <item>日付は変更した</item>
+    </string-array>
+    <string-array name="sorting_order_options">
+        <item>上昇</item>
+        <item>下行</item>
+    </string-array>
+    <string-array name="theme_options">
+        <item>暗い</item>
+        <item>光</item>
+        <item>楽しい</item>
+    </string-array>
+    <string-array name="view_options">
+        <item>リスト</item>
+        <item>グリッド</item>
+    </string-array>
+    <string-array name="lang_options">
+        <item>Default</item>
+        <item>English</item>
+        <item>čeština</item>
+        <item>Deutsch</item>
+        <item>日本語</item>
+        <item>русский</item>
+    </string-array>
+    <string-array name="frequency_options">
+        <item>12時間</item>
+        <item>デイリー</item>
+        <item>毎週</item>
+        <item>毎月</item>
+    </string-array>
+    <string-array name="option_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+</resources>

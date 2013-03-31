@@ -1,0 +1,21 @@
+<resources>
+    <declare-styleable name="AppTheme">
+        <attr name="dworksLogo" format="reference" />
+        <attr name="text" format="color" />
+        <attr name="background_current" format="color" />
+        <attr name="folder" format="reference" />
+        <attr name="lineColor" format="color" />
+        <attr name="aboutColor" format="color" />
+        <attr name="back" format="reference" />
+        <attr name="card" format="reference" />
+        <attr name="aboutTheme" format="reference" />
+        <attr name="mainFolder" format="reference" />
+        <attr name="specialFolder" format="reference" />
+        <attr name="actionText" format="color" />
+        <attr name="actionBar" format="reference" />
+    </declare-styleable>  
+    
+    <declare-styleable name="IconPreference">
+        <attr name="iconPref" format="reference" />
+    </declare-styleable>    
+</resources>

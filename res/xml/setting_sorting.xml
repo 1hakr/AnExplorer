@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference
+        style="@style/MyPreference"
+        android:defaultValue="1"
+        android:dialogTitle="@string/sorting_type"
+        android:entries="@array/sorting_options"
+        android:entryValues="@array/option_value"
+        android:key="SortingTypePref"
+        android:summary="@string/choose_type"
+        android:title="@string/sorting_type" />
+    <ListPreference
+        style="@style/MyPreference"
+        android:defaultValue="0"
+        android:dialogTitle="@string/sorting_order"
+        android:entries="@array/sorting_order_options"
+        android:entryValues="@array/option_value"
+        android:key="SortingOrderPref"
+        android:summary="@string/choose_order"
+        android:title="@string/sorting_order" />
+
+</PreferenceScreen>

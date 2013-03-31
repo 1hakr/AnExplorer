@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference
+        style="@style/MyPreference"
+        android:defaultValue="2"
+        android:dialogTitle="@string/themes"
+        android:entries="@array/theme_options"
+        android:entryValues="@array/option_value"
+        android:key="ThemePref"
+        android:summary="@string/choose_theme"
+        android:title="@string/themes_to_display" />
+    <ListPreference
+        style="@style/MyPreference"
+        android:defaultValue="0"
+        android:dialogTitle="@string/views"
+        android:entries="@array/view_options"
+        android:entryValues="@array/option_value"
+        android:key="ViewPref"
+        android:summary="@string/choose_view"
+        android:title="@string/view_to_display" />
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:disableDependentsState="true"
+        android:key="StorageModePref"
+        android:summary="@string/display_memory"
+        android:title="@string/show_storage" />
+    
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:dependency="StorageModePref"
+        android:key="FolderPreviewPref"
+        android:summary="@string/display_space"
+        android:title="@string/show_sizes" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="HiddenFolderPref"
+        android:summary="@string/display_hidden"
+        android:title="@string/show_hidden" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="ScrollThumbPref"
+        android:summary="@string/display_thumb"
+        android:title="@string/show_thumb" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="NavigationPanePref"
+        android:summary="@string/display_pane"
+        android:title="@string/show_pane" />
+
+</PreferenceScreen>

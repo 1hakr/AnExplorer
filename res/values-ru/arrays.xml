@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="create_options">
+        <item>Новый файл</item>
+        <item>Новая папка</item>
+    </string-array>
+    <string-array name="compress_options">
+        <item>Zip</item>
+    </string-array>
+    <string-array name="uncompress_options">
+        <item>Здесь Распакуйте</item>
+    </string-array>
+    <string-array name="sorting_options">
+        <item>алфавитный</item>
+        <item>тип</item>
+        <item>размер</item>
+        <item>Дата изменения</item>
+    </string-array>
+    <string-array name="sorting_order_options">
+        <item>восходящий</item>
+        <item>нисходящий</item>
+    </string-array>
+    <string-array name="theme_options">
+        <item>темнота</item>
+        <item>светило</item>
+        <item>приятный</item>
+    </string-array>
+    <string-array name="view_options">
+        <item>список</item>
+        <item>сетка</item>
+    </string-array>
+    <string-array name="lang_options">
+        <item>Default</item>
+        <item>English</item>
+        <item>čeština</item>
+        <item>Deutsch</item>
+        <item>日本語</item>
+        <item>русский</item>
+    </string-array>
+    <string-array name="frequency_options">
+        <item>12 часов</item>
+        <item>ежедневно</item>
+        <item>еженедельно</item>
+        <item>ежемесячно</item>
+    </string-array>    
+    <string-array name="option_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+</resources>

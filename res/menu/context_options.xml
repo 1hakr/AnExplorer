@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+        
+    <!-- Edit Menu Options -->    
+
+    <item
+        android:id="@+id/menu_copy"
+        android:icon="@drawable/ic_menu_copy"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_copy"/>
+    
+    <item
+        android:id="@+id/menu_cut"
+        android:icon="@drawable/ic_menu_cut"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_cut"/>
+    
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@drawable/ic_menu_delete"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_delete"/>
+        
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_menu_share"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_share" />
+    <!-- android:actionProviderClass="android.widget.ShareActionProvider" -->
+    
+    <item
+        android:id="@+id/menu_compress"
+        android:icon="@drawable/ic_menu_compress_new"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_compress"/>    
+   
+</menu>
