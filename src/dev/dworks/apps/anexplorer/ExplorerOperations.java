@@ -778,7 +778,7 @@ public class ExplorerOperations {
 		String end = "";
 		int lastIndex = file.getName().lastIndexOf(".");
 		if(lastIndex != -1){
-//			end = file.getName().substring(lastIndex+1, file.getName().length()).toLowerCase(Resources.getSystem().getConfiguration().locale);	
+			end = file.getName().substring(lastIndex+1, file.getName().length()).toLowerCase(Resources.getSystem().getConfiguration().locale);	
 		}
 		return end;		
 	}
