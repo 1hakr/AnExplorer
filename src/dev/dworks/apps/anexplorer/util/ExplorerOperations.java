@@ -1982,7 +1982,7 @@ public class ExplorerOperations {
     	case ExplorerOperations.DIALOG_ABOUT:
             LayoutInflater factory = LayoutInflater.from(context);
             final View aboutView = factory.inflate(R.layout.about, null);
-			TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
+			final TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
             int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
     		if(isTablet(context)){
 				dialog = new AlertDialog.Builder(context)

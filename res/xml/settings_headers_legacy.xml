@@ -3,7 +3,7 @@
     xmlns:anexplorer="http://schemas.android.com/apk/dev.dworks.apps.anexplorer"
     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"  >
 
-    <dev.dworks.apps.anexplorer.MyPrerference
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_settings_display"
         android:title="@string/display" >
@@ -11,8 +11,8 @@
             android:action="0"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
-    <dev.dworks.apps.anexplorer.MyPrerference
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_settings_preview"
         android:title="@string/preview" >
@@ -20,8 +20,8 @@
             android:action="1"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
-    <dev.dworks.apps.anexplorer.MyPrerference
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_settings_sort"
         android:title="@string/sorting" >
@@ -29,8 +29,8 @@
             android:action="2"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
-    <dev.dworks.apps.anexplorer.MyPrerference
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_menu_set"
         android:title="@string/name_wallpaper" >
@@ -38,8 +38,8 @@
             android:action="3"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
-    <dev.dworks.apps.anexplorer.MyPrerference
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_menu_login"
         android:title="@string/msg_login" >
@@ -47,8 +47,8 @@
             android:action="4"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
-    <dev.dworks.apps.anexplorer.MyPrerference
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_settings_advanced"
         android:title="@string/advanced" >
@@ -56,8 +56,8 @@
             android:action="5"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
-    <dev.dworks.apps.anexplorer.MyPrerference
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
+    <dev.dworks.apps.anexplorer.ui.MyPrerference
         style="@style/MyPreferenceHeader"
         anexplorer:icon="@drawable/ic_settings_others"
         android:title="@string/others" >
@@ -65,6 +65,6 @@
             android:action="6"
             android:targetClass="dev.dworks.apps.anexplorer.Setting"
             android:targetPackage="dev.dworks.apps.anexplorer" />
-    </dev.dworks.apps.anexplorer.MyPrerference>
+    </dev.dworks.apps.anexplorer.ui.MyPrerference>
 
 </PreferenceScreen>

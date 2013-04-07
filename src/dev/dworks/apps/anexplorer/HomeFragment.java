@@ -14,7 +14,6 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -62,7 +61,6 @@ public class HomeFragment extends SherlockListFragment {
 	//preferences
 	private boolean isTablet, isPhone;
 	private SharedPreferences.Editor editor;
-	private SharedPreferences adfreePref, exitPref;
 	private AdView adView, adViewHeader;
 	private ArrayList<FileNavList> fileListEntries;
 	//private static final String APP_ERROR = "android.intent.action.APP_ERROR";
@@ -234,7 +232,7 @@ public class HomeFragment extends SherlockListFragment {
 			for (String item : homeItems) {
 				String[] listItem = item.split(",");
 				fileList = new FileNavList(listItem[0], listItem[1], Integer.valueOf(listItem[2]), i);
-				Log.i("path", listItem[0]+listItem[1]+Integer.valueOf(listItem[2]));
+				//Log.i("path", listItem[0]+listItem[1]+Integer.valueOf(listItem[2]));
 				fileListEntries.add(fileList);
 				i++;
 			}
@@ -287,7 +285,7 @@ public class HomeFragment extends SherlockListFragment {
 		for (String item : homeItems) {
 			String[] listItem = item.split(",");
 			FileNavList fileList = new FileNavList(listItem[0], listItem[1], Integer.valueOf(listItem[2]), i);
-			Log.i("path", listItem[0]+listItem[1]+Integer.valueOf(listItem[2]));
+	//		Log.i("path", listItem[0]+listItem[1]+Integer.valueOf(listItem[2]));
 			fileListEntries.add(fileList);
 			i++;
 		}
@@ -344,6 +342,7 @@ public class HomeFragment extends SherlockListFragment {
 							@Override
 							public void onDismiss(ListView listView, int[] reverseSortedPositions) {
 					            for (int position : reverseSortedPositions) {
+					            	if(position < listAdapter.getCount())
 					            	listAdapter.remove(listAdapter.getItem(position));
 					            }
 					            listAdapter.notifyDataSetChanged();

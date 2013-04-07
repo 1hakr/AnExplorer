@@ -21,9 +21,6 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -39,8 +36,6 @@ import dev.dworks.apps.anexplorer.util.ExplorerOperations;
  */
 public class Setting extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
 	
-	private LinearLayout navigationPane;
-	private RelativeLayout titlePane;
 	private Integer themeType, themeTypeInt, themeTypeOrig, langType, langTypeOrig,
 					viewTypeOrig, viewType, sortOrder, sortOrderOrig, sortType, sortTypeOrig;
 	private static ListPreference themePref, viewPref, typePref, orderPref, langPref, freqPref;
@@ -71,7 +66,7 @@ public class Setting extends SherlockPreferenceActivity implements OnSharedPrefe
     	this.getSupportActionBar().setTitle(getResources().getString(R.string.constant_setting));         
 
         if(!showHeader){
-            setContentView(R.layout.home);
+            setContentView(R.layout.activity_settings);
         	String action = getIntent().getAction();
         	if(action != null){
 	            prefType = Integer.valueOf(action);        
@@ -158,10 +153,6 @@ public class Setting extends SherlockPreferenceActivity implements OnSharedPrefe
     }
 
 	private void initControls() {		
-    	titlePane = (RelativeLayout)findViewById(R.id.title_pane);
-    	navigationPane = (LinearLayout) findViewById(R.id.navigation_pane);
-		navigationPane.setVisibility(View.GONE);
-    	titlePane.setVisibility(View.GONE);
 	}
 	
 	@Override

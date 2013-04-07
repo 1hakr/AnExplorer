@@ -2,18 +2,17 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="?android:listPreferredItemHeightSmall" >
+    android:layout_height="wrap_content">
 
     <dev.dworks.apps.anexplorer.ui.DragGripView
         android:id="@+id/drag_handle"
         android:layout_width="64dp"
-        android:layout_height="fill_parent"
-        android:layout_gravity="fill_vertical|start"
+        android:layout_height="@dimen/drag_grip_height"
+        android:layout_gravity="fill_vertical|left"
         android:paddingBottom="12dp"
         android:paddingTop="12dp"
         android:visibility="gone"
-        android:color="#2333" />
+        android:color="?attr/lineColor" />
 
     <LinearLayout
         android:id="@+id/item"
@@ -44,7 +43,7 @@
                 android:id="@+id/icon_special"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleType="fitCenter" />
+                android:scaleType="centerInside" />
         </RelativeLayout>
 
         <LinearLayout

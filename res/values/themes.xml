@@ -7,7 +7,7 @@
         <item name="background">@android:color/black</item>
         <item name="text">@android:color/white</item>
         <item name="folder">@drawable/folder_blue</item>
-        <item name="lineColor">@color/BlueColor</item>
+        <item name="lineColor">@android:color/white</item>
         <item name="card">@drawable/card_white</item>
         <item name="aboutColor">@android:color/black</item>
         <item name="aboutTheme">@style/Theme.Dark.About</item>
