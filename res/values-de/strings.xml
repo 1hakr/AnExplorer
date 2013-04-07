@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">"AnExplorer"</string>
-    <string name="app_ver">"Ein weiterer Erforscher v1.4"</string>
+    <string name="app_ver">"Ein weiterer Erforscher v1.5"</string>
     <string name="app_company">"© 2013 D Works"</string>
     <string name="app_url">"http://www.dworks.in"</string>
     <string name="app_about_info">"Um einen kleinen Unterschied machen."</string>
@@ -34,7 +34,14 @@
     <string name="menu_select_unselect">"Aktivieren / deaktivieren Sie alle"</string>
     <string name="menu_help">"Help"</string>
     <string name="menu_clear_cache">"Cache löschen"</string>
-
+    <string name="constant_github">Github</string>
+    <string name="constant_gplus">Google+</string>
+    <string name="constant_twitter">Twitter</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_done">Done</string>
+    <string name="menu_reset">Reset</string>
+    
+    
 	<string name="name_phone">"Telefon"</string>
 	<string name="name_tablet">"Tablet"</string>
 	<string name="name_sdcard">"SD-Karte:"</string>

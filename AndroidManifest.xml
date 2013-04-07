@@ -3,7 +3,7 @@
     package="dev.dworks.apps.anexplorer"
     android:installLocation="auto"
     android:versionCode="24"
-    android:versionName="1.4" >
+    android:versionName="1.5" >
 
     <uses-sdk
         android:minSdkVersion="8"

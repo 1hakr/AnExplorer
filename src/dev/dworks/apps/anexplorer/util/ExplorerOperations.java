@@ -1,4 +1,4 @@
-package dev.dworks.apps.anexplorer;
+package dev.dworks.apps.anexplorer.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,6 +25,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import dev.dworks.apps.anexplorer.ExplorerActivity;
+import dev.dworks.apps.anexplorer.MyReceiver;
+import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.R.array;
+import dev.dworks.apps.anexplorer.R.drawable;
+import dev.dworks.apps.anexplorer.R.id;
+import dev.dworks.apps.anexplorer.R.layout;
+import dev.dworks.apps.anexplorer.R.string;
+import dev.dworks.apps.anexplorer.R.style;
+import dev.dworks.apps.anexplorer.R.styleable;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -55,6 +66,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.media.MediaScannerConnection;
@@ -68,19 +80,22 @@ import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.text.format.Formatter;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -239,7 +254,7 @@ public class ExplorerOperations {
 	
 	SharedPreferences.Editor editor;
 	int frequency_type;
-	
+	Dialog dialog = null;
 	//private static Process console;
   	//private static OutputStream stdin;
   	//private static InputStream stdout;
@@ -498,10 +513,10 @@ public class ExplorerOperations {
 	}
 	
 	public static boolean isSpecialPath(String filepath){
-		return filepath == ExplorerOperations.DIR_APP_BACKUP
-				|| filepath == ExplorerOperations.DIR_APP_PROCESS
-				|| filepath == ExplorerOperations.DIR_GALLERY_HIDDEN
-				|| filepath == ExplorerOperations.DIR_WALLPAPER;
+		return filepath.compareToIgnoreCase(ExplorerOperations.DIR_APP_BACKUP) == 0
+				|| filepath.compareToIgnoreCase(ExplorerOperations.DIR_APP_PROCESS) == 0
+				|| filepath.compareToIgnoreCase(ExplorerOperations.DIR_GALLERY_HIDDEN) == 0
+				|| filepath.compareToIgnoreCase(ExplorerOperations.DIR_WALLPAPER) == 0;
 	}
 	
 	public static boolean isExtStorage(String filePath){
@@ -749,11 +764,12 @@ public class ExplorerOperations {
 	}
 	
     public static class CmdListItem { 
-        public String  name = "", date = "", permission = "", size = "", path = "", trimName = "";
-        public int length = 0;
-        public boolean isValid = true;
-        int type = 0;
-        String[] flds;
+    	private String  name = "", date = "", permission = "", size = "", path = "", trimName = "";
+		private int length = 0;
+        private boolean isValid = true;
+        private int type = 0;
+        private String[] flds;
+        
         public CmdListItem( String string ) {
         	flds= string.split("\\s+");
             if(flds.length > 3) {
@@ -768,6 +784,25 @@ public class ExplorerOperations {
             	isValid =  false;
             }
         }
+        public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getPermission() {
+			return permission;
+		}
+		public void setPermission(String permission) {
+			this.permission = permission;
+		}
+		
+		public int getType() {
+			return type;
+		}
+		public void setType(int type) {
+			this.type = type;
+		}
     }	
 
 	/**
@@ -1722,7 +1757,6 @@ public class ExplorerOperations {
 		case 0:
 			millisec = AlarmManager.INTERVAL_DAY / 2;
 			break;
-
 		case 1:
 			millisec = AlarmManager.INTERVAL_DAY;
 			break;
@@ -1736,13 +1770,34 @@ public class ExplorerOperations {
 		return millisec;
 	}
 	
+	 View.OnLongClickListener listener = new OnLongClickListener() {
+		
+		@Override
+		public boolean onLongClick(View v) {
+			
+	        final int[] screenPos = new int[2];
+	        final Rect displayFrame = new Rect();
+	        v.getLocationOnScreen(screenPos);
+	        v.getWindowVisibleDisplayFrame(displayFrame);
+	        final int width = v.getWidth();
+	        final int height = v.getHeight();
+	        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+	        final int correctHeight = isTablet(context) ? height * 2 : height;
+	        final int correctWidth = screenPos[0] + width > screenWidth / 2 ? screenPos[0] - width*3 : screenPos[0] - width;
+	        Toast cheatSheet = Toast.makeText(context, v.getTag().toString(), Toast.LENGTH_SHORT);
+	        cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, correctWidth, correctHeight);
+	        cheatSheet.show();
+			return true;
+		}
+	};
+
 	/**
 	 * @param id
 	 * @param context
 	 * @param fileInfo
 	 */
 	public void onCreateSelectedDialog(final int id, final Context context, Bundle fileInfo) {
-		Dialog dialog = null;
+
 		filePath = fileInfo.getString(CONSTANT_PATH);
 		fileToPath = fileInfo.getString(CONSTANT_TO_PATH);
 		parentPath = new File(filePath).getParent();
@@ -1927,80 +1982,84 @@ public class ExplorerOperations {
     	case ExplorerOperations.DIALOG_ABOUT:
             LayoutInflater factory = LayoutInflater.from(context);
             final View aboutView = factory.inflate(R.layout.about, null);
-            ((TextView) aboutView.findViewById(R.id.gplus)).setMovementMethod(LinkMovementMethod.getInstance());
-            ((TextView) aboutView.findViewById(R.id.twitter)).setMovementMethod(LinkMovementMethod.getInstance());
+			TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
+            int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
     		if(isTablet(context)){
-                aboutView.findViewById(R.id.buttons).setVisibility(View.GONE);
-                dialog = new AlertDialog.Builder(context)
-         	   	.setIcon(R.drawable.icon)
-         	   	.setTitle(format2String(R.string.menu_about))
+				dialog = new AlertDialog.Builder(context)
          	   	.setView(aboutView)         	   	
-                .setPositiveButton(R.string.constant_feedback, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    	Intent intent = new Intent(Intent.ACTION_SEND);
-                    	intent.setType("text/email");
-                    	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
-                    	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
-                    	if(isIntentAvailable(context, intent)){
-                    		((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
-                    	}
-                        dialog.dismiss();
-                    }
-                })
-                .setNeutralButton(R.string.constant_rate, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    	Intent intent = new Intent(Intent.ACTION_VIEW);
-                    	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
-                    	openIntent(context, intent);
-                        dialog.dismiss();
-                    }
-                })
-                .setNegativeButton(R.string.constant_support, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    	Intent intent = new Intent(Intent.ACTION_VIEW);
-                    	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
-                    	openIntent(context, intent);
-                        dialog.dismiss();
-                    }
-                })
                 .create();
                 dialog.show();
     		}
     		else{
-    			TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
-    			
-                final Dialog splashScreenDialog = new Dialog(context, a.getResourceId(R.styleable.AppTheme_aboutTheme, 0));
-                aboutView.findViewById(R.id.feedback_button).setOnClickListener(new OnClickListener(){
-    				@Override
-    				public void onClick(View arg0) {
-                    	Intent intent = new Intent(Intent.ACTION_SEND);
-                    	intent.setType("text/email");
-                    	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
-                    	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
-                    	((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
-                    	splashScreenDialog.dismiss();
-    				}});
-                
-                aboutView.findViewById(R.id.rate_button).setOnClickListener(new OnClickListener(){
-    				@Override
-    				public void onClick(View arg0) {
-                    	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
-                    	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
-                    	((Activity) context).startActivity(intentMarket);
-                    	splashScreenDialog.dismiss();
-    				}});
-                
-                aboutView.findViewById(R.id.site_button).setOnClickListener(new OnClickListener(){
-    				@Override
-    				public void onClick(View arg0) {
-                    	Intent intent = new Intent(Intent.ACTION_VIEW);
-                    	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
-                    	((Activity) context).startActivity(intent);
-                    	splashScreenDialog.dismiss();
-    				}});    			
-                splashScreenDialog.setContentView(aboutView);
-                splashScreenDialog.show();    			
-    		}            
+    			dialog = new Dialog(context, theme);
+    			dialog.setContentView(aboutView);
+    			dialog.show();    			
+    		}
+            View view = aboutView.findViewById(R.id.github_button);
+            view.setOnLongClickListener(listener);
+            view.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+       				Uri uriUrl = Uri.parse("https://github.com/DWorkS/AnExplorer");
+	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
+	    				context.startActivity(launchBrowser);
+	    				dialog.dismiss();
+				}});
+            view = aboutView.findViewById(R.id.gplus_button);
+            view.setOnLongClickListener(listener);
+    		view.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+       				Uri uriUrl = Uri.parse("https://plus.google.com/109240246596102887385");
+	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
+	    				context.startActivity(launchBrowser);
+	    				dialog.dismiss();
+				}});
+            view = aboutView.findViewById(R.id.twitter_button);
+            view.setOnLongClickListener(listener);
+    		view.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+       				Uri uriUrl = Uri.parse("https://twitter.com/1HaKr");
+	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
+	    				context.startActivity(launchBrowser);
+	    				dialog.dismiss();
+				}});
+            
+            view = aboutView.findViewById(R.id.feedback_button);
+            view.setOnLongClickListener(listener);
+    		view.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+                	Intent intent = new Intent(Intent.ACTION_SEND);
+                	intent.setType("text/email");
+                	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
+                	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
+                	((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
+                	dialog.dismiss();
+				}});
+            
+            view = aboutView.findViewById(R.id.rate_button);
+            view.setOnLongClickListener(listener);
+    		view.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+                	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
+                	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
+                	((Activity) context).startActivity(intentMarket);
+                	dialog.dismiss();
+				}});
+            
+            view = aboutView.findViewById(R.id.site_button);
+            view.setOnLongClickListener(listener);
+    		view.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+                	Intent intent = new Intent(Intent.ACTION_VIEW);
+                	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
+                	((Activity) context).startActivity(intent);
+                	dialog.dismiss();
+				}});    		
             break;
             
     	case ExplorerOperations.DIALOG_ADFREE:

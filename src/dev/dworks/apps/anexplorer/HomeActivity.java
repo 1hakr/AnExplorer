@@ -24,7 +24,8 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-import dev.dworks.apps.anexplorer.ExplorerOperations.OnFragmentInteractionListener;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
 
 public class HomeActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener{
 

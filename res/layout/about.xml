@@ -69,7 +69,8 @@
                         android:layout_height="2dp"
                         android:background="?aboutColor" />
 
-                    <LinearLayout
+                    <!--
+                         <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -96,6 +97,7 @@
                             android:text="@string/twitter"
                             android:textColor="@color/BlueColor" />
                     </LinearLayout>
+                    -->
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -125,6 +127,19 @@
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?aboutColor" />
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="?aboutColor" />
+
+                    <ImageView
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/made_with_love" />
+
                 </LinearLayout>
 
                 <com.google.ads.AdView
@@ -147,34 +162,70 @@
 
         <!-- style="?attr/actionBarStyle" -->
 
-        <Button
+        <ImageButton
+            android:id="@+id/github_button"
+            style="?attr/actionButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:src="@drawable/github"
+            android:tag="@string/constant_github"
+            android:textColor="?attr/actionText" />
+
+        <ImageButton
+            android:id="@+id/gplus_button"
+            style="?attr/actionButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:src="@drawable/gplus"
+            android:tag="@string/constant_gplus"
+            android:textColor="?attr/actionText" />
+
+        <ImageButton
+            android:id="@+id/twitter_button"
+            style="?attr/actionButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:minHeight="48dp"
+            android:src="@drawable/twitter"
+            android:tag="@string/constant_twitter"
+            android:textColor="?attr/actionText" />
+
+        <ImageButton
             android:id="@+id/feedback_button"
             style="?attr/actionButtonStyle"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="@string/constant_feedback"
+            android:src="@drawable/feedback"
+            android:tag="@string/constant_feedback"
             android:textColor="?attr/actionText" />
 
-        <Button
+        <ImageButton
             android:id="@+id/rate_button"
             style="?attr/actionButtonStyle"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="@string/constant_rate"
+            android:src="@drawable/rate"
+            android:tag="@string/constant_rate"
             android:textColor="?attr/actionText" />
 
-        <Button
+        <ImageButton
             android:id="@+id/site_button"
             style="?attr/actionButtonStyle"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="@string/constant_support"
+            android:src="@drawable/support"
+            android:tag="@string/constant_support"
             android:textColor="?attr/actionText" />
     </LinearLayout>
 

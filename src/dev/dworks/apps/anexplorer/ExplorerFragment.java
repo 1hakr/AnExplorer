@@ -42,7 +42,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.util.LruCache;
 import android.text.TextUtils;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
@@ -79,14 +78,15 @@ import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 
-import dev.dworks.apps.anexplorer.ExplorerOperations.CmdListItem;
-import dev.dworks.apps.anexplorer.ExplorerOperations.FileList;
-import dev.dworks.apps.anexplorer.ExplorerOperations.FileNavList;
-import dev.dworks.apps.anexplorer.ExplorerOperations.GalleryFilter;
-import dev.dworks.apps.anexplorer.ExplorerOperations.MODES;
-import dev.dworks.apps.anexplorer.ExplorerOperations.OnFragmentInteractionListener;
-import dev.dworks.apps.anexplorer.ExplorerOperations.SearchFilter;
-import dev.dworks.apps.anexplorer.ExplorerOperations.TYPES;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.CmdListItem;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.FileList;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.FileNavList;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.GalleryFilter;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.MODES;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.SearchFilter;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
 
 /**
  * @author HaKr
@@ -239,7 +239,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.fragment_home, container, false);
+		view = inflater.inflate(R.layout.fragment_explorer, container, false);
 		context = this.getSherlockActivity();
 		// get preferences
 		preference = PreferenceManager.getDefaultSharedPreferences(context);
@@ -264,7 +264,6 @@ public class ExplorerFragment extends SherlockListFragment implements
 		if(null != savedInstanceState){
 			String path = savedInstanceState.getString(CURRENT_PATH, "");
 			currentPath = !ExplorerOperations.isEmpty(path) ? path : currentPath;
-			Log.i(TAG, "after"+path);
 		}
 		setHasOptionsMenu(true);
 	}
@@ -324,7 +323,6 @@ public class ExplorerFragment extends SherlockListFragment implements
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putString(CURRENT_PATH, currentPath);
-		Log.i(TAG,"before"+currentPath);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -950,8 +948,8 @@ public class ExplorerFragment extends SherlockListFragment implements
 						if (stopTasks) {
 							break;
 						}
-						name = cmdListItem.name;
-						path = cmdListItem.type == 0 ? currentPath + name + "/" : currentPath + name;
+						name = cmdListItem.getName();
+						path = cmdListItem.getType() == 0 ? currentPath + name + "/" : currentPath + name;
 						eachFile = new File(currentPath + name);
 						newFileExplorer.setFile(eachFile);
 						newFileExplorer.setContext(context);
@@ -961,8 +959,8 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 						if (!ExplorerOperations.isEmpty(name)) {
 							icon = newFileExplorer.getFileBasicType();
-							fileAccess = cmdListItem.permission.substring(0, 3);
-							size = cmdListItem.type == 0 ? "" : Formatter.formatShortFileSize(context, Long.valueOf(String.valueOf(eachFile.length())));
+							fileAccess = cmdListItem.getPermission().substring(0, 3);
+							size = cmdListItem.getType() == 0 ? "" : Formatter.formatShortFileSize(context, Long.valueOf(String.valueOf(eachFile.length())));
 							fileListItem = new FileList(path, name, size, icon, i, 0);
 							fileListItem.setInfo(fileCount, fileAccess, fileDateModified, fileSmallDateModified);
 							fileListEntries.add(fileListItem);
@@ -1237,9 +1235,9 @@ public class ExplorerFragment extends SherlockListFragment implements
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-
+		final int position = ((AdapterContextMenuInfo) menuInfo).position; 
 		if (mode == MODES.AppMode || mode == MODES.ProcessMode) {
-			selectedFilePath = fileListEntries.get(((AdapterContextMenuInfo) menuInfo).position).getpackageName();
+			selectedFilePath = fileListAdapter.getItem(position).getpackageName();
 			menu.setHeaderTitle(R.string.app_option);
 			menu.setHeaderIcon(mode == MODES.AppMode ? iconCache.get(5) : iconCache.get(99));
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_APP_OPEN, 0, R.string.constant_open_app);
@@ -1250,13 +1248,13 @@ public class ExplorerFragment extends SherlockListFragment implements
 				menu.add(0, ExplorerOperations.CONTEXT_MENU_STOP_PROCESS, 0, R.string.constant_stop_process);
 			}
 		} else if (mode == MODES.HideFromGalleryMode) {
-			selectedFilePath = fileListEntries.get(((AdapterContextMenuInfo) menuInfo).position).getPath();
+			selectedFilePath = fileListAdapter.getItem(position).getPath();
 			menu.setHeaderTitle(R.string.hide_option);
 			menu.setHeaderIcon(iconCache.get(96));
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_UNHIDE_FOLDER, 0, "Unhide from Gallery");
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_PROPERTIES, 0, R.string.constant_details).setEnabled(!multiSelectMode);
 		} else if (mode == MODES.WallpaperMode) {
-			selectedFilePath = fileListEntries.get(((AdapterContextMenuInfo) menuInfo).position).getPath();
+			selectedFilePath = fileListAdapter.getItem(position).getPath();
 			menu.setHeaderTitle("Wallpaper");
 			menu.setHeaderIcon(iconCache.get(4));
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_PROPERTIES, 0, R.string.constant_details);
@@ -1266,7 +1264,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 			}
 			boolean showHideGallery = true;
 			// current selected file
-			selectedFilePath = fileListEntries.get(((AdapterContextMenuInfo) menuInfo).position).getPath();
+			selectedFilePath = fileListAdapter.getItem(position).getPath();
 			showHideGallery = !isRoot && new File(selectedFilePath).isDirectory() && !new File(selectedFilePath + "/.nomedia").exists();
 			boolean showSU = originalPath.equals(root) && !ExplorerOperations.isExtStorage(currentPath) ? canUseSU(currentPath) : true;
 

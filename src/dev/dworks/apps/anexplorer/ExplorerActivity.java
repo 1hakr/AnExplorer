@@ -16,9 +16,10 @@ import android.widget.FrameLayout;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-import dev.dworks.apps.anexplorer.ExplorerOperations.MODES;
-import dev.dworks.apps.anexplorer.ExplorerOperations.OnFragmentInteractionListener;
-import dev.dworks.apps.anexplorer.ExplorerOperations.TYPES;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.MODES;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
 
 public class ExplorerActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener{
 
