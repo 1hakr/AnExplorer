@@ -68,7 +68,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockListPlusFragment;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -92,10 +92,10 @@ import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
  * @author HaKr
  * 
  */
-public class ExplorerFragment extends SherlockListFragment implements
+public class ExplorerFragment extends SherlockListPlusFragment implements
 		OnQueryTextListener, OnScrollListener, OnTouchListener {
 
-	private static final String TAG = "Explorer";
+	//private static final String TAG = "Explorer";
 	// private static final int FLAG_UPDATED_SYS_APP = 0x80;
 	private static final String CURRENT_PATH = null;
 
@@ -110,8 +110,9 @@ public class ExplorerFragment extends SherlockListFragment implements
 	public String[] newlist;
 
 	// file path and empty view
-	RelativeLayout titlePane;
-	private TextView mypath, empty;
+	private RelativeLayout titlePane;
+	private TextView empty;
+	private TextView mypath;
 	private TextView selectCount, selectCount2;
 	private String root = "/";
 	private String incomingPath, currentPath, originalPath, searchOriginalPath;
@@ -127,10 +128,10 @@ public class ExplorerFragment extends SherlockListFragment implements
 	private List<String> copiedFilesList = null;
 	private List<String> appNameList = new ArrayList<String>();
 
-	private ListAdapter fileListAdapter;
+	private ListAdapter mAdapter;
 	private List<Parcelable> fileListState, NavListState;
 	private boolean filesCopied = false;
-	private ProgressBar progress;
+	//private ProgressBar progress;
 	private SearchTask searchTask;
 	private GalleryTask galleryTask;
 	private LoadListTask loadListTask;
@@ -265,9 +266,33 @@ public class ExplorerFragment extends SherlockListFragment implements
 			String path = savedInstanceState.getString(CURRENT_PATH, "");
 			currentPath = !ExplorerOperations.isEmpty(path) ? path : currentPath;
 		}
+		setEmptyText(format2String(R.string.msg_file_not_found));
 		setHasOptionsMenu(true);
+		mAdapter = new ListAdapter(context, itemId);
+		setListAdapter(mAdapter);
+		setListShown(false);
+		setupAdpater();
 	}
 
+	@Override
+	public void setListAdapter(android.widget.ListAdapter adapter) {
+		if (isCurrentList) {
+			gridView.setVisibility(View.GONE);
+			getListView().setAdapter(mAdapter);
+			gridView.setAdapter(null);
+		} else {
+			listView_explorer.setVisibility(View.GONE);
+			gridView.setEmptyView(empty);
+			gridView.setAdapter(mAdapter);
+			getListView().setAdapter(null);
+		}
+	}
+	
+	@Override
+	public void setListShown(boolean shown) {
+		setListAdapter(mAdapter);
+		super.setListShown(shown);
+	}
 	@Override
 	public void onResume() {
 		loadList = true;
@@ -325,14 +350,6 @@ public class ExplorerFragment extends SherlockListFragment implements
 		outState.putString(CURRENT_PATH, currentPath);
 		super.onSaveInstanceState(outState);
 	}
-
-	/*
-	 * @Override protected void onNewIntent(Intent intent) { Bundle newbundle =
-	 * intent.getExtras(); currentPath = incomingPath =
-	 * newbundle.getString(ExplorerOperations.CONSTANT_PATH);
-	 * this.onConfigurationChanged(getResources().getConfiguration());
-	 * updateMenu(); showList(currentPath); super.onNewIntent(intent); }
-	 */
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -535,7 +552,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 		for (int pos = 0; pos < fileListEntries.size(); pos++) {
 			fileListEntries.get(pos).setSelection(0);
 		}
-		fileListAdapter.notifyDataSetChanged();
+		mAdapter.notifyDataSetChanged();
 	}
 
 	private void setThumbnail(int position, Bitmap bitmap) {
@@ -557,14 +574,11 @@ public class ExplorerFragment extends SherlockListFragment implements
 		initData();
 		// ad
 		adView = (AdView) view.findViewById(R.id.adView);
-
 		mypath = (TextView) view.findViewById(R.id.pathTitle);
 		titlePane = (RelativeLayout) view.findViewById(R.id.title_pane);
-
-		empty = (TextView) view.findViewById(R.id.listempty);
+		empty = (TextView) view.findViewById(R.id.internalEmpty);
 		gridView = (GridView) view.findViewById(R.id.grid_explorer);
 		listView_explorer = (ListView) view.findViewById(android.R.id.list);
-		progress = (ProgressBar) view.findViewById(android.R.id.progress);
 
 		fileListState = new ArrayList<Parcelable>();
 		NavListState = new ArrayList<Parcelable>();
@@ -587,22 +601,21 @@ public class ExplorerFragment extends SherlockListFragment implements
 			gridView.setVerticalSpacing(0);
 			gridView.setPadding(0, 0, 0, 0);
 		}
-		fileListAdapter = new ListAdapter(context, itemId);
-
-		initDataPost();
 	}
 
-	private void initDataPost() {
+	private void setupAdpater() {
 
 		AbsListView absListView = isCurrentList ? getListView() : gridView;
+		empty.setText("");
 		if (isCurrentList) {
 			gridView.setVisibility(View.GONE);
-			getListView().setAdapter(fileListAdapter);
+			getListView().setAdapter(mAdapter);
 			gridView.setAdapter(null);
 		} else {
 			listView_explorer.setVisibility(View.GONE);
 			gridView.setEmptyView(empty);
-			gridView.setAdapter(fileListAdapter);
+			gridView.setVisibility(View.VISIBLE);
+			gridView.setAdapter(mAdapter);
 			getListView().setAdapter(null);
 		}
 		absListView.setTextFilterEnabled(true);
@@ -616,7 +629,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 		absListView.setFastScrollEnabled(showThumbScroll);
 		absListView.setOnScrollListener(ExplorerFragment.this);
 		// change list dynamically
-		fileListAdapter.setNotifyOnChange(true);
+		mAdapter.setNotifyOnChange(true);
 	}
 
 	private void initData() {
@@ -1015,9 +1028,9 @@ public class ExplorerFragment extends SherlockListFragment implements
 	 */
 	public void clearListAdapter() {
 
-		if (fileListAdapter != null) {
-			fileListAdapter.clear();
-			fileListAdapter.notifyDataSetChanged();
+		if (mAdapter != null) {
+			mAdapter.clear();
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 
@@ -1140,7 +1153,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 			
 		case R.id.menu_view:
 			isCurrentList = !isCurrentList;
-			initDataPost();
+			setupAdpater();
 			updateMenu();
 			break;
 
@@ -1237,7 +1250,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 		super.onCreateContextMenu(menu, v, menuInfo);
 		final int position = ((AdapterContextMenuInfo) menuInfo).position; 
 		if (mode == MODES.AppMode || mode == MODES.ProcessMode) {
-			selectedFilePath = fileListAdapter.getItem(position).getpackageName();
+			selectedFilePath = mAdapter.getItem(position).getpackageName();
 			menu.setHeaderTitle(R.string.app_option);
 			menu.setHeaderIcon(mode == MODES.AppMode ? iconCache.get(5) : iconCache.get(99));
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_APP_OPEN, 0, R.string.constant_open_app);
@@ -1248,13 +1261,13 @@ public class ExplorerFragment extends SherlockListFragment implements
 				menu.add(0, ExplorerOperations.CONTEXT_MENU_STOP_PROCESS, 0, R.string.constant_stop_process);
 			}
 		} else if (mode == MODES.HideFromGalleryMode) {
-			selectedFilePath = fileListAdapter.getItem(position).getPath();
+			selectedFilePath = mAdapter.getItem(position).getPath();
 			menu.setHeaderTitle(R.string.hide_option);
 			menu.setHeaderIcon(iconCache.get(96));
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_UNHIDE_FOLDER, 0, "Unhide from Gallery");
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_PROPERTIES, 0, R.string.constant_details).setEnabled(!multiSelectMode);
 		} else if (mode == MODES.WallpaperMode) {
-			selectedFilePath = fileListAdapter.getItem(position).getPath();
+			selectedFilePath = mAdapter.getItem(position).getPath();
 			menu.setHeaderTitle("Wallpaper");
 			menu.setHeaderIcon(iconCache.get(4));
 			menu.add(0, ExplorerOperations.CONTEXT_MENU_PROPERTIES, 0, R.string.constant_details);
@@ -1264,7 +1277,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 			}
 			boolean showHideGallery = true;
 			// current selected file
-			selectedFilePath = fileListAdapter.getItem(position).getPath();
+			selectedFilePath = mAdapter.getItem(position).getPath();
 			showHideGallery = !isRoot && new File(selectedFilePath).isDirectory() && !new File(selectedFilePath + "/.nomedia").exists();
 			boolean showSU = originalPath.equals(root) && !ExplorerOperations.isExtStorage(currentPath) ? canUseSU(currentPath) : true;
 
@@ -1593,7 +1606,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 	private void onListClick(View v, int position, long id) {
 		View select = (View) v.findViewById(R.id.select);
-		FileList selectionFile = fileListAdapter.getItem(position);
+		FileList selectionFile = mAdapter.getItem(position);
 		switch (mode) {
 		case AppMode:
 		case ProcessMode:
@@ -1965,8 +1978,8 @@ public class ExplorerFragment extends SherlockListFragment implements
 				fileListEntries.get(pos).setSelection(1);
 			}
 
-			if (fileListAdapter != null) {
-				fileListAdapter.notifyDataSetChanged();
+			if (mAdapter != null) {
+				mAdapter.notifyDataSetChanged();
 			}
 			multiSelectMode = true;
 			setInfo(getSelectedFilesCount() + "");
@@ -1986,8 +1999,8 @@ public class ExplorerFragment extends SherlockListFragment implements
 				fileListEntries.get(pos).setSelection(0);
 			}
 
-			if (fileListAdapter != null) {
-				fileListAdapter.notifyDataSetChanged();
+			if (mAdapter != null) {
+				mAdapter.notifyDataSetChanged();
 			}
 
 			if (unSelectMode) {
@@ -2025,15 +2038,6 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 	private void showAds() {
 		adView.loadAd(new AdRequest());
-	}
-
-	/*
-	 * @Override public void onBackPressed() { goBack(); }
-	 */
-
-	public void closeApp() {
-		// setResult(Activity.RESULT_OK);
-		// finish();
 	}
 
 	/**
@@ -2124,8 +2128,8 @@ public class ExplorerFragment extends SherlockListFragment implements
 		multiSelectOnOff(multiSelectMode);
 
 		unSelectAllFiles(false);
-		if (fileListAdapter != null) {
-			fileListAdapter.notifyDataSetChanged();
+		if (mAdapter != null) {
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 
@@ -2301,17 +2305,16 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 		@Override
 		protected void onPreExecute() {
-			progress.setVisibility(View.VISIBLE);
-			empty.setText(format2String(R.string.msg_loading));
+			setListShown(false);
 			super.onPreExecute();
 		}
 
 		@Override
 		protected void onPostExecute(List<FileList> result) {
-			progress.setVisibility(View.GONE);
-			empty.setText(mode == MODES.AppMode ? format2String(R.string.msg_file_not_found) : format2String(R.string.msg_folder_empty));
-			if(isAttached)
-			loadListFinally(result, true);
+			setEmptyText(mode == MODES.AppMode ? format2String(R.string.msg_file_not_found) : format2String(R.string.msg_folder_empty));
+			if(isAttached){
+				loadListFinally(result, true);
+			}
 		}
 	}
 
@@ -2331,8 +2334,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 		@Override
 		protected void onPreExecute() {
-			progress.setVisibility(View.VISIBLE);
-			empty.setText(format2String(R.string.msg_searching));
+			setListShown(false);
 			super.onPreExecute();
 		}
 
@@ -2340,9 +2342,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 		protected void onPostExecute(File[] result) {
 			resultCount = String.valueOf(result.length);
 			mypath.setText(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
-			progress.setVisibility(View.GONE);
-			empty.setText(format2String(R.string.msg_file_not_found));
-
+			setEmptyText(format2String(R.string.msg_file_not_found));
 			// show list
 			showList(result);
 		}
@@ -2358,8 +2358,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 		@Override
 		protected void onPreExecute() {
-			progress.setVisibility(View.VISIBLE);
-			empty.setText(format2String(R.string.msg_searching));
+			setListShown(false);
 			super.onPreExecute();
 		}
 
@@ -2367,9 +2366,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 		protected void onPostExecute(File[] result) {
 			resultCount = String.valueOf(result.length);
 			mypath.setText(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
-			progress.setVisibility(View.GONE);
-			empty.setText(format2String(R.string.msg_file_not_found));
-
+			setEmptyText(format2String(R.string.msg_file_not_found));
 			// show list
 			showList(result);
 		}
@@ -2564,9 +2561,17 @@ public class ExplorerFragment extends SherlockListFragment implements
 		if(null == mListener){
 			return;
 		}
-		AbsListView absListView = isCurrentList ? getListView() : gridView;
-		fileListAdapter.setData(result);
-		
+		final AbsListView absListView = isCurrentList ? getListView() : gridView;
+        // Set the new data in the adapter.
+		mAdapter.setData(result);
+
+        // The list should now be shown.
+        if (isResumed()) {
+            //setListShown(true);
+            setListShownNoAnimation(true);
+        } else {
+            setListShownNoAnimation(true);
+        }		
 		// restore list state
 		if (!fileListState.isEmpty() && (isGoBack || isResetList)) {
 			absListView.onRestoreInstanceState(fileListState.get(fileListState.size() - 1));
@@ -2600,7 +2605,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 		boolean stoppedFling = scrollState != SCROLL_STATE_FLING;
 		if (scrollState == SCROLL_STATE_IDLE) {
 			loadList = true;
-			fileListAdapter.notifyDataSetChanged();
+			mAdapter.notifyDataSetChanged();
 		} else if (stoppedFling) {
 			loadList = true;
 		} else if (scrollState == SCROLL_STATE_FLING) {
@@ -2616,7 +2621,7 @@ public class ExplorerFragment extends SherlockListFragment implements
 
 		if (fingerUp && scrollStateAll != OnScrollListener.SCROLL_STATE_FLING) {
 			loadList = true;
-			fileListAdapter.notifyDataSetChanged();
+			mAdapter.notifyDataSetChanged();
 		}
 		return false;
 	}
@@ -2645,8 +2650,8 @@ public class ExplorerFragment extends SherlockListFragment implements
 		if (!ExplorerOperations.isSpecialMode(mode)) {
 			return false;
 		}
-		if (null != fileListAdapter) {
-			fileListAdapter.getFilter().filter(!TextUtils.isEmpty(newText) ? newText : null);
+		if (null != mAdapter) {
+			mAdapter.getFilter().filter(!TextUtils.isEmpty(newText) ? newText : null);
 		}
 		return true;
 	}

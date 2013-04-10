@@ -382,13 +382,12 @@ public class HomeFragment extends SherlockListFragment {
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		if(isEditMode){
-			menu.findItem(R.id.menu_overflow).setVisible(false);
+			menu.setGroupVisible(R.id.main_group, false);
+			menu.setGroupVisible(R.id.edit_group, true);
 		}
 		else{
-			menu.findItem(R.id.menu_done).setVisible(false);
-			menu.findItem(R.id.menu_cancel).setVisible(false);
-			menu.findItem(R.id.menu_reset).setVisible(false);
-
+			menu.setGroupVisible(R.id.main_group, true);
+			menu.setGroupVisible(R.id.edit_group, false);
 		}
 		super.onPrepareOptionsMenu(menu);
 	}

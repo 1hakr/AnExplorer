@@ -26,17 +26,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import dev.dworks.apps.anexplorer.ExplorerActivity;
-import dev.dworks.apps.anexplorer.MyReceiver;
-import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.R.array;
-import dev.dworks.apps.anexplorer.R.drawable;
-import dev.dworks.apps.anexplorer.R.id;
-import dev.dworks.apps.anexplorer.R.layout;
-import dev.dworks.apps.anexplorer.R.string;
-import dev.dworks.apps.anexplorer.R.style;
-import dev.dworks.apps.anexplorer.R.styleable;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -90,15 +79,16 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import dev.dworks.apps.anexplorer.ExplorerActivity;
+import dev.dworks.apps.anexplorer.MyReceiver;
+import dev.dworks.apps.anexplorer.R;
 
 /**
  * @author HaKr
@@ -492,7 +482,6 @@ public class ExplorerOperations {
 		@Override
 		public void writeToParcel(Parcel dest, int flags) {
 			// TODO Auto-generated method stub
-			
 		}		
 	}
 	
@@ -764,7 +753,7 @@ public class ExplorerOperations {
 	}
 	
     public static class CmdListItem { 
-    	private String  name = "", date = "", permission = "", size = "", path = "", trimName = "";
+    	private String  name = "", permission = "", trimName = "";
 		private int length = 0;
         private boolean isValid = true;
         private int type = 0;
@@ -778,7 +767,7 @@ public class ExplorerOperations {
             	trimName = flds[flds.length - 1]; 
             	type = permission.startsWith("d") || permission.startsWith("l") ? 0 : 1;
             	name = permission.startsWith("l") ? flds[flds.length - 3] : trimName.endsWith("/") ? trimName.substring(0, length-1) : trimName;
-            	path = name;            	
+            	//path = name;            	
             }
             else{
             	isValid =  false;

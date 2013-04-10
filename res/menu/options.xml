@@ -16,7 +16,6 @@
         android:icon="@drawable/ic_menu_search"
         android:showAsAction="always"
         android:title="@string/menu_search"/>
-
     <item
         android:id="@+id/menu_select"
         android:icon="@drawable/ic_menu_mark"
@@ -31,24 +30,18 @@
                 android:title="@string/menu_select_all"/>
         </menu>
     </item>
-        <item
+    <item
         android:id="@+id/menu_view"
         android:icon="@drawable/ic_menu_grid_view"
         android:showAsAction="always"
         android:title="View"/>
     <item
-        android:id="@+id/menu_overflows"
-        android:icon="@drawable/ic_menu_overflow"
-        android:showAsAction="always"
-        android:title="@string/menu_select" android:menuCategory="alternative">
-        <menu>
-            <item
-                android:id="@+id/menu_about"
-                android:title="@string/menu_about"/>
-            <item
-                android:id="@+id/menu_setting"
-                android:title="@string/menu_setting"/>
-        </menu>
-    </item>
+        android:id="@+id/menu_about"
+        android:showAsAction="never"
+        android:title="@string/menu_about"/>
+    <item
+        android:id="@+id/menu_setting"
+        android:showAsAction="never"
+        android:title="@string/menu_setting"/>
 
 </menu>

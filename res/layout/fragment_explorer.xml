@@ -1,108 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    android:id="@+id/patients_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeFragment" >
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+    <LinearLayout
+        android:id="@+id/progressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-        <LinearLayout
-            android:id="@android:id/empty"
+        <ProgressBar
+            style="@style/Widget.Sherlock.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true" >
+            android:gravity="center"
+            android:paddingTop="4dip"
+            android:singleLine="true"
+            android:text="Loading"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/BlueColor"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-            <ProgressBar
-                android:id="@+android:id/progress"
-                style="@style/Widget.Sherlock.ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/title_pane"
+            android:layout_width="fill_parent"
+            android:layout_height="20dp"
+            android:background="@color/greyColor"
+            android:orientation="horizontal" >
 
             <TextView
-                android:id="@+id/listempty"
+                android:id="@+id/pathTitle"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:gravity="center"
-                android:text="No Data"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/BlueColor"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:layout_gravity="center_horizontal"
+                android:ellipsize="marquee"
+                android:gravity="center_vertical"
+                android:paddingLeft="4dp"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#ffffffff"
+                android:textIsSelectable="true" />
+        </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" >
-
-            <RelativeLayout
-                android:id="@+id/title_pane"
-                android:layout_width="fill_parent"
-                android:layout_height="20dp"
-                android:background="@color/greyColor"
-                android:orientation="horizontal" >
-
-                <TextView
-                    android:id="@+id/pathTitle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:ellipsize="marquee"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="4dp"
-                    android:singleLine="true"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#ffffffff"
-                    android:textIsSelectable="true" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" >
-
-                <ListView
-                    android:id="@android:id/list"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:listSelector="@drawable/abs__list_selector_holo_dark"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:visibility="visible"
-                    tools:listitem="@layout/row_item" />
-
-                <GridView
-                    android:id="@+id/grid_explorer"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:drawSelectorOnTop="true"
-                    android:gravity="center"
-                    android:listSelector="@drawable/abs__list_selector_holo_dark"
-                    android:numColumns="auto_fit"
-                    android:stretchMode="columnWidth"
-                    android:visibility="gone" />
-            </RelativeLayout>
+        <FrameLayout
+            android:id="@+id/listContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:orientation="vertical" >
 
-                <com.google.ads.AdView
-                    android:id="@+id/adView"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" >
+
+                    <ListView
+                        android:id="@android:id/list"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:listSelector="@drawable/abs__list_selector_holo_dark"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:scrollbarStyle="outsideOverlay"
+                        android:visibility="visible"
+                        tools:listitem="@layout/row_item" />
+
+                    <GridView
+                        android:id="@+id/grid_explorer"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:drawSelectorOnTop="true"
+                        android:gravity="center"
+                        android:listSelector="@drawable/abs__list_selector_holo_dark"
+                        android:numColumns="auto_fit"
+                        android:stretchMode="columnWidth"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    ads:adSize="SMART_BANNER"
-                    ads:adUnitId="a14e25123e38970"
-                    ads:loadAdOnCreate="false" />
+                    android:orientation="vertical" >
+
+                    <com.google.ads.AdView
+                        android:id="@+id/adView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        ads:adSize="SMART_BANNER"
+                        ads:adUnitId="a14e25123e38970"
+                        ads:loadAdOnCreate="false" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+
+            <TextView
+                android:id="@+id/internalEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="8dp"
+                android:textIsSelectable="false"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/BlueColor"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
 
 </FrameLayout>
