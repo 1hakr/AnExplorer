@@ -14,9 +14,12 @@
         <item name="mainFolder">@drawable/folder_blue</item>
         <item name="specialFolder">@drawable/folder_white</item>
         <item name="actionText">@android:color/white</item>
+        <item name="backgroundLayoutColor">#2D2D2D</item>
         <item name="actionBar">@drawable/abs__ab_bottom_solid_dark_holo</item>
         <item name="actionBarStyle">@style/DarkActionBar</item>
         <item name="android:actionBarStyle">@style/DarkActionBar</item>
+        <item name="actionBarSplitStyle">@style/DarkActionBar</item>
+        <item name="android:actionBarSplitStyle">@style/DarkActionBar</item>
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
@@ -39,6 +42,7 @@
         <item name="mainFolder">@drawable/folder_grey</item>
         <item name="specialFolder">@drawable/folder_black</item>
         <item name="actionText">@android:color/black</item>
+        <item name="backgroundLayoutColor">#EBEBEB</item>
         <item name="actionBar">@drawable/abs__ab_bottom_solid_light_holo</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
@@ -46,7 +50,7 @@
         <item name="android:buttonStyle">@style/ButtonAppTheme</item>
         <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_light</item>
-        <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>        
+        <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>
     </style>
 
     <style name="Theme.Pleasant" parent="Theme.Sherlock.Light.DarkActionBar">
@@ -61,6 +65,7 @@
         <item name="mainFolder">@drawable/folder_grey</item>
         <item name="specialFolder">@drawable/folder_black</item>
         <item name="actionText">@android:color/white</item>
+        <item name="backgroundLayoutColor">#EBEBEB</item>
         <item name="actionBar">@drawable/abs__ab_bottom_solid_inverse_holo</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
@@ -68,7 +73,7 @@
         <item name="android:buttonStyle">@style/ButtonAppTheme</item>
         <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>
         <item name="android:listChoiceIndicatorMultiple">@drawable/btn_check_holo_light</item>
-        <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>        
+        <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>
     </style>
 
     <style name="Theme.Dark.About">

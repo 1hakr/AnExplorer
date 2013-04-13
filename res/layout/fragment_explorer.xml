@@ -5,7 +5,7 @@
     android:id="@+id/patients_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment" >
+    tools:context=".ExplorerFragment" >
 
     <LinearLayout
         android:id="@+id/progressContainer"
@@ -26,7 +26,7 @@
             android:gravity="center"
             android:paddingTop="4dip"
             android:singleLine="true"
-            android:text="Loading"
+            android:text="@string/loading"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/BlueColor"
             android:textStyle="bold" />
@@ -61,56 +61,35 @@
         <FrameLayout
             android:id="@+id/listContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="0dp"
+            android:layout_weight="1" >
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" >
+                android:layout_height="fill_parent" >
 
-                <RelativeLayout
+                <ListView
+                    android:id="@android:id/list"
                     android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" >
+                    android:layout_height="fill_parent"
+                    android:listSelector="@drawable/abs__list_selector_holo_dark"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:visibility="visible"
+                    tools:listitem="@layout/row_item" />
 
-                    <ListView
-                        android:id="@android:id/list"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:listSelector="@drawable/abs__list_selector_holo_dark"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:scrollbarStyle="outsideOverlay"
-                        android:visibility="visible"
-                        tools:listitem="@layout/row_item" />
-
-                    <GridView
-                        android:id="@+id/grid_explorer"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:drawSelectorOnTop="true"
-                        android:gravity="center"
-                        android:listSelector="@drawable/abs__list_selector_holo_dark"
-                        android:numColumns="auto_fit"
-                        android:stretchMode="columnWidth"
-                        android:visibility="gone" />
-                </RelativeLayout>
-
-                <LinearLayout
+                <GridView
+                    android:id="@+id/grid_explorer"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-
-                    <com.google.ads.AdView
-                        android:id="@+id/adView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        ads:adSize="SMART_BANNER"
-                        ads:adUnitId="a14e25123e38970"
-                        ads:loadAdOnCreate="false" />
-                </LinearLayout>
-            </LinearLayout>
+                    android:layout_height="fill_parent"
+                    android:drawSelectorOnTop="true"
+                    android:gravity="center"
+                    android:listSelector="@drawable/abs__list_selector_holo_dark"
+                    android:numColumns="auto_fit"
+                    android:stretchMode="columnWidth"
+                    android:visibility="gone" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/internalEmpty"
@@ -118,11 +97,26 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:padding="8dp"
-                android:textIsSelectable="false"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/BlueColor"
+                android:textIsSelectable="false"
                 android:textStyle="bold" />
         </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <com.google.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="a14e25123e38970"
+                ads:loadAdOnCreate="false" />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

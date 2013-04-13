@@ -5,19 +5,24 @@
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
+    android:background="?attr/backgroundLayoutColor"
     android:showDividers="middle" >
 
     <FrameLayout
         android:id="@+id/pane_list"
         android:layout_width="0dp"
+        android:background="?attr/background"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/preference_margin"
+        android:layout_weight="@integer/left_pane"
         tools:layout="@android:layout/list_content" />
 
     <FrameLayout
         android:id="@+id/pane_main"
         android:layout_width="0dp"
+        android:background="?attr/background"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_marginRight="@dimen/preference_margin"
+        android:layout_weight="@integer/right_pane" />
 
 </LinearLayout>

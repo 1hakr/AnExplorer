@@ -13,6 +13,7 @@
         <attr name="specialFolder" format="reference" />
         <attr name="actionText" format="color" />
         <attr name="actionBar" format="reference" />
+        <attr name="backgroundLayoutColor" format="color" />
     </declare-styleable>  
     
     <declare-styleable name="IconPreference">

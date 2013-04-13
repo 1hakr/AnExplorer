@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
@@ -6,64 +7,56 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment" >
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+    <LinearLayout
+        android:id="@+id/progressContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-        <LinearLayout
-            android:id="@android:id/empty"
+        <ProgressBar
+            style="@style/Widget.Sherlock.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true" >
+            android:gravity="center"
+            android:paddingTop="4dip"
+            android:singleLine="true"
+            android:text="@string/loading"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/BlueColor"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-            <ProgressBar
-                android:id="@+android:id/progress"
-                style="@style/Widget.Sherlock.ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true" />
-
-            <TextView
-                android:id="@+id/listempty"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center"
-                android:text="No Data"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/BlueColor"
-                android:textStyle="bold" />
-        </LinearLayout>
+    <FrameLayout
+        android:id="@+id/listContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <RelativeLayout
+            <com.mobeta.android.dslv.DragSortListView
+                android:id="@android:id/list"
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" >
-
-                <com.mobeta.android.dslv.DragSortListView
-                    android:id="@android:id/list"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:listSelector="@drawable/abs__list_selector_holo_dark"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:visibility="visible"
-                    app:drag_start_mode="onDown"
-                    app:float_alpha="0.8"
-                    app:remove_enabled="false"
-                    app:sort_enabled="true"
-                    app:use_default_controller="false"
-                    tools:listitem="@layout/row_item" /> 
-
-            </RelativeLayout>
+                android:layout_height="fill_parent"
+                android:drawSelectorOnTop="false"
+                android:listSelector="@drawable/abs__list_selector_holo_dark"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:scrollbarStyle="outsideOverlay"
+                app:drag_start_mode="onDown"
+                app:float_alpha="0.8"
+                app:remove_enabled="false"
+                app:sort_enabled="true"
+                app:use_default_controller="false"
+                tools:listitem="@layout/row_item" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -80,6 +73,17 @@
                     ads:loadAdOnCreate="false" />
             </LinearLayout>
         </LinearLayout>
-    </RelativeLayout>
+
+        <TextView
+            android:id="@+id/internalEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/BlueColor"
+            android:textIsSelectable="false"
+            android:textStyle="bold" />
+    </FrameLayout>
 
 </FrameLayout>

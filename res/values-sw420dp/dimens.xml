@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="left_pane">1</integer>
+    <integer name="right_pane">3</integer>
+    <dimen name="preference_margin">20dp</dimen>
+    <dimen name="preference_margin_single">20dp</dimen>
+</resources>

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -67,14 +68,14 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 		auto_login = preference.getBoolean("AutoLoginPref", false);
 		
 		this.setTheme(ExplorerOperations.THEMES[themeType]);
-		/*StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+/*		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 		.detectNetwork()
 		.detectDiskWrites()
 		.detectDiskReads()
 		.detectCustomSlowCalls()
 		.penaltyFlashScreen()
 		.penaltyLog()
-		.build());*/		
+		.build());	*/	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
         
@@ -96,6 +97,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	
 	
     private void initControls() {
+    	shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         pane_list = (FrameLayout) findViewById(R.id.pane_list);
 	}
 

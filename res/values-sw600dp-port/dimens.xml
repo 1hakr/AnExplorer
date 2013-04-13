@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="left_pane">2</integer>
+    <integer name="right_pane">6</integer>
+    <dimen name="preference_margin">58dp</dimen>
+    <dimen name="preference_margin_single">58dp</dimen>
+</resources>

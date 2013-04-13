@@ -389,11 +389,9 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 
 	public void initMode(){
 		if (mode == MODES.FileMode || mode == MODES.SearchMode) {
-			//currentPath = originalPath = incomingPath = ExplorerOperations.DIR_SDCARD;
 			currentPath = originalPath = incomingPath = args.getString("path");
 			queryString = args.getString("query");
 		} else {
-			//bundle = getIntent().getBundleExtra(SearchManager.APP_DATA);
 			currentPath = originalPath = incomingPath = args.getString(ExplorerOperations.CONSTANT_PATH);
 			if(currentPath.compareTo(ExplorerOperations.DIR_APP_BACKUP) == 0){
 				mode = MODES.AppMode;
@@ -594,7 +592,6 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			gridView.setPadding(10, 0, 10, 0);
 		}
 		// int padding = type == TYPES.Tablet && checkDevice ? 10 : 0;
-
 		if (mode == MODES.WallpaperMode) {
 			gridView.setColumnWidth(convertDp2Px(100));
 			gridView.setHorizontalSpacing(0);
@@ -1118,7 +1115,6 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(true);
 			searchView.setQueryHint("Search Storage");
-			//searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
 			menu.findItem(R.id.menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 			menu.findItem(R.id.menu_search).setActionView(searchView);
 			menu.findItem(R.id.menu_view).setIcon(isCurrentList ? R.drawable.ic_menu_grid_view : R.drawable.ic_menu_list_view);

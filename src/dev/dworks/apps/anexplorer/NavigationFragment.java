@@ -53,6 +53,7 @@ public class NavigationFragment extends SherlockListFragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		navListAdapter = new NavingationAdapter(context, R.layout.row_navigation);
 		getListView().setAdapter(navListAdapter);
 		navListAdapter.setNotifyOnChange(true);
@@ -63,7 +64,6 @@ public class NavigationFragment extends SherlockListFragment {
 					onListClick(v, position, id);
 			}
 		});
-		super.onActivityCreated(savedInstanceState);
 	}
 	
 	private String format2String(int id){
@@ -105,6 +105,9 @@ public class NavigationFragment extends SherlockListFragment {
 		if(action == 1){
 			curNavPosition = data.getInt("position");
 			ArrayList<FileNavList> list = data.getParcelableArrayList("navlist");
+			if(null == list){
+				return;
+			}
 			navListAdapter.setData(list);
 			navListAdapter.notifyDataSetChanged();
 			if (list != null) {				

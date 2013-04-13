@@ -48,7 +48,8 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	
 		this.setTheme(ExplorerOperations.THEMES[themeType]);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_home);
+		mode = getMode();
+		setContentView(showNavigationPane ? R.layout.activity_home : R.layout.activity_home_single);
 		type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
         
 		initControls();
@@ -56,24 +57,24 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	}
 	
     private void initData() {
-		bundle = getIntent().getExtras();
-		Bundle arguments = new Bundle();		
-		if(null == bundle){
-			bundle = new Bundle();
-			bundle.putString(ExplorerOperations.CONSTANT_PATH, ExplorerOperations.DIR_SDCARD);	
-		}
-		mode = getMode();
 		explorerFragment = ExplorerFragment.newInstance(bundle);
 		explorerFragment.setMode(mode);
 		getSupportFragmentManager().beginTransaction().replace(R.id.pane_main, explorerFragment).commit();		
 		
-		navigationFragment = new NavigationFragment();
-		navigationFragment.setArguments(arguments);			
-		getSupportFragmentManager().beginTransaction().replace(R.id.pane_list, navigationFragment).commit();			
+		if(showNavigationPane){
+			navigationFragment = new NavigationFragment();
+			navigationFragment.setArguments(new Bundle());			
+			getSupportFragmentManager().beginTransaction().replace(R.id.pane_list, navigationFragment).commit();
+		}
 	}
     
 	private MODES getMode() {
 		MODES mode = MODES.None;
+		bundle = getIntent().getExtras();
+		if(null == bundle){
+			bundle = new Bundle();
+			bundle.putString(ExplorerOperations.CONSTANT_PATH, ExplorerOperations.DIR_SDCARD);	
+		}
 		//global search
 		if(getIntent().getAction() != null){
 			if(getIntent().getAction().equals(Intent.ACTION_SEARCH)){
@@ -106,12 +107,13 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 				showNavigationPane = true;
 			}
 		}
+
 		return mode;
 	}
-
+	
 	private void initControls() {
         pane_list = (FrameLayout) findViewById(R.id.pane_list);
-       // pane_main = (FrameLayout) findViewById(R.id.pane_main);	
+        //pane_main = (FrameLayout) findViewById(R.id.pane_main);	
 	}
 
 	private void getPreference() {
@@ -137,9 +139,11 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	    boolean showNavigation = false;
 	    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 	    	showNavigation = true && showNavigationPane;
+	    	if(null != pane_list)
 	    	pane_list.setVisibility(ExplorerOperations.showView(showNavigation));
 	    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
 	    	showNavigation = type == TYPES.Phone ? false : true && showNavigationPane;
+	    	if(null != pane_list)
 	    	pane_list.setVisibility(ExplorerOperations.showView(showNavigation));
 	    }
 	}
@@ -217,7 +221,9 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 				explorerFragment.onNavListClick(bundle.getInt("position"));
 			}
 			else{
-				navigationFragment.initData(bundle);
+				if(null != navigationFragment){
+					navigationFragment.initData(bundle);
+				}
 			}
 		}
 		else if(operation == 4){

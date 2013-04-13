@@ -27,7 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockListPlusFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -47,7 +47,7 @@ import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionL
  * @author HaKr
  *
  */
-public class HomeFragment extends SherlockListFragment {
+public class HomeFragment extends SherlockListPlusFragment {
 	
 	//private static final String TAG = "Explorer";
 	private SparseIntArray iconCache = new SparseIntArray();
@@ -70,9 +70,8 @@ public class HomeFragment extends SherlockListFragment {
 	private OnFragmentInteractionListener mListener;
 	private View view;
 	private Bundle myBundle;
-	private ListAdapter listAdapter;
+	private ListAdapter mAdapter;
 	private SharedPreferences preference;
-	private DragSortListView listView;
 
 	public static HomeFragment newInstance(String param1, String param2) {
 		HomeFragment fragment = new HomeFragment();
@@ -83,12 +82,6 @@ public class HomeFragment extends SherlockListFragment {
 
 	public HomeFragment() {
 	}
-		
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
     
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,23 +93,55 @@ public class HomeFragment extends SherlockListFragment {
 		// get preferences
 		preference = PreferenceManager.getDefaultSharedPreferences(context);
 		editor = preference.edit();
-	    listView = (DragSortListView) view.findViewById(android.R.id.list);
         fillBitmapCache();        
         initControls();        
 		return view;
 	}
 	
 	@Override
-	public void onResume() {
-		onConfigurationChanged(getResources().getConfiguration());
-		fillData();
-		super.onResume();
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		setEmptyText(format2String(R.string.msg_file_not_found));
+		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public DragSortListView getListView() {
+		return (DragSortListView)super.getListView();
+	}
+	
+	@Override
+	public ListAdapter getListAdapter() {
+		return (ListAdapter) super.getListAdapter();
 	}
 
-	public void onButtonPressed(Bundle bundle) {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(bundle);
-		}
+	private void notifyAdapter(){
+		getListAdapter().notifyDataSetChanged();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		onConfigurationChanged(getResources().getConfiguration());
+		showData();
+	}
+
+	private void showData() {
+		fillData();
+    	mAdapter = new ListAdapter(context, R.layout.home_item, fileListEntries);
+    	setListAdapter(mAdapter);
+    	setListShown(true);
+    	if((isTablet && showNavigationPane) || (isPhone && showNavigationPane)){
+   		
+    	}
+		myBundle = new Bundle();
+		myBundle.putInt("operation", 3);
+		myBundle.putInt("action", 1);
+		myBundle.putInt("position", -1);
+		myBundle.putString("base", "home");
+		myBundle.putParcelableArrayList("navlist", fileListNavEntries);
+		mListener.onFragmentInteraction(myBundle); 	
+    	showAds();
 	}
 
 	@Override
@@ -153,11 +178,6 @@ public class HomeFragment extends SherlockListFragment {
 		//ads
         adView = (AdView) view.findViewById(R.id.adView);
         adViewHeader = new AdView((Activity) context, AdSize.SMART_BANNER, "a14e25123e38970");
-
-    	//gridView = (GridView) view.findViewById(R.id.grid_explorer);
-    	//titlePane = (RelativeLayout) view.findViewById(R.id.title_pane);
-    	//gridView.setVisibility(View.GONE);
-    	//titlePane.setVisibility(View.GONE);
 	}
       
 	/**
@@ -252,20 +272,6 @@ public class HomeFragment extends SherlockListFragment {
 			fileList.setSpecialIcon(special_icon);
 			fileListNavEntries.add(fileList);
     	}  	
-    	listAdapter = new ListAdapter(context, R.layout.home_item, fileListEntries);
-    	setListAdapter(listAdapter);
-
-    	if((isTablet && showNavigationPane) || (isPhone && showNavigationPane)){
-   		
-    	}
-		myBundle = new Bundle();
-		myBundle.putInt("operation", 3);
-		myBundle.putInt("action", 1);
-		myBundle.putInt("position", -1);
-		myBundle.putString("base", "home");
-		myBundle.putParcelableArrayList("navlist", fileListNavEntries);
-		mListener.onFragmentInteraction(myBundle);     	
-    	showAds();
 	}
 	
 	private void saveEditMode(){
@@ -289,7 +295,7 @@ public class HomeFragment extends SherlockListFragment {
 			fileListEntries.add(fileList);
 			i++;
 		}
-		listAdapter.notifyDataSetChanged();
+		notifyAdapter();
 	}
 	
 	private void resetEditMode(){
@@ -300,57 +306,58 @@ public class HomeFragment extends SherlockListFragment {
 	}		
 	
 	private void removeEditMode() {
-        listView.setFloatViewManager(null);
-        listView.setOnTouchListener(null);
-        listView.setDragEnabled(false);   
-        listView.setDropListener(null);
-        listView.setOnTouchListener(null);
-        listView.setOnTouchListener(null);
-        listView.setItemsCanFocus(true);
-        listAdapter.notifyDataSetChanged();
+        getListView().setFloatViewManager(null);
+        getListView().setOnTouchListener(null);
+        getListView().setDragEnabled(false);   
+        getListView().setDropListener(null);
+        getListView().setOnTouchListener(null);
+        getListView().setOnTouchListener(null);
+        getListView().setItemsCanFocus(true);
+        notifyAdapter();
 	}
 	
 	private void setEditMode() {
 
         final DragSortController dragSortController = new ConfigurationDragSortController();
-        listView.setFloatViewManager(dragSortController);
-        listView.setOnTouchListener(dragSortController);
-        listView.setDragEnabled(true);      
-        listView.setDropListener(new DragSortListView.DropListener() {
+        getListView().setFloatViewManager(dragSortController);
+        getListView().setOnTouchListener(dragSortController);
+        getListView().setDragEnabled(true);      
+        getListView().setDropListener(new DragSortListView.DropListener() {
             @Override
             public void drop(int from, int to) {
             	FileNavList fileList = fileListEntries.remove(from);
             	fileListEntries.add(to, fileList);
-                listAdapter.notifyDataSetChanged();
+                notifyAdapter();
             }
         });
         
 		final SwipeDismissListViewTouchListener swipeDismissTouchListener = 
         		new SwipeDismissListViewTouchListener(
-        				listView, 
+        				getListView(), 
         				new DismissCallbacks() {
 
 							@Override
 							public boolean canDismiss(int position) {
-								FileNavList fileList = listAdapter.getItem(position);
+								FileNavList fileList = getListAdapter().getItem(position);
 								if(null != fileList && fileList.getPath().compareToIgnoreCase(ExplorerOperations.DIR_SDCARD) == 0){
 									return false;
 								}
-								return position < listAdapter.getCount();
+								return position < getListAdapter().getCount();
 							}
 		
 							@Override
 							public void onDismiss(ListView listView, int[] reverseSortedPositions) {
 					            for (int position : reverseSortedPositions) {
-					            	if(position < listAdapter.getCount())
-					            	listAdapter.remove(listAdapter.getItem(position));
+					            	if(position < getListAdapter().getCount()){
+					            		getListAdapter().remove(getListAdapter().getItem(position));
+					            	}
 					            }
-					            listAdapter.notifyDataSetChanged();
+					            notifyAdapter();
 								
 							}});
         
-        listView.setOnTouchListener(swipeDismissTouchListener);
-        listView.setOnTouchListener(new View.OnTouchListener() {
+		getListView().setOnTouchListener(swipeDismissTouchListener);
+		getListView().setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 return dragSortController.onTouch(view, motionEvent)
@@ -359,8 +366,8 @@ public class HomeFragment extends SherlockListFragment {
 
             }
         });
-        listView.setItemsCanFocus(true);
-        listAdapter.notifyDataSetChanged();
+        getListView().setItemsCanFocus(true);
+        notifyAdapter();
 	}
 
 	private String fileList2Str(FileNavList fileList) {
@@ -442,18 +449,16 @@ public class HomeFragment extends SherlockListFragment {
 	}
 	
     private class ConfigurationDragSortController extends DragSortController {
-        //private int mPos;
-        //private int origHeight = -1;
         
         public ConfigurationDragSortController() {
-            super(listView, R.id.drag_handle, DragSortController.ON_DOWN, 0);
+            super(getListView(), R.id.drag_handle, DragSortController.ON_DOWN, 0);
             setRemoveEnabled(false);
         }
 
         @Override
         public int startDragPosition(MotionEvent ev) {
             int res = super.dragHandleHitPosition(ev);
-            if (res >= listAdapter.getCount()) {
+            if (res >= getListAdapter().getCount()) {
                 return DragSortController.MISS;
             }
             return res;
@@ -461,8 +466,7 @@ public class HomeFragment extends SherlockListFragment {
 
         @Override
         public View onCreateFloatView(int position) {
-            //mPos = position;
-            return listAdapter.getView(position, null, listView);
+            return getListAdapter().getView(position, null, getListView());
         }
 
         @Override
@@ -488,29 +492,6 @@ public class HomeFragment extends SherlockListFragment {
 			myBundle.putString(ExplorerOperations.CONSTANT_PATH, fileListEntries.get(position).getPath());
 			myBundle.putBoolean(ExplorerOperations.CONSTANT_SEARCH, false);
 			mListener.onFragmentInteraction(myBundle);
-		}
-	}
-	    
-	class NavingationAdapter extends ArrayAdapter<FileNavList>{
-
-		LayoutInflater inflater;
-
-		public NavingationAdapter(Context context, int textViewResourceId, List<FileNavList> objects) {
-			super(context, textViewResourceId, objects);
-			inflater = ((Activity) context).getLayoutInflater();
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = inflater.inflate(R.layout.row_navigation, null);
-			TextView name = (TextView) convertView.findViewById(R.id.name);
-			ImageView fileIcon = (ImageView) convertView.findViewById(R.id.icon);
-			ImageView fileIconSpecial = (ImageView) convertView.findViewById(R.id.icon_special);
-
-			name.setText(position == 0 && isTablet ? format2String(R.string.name_tablet) : fileListNavEntries.get(position).getName());
-			fileIcon.setImageResource(position > 2 ? iconCache.get(-1) : iconCache.get(ExplorerOperations.DIRS_ICONS_NAV[position]));
-			fileIconSpecial.setImageResource(position > 2 ? iconCache.get(ExplorerOperations.DIRS_ICONS_NAV[position]) : 0);			
-			return (convertView);
 		}
 	}
 	    
