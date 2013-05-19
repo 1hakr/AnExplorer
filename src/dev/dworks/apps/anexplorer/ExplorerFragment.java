@@ -98,9 +98,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	//private static final String TAG = "Explorer";
 	// private static final int FLAG_UPDATED_SYS_APP = 0x80;
 	private static final String CURRENT_PATH = null;
-
 	private List<FileList> fileListEntries = null;
-
 	private List<String> navigationListPaths = null;
 	// icons cached
 	public SparseIntArray iconCache = new SparseIntArray();
@@ -187,9 +185,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	private ExplorerOperations explorerOperationsSU;
 	private int curNavPosition = -1;
 	private File[] fileList;
-
 	private AdView adView;
-
 	private MODES mode;
 	private TYPES type;
 	private ActionMode actionMode;
@@ -566,7 +562,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	}
 
 	/**
-	 * Initialize the controls
+	 * Initialise the controls
 	 */
 	public void initControls() {
 		initData();
@@ -709,8 +705,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	/**
 	 * This method is used to show the List of files of a particular path
 	 * 
-	 * @param dirPath
-	 *            The path for which the list of files needs to be shown
+	 * @param dirPath The path for which the list of files needs to be shown
 	 */
 	private void showList(String dirPath) {
 		loadList = true;
@@ -791,8 +786,8 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				path = eachFile.getAbsolutePath();
 				navigationListPaths.add(path);
 				icon = navFileExplorer.getFileBasicType();
-				icon = ExplorerOperations.isExtStoragePath(path) ? 0 : iconCache.get(98);
 				special_icon = icon == 0 ? 0 : iconCache.get(icon);
+				icon = ExplorerOperations.isExtStoragePath(path) ? 0 : iconCache.get(98);
 				fileNavList = new FileNavList(path, name, icon, i);
 				fileNavList.setSpecialIcon(special_icon);
 				fileListNavEntries.add(fileNavList);
@@ -2461,7 +2456,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				if (showStorage && parentFolderSize == 0L) {
 					parentFolderSize = getDirectorySize(new File(currentPath));
 				}
-				if (isCancelled()) {
+				if (isCancelled() || position >= fileListEntries.size()) {
 					return null;
 				}
 				File eachFile = new File(fileListEntries.get(position).getPath());

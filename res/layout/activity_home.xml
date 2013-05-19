@@ -1,28 +1,27 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.actionbarsherlock.internal.widget.IcsLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/backgroundLayoutColor"
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
-    android:background="?attr/backgroundLayoutColor"
     android:showDividers="middle" >
-
     <FrameLayout
         android:id="@+id/pane_list"
         android:layout_width="0dp"
-        android:background="?attr/background"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/preference_margin"
         android:layout_weight="@integer/left_pane"
+        android:background="?attr/background"
         tools:layout="@android:layout/list_content" />
 
     <FrameLayout
         android:id="@+id/pane_main"
         android:layout_width="0dp"
-        android:background="?attr/background"
         android:layout_height="match_parent"
         android:layout_marginRight="@dimen/preference_margin"
-        android:layout_weight="@integer/right_pane" />
+        android:layout_weight="@integer/right_pane"
+        android:background="?attr/background" />
 
-</LinearLayout>
+</com.actionbarsherlock.internal.widget.IcsLinearLayout>

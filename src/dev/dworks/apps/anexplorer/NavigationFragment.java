@@ -129,12 +129,6 @@ public class NavigationFragment extends SherlockListFragment {
 		}
 	}
 
-/*	public void onButtonPressed(Uri uri) {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
-		}
-	}*/
-
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -151,7 +145,6 @@ public class NavigationFragment extends SherlockListFragment {
 		super.onDetach();
 		mListener = null;
 	}
-	
 
 	class NavingationAdapter extends ArrayAdapter<FileNavList> {
 		LayoutInflater inflater;

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -32,7 +33,7 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	private SharedPreferences.Editor editor;
 	private TYPES type;
 	private FrameLayout pane_list;
-	//private FrameLayout pane_main;
+	private FrameLayout pane_main;
 	private ExplorerFragment explorerFragment;
 	private NavigationFragment navigationFragment;
 	private ExplorerFragment searchFragment;
@@ -113,7 +114,7 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	
 	private void initControls() {
         pane_list = (FrameLayout) findViewById(R.id.pane_list);
-        //pane_main = (FrameLayout) findViewById(R.id.pane_main);	
+        pane_main = (FrameLayout) findViewById(R.id.pane_main);	
 	}
 
 	private void getPreference() {
@@ -146,6 +147,23 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	    	if(null != pane_list)
 	    	pane_list.setVisibility(ExplorerOperations.showView(showNavigation));
 	    }
+/*	    if(showNavigationPane){
+		    int margin = getResources().getDimensionPixelOffset(R.dimen.preference_margin);
+	        LayoutParams params = new LayoutParams(pane_list.getLayoutParams());
+	        params.leftMargin = margin;
+			pane_list.setLayoutParams(params);
+			
+	        params = new LayoutParams(pane_main.getLayoutParams());
+	        params.rightMargin = margin;
+	        pane_main.setLayoutParams(params);
+	    }
+	    else{
+		    int margin = getResources().getDimensionPixelOffset(R.dimen.preference_margin_single);
+	        LayoutParams params = new LayoutParams(pane_main.getLayoutParams());
+	        params.leftMargin = margin;
+	        params.rightMargin = margin;
+	        pane_main.setLayoutParams(params);
+	    }*/
 	}
 	
 	public void changeLang(){

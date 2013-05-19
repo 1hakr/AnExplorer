@@ -26,6 +26,13 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.actionbarsherlock.app.SherlockDailog;
+import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -68,13 +75,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -1758,27 +1768,6 @@ public class ExplorerOperations {
 		}
 		return millisec;
 	}
-	
-	 View.OnLongClickListener listener = new OnLongClickListener() {
-		
-		@Override
-		public boolean onLongClick(View v) {
-			
-	        final int[] screenPos = new int[2];
-	        final Rect displayFrame = new Rect();
-	        v.getLocationOnScreen(screenPos);
-	        v.getWindowVisibleDisplayFrame(displayFrame);
-	        final int width = v.getWidth();
-	        final int height = v.getHeight();
-	        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-	        final int correctHeight = isTablet(context) ? height * 2 : height;
-	        final int correctWidth = screenPos[0] + width > screenWidth / 2 ? screenPos[0] - width*3 : screenPos[0] - width;
-	        Toast cheatSheet = Toast.makeText(context, v.getTag().toString(), Toast.LENGTH_SHORT);
-	        cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, correctWidth, correctHeight);
-	        cheatSheet.show();
-			return true;
-		}
-	};
 
 	/**
 	 * @param id
@@ -1969,86 +1958,8 @@ public class ExplorerOperations {
             break;    		
     		
     	case ExplorerOperations.DIALOG_ABOUT:
-            LayoutInflater factory = LayoutInflater.from(context);
-            final View aboutView = factory.inflate(R.layout.about, null);
-			final TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
-            int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
-    		if(isTablet(context)){
-				dialog = new AlertDialog.Builder(context)
-         	   	.setView(aboutView)         	   	
-                .create();
-                dialog.show();
-    		}
-    		else{
-    			dialog = new Dialog(context, theme);
-    			dialog.setContentView(aboutView);
-    			dialog.show();    			
-    		}
-            View view = aboutView.findViewById(R.id.github_button);
-            view.setOnLongClickListener(listener);
-            view.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-       				Uri uriUrl = Uri.parse("https://github.com/DWorkS/AnExplorer");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dialog.dismiss();
-				}});
-            view = aboutView.findViewById(R.id.gplus_button);
-            view.setOnLongClickListener(listener);
-    		view.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-       				Uri uriUrl = Uri.parse("https://plus.google.com/109240246596102887385");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dialog.dismiss();
-				}});
-            view = aboutView.findViewById(R.id.twitter_button);
-            view.setOnLongClickListener(listener);
-    		view.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-       				Uri uriUrl = Uri.parse("https://twitter.com/1HaKr");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dialog.dismiss();
-				}});
-            
-            view = aboutView.findViewById(R.id.feedback_button);
-            view.setOnLongClickListener(listener);
-    		view.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-                	Intent intent = new Intent(Intent.ACTION_SEND);
-                	intent.setType("text/email");
-                	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
-                	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
-                	((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
-                	dialog.dismiss();
-				}});
-            
-            view = aboutView.findViewById(R.id.rate_button);
-            view.setOnLongClickListener(listener);
-    		view.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-                	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
-                	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
-                	((Activity) context).startActivity(intentMarket);
-                	dialog.dismiss();
-				}});
-            
-            view = aboutView.findViewById(R.id.site_button);
-            view.setOnLongClickListener(listener);
-    		view.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-                	Intent intent = new Intent(Intent.ACTION_VIEW);
-                	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
-                	((Activity) context).startActivity(intent);
-                	dialog.dismiss();
-				}});    		
+    		AboutFragment AboutFragment = new AboutFragment();
+    		AboutFragment.show(((SherlockFragmentActivity)context).getSupportFragmentManager(), "about");
             break;
             
     	case ExplorerOperations.DIALOG_ADFREE:
@@ -2085,6 +1996,118 @@ public class ExplorerOperations {
     		break;            
     	}
     }
+	
+	public static class AboutFragment extends SherlockDialogFragment implements View.OnLongClickListener{
+		
+		private View view;
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			final TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
+            int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
+            if(!isTablet(context)){
+    			setStyle(STYLE_NO_TITLE, theme);	
+            }
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			view = inflater.inflate(R.layout.about, container, false);
+			initControls();
+			return view;
+		}
+		
+		private void initControls() {
+			LinearLayout layout_ad = (LinearLayout) view.findViewById(R.id.layout_ad);
+		    AdView adView = new AdView((Activity) context, AdSize.IAB_MRECT, "a14e25123e38970");
+	        adView.loadAd(new AdRequest());	    
+	        layout_ad.addView(adView);
+	        
+    		View actionView = view.findViewById(R.id.github_button);
+            actionView.setOnLongClickListener(this);
+            actionView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+       				Uri uriUrl = Uri.parse("https://github.com/DWorkS/AnExplorer");
+	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
+	    				context.startActivity(launchBrowser);
+	    				dismiss();
+				}});
+            actionView = view.findViewById(R.id.gplus_button);
+            actionView.setOnLongClickListener(this);
+    		actionView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+       				Uri uriUrl = Uri.parse("https://plus.google.com/109240246596102887385");
+	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
+	    				context.startActivity(launchBrowser);
+	    				dismiss();
+				}});
+            actionView = view.findViewById(R.id.twitter_button);
+            actionView.setOnLongClickListener(this);
+    		actionView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+       				Uri uriUrl = Uri.parse("https://twitter.com/1HaKr");
+	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
+	    				context.startActivity(launchBrowser);
+	    				dismiss();
+				}});
+            
+            actionView = view.findViewById(R.id.feedback_button);
+            actionView.setOnLongClickListener(this);
+    		actionView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+                	Intent intent = new Intent(Intent.ACTION_SEND);
+                	intent.setType("text/email");
+                	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
+                	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
+                	((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
+                	dismiss();
+				}});
+            
+            actionView = view.findViewById(R.id.rate_button);
+            actionView.setOnLongClickListener(this);
+    		actionView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+                	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
+                	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
+                	((Activity) context).startActivity(intentMarket);
+                	dismiss();
+				}});
+            
+            actionView = view.findViewById(R.id.site_button);
+            actionView.setOnLongClickListener(this);
+    		actionView.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View arg0) {
+                	Intent intent = new Intent(Intent.ACTION_VIEW);
+                	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
+                	((Activity) context).startActivity(intent);
+                	dismiss();
+				}});
+		}
+
+		@Override
+		public boolean onLongClick(View v) {
+	        final int[] screenPos = new int[2];
+	        final Rect displayFrame = new Rect();
+	        v.getLocationOnScreen(screenPos);
+	        v.getWindowVisibleDisplayFrame(displayFrame);
+	        final int width = v.getWidth();
+	        final int height = v.getHeight();
+	        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+	        final int correctHeight = isTablet(context) ? height * 2 : height;
+	        final int correctWidth = screenPos[0] + width > screenWidth / 2 ? screenPos[0] - width*3 : screenPos[0] - width;
+	        Toast cheatSheet = Toast.makeText(context, v.getTag().toString(), Toast.LENGTH_SHORT);
+	        cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, correctWidth, correctHeight);
+	        cheatSheet.show();
+			return true;
+		}
+	}
 	
 	/**
 	 * @author HaKr

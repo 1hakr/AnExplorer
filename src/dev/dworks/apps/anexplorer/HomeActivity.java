@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
+import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
 
 public class HomeActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener{
 
@@ -42,8 +44,10 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	private String password;
 	private boolean auto_login, autoLoginChecked = false;	
 	private FrameLayout pane_list;
+	private FrameLayout pane_main;
 	private HomeFragment homeFragment;
 	private NavigationFragment navigationFragment;
+	private TYPES type;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +82,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 		.build());	*/	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-        
+		type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
     	initLogin();		
         if(showSplashScreen && getIntent().getStringExtra("Splash") == null){
             showSplashScreen();
@@ -95,12 +99,11 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 		initControls();
 	}
 	
-	
     private void initControls() {
     	shake = AnimationUtils.loadAnimation(this, R.anim.shake);
         pane_list = (FrameLayout) findViewById(R.id.pane_list);
+        pane_main = (FrameLayout) findViewById(R.id.pane_main);	
 	}
-
 
 	private void getPreference() {
 		themeType = Integer.valueOf(preference.getString("ThemePref", "2"));
@@ -126,8 +129,17 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 	    	pane_list.setVisibility(ExplorerOperations.showView(true));
 	    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-	    	pane_list.setVisibility(ExplorerOperations.showView(false));
+	    	pane_list.setVisibility(ExplorerOperations.showView(type == TYPES.Phone ? false : true));
 	    }
+	    
+/*	    int margin = getResources().getDimensionPixelOffset(R.dimen.preference_margin);
+        LayoutParams params = new LayoutParams(pane_list.getLayoutParams());
+        params.leftMargin = margin;
+		pane_list.setLayoutParams(params);
+		
+        params = new LayoutParams(pane_main.getLayoutParams());
+        params.rightMargin = margin;
+        pane_main.setLayoutParams(params);*/
 	}
 	
 	public void changeLang(){
