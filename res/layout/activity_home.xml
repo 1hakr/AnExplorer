@@ -1,27 +1,24 @@
-<com.actionbarsherlock.internal.widget.IcsLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SlidingPaneLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_pane"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundLayoutColor"
-    android:baselineAligned="false"
-    android:divider="?android:attr/dividerHorizontal"
-    android:orientation="horizontal"
-    android:showDividers="middle" >
+    android:layout_marginLeft="@dimen/preference_margin"
+    android:layout_marginRight="@dimen/preference_margin"
+    android:background="?attr/backgroundLayoutColor" >
+
     <FrameLayout
         android:id="@+id/pane_list"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/pane_list_width"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/preference_margin"
-        android:layout_weight="@integer/left_pane"
         android:background="?attr/background"
         tools:layout="@android:layout/list_content" />
 
     <FrameLayout
         android:id="@+id/pane_main"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/pane_main_width"
         android:layout_height="match_parent"
-        android:layout_marginRight="@dimen/preference_margin"
-        android:layout_weight="@integer/right_pane"
+        android:layout_weight="1"
         android:background="?attr/background" />
 
-</com.actionbarsherlock.internal.widget.IcsLinearLayout>
+</android.support.v4.widget.SlidingPaneLayout>

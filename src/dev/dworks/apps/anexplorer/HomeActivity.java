@@ -4,12 +4,16 @@ import java.util.Locale;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SlidingPaneLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,18 +23,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
-import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
 
-public class HomeActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener{
+public class HomeActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener,
+	PanelSlideListener{
 
 	private Context context;
 	private Dialog splashScreenDialog;
@@ -43,11 +46,9 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	private Animation shake;
 	private String password;
 	private boolean auto_login, autoLoginChecked = false;	
-	private FrameLayout pane_list;
-	private FrameLayout pane_main;
 	private HomeFragment homeFragment;
 	private NavigationFragment navigationFragment;
-	private TYPES type;
+	private SlidingPaneLayout sliding_pane;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +61,8 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 		if(preference.getInt("adfreePref", -1) == -1){
 			editor.putInt("adfreePref", 1);	
 			editor.commit();
-		}
-		if(preference.getInt("exitPref", -1) == -1){
-			editor.putInt("exitPref", 1);
-			editor.commit();
-		}
+		} 
+
 		if(preference.getBoolean("SessionLoginPref", false)){
 			loginSuccess = true;
 		}
@@ -82,8 +80,8 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 		.build());	*/	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-		type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
-    	initLogin();		
+		//type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
+    	initLogin();
         if(showSplashScreen && getIntent().getStringExtra("Splash") == null){
             showSplashScreen();
         }
@@ -101,8 +99,9 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	
     private void initControls() {
     	shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-        pane_list = (FrameLayout) findViewById(R.id.pane_list);
-        pane_main = (FrameLayout) findViewById(R.id.pane_main);	
+        sliding_pane = (SlidingPaneLayout)findViewById(R.id.sliding_pane);
+        sliding_pane.setSliderFadeColor(0);
+        sliding_pane.setPanelSlideListener(this);
 	}
 
 	private void getPreference() {
@@ -126,20 +125,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
-	    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-	    	pane_list.setVisibility(ExplorerOperations.showView(true));
-	    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-	    	pane_list.setVisibility(ExplorerOperations.showView(type == TYPES.Phone ? false : true));
-	    }
-	    
-/*	    int margin = getResources().getDimensionPixelOffset(R.dimen.preference_margin);
-        LayoutParams params = new LayoutParams(pane_list.getLayoutParams());
-        params.leftMargin = margin;
-		pane_list.setLayoutParams(params);
-		
-        params = new LayoutParams(pane_main.getLayoutParams());
-        params.rightMargin = margin;
-        pane_main.setLayoutParams(params);*/
+		getSupportActionBar().setDisplayHomeAsUpEnabled(!sliding_pane.isSlideable());
 	}
 	
 	public void changeLang(){
@@ -186,6 +172,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 				} catch (Exception e) { }
 				finally {
 					splashScreenDialog.dismiss();
+			        showTutorial();
                 }
             }
         };
@@ -208,9 +195,10 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 
         if(!passwordSet){
         	password_repeat.setVisibility(View.VISIBLE);
+        	cancel.setText(R.string.menu_skip);
+        	header.setVisibility(View.VISIBLE);
         }
-    	header.setText(format2String(R.string.app_name)+" "+format2String(R.string.msg_login)+ (!passwordSet ? " Setup" : ""));        
-        
+    	header.setText(format2String(R.string.msg_login)+ (!passwordSet ? " Setup" : ""));        
         dont_show_login.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean checked) {
@@ -219,7 +207,13 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
         
         final Dialog dialog = new Dialog(this, R.style.Theme_Dailog_Login);
         dialog.setContentView(loginView);
-        dialog.setCancelable(false);
+        dialog.setOnCancelListener(new OnCancelListener() {
+			
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				finish();
+			}
+		});
         dialog.show();        
 
         login.setOnClickListener(new OnClickListener(){
@@ -251,21 +245,37 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 				editor.putBoolean("AutoLoginPref", autoLoginChecked);
 				editor.commit();
         		loginSuccess = true;
-        		setSession(loginSuccess);            		
-        		dialog.cancel();
-				
+        		setSession(loginSuccess);
+    			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "home", "login_done", 0L);
+        		dialog.dismiss();
+        		
 			}});
         
         cancel.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View arg0) {
-				dialog.cancel();
-				finallyFinish();
-			}});        
+				if(!passwordSet){
+					editor.putBoolean("AutoLoginPref", true);
+					editor.commit();
+					dialog.dismiss();
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "home", "login_skip", 0L);
+				}
+				else{
+					dialog.dismiss();
+					finallyFinish();	
+				}
+			}});
     }
     	
-    /**
+    private void showTutorial() {
+		if(preference.getInt("tutorialPref", -1) == -1){
+	    	Intent intent = new Intent(HomeActivity.this, TutorialActivity.class);
+	    	startActivity(intent);
+		}
+	}
+
+	/**
      * @param id
      */
     protected void showSelectedDialog(int id) {
@@ -288,15 +298,36 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	}
     
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			if(sliding_pane.isOpen()){
+	    		sliding_pane.closePane();
+	    	}
+			else{
+				sliding_pane.openPane();
+			}
+			break;
+		}
+    	return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
     public void onBackPressed() {
-    	finallyFinish();
-    	super.onBackPressed();
+    	if(sliding_pane.isSlideable() && sliding_pane.isOpen()){
+    		sliding_pane.closePane();
+    	}
+    	else{
+	    	finallyFinish();
+	    	super.onBackPressed();
+    	}
     }
 	
 	@Override
 	public void onFragmentInteraction(Bundle bundle) {
 		int operation = bundle.getInt("operation");
 		if(operation == 1){
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_NAVIGATION, "home", bundle.getString(ExplorerOperations.CONSTANT_PATH), 0L);
 			Intent intentExplorer = new Intent(context,ExplorerActivity.class);
 			intentExplorer.putExtras(bundle);
 			startActivityForResult(intentExplorer, 0);		
@@ -317,4 +348,23 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
     		finish();    		
     	} 	
     }
+
+	@Override
+	public void onPanelSlide(View panel, float slideOffset) {
+		
+	}
+
+	@Override
+	public void onPanelOpened(View panel) {
+		AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "home", "onPanelOpened", 0L);
+		homeFragment.setHasOptionsMenu(false);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+	}
+
+	@Override
+	public void onPanelClosed(View panel) {
+		AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "home", "onPanelClosed", 0L);
+		homeFragment.setHasOptionsMenu(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	}
 }

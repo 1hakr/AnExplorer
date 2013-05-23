@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/preference_margin_single"
+    android:layout_marginRight="@dimen/preference_margin_single"
     android:background="?attr/backgroundLayoutColor"
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
@@ -12,8 +14,6 @@
         android:id="@+id/pane_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/preference_margin_single"
-        android:layout_marginRight="@dimen/preference_margin_single"
         android:background="?attr/background" >
     </FrameLayout>
 

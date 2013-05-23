@@ -43,10 +43,10 @@
         android:key="ScrollThumbPref"
         android:summary="@string/display_thumb"
         android:title="@string/show_thumb" />
-    <CheckBoxPreference
+<!--     <CheckBoxPreference
         android:defaultValue="true"
         android:key="NavigationPanePref"
         android:summary="@string/display_pane"
-        android:title="@string/show_pane" />
+        android:title="@string/show_pane" /> -->
 
 </PreferenceScreen>

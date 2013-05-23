@@ -82,6 +82,12 @@ public class Setting extends SherlockPreferenceActivity implements OnSharedPrefe
         this.onConfigurationChanged(getResources().getConfiguration());
     }
     
+	@Override
+	public void onStart() {
+		super.onStart();
+		AnExplorer.tracker.sendView("Setting");
+	}
+    
     public void getPreferences(){
     	themeTypeInt = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString("ThemePref", "2"));
     	themeType = ExplorerOperations.THEMES[themeTypeInt];
@@ -208,6 +214,7 @@ public class Setting extends SherlockPreferenceActivity implements OnSharedPrefe
     @SuppressWarnings("deprecation")
 	@Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "setting", key, 0L);
 		Preference pref = findPreference(key);
 		if(pref instanceof ListPreference){
 			ListPreference listPref = (ListPreference) pref;
@@ -300,6 +307,7 @@ public class Setting extends SherlockPreferenceActivity implements OnSharedPrefe
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object newValue) {
 			
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "setting", preference.getKey(), 0L);
 			if(preference instanceof ListPreference){
 				ListPreference listPref = (ListPreference) preference;
 				listPref.setSummary(listPref.getEntries()[Integer.valueOf(newValue.toString())]);

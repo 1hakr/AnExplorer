@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
     android:installLocation="auto"
-    android:versionCode="24"
-    android:versionName="1.5" >
+    android:versionCode="25"
+    android:versionName="1.6" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -21,6 +21,7 @@
         android:required="false" />
 
     <application
+        android:name="AnExplorer"
         android:allowBackup="false"
         android:description="@string/app_about_info"
         android:icon="@drawable/ic_launcher_icon"
@@ -84,6 +85,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Settings" />
 
+        <!-- Tutorial -->
+        <activity
+            android:name="dev.dworks.apps.anexplorer.TutorialActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Tutorial" />
+                
         <!-- AdMob -->
         <activity
             android:name="com.google.ads.AdActivity"

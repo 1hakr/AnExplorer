@@ -16,8 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="8dip"
             android:layout_marginBottom="8dip"
+            android:layout_marginTop="8dip"
             android:adjustViewBounds="true"
             android:minHeight="48dp"
             android:scaleType="fitCenter"
@@ -144,7 +144,8 @@
                     android:id="@+id/layout_ad"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" >
+                    android:layout_gravity="center"
+                    android:orientation="vertical" >
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>

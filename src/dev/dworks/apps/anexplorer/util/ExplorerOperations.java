@@ -26,13 +26,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import com.actionbarsherlock.app.SherlockDailog;
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
@@ -75,18 +68,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.MimeTypeMap;
 import android.widget.CheckBox;
@@ -96,6 +86,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
+import dev.dworks.apps.anexplorer.AnExplorer;
 import dev.dworks.apps.anexplorer.ExplorerActivity;
 import dev.dworks.apps.anexplorer.MyReceiver;
 import dev.dworks.apps.anexplorer.R;
@@ -168,7 +166,10 @@ public class ExplorerOperations {
 	public static final String CONSTANT_APPS_NAME = "apps";
 	public static final String CONSTANT_RUN_SU = "runSU";	
 	
-	public static final String CONSTANT_SEARCH = "Search";	
+	public static final String CONSTANT_SEARCH = "Search";
+	
+	public static final String CATEGORY_OPERATION = "operation";
+	public static final String CATEGORY_NAVIGATION = "navigation";
 	
 	//menu items
     public static final int MENU_CREATE = Menu.FIRST;
@@ -485,14 +486,36 @@ public class ExplorerOperations {
 
 		@Override
 		public int describeContents() {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
-		public void writeToParcel(Parcel dest, int flags) {
-			// TODO Auto-generated method stub
-		}		
+		public void writeToParcel(Parcel out, int flags) {
+			out.writeString(path);
+			out.writeString(name);
+			out.writeInt(icon);
+			out.writeInt(position);
+			out.writeInt(special_icon);
+		}
+
+		public static final Parcelable.Creator<FileNavList> CREATOR = new Parcelable.Creator<FileNavList>() {
+			public FileNavList createFromParcel(Parcel in) {
+				return new FileNavList(in);
+			}
+
+			public FileNavList[] newArray(int size) {
+				return new FileNavList[size];
+			}
+		};
+
+		private FileNavList(Parcel in) {
+			path = in.readString();
+			name = in.readString();
+			icon = in.readInt();
+			position = in.readInt();
+			special_icon = in.readInt();
+		}
+
 	}
 	
 	/**
@@ -2007,7 +2030,10 @@ public class ExplorerOperations {
 			final TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
             int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
             if(!isTablet(context)){
-    			setStyle(STYLE_NO_TITLE, theme);	
+    			setStyle(STYLE_NO_TITLE, theme);
+            }
+            else{
+            	setStyle(STYLE_NO_TITLE, getTheme());
             }
 		}
 
@@ -2029,6 +2055,7 @@ public class ExplorerOperations {
             actionView.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "github_button", 0L);
        				Uri uriUrl = Uri.parse("https://github.com/DWorkS/AnExplorer");
 	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
 	    				context.startActivity(launchBrowser);
@@ -2039,6 +2066,7 @@ public class ExplorerOperations {
     		actionView.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "gplus_button", 0L);
        				Uri uriUrl = Uri.parse("https://plus.google.com/109240246596102887385");
 	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
 	    				context.startActivity(launchBrowser);
@@ -2049,6 +2077,7 @@ public class ExplorerOperations {
     		actionView.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "twitter_button", 0L);
        				Uri uriUrl = Uri.parse("https://twitter.com/1HaKr");
 	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
 	    				context.startActivity(launchBrowser);
@@ -2060,6 +2089,7 @@ public class ExplorerOperations {
     		actionView.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "feedback_button", 0L);
                 	Intent intent = new Intent(Intent.ACTION_SEND);
                 	intent.setType("text/email");
                 	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
@@ -2073,6 +2103,7 @@ public class ExplorerOperations {
     		actionView.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "rate_button", 0L);
                 	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
                 	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
                 	((Activity) context).startActivity(intentMarket);
@@ -2084,6 +2115,7 @@ public class ExplorerOperations {
     		actionView.setOnClickListener(new OnClickListener(){
 				@Override
 				public void onClick(View arg0) {
+					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "site_button", 0L);
                 	Intent intent = new Intent(Intent.ACTION_VIEW);
                 	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
                 	((Activity) context).startActivity(intent);

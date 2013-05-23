@@ -15,7 +15,6 @@ import android.widget.ImageView;
  */
 public class MyPrerference extends Preference {
 
-
 	private int mIcon = 0; 
 
 	public MyPrerference(Context context, AttributeSet attrs) {

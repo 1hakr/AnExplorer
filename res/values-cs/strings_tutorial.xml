@@ -1,0 +1,18 @@
+<resources>
+
+    <string name="menu_skip">"Přeskočit"</string>
+    <string name="menu_next">"Další"</string>
+    <string name="menu_prev">"Předch."</string>
+    <string name="tutorial_welcome">"AnExplorer je prohlížeč souborů s Zing! \n Můžete udělat mnohem více než jen zkoumání souborů. \n\n Tento tutoriál vás dostane přes hlavní věci, které můžete dělat s AnExplorer"</string>
+    <string name="tutorial_overview">" Můžete vidět přehled všech dostupných vzpomínek s jejich volné paměti / Celková paměť. \n\n To je také dar pro aplikace a procesy, takže víte, hows váš systém běží"</string>
+    <string name="tutorial_login">"\n\n Just volitelný, ale dělá vám podá mnohem bezpečnější od ostatních"</string>
+    <string name="tutorial_navigation">"Navigační podokno umožňuje navigovat z místa, kde vůbec jste, kde někdy budete chtít. \n\n přejeďte zleva, a můžete vidět navigační podokno. To může přijít velmi vhod"</string>
+    <string name="tutorial_features">"Mnoho jedinečných funkcí AnExplorer \n 1.Folder velikosti \n 2.Preview mediálních souborů, včetně zvuku \n 3.Language změny z řad 4.Themes app \n si můžete vybrat z \n"</string>
+    <string name="tutorial_apps">"Správa všech aplikací, které jsou nainstalovány. \n Udělat zálohu aplikací. Můžete také odstranit aplikaci, pokud se vám nelíbí jejich"</string>
+    <string name="tutorial_process">"Spravovat všechny své aplikace, které jsou spuštěny. \n Můžete se zastavit aplikace uklidit paměti"</string>
+    <string name="tutorial_hidden">"Jednou z unikátních vlastností AnExplorer. \n skrýt libovolné složky od objevil v galerii. Můžete snadno zviditelnit je kdykoliv budete chtít"</string>
+    <string name="tutorial_wallpaper">"Nastavení tapety ze všech tapet, fotografie atd. \n Můžete také nastavit změnou pozadí automaticky s partou tapet."</string>
+    <string name="tutorial_explore">"\n Jai Hind \\m/ Peace \\m/ \n\n spoustu věcí? Velmi méně? Působivý? Nezajímavá? \n Stejně jako naše aplikace? líbí? nenávidět? mít návrh? \n\n Rádi bychom slyšet od vás.
+"</string>
+
+</resources>
