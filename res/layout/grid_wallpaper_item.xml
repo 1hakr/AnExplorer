@@ -17,7 +17,7 @@
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/wallpaper" />
+            android:src="@drawable/tutorial_wallpaper" />
 
         <ImageView
             android:id="@+id/icon_special"

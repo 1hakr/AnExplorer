@@ -10,6 +10,13 @@
         android:layout_height="fill_parent"
         android:choiceMode="singleChoice"
         android:focusable="false"
+        android:scrollbarStyle="outsideOverlay"
         android:listSelector="@drawable/abs__list_selector_holo_dark" />
+
+    <View
+        android:layout_width="1dp"
+        android:background="@color/greyColorLight"
+        android:layout_gravity="right"
+        android:layout_height="fill_parent"/>
 
 </FrameLayout>

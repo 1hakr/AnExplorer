@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/actionBar"
+        android:orientation="horizontal"
+        android:paddingRight="16dip" >
+
+        <ImageButton
+            style="?attr/actionButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dip"
+            android:layout_marginTop="8dip"
+            android:adjustViewBounds="true"
+            android:minHeight="48dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="About"
+            android:textColor="?attr/actionText"
+            android:textSize="18sp" />
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -69,36 +98,6 @@
                         android:layout_height="2dp"
                         android:background="?aboutColor" />
 
-                    <!--
-                         <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp" >
-
-                        <TextView
-                            android:id="@+id/gplus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="left"
-                            android:drawableLeft="@drawable/gplus32"
-                            android:gravity="center_vertical"
-                            android:text="@string/gplus"
-                            android:textColor="@color/BlueColor" />
-
-                        <TextView
-                            android:id="@+id/twitter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="left"
-                            android:layout_marginTop="10dp"
-                            android:drawableLeft="@drawable/twitter32"
-                            android:gravity="center_vertical"
-                            android:text="@string/twitter"
-                            android:textColor="@color/BlueColor" />
-                    </LinearLayout>
-                    -->
-
                     <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
@@ -139,16 +138,15 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="10dp"
                         android:src="@drawable/made_with_love" />
-
                 </LinearLayout>
 
-                <com.google.ads.AdView
+                <LinearLayout
+                    android:id="@+id/layout_ad"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    ads:adSize="IAB_MRECT"
-                    ads:adUnitId="a14e25123e38970"
-                    ads:loadAdOnCreate="true" />
+                    android:layout_gravity="center"
+                    android:orientation="vertical" >
+                </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
     </ScrollView>

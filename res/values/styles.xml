@@ -7,7 +7,7 @@
     <color name="greyColorLight">#ffD2D2D2</color>
     <color name="BlueColorSelected">#ff0099cc</color>
     <color name="SemiTransparent">#89000000</color>
-
+	<drawable name="tutorialAB">@drawable/abs__ab_transparent_dark_holo</drawable>
     <style name="Title">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

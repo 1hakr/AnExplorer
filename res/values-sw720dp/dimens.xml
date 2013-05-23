@@ -4,4 +4,6 @@
     <integer name="right_pane">6</integer>
     <dimen name="preference_margin">98dp</dimen>
     <dimen name="preference_margin_single">198dp</dimen>
+        <dimen name="pane_list_width">300dp</dimen>
+    <dimen name="pane_main_width">600dp</dimen>
 </resources>

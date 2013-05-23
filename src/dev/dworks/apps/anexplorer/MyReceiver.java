@@ -20,6 +20,7 @@ public class MyReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 
 		if(ExplorerOperations.checkDevice()){
+			AnExplorer.tracker.sendView("ExplorerFragment");
 			SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(context);
 			Editor editor = preference.edit(); 
 			int next = 0;
