@@ -88,6 +88,7 @@
                     android:listSelector="@drawable/abs__list_selector_holo_dark"
                     android:numColumns="auto_fit"
                     android:stretchMode="columnWidth"
+                    android:scrollbarStyle="outsideOverlay"
                     android:visibility="gone" />
             </RelativeLayout>
 

@@ -98,9 +98,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	//private static final String TAG = "Explorer";
 	// private static final int FLAG_UPDATED_SYS_APP = 0x80;
 	private static final String CURRENT_PATH = null;
-
 	private List<FileList> fileListEntries = null;
-
 	private List<String> navigationListPaths = null;
 	// icons cached
 	public SparseIntArray iconCache = new SparseIntArray();
@@ -187,9 +185,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	private ExplorerOperations explorerOperationsSU;
 	private int curNavPosition = -1;
 	private File[] fileList;
-
 	private AdView adView;
-
 	private MODES mode;
 	private TYPES type;
 	private ActionMode actionMode;
@@ -236,6 +232,12 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			args = getArguments();
 		}
 		super.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		AnExplorer.tracker.sendView("ExplorerFragment");
 	}
 
 	@Override
@@ -448,16 +450,19 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			switch (item.getItemId()) {
 
 			case R.id.menu_copy:
+				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_copy", 0L);
 				copyORCut = true;
 				finishMode = copySelectedFiles(copyORCut);
 				break;
 
 			case R.id.menu_cut:
+				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_cut", 0L);
 				copyORCut = false;
 				finishMode = copySelectedFiles(copyORCut);
 				break;
 
 			case R.id.menu_delete:
+				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_delete", 0L);
 				contextFilePath = "";
 				explicitlyRunSU = canUseSU(currentPath);
 				finishMode = showSelectedDialog(ExplorerOperations.DIALOG_DELETE, true);
@@ -465,10 +470,12 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				break;
 
 			case R.id.menu_share:
+				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_share", 0L);
 				finishMode = showSelectedDialog(ExplorerOperations.DIALOG_SHARE, true);
 				break;
 
 			case R.id.menu_compress:
+				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_compress", 0L);
 				finishMode = showSelectedDialog(ExplorerOperations.DIALOG_COMPRESS, true);
 				break;
 
@@ -566,7 +573,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	}
 
 	/**
-	 * Initialize the controls
+	 * Initialise the controls
 	 */
 	public void initControls() {
 		initData();
@@ -709,8 +716,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	/**
 	 * This method is used to show the List of files of a particular path
 	 * 
-	 * @param dirPath
-	 *            The path for which the list of files needs to be shown
+	 * @param dirPath The path for which the list of files needs to be shown
 	 */
 	private void showList(String dirPath) {
 		loadList = true;
@@ -791,8 +797,8 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				path = eachFile.getAbsolutePath();
 				navigationListPaths.add(path);
 				icon = navFileExplorer.getFileBasicType();
-				icon = ExplorerOperations.isExtStoragePath(path) ? 0 : iconCache.get(98);
 				special_icon = icon == 0 ? 0 : iconCache.get(icon);
+				icon = ExplorerOperations.isExtStoragePath(path) ? 0 : iconCache.get(98);
 				fileNavList = new FileNavList(path, name, icon, i);
 				fileNavList.setSpecialIcon(special_icon);
 				fileListNavEntries.add(fileNavList);
@@ -1148,12 +1154,14 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 			
 		case R.id.menu_view:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_view", 0L);
 			isCurrentList = !isCurrentList;
 			setupAdpater();
 			updateMenu();
 			break;
 
 		case R.id.menu_create:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_create", 0L);
 			contextFilePath = currentPath;
 			explicitlyRunSU = canUseSU(currentPath);
 			showSelectedDialog(ExplorerOperations.DIALOG_CREATE, false);
@@ -1161,30 +1169,36 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case R.id.menu_share:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_share", 0L);
 			showSelectedDialog(ExplorerOperations.DIALOG_SHARE, true);
 			break;
 
 		case R.id.menu_compress:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_compress", 0L);
 			showSelectedDialog(ExplorerOperations.DIALOG_COMPRESS, true);
 			break;
 
 		case R.id.menu_select_mode:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_select_mode", 0L);
 			multiSelect();
 			openCAB();
 			break;
 
 		case R.id.menu_select_all:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_select_all", 0L);
 			multiSelectOnOff(true);
 			selectAllFiles();
 			openCAB();
 			break;
 
 		case R.id.menu_select_unselect:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_select_unselect", 0L);
 			appBackupMultiSelect = !appBackupMultiSelect;
 			selectAllOnOff(appBackupMultiSelect);
 			break;
 
 		case R.id.menu_paste:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_paste", 0L);
 			setInfo("");
 			explicitlyRunSU = canUseSU(currentPath);
 			multiSelectOnOff(false);
@@ -1195,14 +1209,17 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case R.id.menu_setting:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_setting", 0L);
 			showSettings();
 			break;
 
 		case R.id.menu_about:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_about", 0L);
 			showSelectedDialog(ExplorerOperations.DIALOG_ABOUT, false);
 			break;
 
 		case R.id.menu_save:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_save", 0L);
 			contextFilePath = "";
 			if (mode == MODES.AppMode) {
 				currentPath = ExplorerOperations.DIR_APP_BACKUP;
@@ -1211,6 +1228,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case R.id.menu_uninstall:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_uninstall", 0L);
 			contextFilePath = "";
 			if (mode == MODES.AppMode) {
 				currentPath = ExplorerOperations.DIR_APP_BACKUP;
@@ -1229,6 +1247,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case R.id.menu_clear_cache:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_clear_cache", 0L);
 			contextFilePath = "";
 			if (mode == MODES.AppMode) {
 				currentPath = ExplorerOperations.DIR_APP_BACKUP;
@@ -1306,6 +1325,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	public boolean onContextItemSelected(android.view.MenuItem item) {
 		switch (item.getItemId()) {
 		case ExplorerOperations.CONTEXT_MENU_RENAME:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_RENAME", 0L);
 			explicitlyRunSU = canUseSU(currentPath);
 			contextFilePath = selectedFilePath;
 			showSelectedDialog(ExplorerOperations.DIALOG_RENAME, true);
@@ -1313,16 +1333,19 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_CUT:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_CUT", 0L);
 			copyORCut = false;
 			copySelectedFiles(copyORCut);
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_COPY:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_COPY", 0L);
 			copyORCut = true;
 			copySelectedFiles(copyORCut);
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_DELETE:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_DELETE", 0L);
 			contextFilePath = selectedFilePath;
 			explicitlyRunSU = canUseSU(currentPath);
 			showSelectedDialog(ExplorerOperations.DIALOG_DELETE, true);
@@ -1330,6 +1353,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_PASTE:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_PASTE", 0L);
 			explicitlyRunSU = canUseSU(currentPath);
 			if (copyPath == currentPath) {
 				Toast.makeText(context, format2String(R.string.msg_cant_copy), Toast.LENGTH_SHORT).show();
@@ -1342,34 +1366,41 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_EXTRACT:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_EXTRACT", 0L);
 			contextFilePath = selectedFilePath;
 			showSelectedDialog(ExplorerOperations.DIALOG_UNCOMPRESS, false);
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_SELECTALL:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_SELECTALL", 0L);
 			selectAllFiles();
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_UNSELECTALL:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_UNSELECTALL", 0L);
 			unSelectAllFiles(false);
 			multiSelectOnOff(false);
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_OPEN_FILE_FOLDER:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_OPEN_FILE_FOLDER", 0L);
 			File newFile = new File(selectedFilePath);
 			openFolder(newFile.isDirectory() ? newFile.getPath() : newFile.getParent());
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_PROPERTIES:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_PROPERTIES", 0L);
 			contextFilePath = selectedFilePath;
 			showSelectedDialog(ExplorerOperations.DIALOG_PROPERTIES, false);
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_APP_DETAILS:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_APP_DETAILS", 0L);
 			openAppDetails(selectedFilePath);
 			break;
 
 		case ExplorerOperations.CONTEXT_MENU_APP_OPEN:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_APP_OPEN", 0L);
 			try {
 				startActivity(packageManager.getLaunchIntentForPackage(selectedFilePath));
 			} catch (Exception e) {
@@ -1378,12 +1409,15 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 
 			break;
 		case ExplorerOperations.CONTEXT_MENU_APP_MARKET:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_APP_MARKET", 0L);
 			startActivity(new Intent().setData(Uri.parse("market://details?id="+ selectedFilePath)));
 			break;
 		case ExplorerOperations.CONTEXT_MENU_STOP_PROCESS:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_STOP_PROCESS", 0L);
 			activityManager.killBackgroundProcesses(selectedFilePath);
 			break;
 		case ExplorerOperations.CONTEXT_MENU_HIDE_FOLDER:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_HIDE_FOLDER", 0L);
 			try {
 				new File(selectedFilePath + "/.nomedia").createNewFile();
 			} catch (IOException e) {
@@ -1402,6 +1436,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 					});
 			break;
 		case ExplorerOperations.CONTEXT_MENU_UNHIDE_FOLDER:
+			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_UNHIDE_FOLDER", 0L);
 			new File(selectedFilePath + "/.nomedia").delete();
 			context.sendBroadcast(new Intent("android.intent.action.MEDIA_MOUNTED", Uri.fromFile(new File(selectedFilePath))));
 
@@ -1635,6 +1670,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				if (newFileExplorer.isDirectory
 						&& (runSU || newFileExplorer.canRead)) {
 					try {
+						AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_NAVIGATION, "browse", "folder", 0L);
 						openFolder(position);
 					} catch (Exception e) {
 					}
@@ -1648,6 +1684,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 					if (mode == MODES.FileMode) {
 						sendBackResult(file);
 					} else {
+						AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_NAVIGATION, "browse", "file", 0L);
 						ExplorerOperations.openFile(file, packageManager);
 					}
 				}
@@ -2461,7 +2498,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				if (showStorage && parentFolderSize == 0L) {
 					parentFolderSize = getDirectorySize(new File(currentPath));
 				}
-				if (isCancelled()) {
+				if (isCancelled() || position >= fileListEntries.size()) {
 					return null;
 				}
 				File eachFile = new File(fileListEntries.get(position).getPath());

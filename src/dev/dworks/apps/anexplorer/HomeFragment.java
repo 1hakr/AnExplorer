@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Formatter;
@@ -55,7 +56,6 @@ public class HomeFragment extends SherlockListPlusFragment {
 	private boolean isEditMode = false;
 	private Context context;
 	private ExplorerOperations fileExplorer;
-	private Dialog splashScreenDialog;
 	private boolean showNavigationPane;
 	
 	//preferences
@@ -81,6 +81,12 @@ public class HomeFragment extends SherlockListPlusFragment {
 	}
 
 	public HomeFragment() {
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		AnExplorer.tracker.sendView("HomeFragment");
 	}
     
 	@Override
@@ -140,7 +146,8 @@ public class HomeFragment extends SherlockListPlusFragment {
 		myBundle.putInt("position", -1);
 		myBundle.putString("base", "home");
 		myBundle.putParcelableArrayList("navlist", fileListNavEntries);
-		mListener.onFragmentInteraction(myBundle); 	
+		mListener.onFragmentInteraction(myBundle); 
+		if(isInternetConnected())
     	showAds();
 	}
 
@@ -159,8 +166,7 @@ public class HomeFragment extends SherlockListPlusFragment {
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
-	}
-/*    
+	}    
     
     private boolean isInternetConnected() {
     	ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -169,7 +175,7 @@ public class HomeFragment extends SherlockListPlusFragment {
     		return true;
     	}
 		return false;	
-	}*/
+	}
 	
 	/**
 	 * Initialises the controls in the activity content view
@@ -291,7 +297,6 @@ public class HomeFragment extends SherlockListPlusFragment {
 		for (String item : homeItems) {
 			String[] listItem = item.split(",");
 			FileNavList fileList = new FileNavList(listItem[0], listItem[1], Integer.valueOf(listItem[2]), i);
-	//		Log.i("path", listItem[0]+listItem[1]+Integer.valueOf(listItem[2]));
 			fileListEntries.add(fileList);
 			i++;
 		}
@@ -406,36 +411,43 @@ public class HomeFragment extends SherlockListPlusFragment {
 	    	case ExplorerOperations.MENU_SYS_INFO:
 	            break;
 	        case R.id.menu_edit:
+	        	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_edit", 0L);
 	        	isEditMode = true;
 	        	getSherlockActivity().supportInvalidateOptionsMenu();
 	        	setEditMode();
 	            break;
 	        case R.id.menu_cancel:
+	        	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_cancel", 0L);
 	        	isEditMode = false;
 	        	getSherlockActivity().supportInvalidateOptionsMenu();
 	        	removeEditMode();
 	        	clearEditMode();
 	            break;
 	        case R.id.menu_done:
+	        	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_done", 0L);
 	        	isEditMode = false;
 	        	getSherlockActivity().supportInvalidateOptionsMenu();
 	        	removeEditMode();
 	        	saveEditMode();	        	
 	            break;	      
 	        case R.id.menu_reset:
+	        	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_reset", 0L);
 	        	isEditMode = false;
 	        	getSherlockActivity().supportInvalidateOptionsMenu();
 	        	removeEditMode();
 	        	resetEditMode();
 	            break;	            
 	    	case R.id.menu_setting: 
+	    		AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_setting", 0L);
 				settingIntent = new Intent(context, Setting.class);
 				startActivityForResult(settingIntent, 0);
 	            break;
 	        case R.id.menu_help:
+	        	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_help", 0L);
 	        	showHelpScreen();
 	            break;	            
 	        case R.id.menu_about:
+	        	AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "menu_about", 0L);
 	        	showSelectedDialog(ExplorerOperations.DIALOG_ABOUT);
 				/*settingIntent = new Intent(APP_ERROR);
 				settingIntent.putExtra(EXTRA_BUG_REPORT, "");
@@ -666,10 +678,13 @@ public class HomeFragment extends SherlockListPlusFragment {
 	}
 	
     public void showHelpScreen(){
-        LayoutInflater factory = LayoutInflater.from(context);
-        final View aboutView = factory.inflate(R.layout.help, null);
+    	Intent intent = new Intent(getActivity(), TutorialActivity.class);
+    	startActivity(intent);
+/*        LayoutInflater factory = LayoutInflater.from(context);
+        final View aboutView = factory.inflate(R.layout.tutorial, null);
+        
         splashScreenDialog = new Dialog(context, R.style.Theme_Tranparent);
         splashScreenDialog.setContentView(aboutView);
-        splashScreenDialog.show();      
-    }  
+        splashScreenDialog.show(); */     
+    }
 }

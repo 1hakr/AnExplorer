@@ -12,17 +12,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.FrameLayout;
+import android.support.v4.widget.SlidingPaneLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
+import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.MODES;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
-import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
 
-public class ExplorerActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener{
-
+public class ExplorerActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener,
+	PanelSlideListener{
 	private Context context;
 	private Bundle bundle;
 	
@@ -30,14 +32,12 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	private SharedPreferences preference = null;
 	private Integer themeType, langType;
 	private SharedPreferences.Editor editor;
-	private TYPES type;
-	private FrameLayout pane_list;
-	//private FrameLayout pane_main;
 	private ExplorerFragment explorerFragment;
 	private NavigationFragment navigationFragment;
 	private ExplorerFragment searchFragment;
 	private MODES mode;
 	private boolean showNavigationPane;
+	private SlidingPaneLayout sliding_pane;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +50,7 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 		super.onCreate(savedInstanceState);
 		mode = getMode();
 		setContentView(showNavigationPane ? R.layout.activity_home : R.layout.activity_home_single);
-		type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
-        
+		//type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
 		initControls();
 		initData();
 	}
@@ -65,6 +64,9 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 			navigationFragment = new NavigationFragment();
 			navigationFragment.setArguments(new Bundle());			
 			getSupportFragmentManager().beginTransaction().replace(R.id.pane_list, navigationFragment).commit();
+	        sliding_pane = (SlidingPaneLayout)findViewById(R.id.sliding_pane);
+	        sliding_pane.setSliderFadeColor(0);
+	        sliding_pane.setPanelSlideListener(this);
 		}
 	}
     
@@ -76,10 +78,10 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 			bundle.putString(ExplorerOperations.CONSTANT_PATH, ExplorerOperations.DIR_SDCARD);	
 		}
 		//global search
+		showNavigationPane = false;
 		if(getIntent().getAction() != null){
 			if(getIntent().getAction().equals(Intent.ACTION_SEARCH)){
 				mode = MODES.SearchMode;
-				showNavigationPane = true;
 			}
 			else if (getIntent().getAction().equals(Intent.ACTION_GET_CONTENT)) {
 				mode = MODES.FileMode;
@@ -89,19 +91,15 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 			String currentPath = bundle.getString(ExplorerOperations.CONSTANT_PATH);
 			if(currentPath.compareTo(ExplorerOperations.DIR_APP_BACKUP) == 0){
 				mode = MODES.AppMode;
-				showNavigationPane = false;
 			}
 			else if(currentPath.compareTo(ExplorerOperations.DIR_APP_PROCESS) == 0){
 				mode = MODES.ProcessMode;
-				showNavigationPane = false;
 			}
 			else if(currentPath.compareTo(ExplorerOperations.DIR_GALLERY_HIDDEN) == 0){
 				mode = MODES.HideFromGalleryMode;
-				showNavigationPane = false;
 			}
 			else if(currentPath.compareTo(ExplorerOperations.DIR_WALLPAPER) == 0){
 				mode = MODES.WallpaperMode;
-				showNavigationPane = false;
 			}
 			else{
 				showNavigationPane = true;
@@ -112,8 +110,6 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	}
 	
 	private void initControls() {
-        pane_list = (FrameLayout) findViewById(R.id.pane_list);
-        //pane_main = (FrameLayout) findViewById(R.id.pane_main);	
 	}
 
 	private void getPreference() {
@@ -136,16 +132,6 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
-	    boolean showNavigation = false;
-	    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-	    	showNavigation = true && showNavigationPane;
-	    	if(null != pane_list)
-	    	pane_list.setVisibility(ExplorerOperations.showView(showNavigation));
-	    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-	    	showNavigation = type == TYPES.Phone ? false : true && showNavigationPane;
-	    	if(null != pane_list)
-	    	pane_list.setVisibility(ExplorerOperations.showView(showNavigation));
-	    }
 	}
 	
 	public void changeLang(){
@@ -157,10 +143,6 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
     	getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
     
-/*	private String format2String(int id){
-		return getResources().getString(id);
-	}*/
-	
     /**
      * @param id
      */
@@ -182,7 +164,7 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
     public void setSession(boolean set){
 		editor.putBoolean("SessionLoginPref", set);
 		editor.commit();
-    }    
+    }
 	
 	@Override
 	public void onFragmentInteraction(Bundle bundle) {
@@ -193,9 +175,15 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 				getSupportFragmentManager().popBackStack();
 			}
 			else if(action == 1){
-				finish();
+		    	if(sliding_pane != null && sliding_pane.isSlideable() && sliding_pane.isOpen()){
+		    		sliding_pane.closePane();
+		    	}
+				else{
+					finish();
+				}
 			}
 			else if(action == 3){
+				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "explorer", "file", 0L);
 				Intent sendBackIntent = new Intent();
 				sendBackIntent.setData(Uri.fromFile(new File(bundle.getString("file"))));
 				setResult(RESULT_OK, sendBackIntent);
@@ -214,6 +202,7 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 	        ft.addToBackStack(null);
 	        ft.commit();
 	        mode = MODES.SearchMode;
+	        AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "explorer", "search", 0L);
 		}
 		else if(operation == 3){
 			int action = bundle.getInt("action");
@@ -231,6 +220,18 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 			explorerFragment.resetList(path);
 		}		
 	}
+	
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+	    	if(sliding_pane != null && sliding_pane.isSlideable() && sliding_pane.isOpen()){
+	    		sliding_pane.closePane();
+	    	}
+			break;
+		}
+    	return super.onOptionsItemSelected(item);
+    }
 	
 	@Override
 	public void onBackPressed() {
@@ -255,5 +256,22 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
     		startActivity(homeIntent);
     		finish();    		
     	} 	
-    }	
+    }
+
+	@Override
+	public void onPanelOpened(View panel) {
+		AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "explorer", "onPanelOpened", 0L);
+		explorerFragment.setHasOptionsMenu(false);
+	}
+
+	@Override
+	public void onPanelClosed(View panel) {
+		AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "explorer", "onPanelClosed", 0L);
+		explorerFragment.setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onPanelSlide(View arg0, float arg1) {
+		
+	}	
 }
