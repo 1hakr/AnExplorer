@@ -787,7 +787,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		int i = 0;
 		for (File eachFile : fileList) {
 			String name = "", path = "";
-			int icon, special_icon, new_icon;
+			int icon, special_icon;
 			navFileExplorer.setFile(eachFile);
 			navFileExplorer.setContext(context);
 			if (navFileExplorer.isDirectory && navFileExplorer.canRead
