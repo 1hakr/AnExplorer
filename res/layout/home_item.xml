@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content" >
 
     <dev.dworks.apps.anexplorer.ui.DragGripView
         android:id="@+id/drag_handle"
@@ -26,8 +26,8 @@
         android:paddingTop="5dp" >
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@android:dimen/app_icon_size"
+            android:layout_height="@android:dimen/app_icon_size"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="1dip"
             android:layout_marginRight="11dip" >
@@ -41,8 +41,11 @@
 
             <ImageView
                 android:id="@+id/icon_special"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
                 android:scaleType="centerInside" />
         </RelativeLayout>
 

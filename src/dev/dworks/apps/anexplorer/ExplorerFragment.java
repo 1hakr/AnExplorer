@@ -787,7 +787,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		int i = 0;
 		for (File eachFile : fileList) {
 			String name = "", path = "";
-			int icon, special_icon;
+			int icon, special_icon, new_icon;
 			navFileExplorer.setFile(eachFile);
 			navFileExplorer.setContext(context);
 			if (navFileExplorer.isDirectory && navFileExplorer.canRead
@@ -797,7 +797,13 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 				navigationListPaths.add(path);
 				icon = navFileExplorer.getFileBasicType();
 				special_icon = icon == 0 ? 0 : iconCache.get(icon);
-				icon = ExplorerOperations.isExtStoragePath(path) ? 0 : iconCache.get(98);
+				if(ExplorerOperations.isExtStoragePath(path)){
+					icon = special_icon;
+					special_icon = 0;
+				}
+				else{
+					icon = iconCache.get(98);
+				}
 				fileNavList = new FileNavList(path, name, icon, i);
 				fileNavList.setSpecialIcon(special_icon);
 				fileListNavEntries.add(fileNavList);
@@ -2284,16 +2290,16 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		iconCache.put(-1, R.drawable.sdcard);
 		iconCache.put(-2, R.drawable.system);
 		iconCache.put(-3, R.drawable.download);
-		iconCache.put(-4, R.drawable.ringtone);
+		iconCache.put(-4, R.drawable.audio);
 		iconCache.put(-5, R.drawable.music);
-		iconCache.put(-6, R.drawable.gallery);
+		iconCache.put(-6, R.drawable.image);
 		iconCache.put(-7, R.drawable.bluetooth);
-		iconCache.put(-8, R.drawable.movies);
+		iconCache.put(-8, R.drawable.video);
 		iconCache.put(-9, R.drawable.locked);
 		iconCache.put(93, R.drawable.hdd);
 		iconCache.put(94, R.drawable.usb);
 		iconCache.put(95, R.drawable.locked);
-		iconCache.put(96, R.drawable.lock);
+		iconCache.put(96, R.drawable.locked);
 		iconCache.put(97, R.drawable.emmc);
 		iconCache.put(99, R.drawable.process);
 
@@ -2310,7 +2316,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		iconCache.put(10, R.drawable.ppt);
 		iconCache.put(11, R.drawable.xls);
 		iconCache.put(12, R.drawable.html);
-		iconCache.put(14, R.drawable.wallpaper);
+		iconCache.put(14, R.drawable.image);
 	}
 
 	private void fillProcessType() {
