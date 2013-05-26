@@ -662,12 +662,12 @@ public class HomeFragment extends SherlockListPlusFragment {
     	iconCache.put(5, R.drawable.download);
     	iconCache.put(6, R.drawable.bluetooth);
     	iconCache.put(7, R.drawable.music);
-    	iconCache.put(8, R.drawable.gallery);
-    	iconCache.put(9, R.drawable.ringtone);
-    	iconCache.put(10, R.drawable.movies);
+    	iconCache.put(8, R.drawable.image);
+    	iconCache.put(9, R.drawable.audio);
+    	iconCache.put(10, R.drawable.video);
     	iconCache.put(11, R.drawable.system);
     	iconCache.put(12, R.drawable.emmc);
-    	iconCache.put(14, R.drawable.lock);
+    	iconCache.put(14, R.drawable.locked);
     	iconCache.put(15, R.drawable.usb);
     	iconCache.put(16, R.drawable.hdd);
     	iconCache.put(17, R.drawable.image);
