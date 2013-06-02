@@ -70,7 +70,7 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 		}
 	}
     
-	private MODES getMode() {
+	public MODES getMode() {
 		MODES mode = MODES.None;
 		bundle = getIntent().getExtras();
 		if(null == bundle){

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,7 +126,7 @@ public class TutorialActivity extends SherlockFragmentActivity {
 		super.onDestroy();
 	}
 	
-    public static class TutorialFragmentAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
+    public static class TutorialFragmentAdapter extends FragmentStatePagerAdapter implements IconPagerAdapter {
 
         private int mCount = TITLES.length;
         public TutorialFragmentAdapter(FragmentManager fm) {
@@ -173,7 +173,11 @@ public class TutorialActivity extends SherlockFragmentActivity {
         private int position = 0;
         //private String mContent = "???";
 		private View root;
+		private ImageView picture;
 
+		public TutorialFragment() {
+		}
+		
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -193,10 +197,9 @@ public class TutorialActivity extends SherlockFragmentActivity {
         private void initControls() {
 			TextView title = (TextView) root.findViewById(R.id.title);
 			TextView content = (TextView) root.findViewById(R.id.content);
-			ImageView picture = (ImageView) root.findViewById(R.id.picture);
+			picture = (ImageView) root.findViewById(R.id.picture);
 			title.setText(TITLES[position]);
 			content.setText(CONTENT[position]);
-			picture.setImageResource(PICTURES[position]);
 			if(position == TITLES.length - 1){
 
 			}
@@ -204,6 +207,12 @@ public class TutorialActivity extends SherlockFragmentActivity {
 				
 			}
 		}
+        
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+        	super.onActivityCreated(savedInstanceState);
+			picture.setImageResource(PICTURES[position]);
+        }
 
 		@Override
         public void onSaveInstanceState(Bundle outState) {
