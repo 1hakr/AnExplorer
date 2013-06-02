@@ -392,6 +392,12 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 
 	public void initMode(){
 		currentPath = originalPath = incomingPath = args.getString("path");
+		if(mode == null){
+			mode = ((ExplorerActivity)getActivity()).getMode();
+			if(mode == null){
+				return;
+			}
+		}
 		switch (mode) {
 		case FileMode:
 		case SearchMode:
@@ -1003,7 +1009,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 					newFileExplorer.setFile(eachFile);
 					newFileExplorer.setContext(context);
 					if (newFileExplorer.canRead && (showHiddenFolders || newFileExplorer.canShow())) {
-						fileCount = (newFileExplorer.isDirectory ? eachFile.list().length + " files" : "");
+						fileCount = (newFileExplorer.isDirectory ? eachFile.list() == null ? "" : eachFile.list().length + " files" : "");
 						fileDateModified = String.format("%tr, %tF", eachFile.lastModified(), eachFile.lastModified());
 						fileSmallDateModified = String.format("%tF", eachFile.lastModified());
 						fileAccess = ExplorerOperations.getFilePermissions(eachFile);
@@ -1142,7 +1148,9 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		} else {
 			// options menu
 			menu.findItem(R.id.menu_paste).setVisible(filesCopied);
-			menu.findItem(R.id.menu_create).setVisible(showSearchMenu ? !originalPath.equals(ROOT) : searchPathLock);
+			MenuItem menuitem = menu.findItem(R.id.menu_create);
+			if(null != menuitem)
+				menuitem.setVisible(showSearchMenu ? !originalPath.equals(ROOT) : searchPathLock);
 
 			menu.findItem(R.id.menu_search).setVisible(showSearchMenu);
 
@@ -1757,7 +1765,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			inflater = this.context.getLayoutInflater();
 		}
 
-		public void setData(List<FileList> data) {
+		public synchronized void setData(List<FileList> data) {
 			clear();
 			parentFolderSize = 0L;
 			if (data != null) {
@@ -2034,6 +2042,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 
 		if (fileListEntries != null) {
 			for (int pos = 0; pos < fileListEntries.size(); pos++) {
+				if(fileListEntries.size() > 0)
 				fileListEntries.get(pos).setSelection(0);
 			}
 
@@ -2337,7 +2346,6 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		@Override
 		protected List<FileList> doInBackground(String... args) {
 			startTasks();
-			fillNavData();
 			return fillData(resultFilesList);
 		}
 
@@ -2351,6 +2359,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		protected void onPostExecute(List<FileList> result) {
 			setEmptyText(mode == MODES.AppMode ? format2String(R.string.msg_file_not_found) : format2String(R.string.msg_folder_empty));
 			if(isAttached){
+				fillNavData();
 				loadListFinally(result, true);
 			}
 		}
