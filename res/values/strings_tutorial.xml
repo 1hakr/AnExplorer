@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-
+    <string name="drawer_open">Open sliding pane</string>
+    <string name="drawer_close">Close sliding pane</string>
     <string name="menu_skip">Skip</string>
     <string name="menu_next">Next</string>
     <string name="menu_prev">Prev</string>

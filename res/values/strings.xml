@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">AnExplorer</string>
-    <string name="app_ver">Another Explorer v1.6</string>
+    <string name="app_ver">Another Explorer v1.7</string>
     <string name="app_company">Developed By DWorkS</string>
     <string name="app_url">http://www.dworks.in</string>
     <string name="app_about_info">To make a small difference.</string>

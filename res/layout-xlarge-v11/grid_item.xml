@@ -15,13 +15,12 @@
         android:visibility="invisible" />
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/tablet_icon_size"
+        android:layout_height="@dimen/tablet_icon_size"
         android:layout_gravity="center"
         android:layout_marginLeft="5dip"
         android:layout_marginRight="5dip"
-        android:gravity="center"
-        android:visibility="visible" >
+        android:gravity="center" >
 
         <ImageView
             android:id="@+id/icon"
@@ -32,9 +31,11 @@
 
         <ImageView
             android:id="@+id/icon_special"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
             android:scaleType="fitCenter" />
     </RelativeLayout>
 

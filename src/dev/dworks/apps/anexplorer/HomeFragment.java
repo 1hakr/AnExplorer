@@ -671,6 +671,7 @@ public class HomeFragment extends SherlockListPlusFragment {
     	iconCache.put(15, R.drawable.usb);
     	iconCache.put(16, R.drawable.hdd);
     	iconCache.put(17, R.drawable.image);
+    	a.recycle();
     }
 	
 	private String format2String(int id){
