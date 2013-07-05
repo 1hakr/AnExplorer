@@ -185,7 +185,9 @@ public class ExplorerActivity extends SherlockFragmentActivity implements OnFrag
 			else if(action == 3){
 				AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "explorer", "file", 0L);
 				Intent sendBackIntent = new Intent();
-				sendBackIntent.setData(Uri.fromFile(new File(bundle.getString("file"))));
+				if(null != bundle.getString("file")){
+					sendBackIntent.setData(Uri.fromFile(new File(bundle.getString("file"))));
+				}
 				setResult(RESULT_OK, sendBackIntent);
 				finish();
 			}

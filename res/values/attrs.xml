@@ -14,6 +14,7 @@
         <attr name="actionText" format="color" />
         <attr name="actionBar" format="reference" />
         <attr name="backgroundLayoutColor" format="color" />
+        <attr name="toggle" format="reference" />
     </declare-styleable>  
     
     <declare-styleable name="IconPreference">

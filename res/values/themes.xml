@@ -3,6 +3,7 @@
 
     <!-- Variation on the Holo Light theme that styles the Action Bar -->
     <style name="Theme.Dark" parent="Theme.Sherlock">
+        <item name="toggle">@drawable/ic_drawer_light</item>
         <item name="dworksLogo">@drawable/dworks_dark</item>
         <item name="background">@android:color/black</item>
         <item name="text">@android:color/white</item>
@@ -31,6 +32,7 @@
     </style>
 
     <style name="Theme.Light" parent="Theme.Sherlock.Light">
+        <item name="toggle">@drawable/ic_drawer</item>
         <item name="dworksLogo">@drawable/dworks</item>
         <item name="text">@android:color/black</item>
         <item name="background">@android:color/white</item>
@@ -54,6 +56,7 @@
     </style>
 
     <style name="Theme.Pleasant" parent="Theme.Sherlock.Light.DarkActionBar">
+        <item name="toggle">@drawable/ic_drawer_light</item>
         <item name="dworksLogo">@drawable/dworks</item>
         <item name="text">@android:color/black</item>
         <item name="background">@android:color/white</item>
