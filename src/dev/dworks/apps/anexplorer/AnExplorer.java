@@ -3,16 +3,16 @@ package dev.dworks.apps.anexplorer;
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 
+import android.preference.PreferenceManager;
+
+import dev.dworks.libs.actionbarplus.SherlockApplication;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 
-import android.app.Application;
-import android.preference.PreferenceManager;
-
 @ReportsCrashes(formKey = "dHh0Z3hQV1BvMUY2MzZYak01WlJ6RGc6MA")
-public class AnExplorer extends Application {
+public class AnExplorer extends SherlockApplication {
 
 	private GoogleAnalytics googleAnalytics;
 	public static Tracker tracker;

@@ -16,14 +16,14 @@ import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.view.View;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import dev.dworks.libs.actionbarplus.SherlockFragmentActivityPlus;
 import com.actionbarsherlock.view.MenuItem;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.MODES;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
 
-public class ExplorerActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener,
+public class ExplorerActivity extends SherlockFragmentActivityPlus implements OnFragmentInteractionListener,
 	PanelSlideListener{
 	private Context context;
 	private Bundle bundle;
