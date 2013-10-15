@@ -1,35 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+
     <string name="drawer_open">Open sliding pane</string>
     <string name="drawer_close">Close sliding pane</string>
     <string name="menu_skip">Skip</string>
     <string name="menu_next">Next</string>
     <string name="menu_prev">Prev</string>
-    <string name="tutorial_welcome">AnExplorer is a file explorer with a Zing!!!\n
-        You can do lot more than just exploring your files.\n\n
-        This tutorial gets you through the major stuff you can do with AnExplorer</string>
-    <string name="tutorial_overview"> You can see the overview of all available memories
-        with their free memory / total memory.\n\n This is also present for apps and processes,
-         so you know hows your system is running</string>
-    <string name="tutorial_login">\n\nJust optional, but makes you files more secure from others</string>
-    <string name="tutorial_navigation">Navigation pane lets you navigate from where ever you are to where ever you want.\n\n
-        Swipe from left and you can see the navigation pane. It can come very handy</string>
-    <string name="tutorial_features">Lot of unique features in AnExplorer\n
-        1.Folder sizes\n
-        2.Preview for media files including audio\n
-        3.Language change from within the app\n
-        4.Themes you can choose from\n</string>
-    <string name="tutorial_apps">Manage all your apps that are installed.\n Make backup of your apps.
-        You can also delete the app if you dont like them</string>
-    <string name="tutorial_process">Manage all your apps that are running. \n
-        You can stop the apps to clear up the memory</string>
-    <string name="tutorial_hidden">One unique feature of AnExplorer.\n
-        Hide any folder from showing up in the gallery. You can easily unhide them whenever you want</string>
-    <string name="tutorial_wallpaper">Set wallpaper from all the wallpapers, picture etc.\n
-        You can also set changing background automatically with bunch of wallpapers.</string>
+    <string name="tutorial_overview"> See overview of all available memories and also for apps and processes</string>
+    <string name="tutorial_login">Just optional, but can makes your files more secure</string>
+    <string name="tutorial_navigation">Navigate from where ever you are to where ever you want. Comes very handy</string>
+    <string name="tutorial_features">Folder sizes, Preview for media files, Language change and any theme </string>
+    <string name="tutorial_apps">Manage all your apps that are installed and also backup them up</string>
+    <string name="tutorial_process">Manage all your apps that are running </string>
+    <string name="tutorial_hidden">Hide any folder from showing up in the gallery</string>
+    <string name="tutorial_wallpaper">Set wallpaper from all the wallpapers, picture etc.</string>
     <string name="tutorial_explore">\n Jai Hind \\m/ Peace \\m/ \n\n
         Lot of stuff? Very less? Impressive? Unimpressive?\n
         Like our app? love it? hate it? have suggestion?\n\n
-        We would love to hear from you.</string>
+        We would love to hear from you.	</string>
 
 </resources>

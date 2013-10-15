@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,9 +82,10 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		//type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
-    	initLogin();
-        if(showSplashScreen && getIntent().getStringExtra("Splash") == null){
-            showSplashScreen();
+    	//initLogin();
+        if(showSplashScreen){
+        	editor.putBoolean("SplashScreenPref", true);
+        	showTutorial();
         }
         
 		Bundle arguments = new Bundle();
@@ -209,7 +211,7 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
     }
     
 	private void showLoginDialog(){
-    	final boolean passwordSet = !ExplorerOperations.isEmpty(this.password);
+    	final boolean passwordSet = !TextUtils.isEmpty(this.password);
     	final String setPassword = this.password;
     			
         LayoutInflater factorys = LayoutInflater.from(this);

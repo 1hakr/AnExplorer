@@ -234,6 +234,8 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			args = getArguments();
 		}
 		super.onCreate(savedInstanceState);
+		initMode();
+		setHasOptionsMenu(true);
 	}
 	
 	@Override
@@ -251,7 +253,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		getSharedPreference();
 		fillBitmapCache();
 		initMode();
-
+		
 		type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
 		wasPaused = false;
 		scrollStateAll = OnScrollListener.SCROLL_STATE_IDLE;
@@ -269,10 +271,9 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		if(null != savedInstanceState){
 			String path = savedInstanceState.getString(CURRENT_PATH);
 			currentPath = currentPath != null ? currentPath : "";
-			currentPath = !ExplorerOperations.isEmpty(path) ? path : currentPath;
+			currentPath = !TextUtils.isEmpty(path) ? path : currentPath;
 		}
 		setEmptyText(format2String(R.string.msg_file_not_found));
-		setHasOptionsMenu(true);
 		mAdapter = new ListAdapter(context, itemId);
 		setListAdapter(mAdapter);
 		setListShown(false);
@@ -422,7 +423,8 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			runSU = hasRootAccess && hasMountWrite && originalPath.equals(ROOT);
 			
 			if(mode == MODES.None){
-				mode = originalPath.equals(ROOT) ? MODES.RootMode : MODES.ExplorerMode;
+				mode = !TextUtils.isEmpty(originalPath) && 
+						originalPath.equals(ROOT) ? MODES.RootMode : MODES.ExplorerMode;
 				if(runSU)
 					explorerOperationsSU = new ExplorerOperations(runSU);
 			}
@@ -555,7 +557,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 
 		default:
 			showList(path);
-			unSelectAllFiles(false);
+			//unSelectAllFiles(false);
 			break;
 		}
 	}
@@ -714,7 +716,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	public void search() {
 		fileListState = new ArrayList<Parcelable>();
 		mypath.setText(format2String(R.string.msg_search_results));
-		incomingPath = ExplorerOperations.isEmpty(incomingPath) ? ExplorerOperations.DIR_SDCARD : incomingPath; 
+		incomingPath = TextUtils.isEmpty(incomingPath) ? ExplorerOperations.DIR_SDCARD : incomingPath; 
 		
 		searchTask = new SearchTask();
 		searchTask.execute(incomingPath, queryString);
@@ -872,7 +874,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 					} catch (NameNotFoundException e) {
 					}
 
-					if (ExplorerOperations.isEmpty(name)) {
+					if (TextUtils.isEmpty(name)) {
 						continue;
 					} else {
 						name = process;
@@ -992,7 +994,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 						fileDateModified = String.format("%tr, %tF", eachFile.lastModified(), eachFile.lastModified());
 						fileSmallDateModified = String.format("%tF",eachFile.lastModified());
 
-						if (!ExplorerOperations.isEmpty(name)) {
+						if (!TextUtils.isEmpty(name)) {
 							icon = newFileExplorer.getFileBasicType();
 							fileAccess = cmdListItem.getPermission().substring(0, 3);
 							size = cmdListItem.getType() == 0 ? "" : Formatter.formatShortFileSize(context, Long.valueOf(String.valueOf(eachFile.length())));
@@ -2111,13 +2113,13 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 
 		if (check) {
 			if (getSelectedFileList().size() == 0
-					&& ExplorerOperations.isEmpty(contextFilePath)) {
+					&& TextUtils.isEmpty(contextFilePath)) {
 				Toast.makeText(context, format2String(R.string.msg_file_not_selected), Toast.LENGTH_SHORT).show();
 				return false;
 			}
 		}
 
-		fileInfo.putString(ExplorerOperations.CONSTANT_PATH, ExplorerOperations.isEmpty(contextFilePath) ? currentPath : contextFilePath);
+		fileInfo.putString(ExplorerOperations.CONSTANT_PATH, TextUtils.isEmpty(contextFilePath) ? currentPath : contextFilePath);
 		fileInfo.putString(ExplorerOperations.CONSTANT_TO_PATH, currentPath);
 		fileInfo.putStringArray(ExplorerOperations.CONSTANT_PATH_LIST,
 				(id == ExplorerOperations.DIALOG_PASTE
@@ -2131,7 +2133,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			break;
 		case WallpaperMode:
 			fileInfo.putBoolean(ExplorerOperations.CONSTANT_MULTI_SELECTION, 
-					ExplorerOperations.isEmpty(contextFilePath) ? multiSelectMode: false);
+					TextUtils.isEmpty(contextFilePath) ? multiSelectMode: false);
 			break;
 		default:
 			break;
