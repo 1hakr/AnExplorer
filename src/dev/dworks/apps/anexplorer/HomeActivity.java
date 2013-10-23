@@ -169,7 +169,7 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
     }
     
 	private String format2String(int id){
-		return getResources().getString(id);
+		return getString(id);
 	}
 	
 	private void initLogin(){	
