@@ -1,5 +1,6 @@
 AnExplorer
 ==========
+![AnExplorer](https://github.com/DWorkS/AnExplorer/raw/master/header.png)
 
 Another Android Explorer (AnExplorer) is simple, fast, lightweight. 
 It has all the basic features of a File browser and the best thing is its small and tablet optimized. 

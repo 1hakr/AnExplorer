@@ -69,6 +69,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseArray;
@@ -626,7 +627,7 @@ public class ExplorerOperations {
 		String mimeType = getMIMEType(localFile);
 		String type = "";
 		if(null != mimeType && mimeType.indexOf("/") != -1){
-			mimeType.substring(0, mimeType.indexOf("/"));
+			type = mimeType.substring(0, mimeType.indexOf("/"));
 		}
 		int fileType;
 		
@@ -866,15 +867,7 @@ public class ExplorerOperations {
         type = map.getMimeTypeFromExtension(end) != null ? map.getMimeTypeFromExtension(end): file.isDirectory() ? "directory" : "application/*";
         return type;
     }
-    
-    /**
-     * @param str
-     * @return true if string is null or empty else false
-     */
-    public static boolean isEmpty(String str){
-		return (str == null || str == "") ? true : false;
-    }
-    
+
     public static int showView(boolean show){
 		return show ? View.VISIBLE : View.GONE;
     }    
@@ -1309,7 +1302,7 @@ public class ExplorerOperations {
 		ZipEntry zipEntry;
 		ZipInputStream ZIS;
 		int count = 0, total = new ZipFile(file2Extract).size();
-		String newFolderName = ExplorerOperations.isEmpty(fileName) ? getFileName(file2Extract) : fileName;
+		String newFolderName = TextUtils.isEmpty(fileName) ? getFileName(file2Extract) : fileName;
 		newBackgroundWork.onProgressUpdate(count, total);
 		newDir2Extract = new File(newDirPath + "/" + newFolderName + "/");
 		ZIS = new ZipInputStream(new FileInputStream(filePath));
@@ -1368,7 +1361,7 @@ public class ExplorerOperations {
 		else{
 			if(toDir2Copy.isDirectory() && toDir2Copy.canWrite()){
 				if(from2Copy.isFile()){
-					File newFile = new File(toDirPath +"/"+ (!isEmpty(newFileName) ? newFileName :from2Copy.getName()));
+					File newFile = new File(toDirPath +"/"+ (!TextUtils.isEmpty(newFileName) ? newFileName :from2Copy.getName()));
 					BufferedOutputStream BOS = new BufferedOutputStream(new FileOutputStream(newFile));
 					BufferedInputStream BIS = new BufferedInputStream(new FileInputStream(from2Copy));
 					while((read = BIS.read(data, 0, BUFFER)) != -1)

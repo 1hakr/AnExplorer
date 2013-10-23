@@ -13,6 +13,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SlidingPaneLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,14 +26,14 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockActionBarToggle;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import dev.dworks.libs.actionbartoggle.ActionBarToggle;
+import dev.dworks.libs.actionbarplus.SherlockFragmentActivityPlus;
 import com.actionbarsherlock.view.MenuItem;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
 
-public class HomeActivity extends SherlockFragmentActivity implements OnFragmentInteractionListener{
+public class HomeActivity extends SherlockFragmentActivityPlus implements OnFragmentInteractionListener{
 
 	private Context context;
 	private Dialog splashScreenDialog;
@@ -48,7 +49,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 	private HomeFragment homeFragment;
 	private NavigationFragment navigationFragment;
 	private SlidingPaneLayout sliding_pane;
-	private SherlockActionBarToggle mActionBarToggle;
+	private ActionBarToggle mActionBarToggle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +82,10 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		//type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
-    	initLogin();
-        if(showSplashScreen && getIntent().getStringExtra("Splash") == null){
-            showSplashScreen();
+    	//initLogin();
+        if(showSplashScreen){
+        	editor.putBoolean("SplashScreenPref", true);
+        	showTutorial();
         }
         
 		Bundle arguments = new Bundle();
@@ -105,7 +107,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
         sliding_pane.setSliderFadeColor(0);
         int toggle = themeType == 1 ? R.drawable.ic_drawer : R.drawable.ic_drawer_light;
         
-        mActionBarToggle = new SherlockActionBarToggle(this, sliding_pane, toggle, R.string.drawer_open, R.string.drawer_close) {
+        mActionBarToggle = new ActionBarToggle(this, sliding_pane, toggle, R.string.drawer_open, R.string.drawer_close) {
 
         	@Override
         	public void onPanelOpened(View panel) {
@@ -167,7 +169,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
     }
     
 	private String format2String(int id){
-		return getResources().getString(id);
+		return getString(id);
 	}
 	
 	private void initLogin(){	
@@ -209,7 +211,7 @@ public class HomeActivity extends SherlockFragmentActivity implements OnFragment
     }
     
 	private void showLoginDialog(){
-    	final boolean passwordSet = !ExplorerOperations.isEmpty(this.password);
+    	final boolean passwordSet = !TextUtils.isEmpty(this.password);
     	final String setPassword = this.password;
     			
         LayoutInflater factorys = LayoutInflater.from(this);
