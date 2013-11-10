@@ -26,12 +26,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import dev.dworks.libs.actionbartoggle.ActionBarToggle;
-import dev.dworks.libs.actionbarplus.SherlockFragmentActivityPlus;
 import com.actionbarsherlock.view.MenuItem;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
+import dev.dworks.libs.actionbarplus.SherlockFragmentActivityPlus;
+import dev.dworks.libs.actionbartoggle.ActionBarToggle;
 
 public class HomeActivity extends SherlockFragmentActivityPlus implements OnFragmentInteractionListener{
 
@@ -83,11 +83,11 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
 		setContentView(R.layout.activity_home);
 		//type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
     	//initLogin();
-        if(showSplashScreen){
+/*        if(showSplashScreen){
         	editor.putBoolean("SplashScreenPref", true);
         	showTutorial();
         }
-        
+*/        
 		Bundle arguments = new Bundle();
 		homeFragment = new HomeFragment();
 		homeFragment.setArguments(arguments);
