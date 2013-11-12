@@ -24,9 +24,9 @@
         android:name="AnExplorer"
         android:allowBackup="false"
         android:description="@string/app_about_info"
-        android:icon="@drawable/ic_launcher_icon"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:logo="@drawable/ic_launcher_icon" >
+        android:logo="@drawable/ic_launcher" >
 
         <!-- Home -->
         <activity
@@ -38,6 +38,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="dev.dworks.apps.anexplorer.AboutActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="About"
+            android:parentActivityName="dev.dworks.apps.anexplorer.HomeActivity"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.dworks.apps.anexplorer.HomeActivity" />
         </activity>
 
         <!-- Explorer -->
@@ -90,7 +100,7 @@
             android:name="dev.dworks.apps.anexplorer.TutorialActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Tutorial" />
-                
+
         <!-- AdMob -->
         <activity
             android:name="com.google.ads.AdActivity"

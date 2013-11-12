@@ -1,3 +1,4 @@
+
 package dev.dworks.apps.anexplorer.util;
 
 import java.io.BufferedInputStream;
@@ -46,7 +47,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -56,7 +56,6 @@ import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.media.MediaScannerConnection;
@@ -73,12 +72,9 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.MimeTypeMap;
 import android.widget.CheckBox;
@@ -88,14 +84,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
-
-import dev.dworks.apps.anexplorer.AnExplorer;
+import dev.dworks.apps.anexplorer.AboutActivity;
 import dev.dworks.apps.anexplorer.ExplorerActivity;
 import dev.dworks.apps.anexplorer.MyReceiver;
 import dev.dworks.apps.anexplorer.R;
@@ -1989,8 +1978,9 @@ public class ExplorerOperations {
             break;    		
     		
     	case ExplorerOperations.DIALOG_ABOUT:
-    		AboutFragment AboutFragment = new AboutFragment();
-    		AboutFragment.show(((SherlockFragmentActivity)context).getSupportFragmentManager(), "about");
+    		context.startActivity(new Intent(context, AboutActivity.class));
+/*    		AboutFragment AboutFragment = new AboutFragment();
+    		AboutFragment.show(((SherlockFragmentActivity)context).getSupportFragmentManager(), "about");*/
             break;
             
     	case ExplorerOperations.DIALOG_ADFREE:
@@ -2027,127 +2017,6 @@ public class ExplorerOperations {
     		break;            
     	}
     }
-	
-	public static class AboutFragment extends SherlockDialogFragment implements View.OnLongClickListener{
-		
-		private View view;
-		
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			final TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
-            int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
-            if(!isTablet(context)){
-    			setStyle(STYLE_NO_TITLE, theme);
-            }
-            else{
-            	setStyle(STYLE_NO_TITLE, getTheme());
-            }
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			view = inflater.inflate(R.layout.about, container, false);
-			initControls();
-			return view;
-		}
-		
-		private void initControls() {
-			LinearLayout layout_ad = (LinearLayout) view.findViewById(R.id.layout_ad);
-		    AdView adView = new AdView((Activity) context, AdSize.IAB_MRECT, "a14e25123e38970");
-	        adView.loadAd(new AdRequest());	    
-	        layout_ad.addView(adView);
-	        
-    		View actionView = view.findViewById(R.id.github_button);
-            actionView.setOnLongClickListener(this);
-            actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "github_button", 0L);
-       				Uri uriUrl = Uri.parse("https://github.com/DWorkS/AnExplorer");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dismiss();
-				}});
-            actionView = view.findViewById(R.id.gplus_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "gplus_button", 0L);
-       				Uri uriUrl = Uri.parse("https://plus.google.com/109240246596102887385");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dismiss();
-				}});
-            actionView = view.findViewById(R.id.twitter_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "twitter_button", 0L);
-       				Uri uriUrl = Uri.parse("https://twitter.com/1HaKr");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dismiss();
-				}});
-            
-            actionView = view.findViewById(R.id.feedback_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "feedback_button", 0L);
-                	Intent intent = new Intent(Intent.ACTION_SEND);
-                	intent.setType("text/email");
-                	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
-                	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
-                	((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
-                	dismiss();
-				}});
-            
-            actionView = view.findViewById(R.id.rate_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "rate_button", 0L);
-                	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
-                	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
-                	((Activity) context).startActivity(intentMarket);
-                	dismiss();
-				}});
-            
-            actionView = view.findViewById(R.id.site_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "site_button", 0L);
-                	Intent intent = new Intent(Intent.ACTION_VIEW);
-                	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
-                	((Activity) context).startActivity(intent);
-                	dismiss();
-				}});
-		}
-
-		@Override
-		public boolean onLongClick(View v) {
-	        final int[] screenPos = new int[2];
-	        final Rect displayFrame = new Rect();
-	        v.getLocationOnScreen(screenPos);
-	        v.getWindowVisibleDisplayFrame(displayFrame);
-	        final int width = v.getWidth();
-	        final int height = v.getHeight();
-	        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-	        final int correctHeight = isTablet(context) ? height * 2 : height;
-	        final int correctWidth = screenPos[0] + width > screenWidth / 2 ? screenPos[0] - width*3 : screenPos[0] - width;
-	        Toast cheatSheet = Toast.makeText(context, v.getTag().toString(), Toast.LENGTH_SHORT);
-	        cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, correctWidth, correctHeight);
-	        cheatSheet.show();
-			return true;
-		}
-	}
 	
 	/**
 	 * @author HaKr

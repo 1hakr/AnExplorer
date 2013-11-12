@@ -61,17 +61,17 @@
         <FrameLayout
             android:id="@+id/listContainer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" >
+            android:layout_height="match_parent" >
 
             <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" >
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
 
                 <ListView
                     android:id="@android:id/list"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/adView"
                     android:listSelector="@drawable/abs__list_selector_holo_dark"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
@@ -81,15 +81,26 @@
 
                 <GridView
                     android:id="@+id/grid_explorer"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:drawSelectorOnTop="true"
                     android:gravity="center"
+                    android:layout_above="@+id/adView"
                     android:listSelector="@drawable/abs__list_selector_holo_dark"
                     android:numColumns="auto_fit"
-                    android:stretchMode="columnWidth"
                     android:scrollbarStyle="outsideOverlay"
+                    android:stretchMode="columnWidth"
                     android:visibility="gone" />
+
+                <com.google.ads.AdView
+                    android:id="@+id/adView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    ads:adSize="SMART_BANNER"
+                    ads:adUnitId="a14e25123e38970"
+                    ads:loadAdOnCreate="false" />
+
             </RelativeLayout>
 
             <TextView
@@ -103,21 +114,6 @@
                 android:textIsSelectable="false"
                 android:textStyle="bold" />
         </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <com.google.ads.AdView
-                android:id="@+id/adView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                ads:adSize="SMART_BANNER"
-                ads:adUnitId="a14e25123e38970"
-                ads:loadAdOnCreate="false" />
-        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
