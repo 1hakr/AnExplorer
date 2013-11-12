@@ -37,6 +37,8 @@
                     android:fontFamily="sans-serif-regular"
                     android:gravity="center_horizontal"
                     android:singleLine="true"
+                    android:drawablePadding="10dp"
+                    android:drawableTop="@drawable/logo_login"
                     android:text="@string/app_ver" />
 
                 <TextView

@@ -37,7 +37,7 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
 
 	private Context context;
 	private Dialog splashScreenDialog;
-	private boolean showSplashScreen, loginSuccess = false;
+	private boolean loginSuccess = false;
 	
 	//preferences
 	private SharedPreferences preference = null;
@@ -82,7 +82,7 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 		//type = ExplorerOperations.isPhone(context) ? TYPES.Phone : TYPES.Tablet;
-    	//initLogin();
+    	initLogin();
 /*        if(showSplashScreen){
         	editor.putBoolean("SplashScreenPref", true);
         	showTutorial();
@@ -132,7 +132,6 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
 	private void getPreference() {
 		themeType = Integer.valueOf(preference.getString("ThemePref", "2"));
 		langType = Integer.valueOf(preference.getString("LangPref", "0"));
-		showSplashScreen = !preference.getBoolean("SplashScreenPref", false);
 	}
 	
 	@Override
@@ -172,14 +171,10 @@ public class HomeActivity extends SherlockFragmentActivityPlus implements OnFrag
 		return getString(id);
 	}
 	
-	private void initLogin(){	
-        if(!loginSuccess){
-        	if(!auto_login)
-            showLoginDialog();	
-        }
-        else{
-        	showAdfreeDailog();
-        }
+	private void initLogin(){
+    	if(!TextUtils.isEmpty(password) && !auto_login){
+    		showLoginDialog();
+    	}
 	}
 	
     private void showAdfreeDailog(){

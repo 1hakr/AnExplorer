@@ -2338,7 +2338,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		iconCache.put(10, R.drawable.ppt);
 		iconCache.put(11, R.drawable.xls);
 		iconCache.put(12, R.drawable.html);
-		iconCache.put(14, R.drawable.image);
+		iconCache.put(14, R.drawable.empty_photo);
 		a.recycle();
 	}
 

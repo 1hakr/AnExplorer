@@ -11,13 +11,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" >
 
-        <ImageView
+        <dev.dworks.libs.widget.SquareImageView
             android:id="@+id/icon"
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/tutorial_wallpaper" />
+            android:src="@drawable/empty_photo" />
 
         <ImageView
             android:id="@+id/icon_special"
