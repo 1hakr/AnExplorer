@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -25,15 +26,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.actionbarsherlock.view.MenuItem;
-
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
-import dev.dworks.libs.actionbarplus.SherlockFragmentActivityPlus;
+import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
 import dev.dworks.libs.actionbartoggle.ActionBarToggle;
 
-public class HomeActivity extends SherlockFragmentActivityPlus implements OnFragmentInteractionListener{
+public class HomeActivity extends ActionBarActivityPlus implements OnFragmentInteractionListener{
 
 	private Context context;
 	private Dialog splashScreenDialog;

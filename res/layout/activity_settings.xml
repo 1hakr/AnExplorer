@@ -17,7 +17,7 @@
             android:id="@android:id/list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:listSelector="@drawable/abs__list_selector_holo_dark"
+            android:listSelector="@drawable/abc_list_selector_holo_dark"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:scrollbarStyle="outsideOverlay"

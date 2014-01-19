@@ -21,14 +21,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
+import android.view.Menu;
+import android.view.MenuItem;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
-import dev.dworks.libs.actionbarplus.SherlockFragmentActivityPlus;
+import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
 
-public class AboutActivity extends SherlockFragmentActivityPlus {
+public class AboutActivity extends ActionBarActivityPlus {
 
 	private SharedPreferences preference;
 
@@ -44,7 +42,7 @@ public class AboutActivity extends SherlockFragmentActivityPlus {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.about, menu);
+		getMenuInflater().inflate(R.menu.about, menu);
 		return true;
 	}
 

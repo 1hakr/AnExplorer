@@ -7,9 +7,9 @@ import com.google.analytics.tracking.android.Tracker;
 import com.joshdholtz.sentry.Sentry;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
-import dev.dworks.libs.actionbarplus.SherlockApplication;
+import dev.dworks.libs.actionbarplus.app.ActionBarApplication;
 
-public class AnExplorer extends SherlockApplication {
+public class AnExplorer extends ActionBarApplication {
 
 	private GoogleAnalytics googleAnalytics;
 	public static Tracker tracker;

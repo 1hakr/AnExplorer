@@ -9,20 +9,20 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.UnderlinePageIndicator;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
+import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
 
-public class TutorialActivity extends SherlockFragmentActivity {
+public class TutorialActivity extends ActionBarActivityPlus {
     protected final static String[] TITLES = new String[] {
     	"Overview",
     	"Login",
@@ -82,7 +82,7 @@ public class TutorialActivity extends SherlockFragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.options_tutorial, menu);
+		getMenuInflater().inflate(R.menu.options_tutorial, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
     

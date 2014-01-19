@@ -40,6 +40,10 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.util.LruCache;
+import android.support.v7.app.ActionBar;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.SparseArray;
@@ -49,6 +53,9 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -67,14 +74,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import dev.dworks.libs.actionbarplus.SherlockListPlusFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
-import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 
@@ -89,12 +88,13 @@ import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionL
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.SearchFilter;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.SortType;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
+import dev.dworks.libs.actionbarplus.app.ActionBarListFragment;
 
 /**
  * @author HaKr
  * 
  */
-public class ExplorerFragment extends SherlockListPlusFragment implements
+public class ExplorerFragment extends ActionBarListFragment implements
 		OnQueryTextListener, OnScrollListener, OnTouchListener {
 
 	//private static final String TAG = "Explorer";
@@ -234,6 +234,10 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			args = getArguments();
 		}
 		super.onCreate(savedInstanceState);
+		context = getActionBarActivity();
+		// get preferences
+		preference = PreferenceManager.getDefaultSharedPreferences(context);
+		getSharedPreference();
 		initMode();
 		setHasOptionsMenu(true);
 	}
@@ -247,10 +251,6 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.fragment_explorer, container, false);
-		context = this.getSherlockActivity();
-		// get preferences
-		preference = PreferenceManager.getDefaultSharedPreferences(context);
-		getSharedPreference();
 		fillBitmapCache();
 		initMode();
 		
@@ -508,7 +508,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	}
 
 	private void setupActionBar() {
-		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		ActionBar actionBar = getActionBarActivity().getSupportActionBar();
 
 		ViewGroup v = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.actionbar, null);
 		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -676,8 +676,8 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	}
 
 	public void show() {
-		getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSherlockActivity().getSupportActionBar().setTitle(getTitle(mode));
+		getActionBarActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBarActivity().getSupportActionBar().setTitle(getTitle(mode));
 
 		switch (mode) {
 		case SearchMode:
@@ -1074,7 +1074,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			menu_id = R.menu.options;
 			break;
 		}
-		getSherlockActivity().getSupportMenuInflater().inflate(menu_id, menu);
+		getActionBarActivity().getMenuInflater().inflate(menu_id, menu);
 
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -1090,7 +1090,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		case AppMode:
 			showMenuAppBackup = true;
 			showOthers = true;
-			searchView = new SearchView(getSherlockActivity().getSupportActionBar().getThemedContext());
+			searchView = new SearchView(getActionBarActivity().getSupportActionBar().getThemedContext());
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(false);
 			searchView.setQueryHint("Filter Apps");
@@ -1102,7 +1102,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			menu.findItem(R.id.menu_uninstall).setIcon(R.drawable.ic_menu_stop);
 			menu.findItem(R.id.menu_uninstall).setTitle("Stop process");
 			showOthers = true;
-			searchView = new SearchView(getSherlockActivity().getSupportActionBar().getThemedContext());
+			searchView = new SearchView(getActionBarActivity().getSupportActionBar().getThemedContext());
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(false);
 			searchView.setQueryHint("Filter Processes");
@@ -1114,7 +1114,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			menu.findItem(R.id.menu_uninstall).setIcon(R.drawable.ic_menu_unhide);
 			menu.findItem(R.id.menu_uninstall).setTitle("Unhide from Gallery");
 			showOthers = true;
-			searchView = new SearchView(getSherlockActivity().getSupportActionBar().getThemedContext());
+			searchView = new SearchView(getActionBarActivity().getSupportActionBar().getThemedContext());
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(false);
 			searchView.setQueryHint("Filter Hidden Folders");
@@ -1138,7 +1138,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 			showSearchMenu = true;
 			showMenuAppBackup = false;
 			showOthers = false;
-			searchView = new SearchView(getSherlockActivity().getSupportActionBar().getThemedContext());
+			searchView = new SearchView(getActionBarActivity().getSupportActionBar().getThemedContext());
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(true);
 			searchView.setQueryHint("Search Storage");
@@ -2073,7 +2073,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 	}
 
 	private void updateMenu() {
-		getSherlockActivity().invalidateOptionsMenu();
+		getActionBarActivity().invalidateOptionsMenu();
 	}
 
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
@@ -2195,7 +2195,7 @@ public class ExplorerFragment extends SherlockListPlusFragment implements
 		if (actionMode != null) {
 			return;
 		}
-		actionMode = getSherlockActivity().startActionMode(actionModeCallback);
+		actionMode = getActionBarActivity().startSupportActionMode(actionModeCallback);
 	}
 
 	/**
