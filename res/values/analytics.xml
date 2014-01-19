@@ -2,14 +2,12 @@
 <resources>
 
     <string name="ga_trackingId">UA-41161328-1</string>
-    <string name="ga_appName">AnExplorer</string>
-    <string name="ga_appVersion">1.6</string>
+    <string name="ga_appName">AnExplorer Min</string>
+    <string name="ga_appVersion">2.0</string>
     <bool name="ga_autoActivityTracking">true</bool>
     <bool name="ga_reportUncaughtExceptions">true</bool>
 
-    <string name="dev.dworks.apps.anexplorer.HomeActivity">Home</string>
-    <string name="dev.dworks.apps.anexplorer.ExplorerActivity">Explorer</string>
-    <string name="dev.dworks.apps.anexplorer.TutorialActivity">Tutorial</string>
-    <string name="dev.dworks.apps.anexplorer.Setting">Setting</string>
+    <string name="dev.dworks.apps.anexplorer.DocumentsActivity">Documents</string>
+    <string name="dev.dworks.apps.anexplorer.SettingActivity">Setting</string>
 
 </resources>

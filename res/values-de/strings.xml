@@ -1,237 +1,54 @@
-<resources>
-    <string name="app_name">"AnExplorer"</string>
-    <string name="app_ver">"Ein weiterer Erforscher v1.8"</string>
-    <string name="app_company">"© 2013 D Works"</string>
-    <string name="app_url">"http://www.dworks.in"</string>
-    <string name="app_about_info">"Um einen kleinen Unterschied machen."</string>
-    <string name="app_contrib">"Beiträge von Hari Krishna Dulipudi"</string>
-    <string name="app_about">"Diese Datei-Explorer hilft Ihnen beim Organisieren Ihrer Dateien, speichern app, monitor process, verstecken Ordner und vieles mehr"</string>
-    
-    <string name="twitter">"<a href="https://twitter.com/1HaKr"> Twitter </a>"</string>
-    <string name="gplus">"<a href="https://plus.google.com/109240246596102887385"> Google+ </a>"</string>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  Copyright (C) 2013 The Android Open Source Project
 
-    <string name="searchHint">"Suchen"</string>
-    <string name="searchGobal">"Suche SD Card"</string>
-    
-    <string name="menu_create">"Neu"</string>
-    <string name="menu_select">"Selektion."</string>
-    <string name="menu_search">"Suchen"</string>
-    <string name="menu_setting">"einstellung"</string>
-    <string name="menu_about">"Über Capljina"</string>
-    <string name="menu_exit">"Ausgang"</string>
-    <string name="menu_cancel">"Abbrechen"</string>
-    <string name="menu_copy">"Kopieren"</string>
-    <string name="menu_cut">"Schneiden"</string>
-    <string name="menu_paste">"Paste"</string>
-    <string name="menu_delete">"Löschen"</string>
-    <string name="menu_share">"Aktie"</string>
-    <string name="menu_compress">"Komprimieren"</string>
-    <string name="menu_save">"Speichern App"</string>
-    <string name="menu_uninstall">"Deinstallieren App"</string>
-    <string name="menu_select_mode">"Wählen Sie Modus"</string>
-    <string name="menu_select_all">"Alles auswählen"</string>
-    <string name="menu_unselect_all">"Alle abwählen"</string>
-    <string name="menu_select_unselect">"Aktivieren / deaktivieren Sie alle"</string>
-    <string name="menu_help">"Help"</string>
-    <string name="menu_clear_cache">"Cache löschen"</string>
-    <string name="constant_github">Github</string>
-    <string name="constant_gplus">Google+</string>
-    <string name="constant_twitter">Twitter</string>
-    <string name="menu_edit">Edit</string>
-    <string name="menu_done">Done</string>
-    <string name="menu_reset">Reset</string>
-    
-    
-	<string name="name_phone">"Telefon"</string>
-	<string name="name_tablet">"Tablet"</string>
-	<string name="name_sdcard">"SD-Karte:"</string>
-	<string name="name_apps">"Apps"</string>
-	<string name="name_processes">"Prozesse"</string>
-	<string name="name_download">"Downloads"</string>
-	<string name="name_bluetooth">"Bluetooth"</string>
-	<string name="name_music">"Musik"</string>
-	<string name="name_gallery">"Galerie"</string>
-	<string name="name_explorer">"Explorer"</string>
-	<string name="name_system">"System"</string>
-	<string name="name_media">"Klingeltöne"</string>
-	<string name="name_movies">"Filme"</string>
-	<string name="name_emmc">"eMMC"</string>
-	<string name="name_unscannable">"Versteckte Ordner"</string>	
-	<string name="name_wallpaper">"Hintergrundbilder"</string>
-	
-	<string name="constant_search">"Suchen"</string>
-	<string name="constant_about">"Über Capljina"</string>
-	<string name="constant_setting">"einstellung"</string>
-	<string name="constant_rename">"Umbenennen"</string>
-	<string name="constant_copy">"Kopieren"</string>
-	<string name="constant_delete">"Löschen"</string>
-	<string name="constant_paste">"Paste"</string>
-	<string name="constant_cut">"Schneiden"</string>
-	<string name="constant_extract">"Extract"</string>
-	<string name="constant_details">"Einzelheiten"</string>
-	<string name="constant_open_file">"Open File Location"</string>
-	<string name="constant_app_details">"App Details"</string>
-	<string name="constant_open_app">"Öffne App"</string>
-	<string name="constant_market">"Market-Link"</string>
-	<string name="constant_stop_process">"Prozess beenden"</string>
-	<string name="constant_feedback">"Rueckmeldung "</string>
-	<string name="constant_rate">"App bewerten"</string>
-	<string name="constant_support">"Hilfe"</string>
-	<string name="constant_continue">"Continue"</string>
-	<string name="hide_folder">"Aus der Galerie ausblenden"</string>
-	<string name="unhide_folder">"Einblenden aus der Galerie"</string>
-	<string name="folder_option">"Ordneroptionen"</string>
-	<string name="app_option">"App-Optionen"</string>
-	<string name="hide_option">"Ausblenden"</string>	
-	
-	<string name="msg_loading">"Beladung\u2026"</string>
-	<string name="msg_searching">"Suchen\u2026"</string>
-	<string name="msg_file_not_found">"Keine passenden Dateien gefunden"</string>
-	<string name="msg_file_not_selected">"Keine Datei ausgewählt"</string>
-	<string name="msg_file_not_copied">"Keine Datei kopiert"</string>
-	<string name="msg_cant_select">"Es können nicht mehr als 1 Datei"</string>
-	<string name="msg_cant_rename">"Kann nicht umbenennen Mehr als 1 Datei"</string>
-	<string name="msg_cant_extract">"Kann nicht Auszug Mehr als 1 Datei"</string>
-	<string name="msg_cant_extract_other">"Nicht extrahieren kann andere als \"zip\"-Datei"</string>
-	<string name="msg_cant_extract_zip">"Kann nicht extrahieren 'zip' Datei"</string>
-	<string name="msg_cant_compress_zip">"Kann nicht in 'zip' Datei komprimieren"</string>
-	<string name="msg_cant_copy">"Kann nicht in den gleichen Ordner kopieren"</string>
-	<string name="msg_cant_open">"Datei kann nicht geöffnet werden"</string>
-	<string name="msg_files_copied">"Dateien kopiert"</string>
-	<string name="msg_files_cut">"Dateien schneiden"</string>
-	<string name="msg_search_results">"Suchergebnisse"</string>
-	<string name="msg_folder_empty">"Ordner leer ist"</string>
-	<string name="msg_sdcard_unmounted">"SD-Karte ist nicht angebracht"</string>
-	<string name="msg_folder_not_present">"Ordner nicht vorhanden ist"</string>
-	<string name="msg_share">"Anteil mit\u2026"</string>
-	<string name="msg_unmounted">"Unmontiert"</string>
-	<string name="msg_compress">"Komprimieren"</string>
-	<string name="msg_uncompress">"Unkomprimiert"</string>
-	<string name="msg_select">"Selektion."</string>
-	<string name="msg_selected">"ausgewählt"</string>
-	<string name="msg_new">"Neu"</string>
-	<string name="msg_properties">"Eigenschaften"</string>
-	<string name="msg_installed">"Installierte Apps"</string>
-	<string name="msg_running">"Laufen Apps"</string>
-	<string name="msg_create_file">"Datei erstellen"</string>
-	<string name="msg_create_folder">"Ordner erstellen"</string>
-	<string name="msg_rename_folder">"Ordner umbenennen"</string>
-	<string name="msg_want_delete">"Sind Sie sicher, dass Sie löschen wollen?"</string>
-	<string name="msg_want_exit">"Wollen Sie die App zu verlassen?"</string>
-	<string name="msg_want_adfree">"Möchten Sie AnExplorer unterstützen? Kaufen Sie die werbefreie Version in Android Market"</string>
-	<string name="msg_adfree">"Unterstützt AnExplorer!"</string>
-	<string name="msg_dont_show">"Don 't zeigen wieder"</string>
-	<string name="msg_login">"Login"</string>
-	<string name="msg_wrong_password">"Falsches Passwort"</string>
-	<string name="msg_pwd_empty">"Das Feld Passwort darf nicht leer sein."</string>		
-		
-	<!-- progress -->	    
-	<string name="msg_creating_dir">"Erstellen des Verzeichnisses"</string>
-	<string name="msg_creating_file">"Erstellen von Datei-"</string>
-	<string name="msg_renaming_file">"Umbenennen ausgewählte Datei\u2026"</string>
-	<string name="msg_deleting_file">"Löschen ausgewählter Dateien\u2026"</string>
-	<string name="msg_moving_file">"Verschieben ausgewählter Dateien\u2026"</string>
-	<string name="msg_pasting_file">"Einfügen ausgewählten Dateien\u2026"</string>
-	<string name="msg_compressing_file">"Komprimieren ausgewählten Dateien\u2026"</string>
-	<string name="msg_uncompressing_file">"Entpacken ausgewählten Dateien\u2026"</string>
-	<string name="msg_saving_file">"Speichern Ausgewählte Apps\u2026"</string>
-	<string name="msg_stopping_apps">"Stoppen gewählte apps\u2026"</string>
-	<string name="msg_gallery_hide">"Ausblenden Ausgewählte Ordner\u2026"</string>
-	<string name="msg_gallery_unhide">"Einblenden Ausgewählte Ordner\u2026"</string>
-	<string name="msg_clearing_cache">"Clearing Apps Cache\u2026"</string>
-	<string name="msg_setting_wallpaper">"Einstellen Wallpaper\u2026"</string>
-	
-	<!-- About -->
-	<string name="constant_name">"Name"</string>
-	<string name="constant_path">"Pfad"</string>
-	<string name="constant_type">"typ"</string>
-	<string name="constant_size">"Größe"</string>
-	<string name="constant_total">"Dateien insgesamt"</string>
-	<string name="constant_permission">"Genehmigung"</string>
-  	  
-	<!-- setting -->
-	<string name="display">"Aussehen"</string>
-	<string name="preview">"Vorschau"</string>
-	<string name="themes">"Themen"</string>
-	<string name="views">"Aufrufe"</string>
-	<string name="splash">"Splash Screen"</string>
-	<string name="sorting_type">"Sortier-Typ"</string>
-	<string name="sorting_order">"Sortierreihenfolge"</string>
-	<string name="others">"Anderes"</string>
-	<string name="advanced">"Nur für fortgeschrittene Benutzer"</string>
-	<string name="themes_to_display">"Hintergrund"</string>
-	<string name="view_to_display">"Anzeigen:"</string>	
-	<string name="show_storage">"Storage Mode"</string>
-	<string name="show_sizes">"Ordner-Größen"</string>
-	<string name="show_hidden">"Versteckte Ordner"</string>
-	<string name="show_thumb">"Thumb Scroll"</string>
-	<string name="show_pane">"Dual-Pane"</string>
-	<string name="show_image">"Bildvorschau"</string>
-	<string name="show_video">"Video Vorschau"</string>
-	<string name="show_mp3">"MP3-Vorschau"</string>
-	<string name="show_apk">"APK-Vorschau"</string>
-	<string name="sorting">"Sortieren"</string>
-	<string name="choose_theme">"Wählen Sie das gewünschte Thema"</string>
-	<string name="choose_view">"Wählen Sie die gewünschte Ansicht"</string>	
-	<string name="display_memory">"Zeigt Arbeitsspeicher bar für jeden Ordner"</string>
-	<string name="display_space">"Displays Raum von jedem Ordner belegt"</string>
-	<string name="display_hidden">"Zeigt Dateien / Ordner beginnend mit (.)"</string>	
-	<string name="display_thumb">"Zeigt Daumen blättern Sie in der Liste"</string>
-	<string name="display_pane">"Anzeige Navigationsbereich"</string>		
-	<string name="display_image">"Displays Vorschau für Bilder"</string>	
-	<string name="display_video">"Displays Vorschau für Videos"</string>	
-	<string name="display_mp3">"Zeigt Albumcover für MP3"</string>	
-	<string name="display_apk">"Zeigt ein Icon für APK"</string>	
-	<string name="choose_type">"Wählen Sie Sortier-Typ"</string>	
-	<string name="choose_order">"Wählen Sie Sortierung"</string>
-	<string name="dont_show_splash">"Nicht mehr anzeigen Begrüßungsbildschirm"</string>
-	<string name="visit_site">"Besuchen Entwickler-Website"</string>
-	<string name="site_dworks">"D WorkS"</string>
-	<string name="ads">"Anzeigentyp"</string>
-	<string name="show_ads">"Anzeige"</string>
-	<string name="root_title">"Root-Zugriff"</string>
-	<string name="root_desc">"Geben Sie root-Zugriff auf den App"</string>
-	<string name="mount_title">"Montieren beschreibbar"</string>
-	<string name="mount_desc">"Berg Telefon Dateisystem beschreibbar"</string>
-	<string name="lang">"Language"</string>
-	<string name="auto_login">"Auto Login"</string>
-	<string name="auto_login_desc">"Automatisch einloggen"</string>
-	<string name="login_pwd">"Login/Passwort"</string>
-	<string name="login_pwd_retype">"Bitte geben Sie Login Passwort"</string>
-	<string name="login_pwd_desc">"Passwort für den Login"</string>
-	<string name="change">"Ändern"</string>		
-	<string name="display_wallpaper">Enables Wallpaper changing</string>
-	<string name="enable_wallpaper">Enable wallpaper</string>
-	<string name="wallpaper_freq">Wallpaper frequency</string>	
-		
-	<!-- messages -->
-	<string name="msg_dir_create_success">"Directory wurde erfolgreich erstellt"</string>
-	<string name="msg_dir_create_unsuccess">"Etwas falsch mit Erstellen des Verzeichnisses"</string>
-	<string name="msg_file_create_success">"Die Datei wurde erfolgreich erstellt"</string>
-	<string name="msg_file_create_unsuccess">"Etwas falsch mit Erstellen der Datei"</string>
-	<string name="msg_file_rename_success">"Die Datei wurde erfolgreich umbenannt"</string>
-	<string name="msg_file_rename_unsuccess">"Etwas falsch mit der Umbenennung Datei"</string>
-	<string name="msg_file_delete_success">"Datei (en) erfolgreich gelöscht"</string>
-	<string name="msg_file_delete_unsuccess">"Etwas falsch mit dem Löschen Datei (en)"</string>
-	<string name="msg_app_save_success">"App (s) gespeichert erfolgreich sdcard / AppBackup"</string>
-	<string name="msg_app_save_unsuccess">"Etwas falsch mit der Rettung Apps (s)"</string>
-	<string name="msg_app_stop_success">"App (s) wurde erfolgreich beendet"</string>
-	<string name="msg_app_stop_unsuccess">"Etwas falsch mit dem Stoppen App (s)"</string>
-	<string name="msg_folder_hidden_success">"Folder (s) versteckt erfolgreich"</string>
-	<string name="msg_folder_hidden_unsuccess">"Etwas falsch mit versteckt Ordner (s)"</string>
-	<string name="msg_folder_unhidden_success">"Folder (s) eingeblendet erfolgreich"</string>
-	<string name="msg_folder_unhidden_unsuccess">"Etwas falsch mit Sichtbarmachen Ordner (s)"</string>
-	<string name="msg_clear_cache_success">"Cache erfolgreich gelöscht"</string>
-	<string name="msg_clear_cache_unsuccess">"Etwas falsch mit Clearing Cache"</string>
-	<string name="msg_set_wallpaper_success">"Wallpaper erfolgreich eingestellt"</string>
-	<string name="msg_set_wallpaper_unsuccess">"Etwas falsch mit der Einstellung Wallpaper"</string>
-	
-	<!-- help -->
-	<string name="help_internal">"Durchsuchen Interner Speicher"</string>
-	<string name="help_sdcard">"Durchsuchen SD Card"</string>
-	<string name="help_apps">"Apps Verwaltung"</string>
-	<string name="help_process">"Überwachung von Prozessen"</string>
-	<string name="help_folder">"Hide Folders"</string>
-	<string name="help_shortcut">"Verknüpfung"</string>
-	<string name="welcome">Welcome to AnExplorer</string>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_label" msgid="2783841764617238354">"Dokumente"</string>
+    <string name="title_open" msgid="4353228937663917801">"Öffnen von"</string>
+    <string name="title_save" msgid="2433679664882857999">"Speichern unter"</string>
+    <string name="menu_create_dir" msgid="5947289605844398389">"Ordner erstellen"</string>
+    <string name="menu_grid" msgid="6878021334497835259">"Rasteransicht"</string>
+    <string name="menu_list" msgid="7279285939892417279">"Listenansicht"</string>
+    <string name="menu_sort" msgid="7677740407158414452">"Sortieren nach"</string>
+    <string name="menu_search" msgid="3816712084502856974">"Suchen"</string>
+    <string name="menu_settings" msgid="6008033148948428823">"Einstellungen"</string>
+    <string name="menu_open" msgid="432922957274920903">"Öffnen"</string>
+    <string name="menu_save" msgid="2394743337684426338">"Speichern"</string>
+    <string name="menu_share" msgid="3075149983979628146">"Teilen"</string>
+    <string name="menu_delete" msgid="8138799623850614177">"Löschen"</string>
+    <string name="mode_selected_count" msgid="459111894725594625">"<xliff:g id="COUNT">%1$d</xliff:g> ausgewählt"</string>
+    <string name="sort_name" msgid="9183560467917256779">"Nach Name"</string>
+    <string name="sort_date" msgid="586080032956151448">"Nach Änderungsdatum"</string>
+    <string name="sort_size" msgid="3350681319735474741">"Nach Größe"</string>
+    <string name="drawer_open" msgid="4545466532430226949">"Root-Verzeichnis anzeigen"</string>
+    <string name="drawer_close" msgid="7602734368552123318">"Root-Verzeichnis ausblenden"</string>
+    <string name="save_error" msgid="6167009778003223664">"Dokument konnte nicht gespeichert werden."</string>
+    <string name="create_error" msgid="3735649141335444215">"Ordner konnte nicht erstellt werden."</string>
+    <string name="query_error" msgid="1222448261663503501">"Fehler bei der Anforderung von Dokumenten"</string>
+    <string name="root_recent" msgid="4470053704320518133">"Letzte"</string>
+    <string name="root_available_bytes" msgid="8568452858617033281">"<xliff:g id="SIZE">%1$s</xliff:g> verfügbar"</string>
+    <string name="root_type_service" msgid="2178854894416775409">"Speicherdienste"</string>
+    <string name="root_type_shortcut" msgid="3318760609471618093">"Verknüpfungen"</string>
+    <string name="root_type_device" msgid="7121342474653483538">"Geräte"</string>
+    <string name="root_type_apps" msgid="8838065367985945189">"Weitere Apps"</string>
+    <string name="pref_advanced_devices" msgid="903257239609301276">"Erweiterte Geräte anzeigen"</string>
+    <string name="pref_file_size" msgid="2826879315743961459">"Dateigröße anzeigen"</string>
+    <string name="pref_device_size" msgid="3542106883278997222">"Geräteabmessungen anzeigen"</string>
+    <string name="empty" msgid="7858882803708117596">"Keine Elemente"</string>
+    <string name="toast_no_application" msgid="1339885974067891667">"Datei kann nicht geöffnet werden."</string>
+    <string name="toast_failed_delete" msgid="2180678019407244069">"Einige Dokumente konnten nicht gelöscht werden."</string>
+    <string name="share_via" msgid="8966594246261344259">"Teilen über"</string>
 </resources>

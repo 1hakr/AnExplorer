@@ -1,238 +1,54 @@
-<resources>
-    <string name="app_name">"AnExplorer"</string>
-    <string name="app_ver">"Другой Проводник v1.8"</string>
-    <string name="app_company">"© 2013 D WorkS"</string>
-    <string name="app_url">"http://www.dworks.in"</string>
-    <string name="app_about_info">"Для того, чтобы небольшая разница."</string>
-    <string name="app_contrib">"Вклады Hari Krishna Dulipudi"</string>
-    <string name="app_about">"Это файл Проводник поможет вам организовать ваши файлы, кроме приложений, мониторинга процессов, скрыть папки и многое другое"</string>
-    
-    <string name="twitter">"<a href="https://twitter.com/1HaKr"> Twitter </a>"</string>
-    <string name="gplus">"<a href="https://plus.google.com/109240246596102887385"> Google+ </a>"</string>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  Copyright (C) 2013 The Android Open Source Project
 
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
 
-    <string name="searchHint">"Поиск"</string>
-    <string name="searchGobal">"Поиск SD Card"</string>
-    
-    <string name="menu_create">"новое"</string>
-    <string name="menu_select">"выбор"</string>
-    <string name="menu_search">"Поиск"</string>
-    <string name="menu_setting">"установка"</string>
-    <string name="menu_about">"О проекте"</string>
-    <string name="menu_exit">"конец"</string>
-    <string name="menu_cancel">"Отменить"</string>
-    <string name="menu_copy">"Копия"</string>
-    <string name="menu_cut">"Вырезать"</string>
-    <string name="menu_paste">"Вставлять"</string>
-    <string name="menu_delete">"Удалить"</string>
-    <string name="menu_share">"доля"</string>
-    <string name="menu_compress">"Компрессия"</string>
-    <string name="menu_save">"Сохранить приложения"</string>
-    <string name="menu_uninstall">"Удаление приложения"</string>
-    <string name="menu_select_mode">"Выберите режим"</string>
-    <string name="menu_select_all">"Выбрать все"</string>
-    <string name="menu_unselect_all">"Отменить выбор"</string>
-    <string name="menu_select_unselect">"Выбрать / снять все"</string>
-    <string name="menu_help">"Справка"</string>
-    <string name="menu_clear_cache">"Очистить кэш"</string>
-    <string name="constant_github">Github</string>
-    <string name="constant_gplus">Google+</string>
-    <string name="constant_twitter">Twitter</string>
-    <string name="menu_edit">Edit</string>
-    <string name="menu_done">Done</string>
-    <string name="menu_reset">Reset</string>
-    
-    
-	<string name="name_phone">"Phone"</string>
-	<string name="name_tablet">"Таблетки"</string>
-	<string name="name_sdcard">"SD-карта:"</string>
-	<string name="name_apps">"Приложения"</string>
-	<string name="name_processes">"Процессы"</string>
-	<string name="name_download">"Загрузки"</string>
-	<string name="name_bluetooth">"Bluetooth"</string>
-	<string name="name_music">"Музыка"</string>
-	<string name="name_gallery">"Галерея"</string>
-	<string name="name_explorer">"эксплорер"</string>
-	<string name="name_system">"Система"</string>
-	<string name="name_media">"Сигналы"</string>
-	<string name="name_movies">"Песня Movies"</string>
-	<string name="name_emmc">"eMMC"</string>
-	<string name="name_unscannable">"Скрытые папки"</string>	
-	<string name="name_wallpaper">"Обои"</string>
-	
-	<string name="constant_search">"Поиск"</string>
-	<string name="constant_about">"О проекте"</string>
-	<string name="constant_setting">"установка"</string>
-	<string name="constant_rename">"Переименовать"</string>
-	<string name="constant_copy">"Копия"</string>
-	<string name="constant_delete">"Удалить"</string>
-	<string name="constant_paste">"Вставлять"</string>
-	<string name="constant_cut">"Вырезать"</string>
-	<string name="constant_extract">"экстракт"</string>
-	<string name="constant_details">"подробности"</string>
-	<string name="constant_open_file">"Открыть расположение файлов"</string>
-	<string name="constant_app_details">"приложения Подробнее"</string>
-	<string name="constant_open_app">"Открытые приложения"</string>
-	<string name="constant_market">"Рынка Link"</string>
-	<string name="constant_stop_process">"Остановить процесс"</string>
-	<string name="constant_feedback">"Написать разработчику"</string>
-	<string name="constant_rate">"Оценить программу"</string>
-	<string name="constant_support">"Суппорт"</string>
-	<string name="constant_continue">"продолжаться"</string>
-	<string name="hide_folder">"Скрыть из галереи"</string>
-	<string name="unhide_folder">"Отобразить из галереи"</string>
-	<string name="folder_option">"Свойства папки"</string>
-	<string name="app_option">"приложения варианты"</string>
-	<string name="hide_option">"Скрыть параметры"</string>	
-	
-	<string name="msg_loading">"Загрузка\u2026"</string>
-	<string name="msg_searching">"Поиск\u2026"</string>
-	<string name="msg_file_not_found">"Нет соответствующих файлов, найденных"</string>
-	<string name="msg_file_not_selected">"Файл не выбран"</string>
-	<string name="msg_file_not_copied">"Нет скопировать файл"</string>
-	<string name="msg_cant_select">"Не можете выбрать более 1 файл"</string>
-	<string name="msg_cant_rename">"Невозможно переименовать Более 1 файл"</string>
-	<string name="msg_cant_extract">"Не удается извлечь больше, чем 1 файл"</string>
-	<string name="msg_cant_extract_other">"Не может извлечь кроме 'ZIP' файл"</string>
-	<string name="msg_cant_extract_zip">"Не может извлечь 'ZIP' файл"</string>
-	<string name="msg_cant_compress_zip">"Не может сжимать в «почтовый» файл"</string>
-	<string name="msg_cant_copy">"Не удается скопировать в ту же папку"</string>
-	<string name="msg_cant_open">"Невозможно открыть файл "</string>
-	<string name="msg_files_copied">"Файлы, скопированные"</string>
-	<string name="msg_files_cut">"Файлы сократить"</string>
-	<string name="msg_search_results">"Результаты поиска"</string>
-	<string name="msg_folder_empty">"Папка пуста"</string>
-	<string name="msg_sdcard_unmounted">"SD-карта не установлена"</string>
-	<string name="msg_folder_not_present">"Папка нет"</string>
-	<string name="msg_share">"Поделиться с помощью\u2026"</string>
-	<string name="msg_unmounted">"Пеший"</string>
-	<string name="msg_compress">"Компрессия"</string>
-	<string name="msg_uncompress">"Распакуйте"</string>
-	<string name="msg_select">"выбор"</string>
-	<string name="msg_selected">"выбранно"</string>
-	<string name="msg_new">"новое"</string>
-	<string name="msg_properties">"Объекты"</string>
-	<string name="msg_installed">"Установленные приложения"</string>
-	<string name="msg_running">"Работающие приложения"</string>
-	<string name="msg_create_file">"Создайте файл"</string>
-	<string name="msg_create_folder">"Создать папку"</string>
-	<string name="msg_rename_folder">"переименовать папку"</string>
-	<string name="msg_want_delete">"Вы уверены, что хотите удалить?"</string>
-	<string name="msg_want_exit">"Вы хотите, чтобы выйти из приложения?"</string>
-	<string name="msg_want_adfree">"Хотите поддержать AnExplorer? Купить объявлений бесплатная версия доступна на рынке Android"</string>
-	<string name="msg_adfree">"Поддержка AnExplorer!"</string>
-	<string name="msg_dont_show">"Т Don 'показывать"</string>
-	<string name="msg_login">"Войти"</string>
-	<string name="msg_wrong_password">"Пароль неверен"</string>
-	<string name="msg_pwd_empty">"Пароль не может быть пустым"</string>		
-		
-	<!-- progress -->	    
-	<string name="msg_creating_dir">"Создание каталога"</string>
-	<string name="msg_creating_file">"Создание файлов"</string>
-	<string name="msg_renaming_file">"Переименование выбранного файла\u2026"</string>
-	<string name="msg_deleting_file">"Удаление выбранных файлов\u2026"</string>
-	<string name="msg_moving_file">"Перемещение выбранных файлов\u2026"</string>
-	<string name="msg_pasting_file">"Вставка файлов\u2026"</string>
-	<string name="msg_compressing_file">"Сжатие файлов\u2026"</string>
-	<string name="msg_uncompressing_file">"Распакуйте выбранных файлов\u2026"</string>
-	<string name="msg_saving_file">"Сохранение выбранных Apps\u2026"</string>
-	<string name="msg_stopping_apps">"Остановка выбранных приложений\u2026"</string>
-	<string name="msg_gallery_hide">"Скрытие выбранных папках\u2026"</string>
-	<string name="msg_gallery_unhide">"Восстановление скрытого выбранные папки\u2026"</string>
-	<string name="msg_clearing_cache">"Посредничества приложения Cache\u2026"</string>
-	<string name="msg_setting_wallpaper">"Установка обоев\u2026"</string>
-	
-	<!-- About -->
-	<string name="constant_name">"Полное "</string>
-	<string name="constant_path">"Путь"</string>
-	<string name="constant_type">"тип"</string>
-	<string name="constant_size">"размер"</string>
-	<string name="constant_total">"Всего файлов"</string>
-	<string name="constant_permission">"Разрешение"</string>
-  	  
-	<!-- setting -->
-	<string name="display">"Внешний вид"</string>
-	<string name="preview">"выглядит"</string>
-	<string name="themes">"Темы"</string>
-	<string name="views">"Просмотров"</string>
-	<string name="splash">"Заставка"</string>
-	<string name="sorting_type">"Тип сортировки"</string>
-	<string name="sorting_order">"Порядок сортировки"</string>
-	<string name="others">"Прочие"</string>
-	<string name="advanced">"Только для опытных пользователей"</string>
-	<string name="themes_to_display">"Тема"</string>
-	<string name="view_to_display">"Просмотрено"</string>	
-	<string name="show_storage">"Режим хранения"</string>
-	<string name="show_sizes">"Папка размеров"</string>
-	<string name="show_hidden">"Скрытые папки"</string>
-	<string name="show_thumb">"захватать прокрутки"</string>
-	<string name="show_pane">"Двойная области"</string>
-	<string name="show_image">"Предварительный просмотр изображений"</string>
-	<string name="show_video">"Видео-превью"</string>
-	<string name="show_mp3">"MP3 просмотр"</string>
-	<string name="show_apk">"АPK просмотр"</string>
-	<string name="sorting">"Сортировка"</string>
-	<string name="choose_theme">"Выберите нужную тему"</string>
-	<string name="choose_view">"Выберите нужный вид"</string>	
-	<string name="display_memory">"Отображение памяти бар для каждой папки"</string>
-	<string name="display_space">"Дисплеи пространство, занимаемое каждой папке"</string>
-	<string name="display_hidden">"Отображение файлов / папок, начиная с (.)"</string>	
-	<string name="display_thumb">"Отображение большого пальца прокрутки в списке"</string>
-	<string name="display_pane">"Показать панель навигации"</string>		
-	<string name="display_image">"Дисплеи для предварительного просмотра изображений"</string>	
-	<string name="display_video">"Дисплеи для просмотра видео"</string>	
-	<string name="display_mp3">"Отображение обложек альбомов для MP3"</string>	
-	<string name="display_apk">"Отображение значка для АПК в"</string>	
-	<string name="choose_type">"Выберите тип сортировки"</string>	
-	<string name="choose_order">"Выберите порядок сортировки"</string>
-	<string name="dont_show_splash">"Не показывать заставку"</string>
-	<string name="visit_site">"Посетите сайт разработчика"</string>
-	<string name="site_dworks">"D работает"</string>
-	<string name="ads">"типа объявлений."</string>
-	<string name="show_ads">"Реклама"</string>
-	<string name="root_title">"Доступ к корневой"</string>
-	<string name="root_desc">"Дайте корневой доступ к приложению"</string>
-	<string name="mount_title">"Установите записываемый"</string>
-	<string name="mount_desc">"Гора телефон файловой системы записи"</string>
-	<string name="lang">"Language"</string>
-	<string name="auto_login">"Автоматический вход"</string>
-	<string name="auto_login_desc">"автоматически войдите"</string>
-	<string name="login_pwd">"Логин/Пароль"</string>
-	<string name="login_pwd_retype">"Повторите пароль Логин"</string>
-	<string name="login_pwd_desc">"Пароль для входа в систему"</string>
-	<string name="change">"менять"</string>		
-	<string name="display_wallpaper">Enables Wallpaper changing</string>
-	<string name="enable_wallpaper">Enable wallpaper</string>
-	<string name="wallpaper_freq">Wallpaper frequency</string>	
-		
-	<!-- messages -->
-	<string name="msg_dir_create_success">"Каталог был создан успешно"</string>
-	<string name="msg_dir_create_unsuccess">"Что-то не так с созданием каталога"</string>
-	<string name="msg_file_create_success">"Файл был создан успешно"</string>
-	<string name="msg_file_create_unsuccess">"Что-то не так с создания файла"</string>
-	<string name="msg_file_rename_success">"Файл был переименован успешно"</string>
-	<string name="msg_file_rename_unsuccess">"Что-то не так с переименованием файлов"</string>
-	<string name="msg_file_delete_success">"Файл (ы) успешно удалены"</string>
-	<string name="msg_file_delete_unsuccess">"Что-то не так с удалением файла (ов)"</string>
-	<string name="msg_app_save_success">"Приложения (ы) успешно сохранены в SDCard / AppBackup"</string>
-	<string name="msg_app_save_unsuccess">"Что-то не так с сохранением приложения (ы)"</string>
-	<string name="msg_app_stop_success">"Приложения (ы) успешно остановлена"</string>
-	<string name="msg_app_stop_unsuccess">"Что-то не так с остановкой приложения (ы)"</string>
-	<string name="msg_folder_hidden_success">"Папка (ы) скрыты успешно"</string>
-	<string name="msg_folder_hidden_unsuccess">"Что-то не так с скрывать папки (папок)"</string>
-	<string name="msg_folder_unhidden_success">"Папка (ы) нескрываемым успешно"</string>
-	<string name="msg_folder_unhidden_unsuccess">"Что-то не так с восстановления скрытого папки (папок)"</string>
-	<string name="msg_clear_cache_success">"Кэш очищен успешно"</string>
-	<string name="msg_clear_cache_unsuccess">"Что-то не так с очисткой кэша"</string>
-	<string name="msg_set_wallpaper_success">"Обои успешно установлены "</string>
-	<string name="msg_set_wallpaper_unsuccess">"Что-то не так с установкой обоев"</string>
-	
-	<!-- help -->
-	<string name="help_internal">"Интересное внутренней памяти"</string>
-	<string name="help_sdcard">"Интересное SD Card"</string>
-	<string name="help_apps">"Управление программах"</string>
-	<string name="help_process">"Мониторинг процессов"</string>
-	<string name="help_folder">"забиться папки"</string>
-	<string name="help_shortcut">"Комбинации клавиш"</string>
-	<string name="welcome">Добро пожаловать в AnExplorer</string>
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_label" msgid="2783841764617238354">"Документы"</string>
+    <string name="title_open" msgid="4353228937663917801">"Открыть"</string>
+    <string name="title_save" msgid="2433679664882857999">"Сохранить"</string>
+    <string name="menu_create_dir" msgid="5947289605844398389">"Новая папка"</string>
+    <string name="menu_grid" msgid="6878021334497835259">"Таблица"</string>
+    <string name="menu_list" msgid="7279285939892417279">"Список"</string>
+    <string name="menu_sort" msgid="7677740407158414452">"Сортировать"</string>
+    <string name="menu_search" msgid="3816712084502856974">"Поиск"</string>
+    <string name="menu_settings" msgid="6008033148948428823">"Настройки"</string>
+    <string name="menu_open" msgid="432922957274920903">"Открыть"</string>
+    <string name="menu_save" msgid="2394743337684426338">"Сохранить"</string>
+    <string name="menu_share" msgid="3075149983979628146">"Поделиться"</string>
+    <string name="menu_delete" msgid="8138799623850614177">"Удалить"</string>
+    <string name="mode_selected_count" msgid="459111894725594625">"Выбрано: <xliff:g id="COUNT">%1$d</xliff:g>"</string>
+    <string name="sort_name" msgid="9183560467917256779">"По названию"</string>
+    <string name="sort_date" msgid="586080032956151448">"По дате изменения"</string>
+    <string name="sort_size" msgid="3350681319735474741">"По размеру"</string>
+    <string name="drawer_open" msgid="4545466532430226949">"Показать"</string>
+    <string name="drawer_close" msgid="7602734368552123318">"Скрыть"</string>
+    <string name="save_error" msgid="6167009778003223664">"Не удалось сохранить документ"</string>
+    <string name="create_error" msgid="3735649141335444215">"Не удалось создать папку"</string>
+    <string name="query_error" msgid="1222448261663503501">"Не удалось отправить запрос"</string>
+    <string name="root_recent" msgid="4470053704320518133">"Недавние"</string>
+    <string name="root_available_bytes" msgid="8568452858617033281">"Свободно <xliff:g id="SIZE">%1$s</xliff:g>"</string>
+    <string name="root_type_service" msgid="2178854894416775409">"Службы хранения"</string>
+    <string name="root_type_shortcut" msgid="3318760609471618093">"Ярлыки"</string>
+    <string name="root_type_device" msgid="7121342474653483538">"Устройства"</string>
+    <string name="root_type_apps" msgid="8838065367985945189">"Другие приложения"</string>
+    <string name="pref_advanced_devices" msgid="903257239609301276">"Показать другие устройства"</string>
+    <string name="pref_file_size" msgid="2826879315743961459">"Показать размер файла"</string>
+    <string name="pref_device_size" msgid="3542106883278997222">"Показать размер устройства"</string>
+    <string name="empty" msgid="7858882803708117596">"Ничего нет"</string>
+    <string name="toast_no_application" msgid="1339885974067891667">"Не удалось открыть файл"</string>
+    <string name="toast_failed_delete" msgid="2180678019407244069">"Не удалось удалить некоторые документы"</string>
+    <string name="share_via" msgid="8966594246261344259">"Поделиться"</string>
 </resources>

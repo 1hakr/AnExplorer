@@ -1,89 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- <color name="BlueColor">#ff0099cc</color> -->
-    <color name="BlueColor">#ff33b5e5</color>
-    <color name="greyColor">#ff626262</color>
-    <color name="greyColorLight">#ffD2D2D2</color>
-    <color name="BlueColorSelected">#ff0099cc</color>
-    <color name="SemiTransparent">#89000000</color>
-	<drawable name="tutorialAB">@drawable/abc_ab_transparent_dark_holo</drawable>
+    <style name="TextAppearance" />
+
+    <style name="TextAppearance.Medium">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.Small">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">?android:attr/textColorTertiary</item>
+    </style>
+
+    <!--
+         Normally just a redirection, but this is used to make ourselves a
+         dialog on large tablets
+    -->
+    <style name="Theme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
+    </style>
+
+    <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_menu_overflow</item>
+    </style>
+
+    <style name="MyTitleText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#ff49c0ec</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">5dip</item>
+        <item name="android:shadowColor">#ff000000</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="PinButton" parent="@android:style/Widget.Holo.Button.Borderless">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#666666</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
     <style name="Title">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textSize">25sp</item>
-        <item name="android:textColor">#ff0099cc</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/blue</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="EditTextAppTheme" parent="android:Widget.EditText">
-        <item name="android:background">@drawable/edit_text_holo_light</item>
-        <item name="android:textColor">?attr/text</item>
+    <style name="Theme.DailogPIN">
+        <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="CheckBoxAppTheme" parent="android:Widget.CompoundButton.CheckBox">
-        <item name="android:button">@drawable/btn_check_holo_light</item>
+    <style name="DialogEnterNoAnimation">
+        <item name="android:windowEnterAnimation">@anim/no_animation</item>
     </style>
 
-    <style name="RadioButtonAppTheme" parent="android:Widget.CompoundButton.RadioButton">
-        <item name="android:button">@drawable/btn_radio_holo_light</item>
-    </style>
-
-    <style name="ButtonAppTheme" parent="android:Widget.Button">
-        <item name="android:background">@drawable/btn_default_holo_light</item>
-        <item name="android:minHeight">48dip</item>
-        <item name="android:minWidth">64dip</item>
-        <item name="android:textColor">?attr/text</item>
-        <item name="android:textSize">18sp</item>
-    </style>
-
-    <style name="ImageButtonAppTheme" parent="android:Widget.ImageButton">
-        <item name="android:background">@drawable/btn_default_holo_light</item>
-    </style>
-
-    <style name="DarkActionBar" parent="Widget.AppCompat.ActionBar">
-        <item name="background">@drawable/abc_ab_solid_dark_holo</item>
-        <item name="android:background">@drawable/abc_ab_solid_dark_holo</item>
-    </style>
-
-    <style name="MyTitleText">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">5dp</item>
-        <item name="android:textSize">23sp</item>
-        <item name="android:textColor">#49C0EC</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">2.0</item>
-    </style>
-
-    <style name="MyProgress" parent="@android:style/Widget.ProgressBar.Horizontal">
-        <item name="android:progressDrawable">@drawable/progress</item>
-    </style>
-
-    <style name="MyPreference" parent="@android:attr/preferenceStyle">
-        <item name="android:layout">@layout/preference</item>
-    </style>
-    
-    <style name="MyPreferenceHeader" parent="@android:attr/preferenceStyle">
-        <item name="android:layout">@layout/preference_header</item>
-    </style>    
-        
-    <style name="MyAnimation">
-        <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
-        <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
-    </style>
-
-    <style name="MyReverseAnimation">
-        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
-    </style>
-
-    <style name="MyAnimationAbout">
-        <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_left</item>
+    <style name="DialogExitNoAnimation">
+        <item name="android:windowExitAnimation">@anim/no_animation</item>
     </style>
 
 </resources>
