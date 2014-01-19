@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_github"
+        android:icon="@drawable/ic_menu_github"
+        android:showAsAction="always"
+        android:title="Github"/>
+    <item
+        android:id="@+id/action_gplus"
+        android:icon="@drawable/ic_menu_gplus"
+        android:orderInCategory="101"
+        android:showAsAction="always"
+        android:title="Google+"/>
+    <item
+        android:id="@+id/action_twitter"
+        android:icon="@drawable/ic_menu_twitter"
+        android:orderInCategory="102"
+        android:showAsAction="always"
+        android:title="Twitter"/>
+    <item
+        android:id="@+id/action_feedback"
+        android:icon="@drawable/ic_menu_feedback"
+        android:orderInCategory="103"
+        android:showAsAction="always"
+        android:title="Feedback"/>
+    <item
+        android:id="@+id/action_rate"
+        android:icon="@drawable/ic_menu_rate"
+        android:orderInCategory="104"
+        android:showAsAction="always"
+        android:title="Rate"/>
+    <item
+        android:id="@+id/action_support"
+        android:icon="@drawable/ic_menu_support"
+        android:orderInCategory="105"
+        android:showAsAction="always"
+        android:title="Other Apps"/>
+
+</menu>

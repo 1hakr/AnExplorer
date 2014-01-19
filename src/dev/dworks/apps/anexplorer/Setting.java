@@ -18,23 +18,25 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceActivity.Header;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
+import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
 
 /**
  * @author HaKr
  * 
  */
-public class Setting extends SherlockPreferenceActivity implements OnSharedPreferenceChangeListener {
+public class Setting extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	
 	private Integer themeType, themeTypeInt, themeTypeOrig, langType, langTypeOrig,
 					viewTypeOrig, viewType, sortOrder, sortOrderOrig, sortType, sortTypeOrig;
@@ -62,8 +64,8 @@ public class Setting extends SherlockPreferenceActivity implements OnSharedPrefe
   
         super.onCreate(savedInstanceState);
         changeLang();      
-    	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    	this.getSupportActionBar().setTitle(getResources().getString(R.string.constant_setting));         
+    	//this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    	//this.getSupportActionBar().setTitle(getResources().getString(R.string.constant_setting));         
 
         if(!showHeader){
             setContentView(R.layout.activity_settings);

@@ -2,7 +2,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Variation on the Holo Light theme that styles the Action Bar -->
-    <style name="Theme.Dark" parent="Theme.Sherlock">
+    <style name="Theme.Dark" parent="Theme.AppCompat">
+        <item name="toggle">@drawable/ic_drawer_light</item>
         <item name="dworksLogo">@drawable/dworks_dark</item>
         <item name="background">@android:color/black</item>
         <item name="text">@android:color/white</item>
@@ -15,7 +16,7 @@
         <item name="specialFolder">@drawable/folder_white</item>
         <item name="actionText">@android:color/white</item>
         <item name="backgroundLayoutColor">#2D2D2D</item>
-        <item name="actionBar">@drawable/abs__ab_bottom_solid_dark_holo</item>
+        <item name="actionBar">@drawable/abc_ab_bottom_solid_dark_holo</item>
         <item name="actionBarStyle">@style/DarkActionBar</item>
         <item name="android:actionBarStyle">@style/DarkActionBar</item>
         <item name="actionBarSplitStyle">@style/DarkActionBar</item>
@@ -30,7 +31,8 @@
         <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>
     </style>
 
-    <style name="Theme.Light" parent="Theme.Sherlock.Light">
+    <style name="Theme.Light" parent="Theme.AppCompat.Light">
+        <item name="toggle">@drawable/ic_drawer</item>
         <item name="dworksLogo">@drawable/dworks</item>
         <item name="text">@android:color/black</item>
         <item name="background">@android:color/white</item>
@@ -43,7 +45,7 @@
         <item name="specialFolder">@drawable/folder_black</item>
         <item name="actionText">@android:color/black</item>
         <item name="backgroundLayoutColor">#EBEBEB</item>
-        <item name="actionBar">@drawable/abs__ab_bottom_solid_light_holo</item>
+        <item name="actionBar">@drawable/abc_ab_bottom_solid_light_holo</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>
@@ -53,7 +55,8 @@
         <item name="android:listChoiceIndicatorSingle">@drawable/btn_radio_holo_light</item>
     </style>
 
-    <style name="Theme.Pleasant" parent="Theme.Sherlock.Light.DarkActionBar">
+    <style name="Theme.Pleasant" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="toggle">@drawable/ic_drawer_light</item>
         <item name="dworksLogo">@drawable/dworks</item>
         <item name="text">@android:color/black</item>
         <item name="background">@android:color/white</item>
@@ -66,7 +69,7 @@
         <item name="specialFolder">@drawable/folder_black</item>
         <item name="actionText">@android:color/white</item>
         <item name="backgroundLayoutColor">#EBEBEB</item>
-        <item name="actionBar">@drawable/abs__ab_bottom_solid_inverse_holo</item>
+        <item name="actionBar">@drawable/abc_ab_bottom_solid_dark_holo</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>

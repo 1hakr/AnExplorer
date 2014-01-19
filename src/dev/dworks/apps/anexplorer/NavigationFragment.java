@@ -17,14 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockListFragment;
-
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.FileNavList;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.OnFragmentInteractionListener;
+import dev.dworks.libs.actionbarplus.app.ActionBarListFragment;
 
-public class NavigationFragment extends SherlockListFragment {
+public class NavigationFragment extends ActionBarListFragment {
 	private Context context;
 	private OnFragmentInteractionListener mListener;
 	private int curNavPosition;
@@ -43,7 +41,7 @@ public class NavigationFragment extends SherlockListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		context = getSherlockActivity();
+		context = getActionBarActivity();
 	}
 
 	@Override

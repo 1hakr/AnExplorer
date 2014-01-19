@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">"AnExplorer"</string>
-    <string name="app_ver">"別のエクスプローラv1.6の"</string>
+    <string name="app_ver">"別のエクスプローラv1.8の"</string>
     <string name="app_company">"©2013 D WorkS"</string>
     <string name="app_url">"http://www.dworks.in"</string>
     <string name="app_about_info">"小さな違いを確認する。"</string>

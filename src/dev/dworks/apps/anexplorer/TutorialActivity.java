@@ -9,22 +9,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.UnderlinePageIndicator;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
+import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
 
-public class TutorialActivity extends SherlockFragmentActivity {
+public class TutorialActivity extends ActionBarActivityPlus {
     protected final static String[] TITLES = new String[] {
-    	"Welcome",
     	"Overview",
     	"Login",
     	"Navigation",
@@ -32,10 +31,8 @@ public class TutorialActivity extends SherlockFragmentActivity {
     	"Apps",
     	"Process",
     	"Hidden",
-    	"Wallpaper",
-    	"Start Exploring"};
+    	"Wallpaper"};
     protected final static int[] PICTURES = new int[] {
-    		R.drawable.logo_login,
     		R.drawable.tutorial_overview,
             R.drawable.tutorial_login,
             R.drawable.tutorial_navigation,
@@ -44,11 +41,9 @@ public class TutorialActivity extends SherlockFragmentActivity {
             R.drawable.tutorial_process,
             R.drawable.tutorial_hidden,
             R.drawable.tutorial_wallpaper,
-            R.drawable.dworks_dark,
     };
 
     protected final static int[] CONTENT = new int[] {
-		R.string.tutorial_welcome,
 		R.string.tutorial_overview,
 		R.string.tutorial_login,
 		R.string.tutorial_navigation,
@@ -57,7 +52,6 @@ public class TutorialActivity extends SherlockFragmentActivity {
 		R.string.tutorial_process,
 		R.string.tutorial_hidden,
 		R.string.tutorial_wallpaper,
-		R.string.tutorial_explore
     };
     
     private TutorialFragmentAdapter mAdapter;
@@ -88,7 +82,7 @@ public class TutorialActivity extends SherlockFragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.options_tutorial, menu);
+		getMenuInflater().inflate(R.menu.options_tutorial, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
     
@@ -171,7 +165,6 @@ public class TutorialActivity extends SherlockFragmentActivity {
         }
 
         private int position = 0;
-        //private String mContent = "???";
 		private View root;
 		private ImageView picture;
 
@@ -200,12 +193,6 @@ public class TutorialActivity extends SherlockFragmentActivity {
 			picture = (ImageView) root.findViewById(R.id.picture);
 			title.setText(TITLES[position]);
 			content.setText(CONTENT[position]);
-			if(position == TITLES.length - 1){
-
-			}
-			else{
-				
-			}
 		}
         
         @Override
@@ -219,5 +206,11 @@ public class TutorialActivity extends SherlockFragmentActivity {
             super.onSaveInstanceState(outState);
             outState.putInt(KEY_CONTENT, position);
         }
+		
+		@Override
+		public void onDestroyView() {
+			picture.setImageResource(0);
+			super.onDestroyView();
+		}
     }
 }

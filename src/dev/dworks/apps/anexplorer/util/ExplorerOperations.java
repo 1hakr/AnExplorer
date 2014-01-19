@@ -1,3 +1,4 @@
+
 package dev.dworks.apps.anexplorer.util;
 
 import java.io.BufferedInputStream;
@@ -19,6 +20,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -45,7 +47,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -55,7 +56,6 @@ import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.media.MediaScannerConnection;
@@ -68,15 +68,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.MimeTypeMap;
 import android.widget.CheckBox;
@@ -86,14 +84,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
-
-import dev.dworks.apps.anexplorer.AnExplorer;
+import dev.dworks.apps.anexplorer.AboutActivity;
 import dev.dworks.apps.anexplorer.ExplorerActivity;
 import dev.dworks.apps.anexplorer.MyReceiver;
 import dev.dworks.apps.anexplorer.R;
@@ -623,7 +614,10 @@ public class ExplorerOperations {
 
 		String ext = getFileExt(localFile);
 		String mimeType = getMIMEType(localFile);
-		String type = mimeType.substring(0, mimeType.indexOf("/"));
+		String type = "";
+		if(null != mimeType && mimeType.indexOf("/") != -1){
+			type = mimeType.substring(0, mimeType.indexOf("/"));
+		}
 		int fileType;
 		
 		if(type.equalsIgnoreCase("audio")){
@@ -862,15 +856,7 @@ public class ExplorerOperations {
         type = map.getMimeTypeFromExtension(end) != null ? map.getMimeTypeFromExtension(end): file.isDirectory() ? "directory" : "application/*";
         return type;
     }
-    
-    /**
-     * @param str
-     * @return true if string is null or empty else false
-     */
-    public static boolean isEmpty(String str){
-		return (str == null || str == "") ? true : false;
-    }
-    
+
     public static int showView(boolean show){
 		return show ? View.VISIBLE : View.GONE;
     }    
@@ -950,10 +936,16 @@ public class ExplorerOperations {
 	 * @return return Total Size when isTotal is {@value true} else return Free Size of Internal memory(data folder) 
 	 */	
 	public static Long getPartionSize(String path, boolean isTotal){
-		StatFs stat = new StatFs(path);
-		long blockSize = stat.getBlockSize();
-		long availableBlocks = (isTotal ? (long)stat.getBlockCount() : (long)stat.getAvailableBlocks());
-		return availableBlocks * blockSize;
+		StatFs stat = null;
+		try {
+			stat = new StatFs(path);	
+		} catch (Exception e) { }
+		if(null != stat){
+			final long blockSize = stat.getBlockSize();
+			final long availableBlocks = (isTotal ? (long)stat.getBlockCount() : (long)stat.getAvailableBlocks());
+			return availableBlocks * blockSize;
+		}
+		else return 0L;
 	}
 	
 	/**
@@ -1055,6 +1047,7 @@ public class ExplorerOperations {
 	      WallpaperManager wallpaperManager = WallpaperManager.getInstance(context);
 	      //Drawable wallpaperDrawable = wallpaperManager.getDrawable();
 	      try {
+	    	  //FIXME OOM exception
 			wallpaperManager.setBitmap(BitmapFactory.decodeFile(path));
 			return true;
 		} catch (IOException e) { }
@@ -1099,38 +1092,40 @@ public class ExplorerOperations {
 	    return reflection;
 	}
 	
-	public static Bitmap getThumbnailBitmap(String filePath) {
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    
-	    options.inJustDecodeBounds = true;
-	    BitmapFactory.decodeFile(filePath, options);
-	    
-	    options.inSampleSize = calculateInSampleSize(options, 0, 0);
-	    options.inJustDecodeBounds = false;
-	    final Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-	    return bitmap;
-	}	
-	
-	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		byte[] buf = new byte[100*1024];
-        int greatest, factor, b, thumb_sz = 64;
-	    int inSampleSize = 1;
-	    options.inSampleSize = 1;
-        options.outWidth = 0;
-        options.outHeight = 0;
-        options.inTempStorage = buf;
-        
-        if( options.outWidth > 0 && options.outHeight > 0 ) {
-            greatest = Math.max(options.outWidth, options.outHeight);
-            factor = greatest / thumb_sz;
-            for( b = 0x8000000; b > 0; b >>= 1 )
-                if( b < factor ) break;
-            inSampleSize = b;
+    public static Bitmap decodeSampledBitmap(String filename, int reqWidth, int reqHeight) {
+		Log.i(TAG, "path"+ filename);
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filename, options);
+
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(filename, options);
+    }
+    
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+            
+            final float totalPixels = width * height;
+            final float totalReqPixelsCap = reqWidth * reqHeight * 2;
+
+            while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
+                inSampleSize++;
+            }
         }
-	    return inSampleSize;
-	}	
+		Log.i(TAG, "size"+ inSampleSize+"::"+options.outHeight+"::"+options.outWidth);
+        return inSampleSize;
+    }
 	
-	public static Bitmap getThumbnailBitmap2(String filePath){
+	public static Bitmap getThumbnailBitmap3(String filePath){
 		byte[] buf = new byte[100*1024];
         int greatest, factor, b, thumb_sz = 64;
 		BitmapFactory.Options options = new BitmapFactory.Options();
@@ -1296,7 +1291,7 @@ public class ExplorerOperations {
 		ZipEntry zipEntry;
 		ZipInputStream ZIS;
 		int count = 0, total = new ZipFile(file2Extract).size();
-		String newFolderName = ExplorerOperations.isEmpty(fileName) ? getFileName(file2Extract) : fileName;
+		String newFolderName = TextUtils.isEmpty(fileName) ? getFileName(file2Extract) : fileName;
 		newBackgroundWork.onProgressUpdate(count, total);
 		newDir2Extract = new File(newDirPath + "/" + newFolderName + "/");
 		ZIS = new ZipInputStream(new FileInputStream(filePath));
@@ -1355,7 +1350,7 @@ public class ExplorerOperations {
 		else{
 			if(toDir2Copy.isDirectory() && toDir2Copy.canWrite()){
 				if(from2Copy.isFile()){
-					File newFile = new File(toDirPath +"/"+ (!isEmpty(newFileName) ? newFileName :from2Copy.getName()));
+					File newFile = new File(toDirPath +"/"+ (!TextUtils.isEmpty(newFileName) ? newFileName :from2Copy.getName()));
 					BufferedOutputStream BOS = new BufferedOutputStream(new FileOutputStream(newFile));
 					BufferedInputStream BIS = new BufferedInputStream(new FileInputStream(from2Copy));
 					while((read = BIS.read(data, 0, BUFFER)) != -1)
@@ -1608,7 +1603,9 @@ public class ExplorerOperations {
 				return selectedFile.delete();
 			}
 			else if(selectedFile.isDirectory()){
-				if(selectedFile.list() != null && selectedFile.list().length == 0){
+				if(null != selectedFile 
+						&& selectedFile.list() != null 
+						&& selectedFile.list().length == 0){
 					return selectedFile.delete();
 				}
 				else{
@@ -1981,8 +1978,9 @@ public class ExplorerOperations {
             break;    		
     		
     	case ExplorerOperations.DIALOG_ABOUT:
-    		AboutFragment AboutFragment = new AboutFragment();
-    		AboutFragment.show(((SherlockFragmentActivity)context).getSupportFragmentManager(), "about");
+    		context.startActivity(new Intent(context, AboutActivity.class));
+/*    		AboutFragment AboutFragment = new AboutFragment();
+    		AboutFragment.show(((SherlockFragmentActivity)context).getSupportFragmentManager(), "about");*/
             break;
             
     	case ExplorerOperations.DIALOG_ADFREE:
@@ -2019,127 +2017,6 @@ public class ExplorerOperations {
     		break;            
     	}
     }
-	
-	public static class AboutFragment extends SherlockDialogFragment implements View.OnLongClickListener{
-		
-		private View view;
-		
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			final TypedArray a = context.getTheme().obtainStyledAttributes(R.styleable.AppTheme);
-            int theme = a.getResourceId(R.styleable.AppTheme_aboutTheme, 0);
-            if(!isTablet(context)){
-    			setStyle(STYLE_NO_TITLE, theme);
-            }
-            else{
-            	setStyle(STYLE_NO_TITLE, getTheme());
-            }
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			view = inflater.inflate(R.layout.about, container, false);
-			initControls();
-			return view;
-		}
-		
-		private void initControls() {
-			LinearLayout layout_ad = (LinearLayout) view.findViewById(R.id.layout_ad);
-		    AdView adView = new AdView((Activity) context, AdSize.IAB_MRECT, "a14e25123e38970");
-	        adView.loadAd(new AdRequest());	    
-	        layout_ad.addView(adView);
-	        
-    		View actionView = view.findViewById(R.id.github_button);
-            actionView.setOnLongClickListener(this);
-            actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "github_button", 0L);
-       				Uri uriUrl = Uri.parse("https://github.com/DWorkS/AnExplorer");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dismiss();
-				}});
-            actionView = view.findViewById(R.id.gplus_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "gplus_button", 0L);
-       				Uri uriUrl = Uri.parse("https://plus.google.com/109240246596102887385");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dismiss();
-				}});
-            actionView = view.findViewById(R.id.twitter_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "twitter_button", 0L);
-       				Uri uriUrl = Uri.parse("https://twitter.com/1HaKr");
-	    				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl); 
-	    				context.startActivity(launchBrowser);
-	    				dismiss();
-				}});
-            
-            actionView = view.findViewById(R.id.feedback_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "feedback_button", 0L);
-                	Intent intent = new Intent(Intent.ACTION_SEND);
-                	intent.setType("text/email");
-                	intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"hakr@dworks.in"});
-                	intent.putExtra(Intent.EXTRA_SUBJECT, "AnExplorer Feedback");
-                	((Activity) context).startActivity(Intent.createChooser(intent, "Send Feedback"));
-                	dismiss();
-				}});
-            
-            actionView = view.findViewById(R.id.rate_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "rate_button", 0L);
-                	Intent intentMarket = new Intent(Intent.ACTION_VIEW);
-                	intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
-                	((Activity) context).startActivity(intentMarket);
-                	dismiss();
-				}});
-            
-            actionView = view.findViewById(R.id.site_button);
-            actionView.setOnLongClickListener(this);
-    		actionView.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View arg0) {
-					AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "about", "site_button", 0L);
-                	Intent intent = new Intent(Intent.ACTION_VIEW);
-                	intent.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer.pro"));
-                	((Activity) context).startActivity(intent);
-                	dismiss();
-				}});
-		}
-
-		@Override
-		public boolean onLongClick(View v) {
-	        final int[] screenPos = new int[2];
-	        final Rect displayFrame = new Rect();
-	        v.getLocationOnScreen(screenPos);
-	        v.getWindowVisibleDisplayFrame(displayFrame);
-	        final int width = v.getWidth();
-	        final int height = v.getHeight();
-	        final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-	        final int correctHeight = isTablet(context) ? height * 2 : height;
-	        final int correctWidth = screenPos[0] + width > screenWidth / 2 ? screenPos[0] - width*3 : screenPos[0] - width;
-	        Toast cheatSheet = Toast.makeText(context, v.getTag().toString(), Toast.LENGTH_SHORT);
-	        cheatSheet.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, correctWidth, correctHeight);
-	        cheatSheet.show();
-			return true;
-		}
-	}
 	
 	/**
 	 * @author HaKr
@@ -2226,47 +2103,99 @@ public class ExplorerOperations {
         }
 	}	
 	
-    //Sorting//
-    /**
-     * 
-     */
-    public static final Comparator<File> typeAlpha = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {	
-			return file1.isDirectory() ? (file2.isDirectory() ? file1.getName().compareToIgnoreCase(file2.getName()) : -1) : (file2.isFile() ? file1.getName().compareToIgnoreCase(file2.getName()) : 1); 
+	public static enum SortType{
+		NONE,
+		ALPHA_ASC,
+		ALPHA_DESC,
+		TYPE_ASC,
+		TYPE_DESC,
+		SIZE_ASC,
+		SIZE_DESC,
+		DATE_ASC,
+		DATE_DESC
+		
+	}
+	public static class FileComparator implements Comparator<File>{
+		private final SortType sortType;
+		private final Locale locale;
+		public FileComparator(SortType sortType) {
+			this.sortType = sortType;
+			locale = Resources.getSystem().getConfiguration().locale;
 		}
-	};
-	
-    public static final Comparator<File> alphaAscending = new Comparator<File>() {
 		@Override
-		public int compare(File file1, File file2) {	
-			return file1.getName().compareToIgnoreCase(file2.getName()); 
+		public int compare(File lhs, File rhs) {
+			try {
+				if (lhs == null && rhs != null)
+	                return 1;
+	            if (rhs == null && lhs != null)
+	                return 0;
+	            if (rhs == null || lhs == null)
+	                return 0;
+	            //forlder first
+                if (rhs.isDirectory() && !lhs.isDirectory())
+                    return 1;
+                if (lhs.isDirectory() && !rhs.isDirectory())
+                    return -1;
+                
+	            String a = lhs.getName();
+	            String b = rhs.getName();
+	            Long sa = lhs.length();
+	            Long sb = rhs.length();
+	            Long ma = lhs.lastModified();
+	            Long mb = rhs.lastModified();
+	            if (a == null && b != null)
+	                return 1;
+	            if (a == null || b == null)
+	                return 0;
+	            switch (sortType) {
+	                case ALPHA_DESC:
+	                    return b.toLowerCase(locale).compareTo(a.toLowerCase(locale));
+	                case ALPHA_ASC:
+	                    return a.toLowerCase(locale).compareTo(b.toLowerCase(locale));
+	                case SIZE_DESC:
+	                    if (sa == null && sb != null)
+	                        return 1;
+	                    if (sa == null || sb == null)
+	                        return 0;
+	                    return sa.compareTo(sb);
+	                case SIZE_ASC:
+	                    if (sb == null && sa != null)
+	                        return 1;
+	                    if (sa == null || sb == null)
+	                        return 0;
+	                    return sb.compareTo(sa);
+	                case DATE_DESC:
+	                    if (ma == null && mb != null)
+	                        return 1;
+	                    if (ma == null || mb == null)
+	                        return 0;
+	                    return ma.compareTo(mb);
+	                case DATE_ASC:
+	                    if (mb == null && ma != null)
+	                        return 1;
+	                    if (ma == null || mb == null)
+	                        return 0;
+	                    return mb.compareTo(ma);
+	                case TYPE_ASC:
+	                    String ea = a.substring(a.lastIndexOf(".") + 1, a.length()).toLowerCase(locale);
+	                    String eb = b.substring(b.lastIndexOf(".") + 1, b.length()).toLowerCase(locale);
+	                    return ea.compareTo(eb);
+	                case TYPE_DESC:
+	                    String ead = a.substring(a.lastIndexOf(".") + 1, a.length()).toLowerCase(locale);
+	                    String ebd = b.substring(b.lastIndexOf(".") + 1, b.length()).toLowerCase(locale);
+	                    return ebd.compareTo(ead);
+	                case NONE:
+	                    return 0;
+	                default:
+	                    return a.toLowerCase(locale).compareTo(b.toLowerCase(locale));
+	            }
+			} catch (Exception e) {
+				return 0;
+			}
 		}
-	};
+		
+	}
 
-    public static final Comparator<File> alphaDescending = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {	
-			return file1.getName().compareToIgnoreCase(file2.getName()); 
-		}
-	};
-	
-    /**
-     * 
-     */
-    public static final Comparator<File> typeAscending = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {
-			return file1.isDirectory() ? (file2.isDirectory() ? file1.getName().compareToIgnoreCase(file2.getName()) : -1) : (file2.isFile() ? file1.getName().compareToIgnoreCase(file2.getName()) : 1); 
-		}
-	};
-
-    public static final Comparator<File> typeDescending = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {
-			return file1.isFile() ? (file2.isFile() ? file1.getName().compareToIgnoreCase(file2.getName()) : -1) : (file2.isDirectory() ? file1.getName().compareToIgnoreCase(file2.getName()) : 1); 
-		}
-	};
 	
     public static final Comparator<CmdListItem> typeAscendingSU = new Comparator<CmdListItem>() {
 		@Override
@@ -2274,47 +2203,8 @@ public class ExplorerOperations {
 			return item1.type == 0 ? (item2.type == 0 ? item1.name.compareToIgnoreCase(item2.name) : -1) : (item2.type == 1 ? item1.name.compareToIgnoreCase(item2.name) : 1); 
 		}
 	};	
-    /**
-     * 
-     */
-    public static final Comparator<File> sizesAscending = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {
-			Long size1 = file1.length();
-			Long size2 = file2.length();
-			return size1.compareTo(size2); 
-		}
-	};
-
-    public static final Comparator<File> sizesDescending = new Comparator<File>() {
-		@Override
-		public int compare(File file2, File file1) {
-			Long size1 = file1.length();
-			Long size2 = file2.length();
-			return size1.compareTo(size2); 
-		}
-	};
 	
-    /**
-     * 
-     */
-    public static final Comparator<File> datesAscending = new Comparator<File>() {
-		@Override
-		public int compare(File file2, File file1) {
-			Long date1 = file1.lastModified();
-			Long date2 = file2.lastModified();
-			return date1.compareTo(date2); 
-		}
-	};
 	
-    public static final Comparator<File> datesDescending = new Comparator<File>() {
-		@Override
-		public int compare(File file1, File file2) {
-			Long date1 = file1.lastModified();
-			Long date2 = file2.lastModified();
-			return date1.compareTo(date2); 
-		}
-	};
 	/**
 	 * @author HaKr
 	 *This AsyncTask will be useful when there are large number of files involved 

@@ -10,12 +10,6 @@
         android:key="LangPref"
         android:title="@string/lang" />
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="SplashScreenPref"
-        android:summary="@string/dont_show_splash"
-        android:title="@string/splash" />
-
     <PreferenceScreen
         android:summary="@string/visit_site"
         android:title="@string/site_dworks" >

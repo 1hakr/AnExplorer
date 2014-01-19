@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
-    xmlns:app="http://schemas.android.com/apk/res/dev.dworks.apps.anexplorer"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeFragment" >
@@ -16,7 +16,7 @@
         android:visibility="gone" >
 
         <ProgressBar
-            style="@style/Widget.Sherlock.ProgressBar"
+            style="?attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -37,17 +37,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
             <com.mobeta.android.dslv.DragSortListView
                 android:id="@android:id/list"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/adView"
                 android:drawSelectorOnTop="false"
-                android:listSelector="@drawable/abs__list_selector_holo_dark"
+                android:listSelector="@drawable/abc_list_selector_holo_dark"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:scrollbarStyle="outsideOverlay"
@@ -58,21 +58,15 @@
                 app:use_default_controller="false"
                 tools:listitem="@layout/row_item" />
 
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <com.google.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <com.google.ads.AdView
-                    android:id="@+id/adView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    ads:adSize="SMART_BANNER"
-                    ads:adUnitId="a14e25123e38970"
-                    ads:loadAdOnCreate="false" />
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_alignParentBottom="true"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="a14e25123e38970"
+                ads:loadAdOnCreate="false" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/internalEmpty"
