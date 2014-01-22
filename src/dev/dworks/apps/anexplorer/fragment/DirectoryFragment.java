@@ -61,11 +61,14 @@ import android.text.format.Time;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
+import android.util.SparseLongArray;
 import android.view.ActionMode;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
@@ -146,7 +149,8 @@ public class DirectoryFragment extends ListFragment {
 
 	private DocumentsAdapter mAdapter;
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
-
+	private SparseLongArray mSizes = new SparseLongArray();
+	
 	private static final String EXTRA_TYPE = "type";
 	private static final String EXTRA_ROOT = "root";
 	private static final String EXTRA_DOC = "doc";
@@ -155,6 +159,7 @@ public class DirectoryFragment extends ListFragment {
 
 	private final int mLoaderId = 42;
 	private RootInfo root;
+	private DocumentInfo doc;
 
 	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -254,7 +259,7 @@ public class DirectoryFragment extends ListFragment {
 		final State state = getDisplayState(DirectoryFragment.this);
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
-		final DocumentInfo doc = getArguments().getParcelable(EXTRA_DOC);
+		doc = getArguments().getParcelable(EXTRA_DOC);
 
 		mAdapter = new DocumentsAdapter();
 		mType = getArguments().getInt(EXTRA_TYPE);
@@ -492,6 +497,7 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			final int count = mCurrentView.getCheckedItemCount();
 			final State state = getDisplayState(DirectoryFragment.this);
 			
 			final MenuItem open = menu.findItem(R.id.menu_open);
@@ -499,11 +505,11 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem delete = menu.findItem(R.id.menu_delete);
 
 			final boolean manageMode = state.action == ACTION_GET_CONTENT;
-
+			final boolean canDelete = doc != null && doc.isDeleteSupported();
 			isApp = root != null && root.isApp();
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
-			delete.setVisible(manageMode);
+			delete.setVisible(canDelete);
 			if(isApp){
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
@@ -513,11 +519,14 @@ public class DirectoryFragment extends ListFragment {
 			}
 			else{
 				if(editMode){
+					
+					final MenuItem info = menu.findItem(R.id.menu_info);
 					final MenuItem copy = menu.findItem(R.id.menu_copy);
 					final MenuItem cut = menu.findItem(R.id.menu_cut);
 					//final MenuItem compress = menu.findItem(R.id.menu_compress);
 					copy.setVisible(editMode);
 					cut.setVisible(editMode);
+					info.setVisible(count == 1);
 				}
 			}
 			return true;
@@ -537,27 +546,28 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			final int id = item.getItemId();
-			if (id == R.id.menu_open) {
+			switch (id) {
+			case R.id.menu_open:
 				DocumentsActivity.get(DirectoryFragment.this).onDocumentsPicked(docs);
 				mode.finish();
 				return true;
 
-			} else if (id == R.id.menu_share) {
+			case R.id.menu_share:
 				onShareDocuments(docs);
 				mode.finish();
 				return true;
 				
-			} else if (id == R.id.menu_copy) {
+			case R.id.menu_copy:
 				MoveFragment.show(getFragmentManager(), docs, false);
 				mode.finish();
 				return true;
 				
-			} else if (id == R.id.menu_cut) {
+			case R.id.menu_cut:
 				MoveFragment.show(getFragmentManager(), docs, true);
 				mode.finish();
 				return true;
-
-			} else if (id == R.id.menu_delete) {
+				
+			case R.id.menu_delete:
 				if(isApp && root.isAppPackage()){
 					//TODO
 				}
@@ -567,19 +577,24 @@ public class DirectoryFragment extends ListFragment {
 				mode.finish();
 				return true;
 				
-			} else if (id == R.id.menu_save) {
+			case R.id.menu_save:
 				new OperationTask(docs, id).execute();
 				mode.finish();
 				return true;
 				
-			} else if (id == R.id.menu_select_all) {
+			case R.id.menu_select_all:
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					mCurrentView.setItemChecked(i, selectAll);
 				}
 				selectAll = !selectAll;
 				return true;
 				
-			} else {
+			case R.id.menu_info:
+				((DocumentsActivity) getActivity()).setInfoDrawerOpen(true);
+				mode.finish();
+				return true;
+
+			default:
 				return false;
 			}
 		}
@@ -609,7 +624,11 @@ public class DirectoryFragment extends ListFragment {
 				}
 			}
 
-			mode.setTitle(getResources().getString(R.string.mode_selected_count, mCurrentView.getCheckedItemCount()));
+			int count = mCurrentView.getCheckedItemCount();
+			mode.setTitle(getResources().getString(R.string.mode_selected_count, count));
+			if(count == 1 || count == 2){
+				mode.invalidate();
+			}
 		}
 	};
 
@@ -703,7 +722,9 @@ public class DirectoryFragment extends ListFragment {
 				if(null != root && root.isApp()){
 					progressDialog.setMessage("Stopping processes...");
 				}
-				progressDialog.setMessage("Deleting files...");
+				else{
+					progressDialog.setMessage("Deleting files...");
+				}
 				break;
 
 			case R.id.menu_save:
@@ -757,7 +778,9 @@ public class DirectoryFragment extends ListFragment {
 				AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
 				AppsProvider.notifyRootsChanged(getActivity());
 			}
-			((DocumentsActivity)getActivity()).onCurrentDirectoryChanged(ANIM_NONE);
+			if(!(null != root && root.isAppPackage())){
+				((DocumentsActivity)getActivity()).onCurrentDirectoryChanged(ANIM_NONE);	
+			}
 		}
 	}
 	
@@ -879,7 +902,7 @@ public class DirectoryFragment extends ListFragment {
 		}
 	}
 
-	private class DocumentsAdapter extends BaseAdapter {
+	private class DocumentsAdapter extends BaseAdapter implements OnClickListener {
 		private Cursor mCursor;
 		private int mCursorCount;
 
@@ -888,7 +911,8 @@ public class DirectoryFragment extends ListFragment {
 		public void swapResult(DirectoryResult result) {
 			mCursor = result != null ? result.cursor : null;
 			mCursorCount = mCursor != null ? mCursor.getCount() : 0;
-
+			
+			mSizes.clear();
 			mFooters.clear();
 
 			final Bundle extras = mCursor != null ? mCursor.getExtras() : null;
@@ -995,6 +1019,10 @@ public class DirectoryFragment extends ListFragment {
 			final TextView date = (TextView) convertView.findViewById(R.id.date);
 			final TextView size = (TextView) convertView.findViewById(R.id.size);
 
+			final View iconView = convertView.findViewById(android.R.id.icon);
+			if(null != iconView){
+				iconView.setOnClickListener(this);
+			}
 			final ThumbnailAsyncTask oldTask = (ThumbnailAsyncTask) iconThumb.getTag();
 			if (oldTask != null) {
 				oldTask.preempt();
@@ -1013,6 +1041,7 @@ public class DirectoryFragment extends ListFragment {
 				final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
 				final Bitmap cachedResult = thumbs.get(uri);
 				if (cachedResult != null) {
+					iconThumb.setScaleType(!TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
 					iconThumb.setImageBitmap(cachedResult);
 					cacheHit = true;
 				} else {
@@ -1124,11 +1153,17 @@ public class DirectoryFragment extends ListFragment {
 				size.setVisibility(View.VISIBLE);
 				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
 					if(state.showFolderSize){
-						final FolderSizeAsyncTask task = new FolderSizeAsyncTask(size, docPath);
-						size.setTag(task);
-						ProviderExecutor.forAuthority(docAuthority).execute(task);	
+						long sizeInBytes = mSizes.get(position, -1);
+						if(sizeInBytes != -1){
+							size.setText(Formatter.formatFileSize(context, sizeInBytes));
+						}
+						else{
+							final FolderSizeAsyncTask task = new FolderSizeAsyncTask(size, docPath, position);
+							size.setTag(task);
+							ProviderExecutor.forAuthority(docAuthority).execute(task);
+							size.setText(null);
+						}
 					}
-					size.setText(null);
 				} else {
 					size.setText(Formatter.formatFileSize(context, docSize));
 					hasLine2 = true;
@@ -1198,6 +1233,23 @@ public class DirectoryFragment extends ListFragment {
 			} else {
 				position -= mCursorCount;
 				return mFooters.get(position).getItemViewType();
+			}
+		}
+
+		@Override
+		public void onClick(View v) {
+			int count = mCurrentView.getCheckedItemCount();
+			if(count != 0){
+				return;
+			}
+			final int position = mCurrentView.getPositionForView(v);
+			if (position != ListView.INVALID_POSITION) {
+	            ActionMode mChoiceActionMode = null;
+				if (mChoiceActionMode == null &&
+	                    (mChoiceActionMode = mCurrentView.startActionMode(mMultiListener)) != null) {
+	                mCurrentView.setItemChecked(position, true);
+	                mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+	            }				
 			}
 		}
 	}
@@ -1272,15 +1324,17 @@ public class DirectoryFragment extends ListFragment {
 		}
 	}
 
-	private static class FolderSizeAsyncTask extends AsyncTask<Uri, Void, String> implements Preemptable {
+	private class FolderSizeAsyncTask extends AsyncTask<Uri, Void, Long> implements Preemptable {
 		private final TextView mSizeView;
 		private final CancellationSignal mSignal;
 		private final String mPath;
+		private final int mPosition;
 
-		public FolderSizeAsyncTask(TextView sizeView, String path) {
+		public FolderSizeAsyncTask(TextView sizeView, String path, int position) {
 			mSizeView = sizeView;
 			mSignal = new CancellationSignal();
 			mPath = path;
+			mPosition = position;
 		}
 
 		@Override
@@ -1290,16 +1344,17 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		@Override
-		protected String doInBackground(Uri... params) {
+		protected Long doInBackground(Uri... params) {
 			if (isCancelled())
 				return null;
 
-			final Context context = mSizeView.getContext();
-			String result = null;
+			//final Context context = mSizeView.getContext();
+			Long result = null;
 			try {
 				if(!TextUtils.isEmpty(mPath)){
 					File dir = new File(mPath);
-					result = Formatter.formatFileSize(context, getDirectorySize(dir));
+					//result = Formatter.formatFileSize(context, getDirectorySize(dir));
+					result = getDirectorySize(dir);
 				}
 			} catch (Exception e) {
 				if (!(e instanceof OperationCanceledException)) {
@@ -1310,10 +1365,12 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(Long result) {
 			if (mSizeView.getTag() == this && result != null) {
 				mSizeView.setTag(null);
-				mSizeView.setText(result);
+				String size = Formatter.formatFileSize(mSizeView.getContext(), result);
+				mSizeView.setText(size);
+				mSizes.put(mPosition, result);
 			}
 		}
 	}

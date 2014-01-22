@@ -40,6 +40,7 @@ import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 
 /**
  * Representation of a {@link Root}.
@@ -166,6 +167,8 @@ public class RootInfo implements Durable, Parcelable {
         // TODO: remove these special case icons
         if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
+        } else if (isRootedStorage()) {
+            derivedIcon = R.drawable.ic_root_root;
         } else if (isPhoneStorage()) {
             derivedIcon = R.drawable.ic_root_phone;
         } else if (isSecondayStorage()) {
@@ -200,6 +203,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority);
+    }
+
+    public boolean isRootedStorage() {
+        return RootedStorageProvider.AUTHORITY.equals(authority);
     }
 
     public boolean isExternalStorage() {

@@ -174,12 +174,6 @@ public class AppsProvider extends DocumentsProvider {
         } finally {
             Binder.restoreCallingIdentity(token);
         }
-/*        
-        if (!ROOT_ID_APP.equals(rootId)) {
-        	//FIXME: Do this only once from client
-        	notifyDocumentsChanged(getContext(), getRootIdForDocId(docId));
-            notifyRootsChanged(getContext());	
-        }*/
     }
     
     @Override
@@ -196,7 +190,10 @@ public class AppsProvider extends DocumentsProvider {
 		}
 
     	final File fileFrom = new File(fromFilePath);
-    	final File fileTo = Environment.getExternalStorageDirectory();
+    	final File fileTo = new File(Environment.getExternalStorageDirectory(), "AppBackup");
+    	if(!fileTo.exists()){
+    		fileTo.mkdir();
+    	}
         if (!FileUtils.moveFile(fileFrom, fileTo, fileName)) {
             throw new IllegalStateException("Failed to copy " + fileFrom);
         }
@@ -264,7 +261,7 @@ public class AppsProvider extends DocumentsProvider {
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
-        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL);
+        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
     }
 
 	private void includeAppFromProcess(MatrixCursor result, String docId, RunningAppProcessInfo processInfo, String query ) {

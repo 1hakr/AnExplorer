@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
 import android.content.ContentResolver;
@@ -25,11 +24,9 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
 import android.provider.MediaStore.Audio;
@@ -45,7 +42,6 @@ import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -59,8 +55,9 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
  * Presents a {@link DocumentsContract} view of {@link MediaProvider} external
  * contents.
  */
-public class MediaDocumentsProvider extends DocumentsProvider {
-    private static final String TAG = "MediaDocumentsProvider";
+public class MediaDocumentsProvider extends StorageProvider {
+    @SuppressWarnings("unused")
+	private static final String TAG = "MediaDocumentsProvider";
 
     public static final String AUTHORITY = "dev.dworks.apps.anexplorer.media.documents";
 
@@ -575,7 +572,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_DOCUMENT_ID, TYPE_IMAGES_ROOT);
         row.add(Document.COLUMN_DISPLAY_NAME, getContext().getString(R.string.root_images));
         row.add(Document.COLUMN_FLAGS,
-                Document.FLAG_DIR_PREFERS_GRID | Document.FLAG_DIR_PREFERS_LAST_MODIFIED);
+                Document.FLAG_DIR_PREFERS_GRID | Document.FLAG_DIR_PREFERS_LAST_MODIFIED | Document.FLAG_SUPPORTS_DELETE);
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
     }
 
@@ -584,7 +581,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_DOCUMENT_ID, TYPE_VIDEOS_ROOT);
         row.add(Document.COLUMN_DISPLAY_NAME, getContext().getString(R.string.root_videos));
         row.add(Document.COLUMN_FLAGS,
-                Document.FLAG_DIR_PREFERS_GRID | Document.FLAG_DIR_PREFERS_LAST_MODIFIED);
+                Document.FLAG_DIR_PREFERS_GRID | Document.FLAG_DIR_PREFERS_LAST_MODIFIED | Document.FLAG_SUPPORTS_DELETE);
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
     }
 
@@ -593,7 +590,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_DOCUMENT_ID, TYPE_AUDIO_ROOT);
         row.add(Document.COLUMN_DISPLAY_NAME, getContext().getString(R.string.root_audio));
         row.add(Document.COLUMN_FLAGS,
-                Document.FLAG_DIR_PREFERS_GRID | Document.FLAG_DIR_PREFERS_LAST_MODIFIED);
+                Document.FLAG_DIR_PREFERS_GRID | Document.FLAG_DIR_PREFERS_LAST_MODIFIED | Document.FLAG_SUPPORTS_DELETE);
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
     }
 
@@ -623,7 +620,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
                 cursor.getLong(ImagesBucketQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
                 | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
-                | Document.FLAG_DIR_HIDE_GRID_TITLES);
+                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE);
     }
 
     private interface ImageQuery {
@@ -652,7 +649,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_MIME_TYPE, cursor.getString(ImageQuery.MIME_TYPE));
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(ImageQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
-        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL);
+        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
     }
 
     private interface VideosBucketQuery {
@@ -681,7 +678,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
                 cursor.getLong(VideosBucketQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
                 | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
-                | Document.FLAG_DIR_HIDE_GRID_TITLES);
+                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE);
     }
 
     private interface VideoQuery {
@@ -710,7 +707,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_MIME_TYPE, cursor.getString(VideoQuery.MIME_TYPE));
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(VideoQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
-        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL);
+        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
     }
 
     private interface ArtistQuery {
@@ -729,7 +726,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
         row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(ArtistQuery.ARTIST));
-        row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
+        row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR );
     }
 
     private interface AlbumQuery {
@@ -750,7 +747,7 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(AlbumQuery.ALBUM));
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
-                | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED );
+                | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED | Document.FLAG_SUPPORTS_DELETE);
     }
 
     private interface SongQuery {
@@ -779,279 +776,6 @@ public class MediaDocumentsProvider extends DocumentsProvider {
         row.add(Document.COLUMN_MIME_TYPE, cursor.getString(SongQuery.MIME_TYPE));
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(SongQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
-        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL);
-    }
-    
-    private interface AudioAlbumThumbnailQuery {
-        final String[] PROJECTION = new String[] {
-                AudioColumns._ID,
-                AudioColumns.ALBUM_ID,
-                AudioColumns.DATE_MODIFIED };
-
-        final int _ID = 0;
-        final int ALBUM_ID = 1;
-        final int DATE_MODIFIED = 2;
-    }
-
-    private long getAlbumForAudioCleared(long album) throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Audio.Media.EXTERNAL_CONTENT_URI,
-            		AudioAlbumThumbnailQuery.PROJECTION, AudioColumns._ID + "=" + album,
-                    null, AudioColumns.DATE_MODIFIED + " DESC");
-            if (cursor.moveToFirst()) {
-                return cursor.getLong(AudioAlbumThumbnailQuery.ALBUM_ID);
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
-        throw new FileNotFoundException("No Audio found for album");
-    }
-
-    private interface AudioThumbnailQuery {
-        final String[] PROJECTION = new String[] {
-                Audio.Albums.ALBUM_ART };
-
-        final int _DATA = 0;
-    }
-
-    private ParcelFileDescriptor openAudioThumbnailCleared(long id, CancellationSignal signal)
-            throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Audio.Albums.EXTERNAL_CONTENT_URI,
-            		AudioThumbnailQuery.PROJECTION, Audio.Albums._ID + "=" + id,
-                    null, null);
-            if (cursor.moveToFirst()) {
-                final String data = cursor.getString(AudioThumbnailQuery._DATA);
-                return ParcelFileDescriptor.open(
-                        new File(data), ParcelFileDescriptor.MODE_READ_ONLY);
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
-        return null;
-    }
-
-    private AssetFileDescriptor openOrCreateAudioThumbnailCleared(
-            long id, CancellationSignal signal) throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-
-        ParcelFileDescriptor pfd = openAudioThumbnailCleared(id, signal);
-        if (pfd == null) {
-            // No thumbnail yet, so generate. This is messy, since we drop the
-            // Bitmap on the floor, but its the least-complicated way.
-            final BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inJustDecodeBounds = true;
-            Images.Thumbnails.getThumbnail(resolver, id, Images.Thumbnails.MINI_KIND, opts);
-
-            pfd = openAudioThumbnailCleared(id, signal);
-        }
-
-        if (pfd == null) {
-            // Phoey, fallback to full image
-            final Uri fullUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, id);
-            pfd = resolver.openFileDescriptor(fullUri, "r");
-        }
-
-        final int orientation = queryOrientationForImage(id, signal);
-        final Bundle extras;
-        if (orientation != 0) {
-            extras = new Bundle(1);
-            extras.putInt(DocumentsContract.EXTRA_ORIENTATION, orientation);
-        } else {
-            extras = null;
-        }
-
-        return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
-    }
-
-
-    private interface ImagesBucketThumbnailQuery {
-        final String[] PROJECTION = new String[] {
-                ImageColumns._ID,
-                ImageColumns.BUCKET_ID,
-                ImageColumns.DATE_MODIFIED };
-
-        final int _ID = 0;
-        final int BUCKET_ID = 1;
-        final int DATE_MODIFIED = 2;
-    }
-
-    private long getImageForBucketCleared(long bucketId) throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Images.Media.EXTERNAL_CONTENT_URI,
-                    ImagesBucketThumbnailQuery.PROJECTION, ImageColumns.BUCKET_ID + "=" + bucketId,
-                    null, ImageColumns.DATE_MODIFIED + " DESC");
-            if (cursor.moveToFirst()) {
-                return cursor.getLong(ImagesBucketThumbnailQuery._ID);
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
-        throw new FileNotFoundException("No video found for bucket");
-    }
-
-    private interface ImageThumbnailQuery {
-        final String[] PROJECTION = new String[] {
-                Images.Thumbnails.DATA };
-
-        final int _DATA = 0;
-    }
-
-    private ParcelFileDescriptor openImageThumbnailCleared(long id, CancellationSignal signal)
-            throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Images.Thumbnails.EXTERNAL_CONTENT_URI,
-                    ImageThumbnailQuery.PROJECTION, Images.Thumbnails.IMAGE_ID + "=" + id, null,
-                    null);
-            if (cursor.moveToFirst()) {
-                final String data = cursor.getString(ImageThumbnailQuery._DATA);
-                return ParcelFileDescriptor.open(
-                        new File(data), ParcelFileDescriptor.MODE_READ_ONLY);
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
-        return null;
-    }
-
-    private AssetFileDescriptor openOrCreateImageThumbnailCleared(
-            long id, CancellationSignal signal) throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-
-        ParcelFileDescriptor pfd = openImageThumbnailCleared(id, signal);
-        if (pfd == null) {
-            // No thumbnail yet, so generate. This is messy, since we drop the
-            // Bitmap on the floor, but its the least-complicated way.
-            final BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inJustDecodeBounds = true;
-            Images.Thumbnails.getThumbnail(resolver, id, Images.Thumbnails.MINI_KIND, opts);
-
-            pfd = openImageThumbnailCleared(id, signal);
-        }
-
-        if (pfd == null) {
-            // Phoey, fallback to full image
-            final Uri fullUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, id);
-            pfd = resolver.openFileDescriptor(fullUri, "r");
-        }
-
-        final int orientation = queryOrientationForImage(id, signal);
-        final Bundle extras;
-        if (orientation != 0) {
-            extras = new Bundle(1);
-            extras.putInt(DocumentsContract.EXTRA_ORIENTATION, orientation);
-        } else {
-            extras = null;
-        }
-
-        return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
-    }
-
-    private interface VideosBucketThumbnailQuery {
-        final String[] PROJECTION = new String[] {
-                VideoColumns._ID,
-                VideoColumns.BUCKET_ID,
-                VideoColumns.DATE_MODIFIED };
-
-        final int _ID = 0;
-        final int BUCKET_ID = 1;
-        final int DATE_MODIFIED = 2;
-    }
-
-    private long getVideoForBucketCleared(long bucketId)
-            throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Video.Media.EXTERNAL_CONTENT_URI,
-                    VideosBucketThumbnailQuery.PROJECTION, VideoColumns.BUCKET_ID + "=" + bucketId,
-                    null, VideoColumns.DATE_MODIFIED + " DESC");
-            if (cursor.moveToFirst()) {
-                return cursor.getLong(VideosBucketThumbnailQuery._ID);
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
-        throw new FileNotFoundException("No video found for bucket");
-    }
-
-    private interface VideoThumbnailQuery {
-        final String[] PROJECTION = new String[] {
-                Video.Thumbnails.DATA };
-
-        final int _DATA = 0;
-    }
-
-    private AssetFileDescriptor openVideoThumbnailCleared(long id, CancellationSignal signal)
-            throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Video.Thumbnails.EXTERNAL_CONTENT_URI,
-                    VideoThumbnailQuery.PROJECTION, Video.Thumbnails.VIDEO_ID + "=" + id, null,
-                    null);
-            if (cursor.moveToFirst()) {
-                final String data = cursor.getString(VideoThumbnailQuery._DATA);
-                return new AssetFileDescriptor(ParcelFileDescriptor.open(
-                        new File(data), ParcelFileDescriptor.MODE_READ_ONLY), 0,
-                        AssetFileDescriptor.UNKNOWN_LENGTH);
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
-        return null;
-    }
-
-    private AssetFileDescriptor openOrCreateVideoThumbnailCleared(
-            long id, CancellationSignal signal) throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
-
-        AssetFileDescriptor afd = openVideoThumbnailCleared(id, signal);
-        if (afd == null) {
-            // No thumbnail yet, so generate. This is messy, since we drop the
-            // Bitmap on the floor, but its the least-complicated way.
-            final BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inJustDecodeBounds = true;
-            Video.Thumbnails.getThumbnail(resolver, id, Video.Thumbnails.MINI_KIND, opts);
-
-            afd = openVideoThumbnailCleared(id, signal);
-        }
-
-        return afd;
-    }
-
-    private interface ImageOrientationQuery {
-        final String[] PROJECTION = new String[] {
-                ImageColumns.ORIENTATION };
-
-        final int ORIENTATION = 0;
-    }
-
-    private int queryOrientationForImage(long id, CancellationSignal signal) {
-        final ContentResolver resolver = getContext().getContentResolver();
-
-        Cursor cursor = null;
-        try {
-            cursor = resolver.query(Images.Media.EXTERNAL_CONTENT_URI,
-                    ImageOrientationQuery.PROJECTION, ImageColumns._ID + "=" + id, null, null);
-            if (cursor.moveToFirst()) {
-                return cursor.getInt(ImageOrientationQuery.ORIENTATION);
-            } else {
-                Log.w(TAG, "Missing orientation data for " + id);
-                return 0;
-            }
-        } finally {
-            IoUtils.closeQuietly(cursor);
-        }
+        row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
     }
 }

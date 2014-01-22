@@ -39,6 +39,12 @@ public class MimePredicate implements Predicate<DocumentInfo> {
     	"application/rar",
     	"application/gzip",
     	Document.MIME_TYPE_APK};
+    
+    public static final String[] COMPRESSED_MIMES = new String[] { 
+    	"application/zip",
+    	"application/rar",
+    	"application/gzip"};
+    
     public MimePredicate(String[] filters) {
         mFilters = filters;
     }

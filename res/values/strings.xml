@@ -77,6 +77,7 @@
     <string name="root_internal_storage">Internal Storage</string>
     <string name="root_external_storage">External Storage</string>
     <string name="root_phone_storage">Phone</string>
+    <string name="root_root_storage">Root</string>
     <string name="root_bluetooth">Bluetooth</string>
     <string name="root_downloads">Downloads</string>
     <string name="root_hidden">Hidden</string>
@@ -129,7 +130,7 @@
 
     <!-- Representation of download progress percentage when running. [CHAR LIMIT=24] -->
     <string name="download_running_percent">In progress, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
-    <string name="app_name">AnExplorer Min</string>
+    <string name="app_name">AnExplorer</string>
     <string name="app_ver">Another Explorer</string>
     <string name="app_company">Developed By DWorkS</string>
     <string name="app_url">http://www.dworks.in</string>

@@ -37,6 +37,9 @@ public class FileUtils {
 	private static final String TAG = "FileUtils";
     private static final int BUFFER = 2048;
     
+    public static String formatFileCount(int count){
+    	return count == 0 ? "emtpy" : count + " file" + (count == 1 ? "" : "s");
+    }
 	private static List<File> searchFiles(File dir, FilenameFilter filter) {
 		List<File> result = new ArrayList<File>();
 		File[] filesFiltered = dir.listFiles(filter), filesAll = dir.listFiles();
@@ -120,7 +123,9 @@ public class FileUtils {
             // If conflicting file, try adding counter suffix
             int n = 0;
             while (destFile.exists() && n++ < 32) {
-                String destName = getNameFromFilename(file.getName()) + " (" + n + ")" + "."
+                String destName = 
+                		 (!TextUtils.isEmpty(name) 
+                 		? name : getNameFromFilename(file.getName()) )+ " (" + n + ")" + "."
                         + getExtFromFilename(file.getName());
                 destFile = new File(dest, destName);
             }

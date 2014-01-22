@@ -308,7 +308,8 @@ public class RootsFragment extends Fragment {
             RootItem videos = null;
             RootItem audio = null;
             RootItem downloads = null;
-
+            RootItem root_root = null;
+            
             final List<RootInfo> clouds = Lists.newArrayList();
             final List<RootInfo> locals = Lists.newArrayList();
             final List<RootInfo> extras = Lists.newArrayList();
@@ -316,10 +317,14 @@ public class RootsFragment extends Fragment {
             for (RootInfo root : roots) {
                 if (root.isRecents()) {
                     recents = new RootItem(root);
+                } else if (root.isBluetoothFolder() || root.isDownloadsFolder()) {
+                    extras.add(root);
                 } else if (root.isStorage()) {
                     locals.add(root);
                 } else if (root.isPhoneStorage()) {
                     locals.add(root);
+                } else if (root.isRootedStorage()) {
+                	root_root = new RootItem(root);
                 } else if (root.isDownloads()) {
                     downloads = new RootItem(root);
                 } else if (root.isImages()) {
@@ -328,8 +333,6 @@ public class RootsFragment extends Fragment {
                     videos = new RootItem(root);
                 } else if (root.isAudio()) {
                     audio = new RootItem(root);
-                } else if (root.isStorage()) {
-                    extras.add(root);
                 } else {
                     clouds.add(root);
                 }
@@ -346,6 +349,12 @@ public class RootsFragment extends Fragment {
             for (RootInfo extra : extras) {
                 add(new RootItem(extra));
             }
+            
+            if(root_root != null){
+            	add(new SpacerItem());
+            	add(root_root);
+            }
+            
             add(new SpacerItem());
             if (recents != null) add(recents);
             if (images != null) add(images);
@@ -353,6 +362,7 @@ public class RootsFragment extends Fragment {
             if (audio != null) add(audio);
             if (downloads != null) add(downloads);
 
+            
             add(new SpacerItem());
             for (RootInfo cloud : clouds) {
                 add(new RootItem(cloud));

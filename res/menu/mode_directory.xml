@@ -22,10 +22,11 @@
         android:showAsAction="always"
         android:title="@string/menu_open"/>
     <item
-        android:id="@+id/menu_share"
-        android:icon="@drawable/ic_menu_share"
+        android:id="@+id/menu_info"
+        android:icon="@drawable/ic_dialog_info"
         android:showAsAction="always"
-        android:title="@string/menu_share"/>
+        android:title="Info"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_edit"
         android:icon="@drawable/ic_menu_rename"
@@ -49,6 +50,11 @@
                 android:title="@string/menu_delete"/>
         </menu>
     </item>
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_menu_share"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_share"/>
     <item
         android:id="@+id/menu_select_all"
         android:icon="@drawable/ic_menu_select_all"

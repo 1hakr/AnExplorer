@@ -70,6 +70,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -204,7 +205,8 @@ public class DocumentsActivity extends Activity {
 
             mDrawerLayout.setDrawerListener(mDrawerListener);
             mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
-
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
+            
             mRootsContainer = findViewById(R.id.container_roots);
         }
 
@@ -462,9 +464,17 @@ public class DocumentsActivity extends Activity {
 
         @Override
         public void onDrawerClosed(View drawerView) {
-            mDrawerToggle.onDrawerClosed(drawerView);
-            updateActionBar();
-            invalidateOptionsMenu();
+        	switch (drawerView.getId()) {
+			case R.id.container_roots:
+	            mDrawerToggle.onDrawerClosed(drawerView);
+	            updateActionBar();
+	            invalidateOptionsMenu();
+				break;
+				
+			case R.id.container_info:
+				mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
+				break;
+			}
         }
 
         @Override
@@ -490,6 +500,18 @@ public class DocumentsActivity extends Activity {
             }
         }
     }
+    
+    public void setInfoDrawerOpen(boolean open) {
+    	setRootsDrawerOpen(false);
+        if (open) {
+        	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
+            mDrawerLayout.openDrawer(Gravity.RIGHT);
+        } else {
+        	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
+            mDrawerLayout.closeDrawer(Gravity.RIGHT);
+        }
+    }
+
 
     private boolean isRootsDrawerOpen() {
         if (mShowAsDialog) {
@@ -696,8 +718,11 @@ public class DocumentsActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
+        if (mDrawerToggle != null) {
+        	if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
+            	mDrawerLayout.closeDrawer(Gravity.RIGHT);
+            }
+            return mDrawerToggle.onOptionsItemSelected(item);
         }
 
         final int id = item.getItemId();
@@ -1066,6 +1091,13 @@ public class DocumentsActivity extends Activity {
         } else if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
             // Explicit file picked, return
             //new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
+        	
+        	/*if(doc.isZipFile()){
+                mState.stack.push(doc);
+                mState.stackTouched = true;
+                onCurrentDirectoryChanged(ANIM_DOWN);
+        		return;
+        	}*/
             // Fall back to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

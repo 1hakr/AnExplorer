@@ -26,6 +26,7 @@
     android:paddingBottom="8dp"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+    android:descendantFocusability="blocksDescendants"
     android:paddingTop="8dp" >
 
     <FrameLayout

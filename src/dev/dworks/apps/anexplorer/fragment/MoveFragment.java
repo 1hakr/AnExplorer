@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 
 /**
@@ -93,8 +94,9 @@ public class MoveFragment extends Fragment implements OnClickListener{
 		mCancel.setOnClickListener(this);
 
 		mMoveInfo = (TextView) view.findViewById(android.R.id.title);
-		mMoveInfo.setText("Paste " + docs.size() + " files in ");
-
+		mMoveInfo.setText("Paste " + FileUtils.formatFileCount(docs.size()) + " in ");
+		mMoveInfo.setEnabled(false);
+		
 		mRootInfo = (TextView) view.findViewById(android.R.id.text1);
 
 		mSave = (ImageButton) view.findViewById(android.R.id.button1);
@@ -120,6 +122,7 @@ public class MoveFragment extends Fragment implements OnClickListener{
 	}
 
 	public void setSaveEnabled(boolean enabled) {
+		mMoveInfo.setEnabled(enabled);
 		mSave.setEnabled(enabled);
 	}
 
