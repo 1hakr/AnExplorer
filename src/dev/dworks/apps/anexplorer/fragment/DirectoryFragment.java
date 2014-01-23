@@ -1184,6 +1184,7 @@ public class DirectoryFragment extends ListFragment {
 			if (state.showSize) {
 				size.setVisibility(View.VISIBLE);
 				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
+					size.setText(null);
 					if(state.showFolderSize){
 						long sizeInBytes = mSizes.get(position, -1);
 						if(sizeInBytes != -1){
@@ -1193,7 +1194,6 @@ public class DirectoryFragment extends ListFragment {
 							final FolderSizeAsyncTask task = new FolderSizeAsyncTask(size, docPath, position);
 							size.setTag(task);
 							ProviderExecutor.forAuthority(docAuthority).execute(task);
-							size.setText(null);
 						}
 					}
 				} else {
