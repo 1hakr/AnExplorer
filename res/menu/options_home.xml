@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
+
+    <group android:id="@+id/edit_group" >
+        <item
+            android:id="@+id/menu_done"
+            android:icon="@drawable/ic_menu_done"
+            support:showAsAction="always|withText"
+            android:title="@string/menu_done"/>
+        <item
+            android:id="@+id/menu_cancel"
+            android:icon="@drawable/ic_menu_close"
+            support:showAsAction="always|withText"
+            android:title="@string/menu_cancel"/>
+        <item
+            android:id="@+id/menu_reset"
+            android:icon="@drawable/ic_menu_reset"
+            support:showAsAction="always|withText"
+            android:title="@string/menu_reset"/>
+    </group>
+    <group android:id="@+id/main_group" >
+        <item
+            android:id="@+id/menu_edit"
+            support:showAsAction="never"
+            android:title="@string/menu_edit"/>
+        <item
+            android:id="@+id/menu_setting"
+            support:showAsAction="never"
+            android:title="@string/menu_setting"/>
+        <item
+            android:id="@+id/menu_help"
+            support:showAsAction="never"
+            android:title="@string/menu_help"/>
+        <item
+            android:id="@+id/menu_about"
+            support:showAsAction="never"
+            android:title="@string/menu_about"/>
+    </group>
+
+</menu>

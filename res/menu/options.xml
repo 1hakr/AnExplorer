@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/menu_create"
+        android:icon="@drawable/ic_menu_add"
+        support:showAsAction="always"
+        android:title="@string/menu_create"/>
+    <item
+        android:id="@+id/menu_paste"
+        android:icon="@drawable/ic_menu_paste"
+        support:showAsAction="always"
+        android:title="@string/menu_paste"/>
+    <item
+        android:id="@+id/menu_search"
+        android:icon="@drawable/ic_menu_search"
+        support:showAsAction="always"
+        android:title="@string/menu_search"/>
+    <item
+        android:id="@+id/menu_select"
+        android:icon="@drawable/ic_menu_mark"
+        support:showAsAction="always"
+        android:title="@string/menu_select">
+        <menu>
+            <item
+                android:id="@+id/menu_select_mode"
+                android:title="@string/menu_select_mode"/>
+            <item
+                android:id="@+id/menu_select_all"
+                android:title="@string/menu_select_all"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_view"
+        android:icon="@drawable/ic_menu_grid_view"
+        support:showAsAction="always"
+        android:title="View"/>
+    <item
+        android:id="@+id/menu_about"
+        support:showAsAction="never"
+        android:title="@string/menu_about"/>
+    <item
+        android:id="@+id/menu_setting"
+        support:showAsAction="never"
+        android:title="@string/menu_setting"/>
+
+</menu>
