@@ -131,7 +131,11 @@
     <!-- Representation of download progress percentage when running. [CHAR LIMIT=24] -->
     <string name="download_running_percent">In progress, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
     <string name="app_name">AnExplorer</string>
+<<<<<<< HEAD
     <string name="app_ver">Another Explorer</string>
+=======
+    <string name="app_ver">Another Explorer v1.9</string>
+>>>>>>> version code updated v1.9
     <string name="app_company">Developed By DWorkS</string>
     <string name="app_url">http://www.dworks.in</string>
     <string name="app_about_info">To make a small difference.</string>
