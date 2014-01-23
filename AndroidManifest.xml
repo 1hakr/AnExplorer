@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
     android:installLocation="auto"
-    android:versionCode="30"
-    android:versionName="1.8" >
+    android:versionCode="31"
+    android:versionName="1.9" >
 
     <uses-sdk
         android:minSdkVersion="8"
