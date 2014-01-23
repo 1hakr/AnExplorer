@@ -722,7 +722,9 @@ public class DocumentsActivity extends Activity {
         	if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
             	mDrawerLayout.closeDrawer(Gravity.RIGHT);
             }
-            return mDrawerToggle.onOptionsItemSelected(item);
+            if(mDrawerToggle.onOptionsItemSelected(item)){
+            	return true;
+            }
         }
 
         final int id = item.getItemId();
@@ -938,8 +940,24 @@ public class DocumentsActivity extends Activity {
     public void onCurrentDirectoryChanged(int anim) {
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
-        final DocumentInfo cwd = getCurrentDirectory();
-
+        DocumentInfo cwd = getCurrentDirectory();
+        
+        //TODO : this has to be done nicely
+        if(cwd == null){
+	        final Uri uri = DocumentsContract.buildDocumentUri(
+	                root.authority, root.documentId);
+	        DocumentInfo result;
+			try {
+				result = DocumentInfo.fromUri(getContentResolver(), uri);
+	            if (result != null) {
+	                mState.stack.push(result);
+	                mState.stackTouched = true;
+	                cwd = result;
+	            }
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+        }
         mDirectoryContainer.setDrawDisappearingFirst(anim == ANIM_DOWN);
 
         if (cwd == null) {

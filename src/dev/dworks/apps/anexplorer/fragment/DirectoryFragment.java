@@ -150,6 +150,7 @@ public class DirectoryFragment extends ListFragment {
 	private DocumentsAdapter mAdapter;
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
 	private SparseLongArray mSizes = new SparseLongArray();
+	private ArrayList<DocumentInfo> docsAppUninstall = new ArrayList<DocumentInfo>();
 	
 	private static final String EXTRA_TYPE = "type";
 	private static final String EXTRA_ROOT = "root";
@@ -369,6 +370,7 @@ public class DirectoryFragment extends ListFragment {
 	public void onResume() {
 		super.onResume();
 		updateDisplayState();
+		onUninstall();
 	}
 
 	public void onUserSortOrderChanged() {
@@ -569,7 +571,8 @@ public class DirectoryFragment extends ListFragment {
 				
 			case R.id.menu_delete:
 				if(isApp && root.isAppPackage()){
-					//TODO
+					docsAppUninstall = docs;
+					onUninstall();
 				}
 				else{
 					deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
@@ -698,6 +701,35 @@ public class DirectoryFragment extends ListFragment {
 				Log.w(TAG, "Failed to delete " + doc);
 				hadTrouble = true;
 			}
+		}
+		
+		return hadTrouble;
+	}
+	
+	private void onUninstall() {
+		if(!docsAppUninstall.isEmpty()){
+			DocumentInfo doc = docsAppUninstall.get(docsAppUninstall.size()-1);
+			onUninstallApp(doc);
+			docsAppUninstall.remove(docsAppUninstall.size() -1);
+		}
+	}
+	
+	private boolean onUninstallApp(DocumentInfo doc) {
+		final Context context = getActivity();
+		final ContentResolver resolver = context.getContentResolver();
+
+		boolean hadTrouble = false;
+		if (!doc.isDeleteSupported()) {
+			Log.w(TAG, "Skipping " + doc);
+			hadTrouble = true;
+			return hadTrouble;
+		}
+
+		try {
+			DocumentsContract.deleteDocument(resolver, doc.derivedUri);
+		} catch (Exception e) {
+			Log.w(TAG, "Failed to delete " + doc);
+			hadTrouble = true;
 		}
 		
 		return hadTrouble;
