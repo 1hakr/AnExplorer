@@ -662,7 +662,56 @@ public class ExplorerOperations {
 		
     	return fileType;
     }
-	
+
+	public static void scanDirKK(Context context, String path) {
+		try {
+			File payload = new File(path);
+			if (payload.isDirectory()) {
+				ScanTask task = new ScanTask(context);
+				task.execute(path);
+			} else
+				scanFile(context, new File(path));
+		} catch (Exception e) {
+		}
+	}
+
+	public static class ScanTask extends AsyncTask<String, String, String> {
+		private ProgressDialog waitDialog;
+		private Context context;
+		
+		public ScanTask(Context context) {
+			this.context = context;
+		}
+		
+		@Override
+		protected void onPreExecute() {
+			waitDialog = ProgressDialog.show(context, "","Working...");
+		}
+
+		@Override
+		protected String doInBackground(String... arg) {
+			try {
+				File[] dir = new File(arg[0]).listFiles();
+				for (File file : dir)
+					scanFile(context, file);
+			} catch (Exception e) {
+			}
+			return null;
+		}
+
+		@Override
+		public void onPostExecute(String result) {
+			if (waitDialog != null && waitDialog.isShowing())
+				waitDialog.dismiss();
+		}
+	}
+
+	private static void scanFile(Context context, File file) {
+		MediaScannerConnection.scanFile(context, new String[] { file.toString() }, null, new MediaScannerConnection.OnScanCompletedListener() {
+			public void onScanCompleted(String path, Uri uri) {
+			}
+		});
+	}
 	/**
 	 * @param file
 	 * @return
@@ -1050,7 +1099,7 @@ public class ExplorerOperations {
 	    	  //FIXME OOM exception
 			wallpaperManager.setBitmap(BitmapFactory.decodeFile(path));
 			return true;
-		} catch (IOException e) { }
+		} catch (Exception e) { }
 	   /*      Bundle newExtras = new Bundle();
 	         newExtras.putString("circleCrop", "true");
 	         Intent cropIntent = new Intent();
@@ -1219,7 +1268,9 @@ public class ExplorerOperations {
 			intent = new Intent(Intent.ACTION_VIEW, Uri.fromFile(file));
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.setComponent(new ComponentName("com.android.browser", "com.android.browser.BrowserActivity"));
-			context.startActivity(intent);
+			if(isIntentAvailable(context, intent)){
+				context.startActivity(intent);
+			}
 		}
 		else{
 	        intent = new Intent();
@@ -1609,16 +1660,19 @@ public class ExplorerOperations {
 					return selectedFile.delete();
 				}
 				else{
-					String[] fileList = selectedFile.list();
-					for(String innerPaths : fileList){
-						File tempFile = new File(selectedFile.getAbsolutePath() + "/" + innerPaths);
-						if(tempFile.isFile()){
-							tempFile.delete();
-						}
-						else{
-							deleteFile(tempFile.getAbsolutePath(), runSU);
-							tempFile.delete();
-						}
+					try {
+						String[] fileList = selectedFile.list();
+						for(String innerPaths : fileList){
+							File tempFile = new File(selectedFile.getAbsolutePath() + "/" + innerPaths);
+							if(tempFile.isFile()){
+								tempFile.delete();
+							}
+							else{
+								deleteFile(tempFile.getAbsolutePath(), runSU);
+								tempFile.delete();
+							}
+						}						
+					} catch (Exception e) {
 					}
 					
 				}

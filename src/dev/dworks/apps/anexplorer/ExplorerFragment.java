@@ -40,6 +40,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.util.LruCache;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
@@ -89,6 +90,7 @@ import dev.dworks.apps.anexplorer.util.ExplorerOperations.SearchFilter;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.SortType;
 import dev.dworks.apps.anexplorer.util.ExplorerOperations.TYPES;
 import dev.dworks.libs.actionbarplus.app.ActionBarListFragment;
+import dev.dworks.libs.actionbarplus.misc.Utils;
 
 /**
  * @author HaKr
@@ -110,9 +112,8 @@ public class ExplorerFragment extends ActionBarListFragment implements
 	public String[] newlist;
 
 	// file path and empty view
-	private RelativeLayout titlePane;
 	private TextView empty;
-	private TextView mypath;
+	//private TextView mypath;
 	private TextView selectCount, selectCount2;
 	private final String ROOT = "/";
 	private String incomingPath, currentPath, originalPath, searchOriginalPath;
@@ -588,8 +589,6 @@ public class ExplorerFragment extends ActionBarListFragment implements
 		initData();
 		// ad
 		adView = (AdView) view.findViewById(R.id.adView);
-		mypath = (TextView) view.findViewById(R.id.pathTitle);
-		titlePane = (RelativeLayout) view.findViewById(R.id.title_pane);
 		empty = (TextView) view.findViewById(R.id.internalEmpty);
 		gridView = (GridView) view.findViewById(R.id.grid_explorer);
 		listView_explorer = (ListView) view.findViewById(android.R.id.list);
@@ -684,23 +683,19 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			search();
 			break;
 		case HideFromGalleryMode:
-			titlePane.setVisibility(View.GONE);
 			galleryTask = new GalleryTask();
 			galleryTask.execute("");
 			break;
 		case WallpaperMode:
 			multiSelectMode = true;
-			titlePane.setVisibility(View.GONE);
 			showList(incomingPath);
 			break;
 		case AppMode:
 			multiSelectMode = true;
-			titlePane.setVisibility(View.GONE);
 			showList(incomingPath);			
 			break;
 		case ProcessMode:
 			multiSelectMode = true;
-			titlePane.setVisibility(View.GONE);
 			fillProcessType();
 			showList(incomingPath);		
 			break;			
@@ -715,7 +710,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 	 */
 	public void search() {
 		fileListState = new ArrayList<Parcelable>();
-		mypath.setText(format2String(R.string.msg_search_results));
+		getActionBarActivity().getActionBar().setSubtitle(format2String(R.string.msg_search_results));
 		incomingPath = TextUtils.isEmpty(incomingPath) ? ExplorerOperations.DIR_SDCARD : incomingPath; 
 		
 		searchTask = new SearchTask();
@@ -730,7 +725,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 	private void showList(String dirPath) {
 		loadList = true;
 		currentPath = dirPath;
-		mypath.setText(dirPath);
+		getActionBarActivity().getActionBar().setSubtitle(dirPath);
 		mainFile = new File(dirPath);
 		curNavPosition = -1;
 
@@ -973,6 +968,9 @@ public class ExplorerFragment extends ActionBarListFragment implements
 				// Log.i(TAG, command);
 				// ExplorerOperations.runCommand("mount -o remount,rw "+currentPath);
 				// | awk '{print $1,\";\",$4,\";\",$5$6$7,\";\",$8}'
+				if(null == explorerOperationsSU){
+					explorerOperationsSU = new ExplorerOperations(runSU);
+				}
 				ArrayList<CmdListItem> result = explorerOperationsSU.runCommand(command);
 				// explorerOperationsSU.getRootDirListing();
 				if (result != null) {
@@ -1094,7 +1092,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(false);
 			searchView.setQueryHint("Filter Apps");
-			menu.findItem(R.id.menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+			menu.findItem(R.id.menu_search).setShowAsAction(MenuItemCompat.SHOW_AS_ACTION_IF_ROOM | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 			menu.findItem(R.id.menu_search).setActionView(searchView);
 			break;
 
@@ -1106,7 +1104,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(false);
 			searchView.setQueryHint("Filter Processes");
-			menu.findItem(R.id.menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+			menu.findItem(R.id.menu_search).setShowAsAction(MenuItemCompat.SHOW_AS_ACTION_IF_ROOM | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 			menu.findItem(R.id.menu_search).setActionView(searchView);
 			break;
 
@@ -1118,7 +1116,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(false);
 			searchView.setQueryHint("Filter Hidden Folders");
-			menu.findItem(R.id.menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+			menu.findItem(R.id.menu_search).setShowAsAction(MenuItemCompat.SHOW_AS_ACTION_IF_ROOM | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 			menu.findItem(R.id.menu_search).setActionView(searchView);
 			break;
 
@@ -1142,7 +1140,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			searchView.setOnQueryTextListener(this);
 			searchView.setSubmitButtonEnabled(true);
 			searchView.setQueryHint("Search Storage");
-			menu.findItem(R.id.menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+			menu.findItem(R.id.menu_search).setShowAsAction(MenuItemCompat.SHOW_AS_ACTION_IF_ROOM | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 			menu.findItem(R.id.menu_search).setActionView(searchView);
 			menu.findItem(R.id.menu_view).setIcon(isCurrentList ? R.drawable.ic_menu_grid_view : R.drawable.ic_menu_list_view);
 			break;
@@ -1159,8 +1157,11 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			// options menu
 			menu.findItem(R.id.menu_paste).setVisible(filesCopied);
 			MenuItem menuitem = menu.findItem(R.id.menu_create);
-			if(null != menuitem)
-				menuitem.setVisible(showSearchMenu ? !originalPath.equals(ROOT) : searchPathLock);
+			try {
+				if(null != menuitem)
+					menuitem.setVisible(showSearchMenu ? !originalPath.equals(ROOT) : searchPathLock);				
+			} catch (Exception e) {
+			}
 
 			menu.findItem(R.id.menu_search).setVisible(showSearchMenu);
 
@@ -1445,31 +1446,37 @@ public class ExplorerFragment extends ActionBarListFragment implements
 				new File(selectedFilePath + "/.nomedia").createNewFile();
 			} catch (IOException e) {
 			}
-			context.sendBroadcast(new Intent("android.intent.action.MEDIA_MOUNTED", Uri.fromFile(new File(selectedFilePath))));
 
-			MediaScannerConnection.scanFile(context, new String[] { new File(
-					selectedFilePath).getAbsolutePath() }, null,
-					new MediaScannerConnection.OnScanCompletedListener() {
-						@Override
-						public void onScanCompleted(String path, Uri uri) {
-							// Log.i("ExternalStorage", "Scanned " + path +
-							// ":");
-							// Log.i("ExternalStorage", "-> uri=" + uri);
-						}
-					});
+			if(Utils.hasKitKat()){
+				ExplorerOperations.scanDirKK(context, new File(selectedFilePath).getAbsolutePath());
+			}
+			else{
+				context.sendBroadcast(new Intent("android.intent.action.MEDIA_MOUNTED", Uri.fromFile(new File(selectedFilePath))));
+				MediaScannerConnection.scanFile(context, new String[] { new File(
+						selectedFilePath).getAbsolutePath() }, null,
+						new MediaScannerConnection.OnScanCompletedListener() {
+							@Override
+							public void onScanCompleted(String path, Uri uri) {
+							}
+						});
+			}
 			break;
 		case ExplorerOperations.CONTEXT_MENU_UNHIDE_FOLDER:
 			AnExplorer.tracker.sendEvent(ExplorerOperations.CATEGORY_OPERATION, "menu", "CONTEXT_MENU_UNHIDE_FOLDER", 0L);
 			new File(selectedFilePath + "/.nomedia").delete();
-			context.sendBroadcast(new Intent("android.intent.action.MEDIA_MOUNTED", Uri.fromFile(new File(selectedFilePath))));
-
-			MediaScannerConnection.scanFile(context, new String[] { new File(selectedFilePath).toString() }, null,
-					new MediaScannerConnection.OnScanCompletedListener() {
-						@Override
-						public void onScanCompleted(String path, Uri uri) {
-							// Log.i("ExternalStorage", "-> uri=" + uri);
-						}
-					});
+			if(Utils.hasKitKat()){
+				ExplorerOperations.scanDirKK(context, new File(selectedFilePath).getAbsolutePath());
+			}
+			else{
+				context.sendBroadcast(new Intent("android.intent.action.MEDIA_MOUNTED", Uri.fromFile(new File(selectedFilePath))));
+	
+				MediaScannerConnection.scanFile(context, new String[] { new File(selectedFilePath).toString() }, null,
+						new MediaScannerConnection.OnScanCompletedListener() {
+							@Override
+							public void onScanCompleted(String path, Uri uri) {
+							}
+						});
+			}
 			break;
 		}
 
@@ -1964,7 +1971,7 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			} else if (currentPath.compareTo(searchOriginalPath) == 0) {
 				// check if current path is search original path and if yes show
 				// search results and unlock search path
-				mypath.setText(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
+				getActionBarActivity().getActionBar().setSubtitle(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
 				searchPathLock = false;
 				this.onConfigurationChanged(getResources().getConfiguration());
 				updateMenu();
@@ -2277,6 +2284,10 @@ public class ExplorerFragment extends ActionBarListFragment implements
 			title = format2String(R.string.name_wallpaper);
 			break;
 		default:
+			if(TextUtils.isEmpty(currentPath)){
+				title = format2String(R.string.name_explorer);
+				return title;
+			}
 			if (currentPath.compareTo(ExplorerOperations.DIR_ROOT) == 0) {
 				title = type == TYPES.Tablet ? format2String(R.string.name_tablet) : format2String(R.string.name_phone);
 			} else if (currentPath.compareTo(ExplorerOperations.DIR_SDCARD) == 0) {
@@ -2403,8 +2414,11 @@ public class ExplorerFragment extends ActionBarListFragment implements
 
 		@Override
 		protected void onPostExecute(File[] result) {
+			if(null == getView()){
+				return;
+			}
 			resultCount = String.valueOf(result.length);
-			mypath.setText(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
+			getActionBarActivity().getActionBar().setSubtitle(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
 			setEmptyText(format2String(R.string.msg_file_not_found));
 			// show list
 			showList(result);
@@ -2427,8 +2441,11 @@ public class ExplorerFragment extends ActionBarListFragment implements
 
 		@Override
 		protected void onPostExecute(File[] result) {
+			if(null == getView()){
+				return;
+			}
 			resultCount = String.valueOf(result.length);
-			mypath.setText(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
+			getActionBarActivity().getActionBar().setSubtitle(format2String(R.string.msg_search_results) + ": " + resultCount + " files");
 			setEmptyText(format2String(R.string.msg_file_not_found));
 			// show list
 			showList(result);
@@ -2496,6 +2513,9 @@ public class ExplorerFragment extends ActionBarListFragment implements
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
+			if(null == getView()){
+				return;
+			}
 			if (null != viewReference && null != result) {
 				final ViewHolder holder = viewReference.get();
 				if (null != holder && null != holder.fileIcon
@@ -2544,6 +2564,9 @@ public class ExplorerFragment extends ActionBarListFragment implements
 
 		@Override
 		protected void onPostExecute(String result) {
+			if(null == getView()){
+				return;
+			}
 			if (null != viewReference && null != result && result != "") {
 				final ViewHolder holder = viewReference.get();
 				if (showStorage) {

@@ -31,6 +31,7 @@ import com.google.ads.AdView;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
 import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
+import dev.dworks.libs.actionbarplus.misc.Utils;
 
 /**
  * @author HaKr
@@ -64,8 +65,10 @@ public class Setting extends PreferenceActivity implements OnSharedPreferenceCha
   
         super.onCreate(savedInstanceState);
         changeLang();      
-    	//this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    	//this.getSupportActionBar().setTitle(getResources().getString(R.string.constant_setting));         
+        if(Utils.hasHoneycomb()){
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
+        	getActionBar().setTitle(getResources().getString(R.string.constant_setting));	
+        }         
 
         if(!showHeader){
             setContentView(R.layout.activity_settings);

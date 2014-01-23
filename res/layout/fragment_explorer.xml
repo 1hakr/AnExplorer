@@ -37,27 +37,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <RelativeLayout
-            android:id="@+id/title_pane"
-            android:layout_width="fill_parent"
-            android:layout_height="20dp"
-            android:background="@color/greyColor"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/pathTitle"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center_horizontal"
-                android:ellipsize="marquee"
-                android:gravity="center_vertical"
-                android:paddingLeft="4dp"
-                android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="#ffffffff"
-                android:textIsSelectable="true" />
-        </RelativeLayout>
-
         <FrameLayout
             android:id="@+id/listContainer"
             android:layout_width="match_parent"
