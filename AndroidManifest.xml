@@ -50,8 +50,27 @@
             <intent-filter android:priority="100" >
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
 
+<<<<<<< HEAD
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
+=======
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="dev.dworks.apps.anexplorer.AboutActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="About"
+            android:parentActivityName="dev.dworks.apps.anexplorer.HomeActivity"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.dworks.apps.anexplorer.HomeActivity" />
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+        </activity>
+>>>>>>> fixes for 2.3
 
                 <data android:mimeType="*/*" />
             </intent-filter>
@@ -81,9 +100,21 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
+<<<<<<< HEAD
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+=======
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="dev.dworks.apps.anexplorer.ExplorerActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+>>>>>>> fixes for 2.3
         </activity>
         <activity
             android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
