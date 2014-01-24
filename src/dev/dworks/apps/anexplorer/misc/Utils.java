@@ -30,7 +30,9 @@ public class Utils {
     public static final long MB_IN_BYTES = KB_IN_BYTES * 1024;
     public static final long GB_IN_BYTES = MB_IN_BYTES * 1024;
 
-    
+    static final String[] BinaryPlaces = { "/data/bin/", "/system/bin/", "/system/xbin/", "/sbin/",
+        "/data/local/xbin/", "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/",
+        "/data/local/" };
 	private static final StringBuilder sBuilder = new StringBuilder(50);
 	private static final java.util.Formatter sFormatter = new java.util.Formatter(
 	            sBuilder, Locale.getDefault());
@@ -157,5 +159,16 @@ public class Utils {
                 
             }
         }
+    }
+    
+    public static boolean isRooted(){
+        for (String p : Utils.BinaryPlaces) {
+            File su = new File(p + "su");
+            if (su.exists()) {
+                return true;
+            } else {
+            }
+        }
+        return false;
     }
 }

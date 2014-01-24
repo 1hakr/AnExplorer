@@ -72,7 +72,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="dev.dworks.apps.anexplorer.SettingsActivity"
+            android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
             android:theme="@android:style/Theme.Holo.Light.DialogWhenLarge" />

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!-- These settings headers are only used on tablets. -->
-
     <header
-        android:fragment="dev.dworks.apps.anexplorer.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="dev.dworks.apps.anexplorer.setting.GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="dev.dworks.apps.anexplorer.SettingsActivity$LoginPreferenceFragment"
+        android:fragment="dev.dworks.apps.anexplorer.setting.LoginPreferenceFragment"
         android:title="@string/pref_header_login" />
 
 </preference-headers>
