@@ -58,6 +58,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.SettingsActivity;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 
@@ -92,7 +93,6 @@ public class RootsFragment extends Fragment {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //final Context context = inflater.getContext();
 
         final View view = inflater.inflate(R.layout.fragment_roots, container, false);
         mList = (ListView) view.findViewById(android.R.id.list);
@@ -100,6 +100,12 @@ public class RootsFragment extends Fragment {
         mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         return view;
+    }
+    
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+    	super.onViewCreated(view, savedInstanceState);
+    	SystemBarTintManager.setInsets(getActivity(), mList);
     }
 
     @Override

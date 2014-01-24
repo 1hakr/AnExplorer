@@ -19,4 +19,5 @@
     <color name="item_root_pressed">#33cccccc</color>
     <color name="item_root_focused">#66cccccc</color>
     <color name="blue">#ff0099cc</color>
+    <color name="status_bar_tint">#DDDDDD</color>
 </resources>

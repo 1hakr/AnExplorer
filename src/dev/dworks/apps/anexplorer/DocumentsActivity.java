@@ -105,6 +105,7 @@ import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper.PINDialogFragment;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
@@ -252,8 +253,9 @@ public class DocumentsActivity extends Activity {
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
+        SystemBarTintManager.setupTint(this);
     }
-    
+
 	private void initProtection() {
 
 		if(authenticated || !SettingsActivity.isPinEnabled(this)){

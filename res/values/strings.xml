@@ -141,6 +141,7 @@
     <string name="gplus"><a href="https://plus.google.com/109240246596102887385">  Google+</a></string>
     <string name="pref_folder_size">Display folder size</string>
     <string name="pref_thumbnail">Display file thumbnails</string>
+	<string name="pref_root_mode">Display Root Mode</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

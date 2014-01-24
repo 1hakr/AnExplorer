@@ -101,6 +101,7 @@ import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
@@ -233,6 +234,13 @@ public class DirectoryFragment extends ListFragment {
 		mGridView.setRecyclerListener(mRecycleListener);
 
 		return view;
+	}
+	
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		SystemBarTintManager.setInsets(getActivity(), mListView);
+		SystemBarTintManager.setInsets(getActivity(), mGridView);
 	}
 
 	@Override

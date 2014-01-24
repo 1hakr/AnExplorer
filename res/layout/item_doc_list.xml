@@ -13,6 +13,7 @@
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
      limitations under the License.
+
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,13 +21,13 @@
     android:layout_height="wrap_content"
     android:background="@drawable/item_background"
     android:baselineAligned="false"
+    android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:paddingBottom="8dp"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
-    android:descendantFocusability="blocksDescendants"
     android:paddingTop="8dp" >
 
     <FrameLayout
@@ -116,5 +117,13 @@
                 android:singleLine="true" />
         </LinearLayout>
     </LinearLayout>
-
+<!-- 
+    <ImageView
+        android:id="@+id/button_popup"
+        android:layout_width="56dip"
+        android:layout_height="match_parent"
+        android:background="@android:style/Widget.Holo.Button.Borderless"
+        android:contentDescription="null"
+        android:src="@drawable/ic_menu_overflow" />
+ -->
 </LinearLayout>
