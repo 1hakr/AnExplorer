@@ -68,6 +68,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -88,6 +91,7 @@ import dev.dworks.apps.anexplorer.AboutActivity;
 import dev.dworks.apps.anexplorer.ExplorerActivity;
 import dev.dworks.apps.anexplorer.MyReceiver;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.libs.actionbarplus.dialog.SimpleDialogFragment;
 
 /**
  * @author HaKr
@@ -1842,6 +1846,56 @@ public class ExplorerOperations {
 		}
 		return millisec;
 	}
+	public static class PropertiesFragment extends DialogFragment{
+		
+		private File newFile;
+
+		public PropertiesFragment() {
+		}
+		
+		public PropertiesFragment(File file) {
+            newFile  = file ;
+		}
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Light);
+		}
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+			LayoutInflater factorys = LayoutInflater.from(context);
+            final View properiesView = factorys.inflate(R.layout.properties, null);
+
+            TextView commonView;
+            commonView = (TextView)properiesView.findViewById(R.id.name);
+            commonView.setText(newFile.getName());
+            commonView = (TextView)properiesView.findViewById(R.id.path);
+            commonView.setText(newFile.getPath());
+            commonView = (TextView)properiesView.findViewById(R.id.type);
+            commonView.setText(getMIMEType(newFile));
+            commonView = (TextView)properiesView.findViewById(R.id.totalFiles);
+            commonView.setText(newFile.exists() && newFile.isDirectory() ? null != newFile.list() ? String.valueOf(newFile.list().length) : "-" : "-");
+            commonView = (TextView)properiesView.findViewById(R.id.access);
+            commonView.setText(getFilePermissions(newFile));
+            commonView = (TextView)properiesView.findViewById(R.id.size);
+            commonView.setText(Formatter.formatShortFileSize(context,newFile.isDirectory() ? getDirectorySize(newFile) : newFile.length()));            
+            
+            Dialog dialog = new AlertDialog.Builder(context)
+     	   	.setIcon(R.drawable.ic_menu_info)
+     	   	.setTitle(format2String(R.string.msg_properties))            
+            .setView(properiesView)
+            .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                	dialog.cancel();
+                }
+            })
+            .create();
+            return dialog;
+		}
+	}
 
 	/**
 	 * @param id
@@ -2001,34 +2055,9 @@ public class ExplorerOperations {
     			Toast.makeText(context, format2String(R.string.msg_cant_select), Toast.LENGTH_SHORT).show();
     			return;
     		}
-            LayoutInflater factorys = LayoutInflater.from(context);
-            final View properiesView = factorys.inflate(R.layout.properties, null);
-            File newFile = new File(isMultiSelected ? filePathList[0] : filePath);
-            TextView commonView;
-            commonView = (TextView)properiesView.findViewById(R.id.name);
-            commonView.setText(newFile.getName());
-            commonView = (TextView)properiesView.findViewById(R.id.path);
-            commonView.setText(newFile.getPath());
-            commonView = (TextView)properiesView.findViewById(R.id.type);
-            commonView.setText(getMIMEType(newFile));
-            commonView = (TextView)properiesView.findViewById(R.id.totalFiles);
-            commonView.setText(newFile.exists() && newFile.isDirectory() ? null != newFile.list() ? String.valueOf(newFile.list().length) : "-" : "-");
-            commonView = (TextView)properiesView.findViewById(R.id.access);
-            commonView.setText(getFilePermissions(newFile));
-            commonView = (TextView)properiesView.findViewById(R.id.size);
-            commonView.setText(Formatter.formatShortFileSize(context,newFile.isDirectory() ? getDirectorySize(newFile) : newFile.length()));            
             
-            dialog = new AlertDialog.Builder(context)
-     	   	.setIcon(R.drawable.ic_menu_info)
-     	   	.setTitle(format2String(R.string.msg_properties))            
-            .setView(properiesView)
-            .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                	dialog.cancel();
-                }
-            })
-            .create();
-            dialog.show();            
+    		PropertiesFragment AboutFragment = new PropertiesFragment(new File(isMultiSelected ? filePathList[0] : filePath));
+    		AboutFragment.show(((ActionBarActivity)context).getSupportFragmentManager(), "about");
             break;    		
     		
     	case ExplorerOperations.DIALOG_ABOUT:

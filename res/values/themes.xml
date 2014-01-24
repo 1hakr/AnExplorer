@@ -16,12 +16,6 @@
         <item name="specialFolder">@drawable/folder_white</item>
         <item name="actionText">@android:color/white</item>
         <item name="backgroundLayoutColor">#2D2D2D</item>
-        <item name="actionBar">@drawable/abc_ab_bottom_solid_dark_holo</item>
-        <item name="actionBarStyle">@style/DarkActionBar</item>
-        <item name="android:actionBarStyle">@style/DarkActionBar</item>
-        <item name="actionBarSplitStyle">@style/DarkActionBar</item>
-        <item name="android:actionBarSplitStyle">@style/DarkActionBar</item>
-        <item name="android:windowBackground">@android:color/black</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>
@@ -45,7 +39,6 @@
         <item name="specialFolder">@drawable/folder_black</item>
         <item name="actionText">@android:color/black</item>
         <item name="backgroundLayoutColor">#EBEBEB</item>
-        <item name="actionBar">@drawable/abc_ab_bottom_solid_light_holo</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>
@@ -69,7 +62,6 @@
         <item name="specialFolder">@drawable/folder_black</item>
         <item name="actionText">@android:color/white</item>
         <item name="backgroundLayoutColor">#EBEBEB</item>
-        <item name="actionBar">@drawable/abc_ab_bottom_solid_dark_holo</item>
         <item name="android:windowAnimationStyle">@style/MyAnimation</item>
         <item name="android:checkboxStyle">@style/CheckBoxAppTheme</item>
         <item name="android:radioButtonStyle">@style/RadioButtonAppTheme</item>
