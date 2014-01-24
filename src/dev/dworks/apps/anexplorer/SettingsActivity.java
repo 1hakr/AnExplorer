@@ -17,13 +17,15 @@
 
 package dev.dworks.apps.anexplorer;
 
+import java.util.List;
+
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -33,7 +35,8 @@ import android.view.View;
 import android.widget.Toast;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends PreferenceActivity {
+	
     private static final String KEY_ADVANCED_DEVICES = "advancedDevices";
     private static final String KEY_FILE_SIZE = "fileSize";
     private static final String KEY_FOLDER_SIZE = "folderSize";
@@ -79,14 +82,18 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
-
         final ActionBar bar = getActionBar();
         if (bar != null) {
             bar.setDisplayShowHomeEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
         }
     }
+
+	/** {@inheritDoc} */
+	@Override
+	public void onBuildHeaders(List<Header> target) {
+		loadHeadersFromResource(R.xml.pref_headers, target);
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -96,14 +103,34 @@ public class SettingsActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+    	return true;
+    }
+    
+	public static class GeneralPreferenceFragment extends PreferenceFragment {
+		
+		public GeneralPreferenceFragment() {
+		}
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			addPreferencesFromResource(R.xml.pref_general);
+		}
+	}
 
-    public static class SettingsFragment extends PreferenceFragment {
+    public static class LoginPreferenceFragment extends PreferenceFragment {
         private Preference pin_set_preference;
+        
+        public LoginPreferenceFragment() {
+		}
 
 		@Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
+            addPreferencesFromResource(R.xml.pref_login);
             
     		pin_set_preference = findPreference("pin_set");
     		pin_set_preference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
