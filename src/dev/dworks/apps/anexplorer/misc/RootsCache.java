@@ -52,6 +52,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 
 /**
  * Cache of known storage backends and their roots.
@@ -365,6 +366,12 @@ public class RootsCache {
             final boolean localOnly = (root.flags & Root.FLAG_LOCAL_ONLY) != 0;
             final boolean empty = (root.flags & DocumentsContract.Root.FLAG_EMPTY) != 0;
 
+            if(null != root.authority
+            		&& root.authority.equals(RootedStorageProvider.AUTHORITY)){
+            	if(!state.rootMode){
+            		continue;
+            	}
+            }
             // Exclude read-only devices when creating
             if (state.action == State.ACTION_CREATE && !supportsCreate) continue;
             // Exclude advanced devices when not requested

@@ -80,6 +80,7 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,6 +90,7 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.SettingsActivity;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.loader.DirectoryLoader;
 import dev.dworks.apps.anexplorer.loader.RecentLoader;
@@ -239,8 +241,31 @@ public class DirectoryFragment extends ListFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		SystemBarTintManager.setInsets(getActivity(), mListView);
-		SystemBarTintManager.setInsets(getActivity(), mGridView);
+		
+		if(Utils.hasKitKat()){
+			if(SettingsActivity.getTranslucentMode(getActivity())){
+				SystemBarTintManager.setInsets(getActivity(), mListView);
+				SystemBarTintManager.setInsets(getActivity(), mGridView);
+				SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
+				mListView.setLayoutParams(getToggleParams(false));
+				mGridView.setLayoutParams(getToggleParams(false));
+			}
+			else{
+				mListView.setLayoutParams(getToggleParams(true));
+				mGridView.setLayoutParams(getToggleParams(true));
+			}
+		}
+	}
+	
+    RelativeLayout.LayoutParams getToggleParams(boolean toggle) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        if(toggle){
+            params.addRule(RelativeLayout.ABOVE, R.id.adView);	
+        }
+        else{
+            params.removeRule(RelativeLayout.ABOVE);
+        }
+        return params;
 	}
 
 	@Override
@@ -1278,18 +1303,22 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public void onClick(View v) {
-			int count = mCurrentView.getCheckedItemCount();
-			if(count != 0){
-				return;
-			}
+			
 			final int position = mCurrentView.getPositionForView(v);
 			if (position != ListView.INVALID_POSITION) {
-	            ActionMode mChoiceActionMode = null;
-				if (mChoiceActionMode == null &&
-	                    (mChoiceActionMode = mCurrentView.startActionMode(mMultiListener)) != null) {
-	                mCurrentView.setItemChecked(position, true);
+				int count = mCurrentView.getCheckedItemCount();
+				if(count == 0){
+		            ActionMode mChoiceActionMode = null;
+					if (mChoiceActionMode == null &&
+		                    (mChoiceActionMode = mCurrentView.startActionMode(mMultiListener)) != null) {
+		                mCurrentView.setItemChecked(position, true);
+		                mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+		            }
+				}
+				else{
+	                mCurrentView.setItemChecked(position, !mCurrentView.isItemChecked(position));
 	                mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-	            }				
+				}
 			}
 		}
 	}

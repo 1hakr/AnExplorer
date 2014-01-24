@@ -105,7 +105,9 @@ public class RootsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
     	super.onViewCreated(view, savedInstanceState);
-    	SystemBarTintManager.setInsets(getActivity(), mList);
+    	if(SettingsActivity.getTranslucentMode(getActivity())){
+    		SystemBarTintManager.setInsets(getActivity(), mList);
+    	}
     }
 
     @Override
@@ -160,7 +162,8 @@ public class RootsFragment extends Fragment {
         final State state = ((DocumentsActivity) context).getDisplayState();
         state.showAdvanced = state.forceAdvanced
                 | SettingsActivity.getDisplayAdvancedDevices(context);
-
+        state.rootMode = SettingsActivity.getRootMode(getActivity());
+        
         if (state.action == ACTION_GET_CONTENT) {
             mList.setOnItemLongClickListener(mItemLongClickListener);
         } else {

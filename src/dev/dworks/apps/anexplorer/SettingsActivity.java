@@ -38,6 +38,10 @@ public class SettingsActivity extends Activity {
     private static final String KEY_FILE_SIZE = "fileSize";
     private static final String KEY_FOLDER_SIZE = "folderSize";
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
+    private static final String KEY_ROOT_MODE = "rootMode";
+    private static final String KEY_TRANSLUCENT_MODE = "translucentMode";
+    
+    
     public static final String KEY_PIN = "pin";
 	public static final String PIN_ENABLED = "pin_enable";
     
@@ -59,6 +63,16 @@ public class SettingsActivity extends Activity {
     public static boolean getDisplayFileThumbnail(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_FILE_THUMBNAIL, true);
+    }
+    
+    public static boolean getRootMode(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_ROOT_MODE, false);
+    }
+    
+    public static boolean getTranslucentMode(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_TRANSLUCENT_MODE, false);
     }
     
     @Override

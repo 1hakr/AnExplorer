@@ -535,14 +535,17 @@ public class SystemBarTintManager {
     	if (Utils.hasKitKat()) {
 	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
 	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), config.getPixelInsetBottom());
+	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 2*config.getPixelInsetBottom());
     	}
     }
     
     public static void setNavigationInsets(Activity context, View view) {
     	if (Utils.hasKitKat()) {
+    		//final android.view.ViewGroup.MarginLayoutParams a = (android.view.ViewGroup.MarginLayoutParams) view.getLayoutParams();
 	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
 	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+    		//a.bottomMargin = config.getPixelInsetBottom();
+    		//view.setLayoutParams(a);
 	        view.setPadding(0, 0, 0, config.getPixelInsetBottom());
     	}
     }

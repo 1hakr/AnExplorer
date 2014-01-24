@@ -142,6 +142,7 @@
     <string name="pref_folder_size">Display folder size</string>
     <string name="pref_thumbnail">Display file thumbnails</string>
 	<string name="pref_root_mode">Display Root Mode</string>
+	<string name="pref_translucent_mode">Display Translucent Mode</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

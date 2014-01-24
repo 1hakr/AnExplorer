@@ -82,7 +82,9 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
@@ -106,6 +108,7 @@ import dev.dworks.apps.anexplorer.misc.PinViewHelper.PINDialogFragment;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
@@ -144,8 +147,13 @@ public class DocumentsActivity extends Activity {
 
 	private boolean authenticated;
 
+	private FrameLayout mSaveContainer;
+
     @Override
     public void onCreate(Bundle icicle) {
+    	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
+    		setTheme(R.style.Theme_Translucent);
+    	}
         super.onCreate(icicle);
 
         mRoots = DocumentsApplication.getRootsCache(this);
@@ -212,6 +220,7 @@ public class DocumentsActivity extends Activity {
         }
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
+        mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
 
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
@@ -253,8 +262,29 @@ public class DocumentsActivity extends Activity {
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
-        SystemBarTintManager.setupTint(this);
+        
+        if(Utils.hasKitKat()){
+            if(SettingsActivity.getTranslucentMode(this)){
+    	        SystemBarTintManager.setupTint(this);
+    	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
+    	        mDirectoryContainer.setLayoutParams(getToggleParams(false));
+            }
+            else{
+            	mDirectoryContainer.setLayoutParams(getToggleParams(true));
+            }	
+        }
     }
+    
+    RelativeLayout.LayoutParams getToggleParams(boolean toggle) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        if(toggle){
+            params.addRule(RelativeLayout.ABOVE, R.id.container_save);	
+        }
+        else{
+            params.removeRule(RelativeLayout.ABOVE);
+        }
+        return params;
+	}
 
 	private void initProtection() {
 
@@ -323,6 +353,8 @@ public class DocumentsActivity extends Activity {
         mState.forceAdvanced = intent.getBooleanExtra(DocumentsContract.EXTRA_SHOW_ADVANCED	, false);
         mState.showAdvanced = mState.forceAdvanced
                 | SettingsActivity.getDisplayAdvancedDevices(this);
+        
+        mState.rootMode = SettingsActivity.getRootMode(this);
     }
 
     private class RestoreRootTask extends AsyncTask<Void, Void, RootInfo> {
@@ -1393,6 +1425,7 @@ public class DocumentsActivity extends Activity {
         public boolean localOnly = false;
         public boolean forceAdvanced = false;
         public boolean showAdvanced = false;
+        public boolean rootMode = false;
         public boolean stackTouched = false;
         public boolean restored = false;
 
@@ -1436,6 +1469,7 @@ public class DocumentsActivity extends Activity {
             out.writeInt(localOnly ? 1 : 0);
             out.writeInt(forceAdvanced ? 1 : 0);
             out.writeInt(showAdvanced ? 1 : 0);
+            out.writeInt(rootMode ? 1 : 0);
             out.writeInt(stackTouched ? 1 : 0);
             out.writeInt(restored ? 1 : 0);
             DurableUtils.writeToParcel(out, stack);
@@ -1459,6 +1493,7 @@ public class DocumentsActivity extends Activity {
                 state.localOnly = in.readInt() != 0;
                 state.forceAdvanced = in.readInt() != 0;
                 state.showAdvanced = in.readInt() != 0;
+                state.rootMode = in.readInt() != 0;
                 state.stackTouched = in.readInt() != 0;
                 state.restored = in.readInt() != 0;
                 DurableUtils.readFromParcel(in, state.stack);
