@@ -47,6 +47,8 @@ public class SettingsActivity extends PreferenceActivity {
     
     public static final String KEY_PIN = "pin";
 	public static final String PIN_ENABLED = "pin_enable";
+	
+	public static boolean restart = false;
     
     public static boolean getDisplayAdvancedDevices(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -106,6 +108,7 @@ public class SettingsActivity extends PreferenceActivity {
     
     @Override
     protected boolean isValidFragment(String fragmentName) {
+    	recreate();
     	return true;
     }
     
@@ -118,6 +121,14 @@ public class SettingsActivity extends PreferenceActivity {
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.pref_general);
+			findPreference(KEY_TRANSLUCENT_MODE).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+				
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					restart = true;
+					return false;
+				}
+			});
 		}
 	}
 
@@ -275,4 +286,12 @@ public class SettingsActivity extends PreferenceActivity {
         cacheKey = Base64.encodeToString(key.getBytes(), Base64.DEFAULT);
         return cacheKey;
     }*/
+    
+    @Override
+    public void finish() {
+    	if(restart){
+			setResult(RESULT_FIRST_USER);
+    	}
+    	super.finish();
+    }
 }

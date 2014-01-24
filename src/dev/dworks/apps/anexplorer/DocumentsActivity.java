@@ -127,6 +127,7 @@ public class DocumentsActivity extends Activity {
     private static final String EXTRA_STATE = "state";
 
     private static final int CODE_FORWARD = 42;
+    private static final int CODE_SETTINGS = 92;
 
     private boolean mShowAsDialog;
 
@@ -144,9 +145,7 @@ public class DocumentsActivity extends Activity {
 
     private RootsCache mRoots;
     private State mState;
-
 	private boolean authenticated;
-
 	private FrameLayout mSaveContainer;
 
     @Override
@@ -791,7 +790,7 @@ public class DocumentsActivity extends Activity {
             setUserMode(State.MODE_LIST);
             return true;
         } else if (id == R.id.menu_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+            startActivityForResult(new Intent(this, SettingsActivity.class), CODE_SETTINGS);
             return true;
         } else if (id == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
@@ -1129,6 +1128,10 @@ public class DocumentsActivity extends Activity {
             // Pass back result to original caller
             setResult(resultCode, data);
             finish();
+        } else if(requestCode == CODE_SETTINGS){
+        	if(resultCode == RESULT_FIRST_USER){
+        		recreate();
+        	}
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
