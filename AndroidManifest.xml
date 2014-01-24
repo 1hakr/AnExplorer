@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
     android:installLocation="auto"
-    android:versionCode="31"
+    android:versionCode="32"
     android:versionName="1.9" >
 
     <uses-sdk
@@ -16,7 +16,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
