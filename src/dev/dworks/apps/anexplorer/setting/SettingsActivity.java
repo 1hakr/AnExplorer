@@ -21,12 +21,21 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.View.OnTouchListener;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.ViewCompat;
 
 public class SettingsActivity extends PreferenceActivity {
 	
@@ -40,7 +49,9 @@ public class SettingsActivity extends PreferenceActivity {
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
 	
-	public boolean restart = false;
+	public boolean changed = false;
+	private boolean mShowAsDialog;
+	private Resources res;
     
     public static boolean getDisplayAdvancedDevices(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -81,6 +92,53 @@ public class SettingsActivity extends PreferenceActivity {
             bar.setDisplayShowHomeEnabled(true);
             bar.setDisplayHomeAsUpEnabled(true);
         }
+        
+        res = getResources();
+        mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
+
+        if (mShowAsDialog) {
+            // backgroundDimAmount from theme isn't applied; do it manually
+            final WindowManager.LayoutParams a = getWindow().getAttributes();
+            a.dimAmount = 0.6f;
+            getWindow().setAttributes(a);
+
+            getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+            getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+            // Inset ourselves to look like a dialog
+            final Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+
+            final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+            final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
+            final int insetX = (size.x - width) / 2;
+            final int insetY = (size.y - height) / 2;
+
+            final Drawable before = getWindow().getDecorView().getBackground();
+            final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
+            getWindow().getDecorView().setBackground(after);
+            ViewCompat.setBackground(getWindow().getDecorView(), after);
+
+            // Dismiss when touch down in the dimmed inset area
+            getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        final float x = event.getX();
+                        final float y = event.getY();
+                        if (x < insetX || x > v.getWidth() - insetX || y < insetY
+                                || y > v.getHeight() - insetY) {
+                            finish();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+
+        }
+        
+        changed = getTranslucentMode(this);
     }
 
 	/** {@inheritDoc} */
@@ -105,7 +163,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
     
     public void setRestart(boolean restart){
-    	this.restart = restart;
+    	this.changed = restart;
     }
     
 	public static final boolean isPinEnabled(Context context) {
@@ -156,9 +214,21 @@ public class SettingsActivity extends PreferenceActivity {
     
     @Override
     public void finish() {
-    	if(restart){
-			setResult(RESULT_FIRST_USER);
+    	if(getTranslucentMode(this) != changed){
+    		setResult(RESULT_FIRST_USER);
     	}
     	super.finish();
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+    	outState.putBoolean("changed", changed);
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+    	super.onRestoreInstanceState(state);
+    	changed = state.getBoolean("changed");
     }
 }

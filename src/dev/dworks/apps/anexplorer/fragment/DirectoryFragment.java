@@ -627,6 +627,7 @@ public class DirectoryFragment extends ListFragment {
 				
 			case R.id.menu_info:
 				((DocumentsActivity) getActivity()).setInfoDrawerOpen(true);
+				DetailFragment.show(getFragmentManager(), docs.get(0));
 				mode.finish();
 				return true;
 

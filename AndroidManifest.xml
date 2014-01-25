@@ -75,7 +75,7 @@
             android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
-            android:theme="@android:style/Theme.Holo.Light.DialogWhenLarge" />
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
         <activity
             android:name="dev.dworks.apps.anexplorer.AboutActivity"
             android:label="About"
