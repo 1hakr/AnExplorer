@@ -175,12 +175,14 @@ public class HomeActivity extends ActionBarActivityPlus implements OnFragmentInt
     	}
 	}
 	
-    private void showAdfreeDailog(){
+    @SuppressWarnings("unused")
+	private void showAdfreeDailog(){
     	if(preference.getInt("adfreePref", -2) == 1){
 			showSelectedDialog(ExplorerOperations.DIALOG_ADFREE);    		
     	}
     }
     
+	@SuppressWarnings("unused")
 	private void showSplashScreen(){
         LayoutInflater factory = LayoutInflater.from(this);
         final View aboutView = factory.inflate(R.layout.splash, null);
