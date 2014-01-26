@@ -241,11 +241,15 @@ public abstract class AsyncTaskLoader<D> extends Loader<D> {
         onCanceled(data);
         if (mCancellingTask == task) {
             if (DEBUG) Log.v(TAG, "Cancelled task is now canceled!");
-            rollbackContentChanged();
+            if(Utils.hasJellyBeanMR2()){
+            	rollbackContentChanged();
+            }
             mLastLoadCompleteTime = SystemClock.uptimeMillis();
             mCancellingTask = null;
             if (DEBUG) Log.v(TAG, "Delivering cancellation");
-            deliverCancellation();
+            if(Utils.hasJellyBeanMR2()){
+            	deliverCancellation();
+            }
             executePendingTask();
         }
     }
@@ -259,7 +263,9 @@ public abstract class AsyncTaskLoader<D> extends Loader<D> {
                 // This cursor has been abandoned; just cancel the new data.
                 onCanceled(data);
             } else {
-                commitContentChanged();
+            	if(Utils.hasJellyBeanMR2()){
+            		commitContentChanged();
+            	}
                 mLastLoadCompleteTime = SystemClock.uptimeMillis();
                 mTask = null;
                 if (DEBUG) Log.v(TAG, "Delivering result");
