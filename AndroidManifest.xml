@@ -6,7 +6,7 @@
     android:versionName="2.0" >
 =======
     android:installLocation="auto"
-    android:versionCode="32"
+    android:versionCode="33"
     android:versionName="1.9" >
 
     <uses-sdk
