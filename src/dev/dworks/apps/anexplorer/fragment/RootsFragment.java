@@ -135,15 +135,6 @@ public class RootsFragment extends Fragment {
                 mList.setAdapter(mAdapter);
 
                 onCurrentRootChanged();
-                
-                //To set the first root as default
-/*                final DocumentsActivity activity = DocumentsActivity.get(RootsFragment.this);
-                if(null == activity.getCurrentDirectory()){
-	                final Item item = mAdapter.getItem(0);
-	                if (item instanceof RootItem) {
-	                    activity.onRootPicked(((RootItem) item).root, false);
-	                }
-                }*/
             }
 
             @Override
@@ -318,6 +309,7 @@ public class RootsFragment extends Fragment {
             RootItem audio = null;
             RootItem downloads = null;
             RootItem root_root = null;
+            RootItem phone = null;
             
             final List<RootInfo> clouds = Lists.newArrayList();
             final List<RootInfo> locals = Lists.newArrayList();
@@ -328,9 +320,9 @@ public class RootsFragment extends Fragment {
                     recents = new RootItem(root);
                 } else if (root.isBluetoothFolder() || root.isDownloadsFolder()) {
                     extras.add(root);
-                } else if (root.isStorage()) {
-                    locals.add(root);
                 } else if (root.isPhoneStorage()) {
+                	phone = new RootItem(root);
+                } else if (root.isStorage()) {
                     locals.add(root);
                 } else if (root.isRootedStorage()) {
                 	root_root = new RootItem(root);
@@ -355,6 +347,8 @@ public class RootsFragment extends Fragment {
             for (RootInfo local : locals) {
                 add(new RootItem(local));
             }
+            if (phone != null) add(phone);
+            
             for (RootInfo extra : extras) {
                 add(new RootItem(extra));
             }

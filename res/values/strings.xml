@@ -136,7 +136,7 @@
     <string name="app_url">http://www.dworks.in</string>
     <string name="app_about_info">To make a small difference.</string>
     <string name="app_contrib">Contributions by Hari Krishna Dulipudi</string>
-    <string name="app_about">This file explorer helps you  organise your files, save app, monitor process, hide folders and many more</string>
+    <string name="app_about">This file explorer helps you  organise your files, save app, monitor process and many more</string>
     <string name="twitter"><a href="https://twitter.com/1HaKr">  Twitter</a></string>
     <string name="gplus"><a href="https://plus.google.com/109240246596102887385">  Google+</a></string>
     <string name="pref_folder_size">Display folder size</string>

@@ -422,8 +422,7 @@ public class DocumentsActivity extends Activity {
             }
             else{
             	RootInfo root = getCurrentRoot();
-                final Uri uri = DocumentsContract.buildDocumentUri(
-                        root.authority, root.documentId);
+                final Uri uri = DocumentsContract.buildDocumentUri(root.authority, root.documentId);
                 DocumentInfo result;
 				try {
 					result = DocumentInfo.fromUri(getContentResolver(), uri);

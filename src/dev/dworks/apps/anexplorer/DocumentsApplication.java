@@ -17,10 +17,6 @@
 
 package dev.dworks.apps.anexplorer;
 
-import com.google.analytics.tracking.android.GoogleAnalytics;
-import com.google.analytics.tracking.android.Tracker;
-import com.joshdholtz.sentry.Sentry;
-
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -35,6 +31,9 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.text.format.DateUtils;
+
+import com.joshdholtz.sentry.Sentry;
+
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 
@@ -45,7 +44,7 @@ public class DocumentsApplication extends Application {
     private RootsCache mRoots;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
-    public static Tracker tracker;
+    //public static Tracker tracker;
 
     public static String APP_VERSION;
     public static int APP_VERSION_CODE;
@@ -79,9 +78,9 @@ public class DocumentsApplication extends Application {
     public void onCreate() {
     	
 		Sentry.init(this, "https://adf863ae0013482a9e052d062d0326df:30ec3caf684c4606ac1a659b7e63ef66@app.getsentry.com/14229");
-		GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
-		googleAnalytics.getTracker(getString(R.string.ga_trackingId));
-		tracker = googleAnalytics.getDefaultTracker();
+		//GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
+		//googleAnalytics.getTracker(getString(R.string.ga_trackingId));
+		//tracker = googleAnalytics.getDefaultTracker();
 		
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;

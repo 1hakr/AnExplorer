@@ -326,7 +326,7 @@ public class RootsCache {
     
     public RootInfo getDefaultRoot() {
     	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (Objects.equal(root.rootId, ExternalStorageProvider.ROOT_ID_PRIMARY_EMULATED)) {
+    		if (root.isExternalStorage() || root.isSecondayStorage()) {
                 return root;
             }
 		}
