@@ -69,7 +69,6 @@ import android.os.Parcelable;
 import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.text.format.Formatter;
@@ -91,7 +90,6 @@ import dev.dworks.apps.anexplorer.AboutActivity;
 import dev.dworks.apps.anexplorer.ExplorerActivity;
 import dev.dworks.apps.anexplorer.MyReceiver;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.libs.actionbarplus.dialog.SimpleDialogFragment;
 
 /**
  * @author HaKr
@@ -970,6 +968,7 @@ public class ExplorerOperations {
 				String[] trm = totrm[0].split(" ");
 				tm=Long.parseLong(trm[trm.length-1]);
 				tm=tm*1024;
+				reader.close();
 			} 
 			catch (IOException ex) {
 				ex.printStackTrace();
@@ -988,6 +987,7 @@ public class ExplorerOperations {
 	 * @param isTotal  The parameter for calculating total size
 	 * @return return Total Size when isTotal is {@value true} else return Free Size of Internal memory(data folder) 
 	 */	
+	@SuppressWarnings("deprecation")
 	public static Long getPartionSize(String path, boolean isTotal){
 		StatFs stat = null;
 		try {
@@ -1339,6 +1339,7 @@ public class ExplorerOperations {
 	 * @return
 	 * @throws IOException
 	 */
+	@SuppressWarnings("resource")
 	public boolean unZipFile(String filePath, String newDirPath, String fileName) throws IOException{
 		File file2Extract = new File(filePath); 
 		File newDir2Extract;// = new File(newDirPath);
@@ -1373,6 +1374,7 @@ public class ExplorerOperations {
 			//Log.i(TAG, "count: "+count+" total: "+total);
 			newBackgroundWork.onProgressUpdate(count, total);
 		}
+		ZIS.close();
 		return false;
 	}
 	

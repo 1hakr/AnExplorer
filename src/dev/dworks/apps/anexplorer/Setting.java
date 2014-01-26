@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,28 +16,29 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceActivity.Header;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 import dev.dworks.apps.anexplorer.util.ExplorerOperations;
-import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
 import dev.dworks.libs.actionbarplus.misc.Utils;
 
 /**
  * @author HaKr
  * 
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class Setting extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	
 	private Integer themeType, themeTypeInt, themeTypeOrig, langType, langTypeOrig,
@@ -66,8 +68,12 @@ public class Setting extends PreferenceActivity implements OnSharedPreferenceCha
         super.onCreate(savedInstanceState);
         changeLang();      
         if(Utils.hasHoneycomb()){
-        	getActionBar().setDisplayHomeAsUpEnabled(true);
-        	getActionBar().setTitle(getResources().getString(R.string.constant_setting));	
+        	try {
+            	getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+            	getActionBar().setDisplayHomeAsUpEnabled(true);
+            	getActionBar().setTitle(getResources().getString(R.string.constant_setting));				
+			} catch (Exception e) {
+			}
         }         
 
         if(!showHeader){
