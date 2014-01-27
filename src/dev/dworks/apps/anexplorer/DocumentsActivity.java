@@ -535,14 +535,19 @@ public class DocumentsActivity extends Activity {
     }
     
     public void setInfoDrawerOpen(boolean open) {
-    	setRootsDrawerOpen(false);
-        if (open) {
-        	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
-            mDrawerLayout.openDrawer(Gravity.RIGHT);
-        } else {
-        	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-            mDrawerLayout.closeDrawer(Gravity.RIGHT);
-        }
+    	if(mShowAsDialog){
+    		//TODO: show detail fragment as dialog
+    	}
+    	else{
+        	setRootsDrawerOpen(false);
+            if (open) {
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
+                mDrawerLayout.openDrawer(Gravity.RIGHT);
+            } else {
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
+                mDrawerLayout.closeDrawer(Gravity.RIGHT);
+            }	
+    	}
     }
 
 
