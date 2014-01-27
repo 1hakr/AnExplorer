@@ -1,7 +1,0 @@
-<resources>
-
-    <style name="Theme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
-    </style>
-
-</resources>

@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="middle"
+        android:textColor="?android:attr/textColorPrimaryInverse"
         style="@style/TextAppearance.Medium" />
 
 </LinearLayout>

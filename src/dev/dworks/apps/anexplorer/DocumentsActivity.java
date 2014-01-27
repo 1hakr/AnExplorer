@@ -577,7 +577,7 @@ public class DocumentsActivity extends Activity {
             }
         } else {
             final RootInfo root = getCurrentRoot();
-            actionBar.setIcon(root != null ? root.loadIcon(this) : null);
+            //actionBar.setIcon(root != null ? root.loadIcon(this) : null);
 
             if (mState.stack.size() <= 1) {
                 actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

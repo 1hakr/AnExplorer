@@ -23,7 +23,7 @@
         android:title="@string/menu_open"/>
     <item
         android:id="@+id/menu_info"
-        android:icon="@drawable/ic_dialog_info"
+        android:icon="@drawable/ic_menu_info"
         android:showAsAction="always"
         android:title="Info"
         android:visible="false"/>

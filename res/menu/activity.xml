@@ -19,7 +19,6 @@
 
     <item
         android:id="@+id/menu_create_file"
-        android:icon="@drawable/ic_menu_new_file"
         android:showAsAction="always"
         android:visible="false"
         android:title="Create File"/>
