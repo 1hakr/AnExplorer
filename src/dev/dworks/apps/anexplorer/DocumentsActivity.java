@@ -1017,7 +1017,7 @@ public class DocumentsActivity extends Activity {
         } else {
             if (mState.currentSearch != null) {
                 // Ongoing search
-                DirectoryFragment.showSearch(fm, root, mState.currentSearch, anim);
+                DirectoryFragment.showSearch(fm, root, cwd, mState.currentSearch, anim);
             } else {
                 // Normal boring directory
                 DirectoryFragment.showNormal(fm, root, cwd, anim);

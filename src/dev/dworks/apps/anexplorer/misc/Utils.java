@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
+import android.text.format.Time;
 
 public class Utils {
 
@@ -171,4 +172,37 @@ public class Utils {
         }
         return false;
     }
+    
+
+    public static String formatTime(Context context, long when) {
+		// TODO: DateUtils should make this easier
+		Time then = new Time();
+		then.set(when);
+		Time now = new Time();
+		now.setToNow();
+
+		int flags = DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL;
+
+		if (then.year != now.year) {
+			flags |= DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE;
+		} else if (then.yearDay != now.yearDay) {
+			flags |= DateUtils.FORMAT_SHOW_DATE;
+		} else {
+			flags |= DateUtils.FORMAT_SHOW_TIME;
+		}
+
+		return DateUtils.formatDateTime(context, when, flags);
+	}
+
+    public static long getDirectorySize(File dir) {
+		long result = 0L;
+		if (dir.listFiles() != null && dir.listFiles().length > 0) {
+			for (File eachFile : dir.listFiles()) {
+				result += eachFile.isDirectory() && eachFile.canRead() ? getDirectorySize(eachFile) : eachFile.length();
+			}
+		} else if (!dir.isDirectory()) {
+			result = dir.length();
+		}
+		return result;
+	}
 }

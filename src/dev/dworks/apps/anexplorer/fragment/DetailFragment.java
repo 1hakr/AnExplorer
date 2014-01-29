@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Hari Krishna Dulipudi
  * Copyright (C) 2013 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,38 +17,60 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
+import java.io.File;
+
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.text.format.Formatter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
+import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
 /**
  * Display document title editor and save button.
  */
-public class DetailFragment extends Fragment implements OnClickListener{
+public class DetailFragment extends Fragment{
 	public static final String TAG = "DetailFragment";
-
-	private DocumentInfo mReplaceTarget;
-	private TextView mMoveInfo;
-	private TextView mRootInfo;
-	private ImageButton mSave;
-	private ProgressBar mProgress;
-
-	private ImageButton mCancel;
+	private static final String EXTRA_DOC = "doc";
+	
 	private DocumentInfo doc;
 
-	private static final String EXTRA_DOC = "doc" +
-			"";
+	private TextView name;
+	private TextView type;
+	private TextView size;
+	private TextView contents;
+	private TextView modified;
+	private TextView path;
+	private ImageView iconMime;
+	private ImageView iconThumb;
+	private FrameLayout icon;
+	private View contents_layout;
 
 	public static void show(FragmentManager fm, DocumentInfo doc) {
 		final Bundle args = new Bundle();
@@ -82,63 +105,117 @@ public class DetailFragment extends Fragment implements OnClickListener{
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		//final Context context = inflater.getContext();
-
 		final View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-/*		mCancel = (ImageButton) view.findViewById(android.R.id.button2);
-		mCancel.setOnClickListener(this);
-
-		mMoveInfo = (TextView) view.findViewById(android.R.id.title);
-		mMoveInfo.setText("Paste " + FileUtils.formatFileCount(docs.size()) + " in ");
-		mMoveInfo.setEnabled(false);
+		name = (TextView) view.findViewById(R.id.name);
+		type = (TextView) view.findViewById(R.id.type);
+		size = (TextView) view.findViewById(R.id.size);
+		contents = (TextView) view.findViewById(R.id.contents);
+		modified = (TextView) view.findViewById(R.id.modified);
+		path = (TextView) view.findViewById(R.id.path);
 		
-		mRootInfo = (TextView) view.findViewById(android.R.id.text1);
-
-		mSave = (ImageButton) view.findViewById(android.R.id.button1);
-		mSave.setOnClickListener(this);
-		mSave.setEnabled(false);
-
-		mProgress = (ProgressBar) view.findViewById(android.R.id.progress);
-*/
+		contents_layout = view.findViewById(R.id.contents_layout);
+		
+		iconMime = (ImageView) view.findViewById(R.id.icon_mime);
+		iconThumb = (ImageView) view.findViewById(R.id.icon_thumb);
+		
+		icon = (FrameLayout)view.findViewById(android.R.id.icon);
+		
 		return view;
 	}
-
-	/**
-	 * Set given document as target for in-place writing if user hits save
-	 * without changing the filename. Can be set to {@code null} if user
-	 * navigates outside the target directory.
-	 */
-	public void setReplaceTarget(DocumentInfo replaceTarget) {
-		mReplaceTarget = replaceTarget;
-
-		if (mReplaceTarget != null) {
-			mRootInfo.setText(replaceTarget.displayName);
-		}
-	}
-
-	public void setSaveEnabled(boolean enabled) {
-		mMoveInfo.setEnabled(enabled);
-		mSave.setEnabled(enabled);
-	}
-
-	public void setPending(boolean pending) {
-		mSave.setVisibility(pending ? View.INVISIBLE : View.VISIBLE);
-		mProgress.setVisibility(pending ? View.VISIBLE : View.GONE);
-	}
-
+	
 	@Override
-	public void onClick(View v) {
-		final DocumentsActivity activity = DocumentsActivity.get(DetailFragment.this);
-		switch (v.getId()) {
-		case android.R.id.button1:
-			if (mReplaceTarget != null) {
-			}
-			break;
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		name.setText(doc.displayName);
+		path.setText(doc.path);
+		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
+		type.setText(doc.mimeType);
+		
+		if(!TextUtils.isEmpty(doc.summary)){
+			contents.setText(doc.summary);
+			contents_layout.setVisibility(View.VISIBLE);
+		}
 
-		case android.R.id.button2:
-			getActivity().getFragmentManager().beginTransaction().remove(this).commit();
-			break;
+		new DetailTask().execute();
+	}
+	
+	private class DetailTask extends AsyncTask<Void, Void, Void>{
+
+		private Bitmap result;
+		String sizeString = "";
+		String filePath = "";
+		
+		@Override
+		protected Void doInBackground(Void... params) {
+			filePath = doc.path;
+
+			if (!Document.MIME_TYPE_DIR.equals(doc.mimeType)) {
+				int thumbSize = getResources().getDimensionPixelSize(R.dimen.grid_width);
+				Point mThumbSize = new Point(thumbSize, thumbSize);
+				final Uri uri = DocumentsContract.buildDocumentUri(doc.authority, doc.documentId);
+				final Context context = getActivity();
+				final ContentResolver resolver = context.getContentResolver();
+				ContentProviderClient client = null;
+				try {
+					
+					if (doc.mimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(filePath)) {
+						result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, filePath, Document.MIME_TYPE_APK)).getBitmap();
+					} else {
+						client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, uri.getAuthority());
+						result = DocumentsContract.getDocumentThumbnail(resolver, uri, mThumbSize, null);
+					}
+				} catch (Exception e) {
+					if (!(e instanceof OperationCanceledException)) {
+						Log.w(TAG, "Failed to load thumbnail for " + uri + ": " + e);
+					}
+				} finally {
+					ContentProviderClientCompat.releaseQuietly(client);
+				}
+				
+				sizeString = Formatter.formatFileSize(context, doc.size);
+			}
+			else{
+				if(!TextUtils.isEmpty(filePath)){
+					File dir = new File(filePath);
+					sizeString = Formatter.formatFileSize(getActivity(), Utils.getDirectorySize(dir));
+				}				
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void e) {
+			super.onPostExecute(e);
+			int docIcon = doc.icon;
+			if(!TextUtils.isEmpty(filePath)){
+				size.setText(sizeString);
+			}			
+			iconMime.setAlpha(1f);
+			iconThumb.setAlpha(0f);
+			iconThumb.setImageDrawable(null);
+			if (docIcon != 0) {
+				iconMime.setImageDrawable(IconUtils.loadPackageIcon(getActivity(), doc.authority, docIcon));
+			} else {
+				iconMime.setImageDrawable(IconUtils.loadMimeIcon(getActivity(), doc.mimeType, doc.authority, doc.documentId, DocumentsActivity.State.MODE_GRID));
+			}
+			
+			if(null != result){
+				ViewCompat.setBackground(icon, null);
+				icon.setForeground(null);
+				
+				iconThumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
+				iconThumb.setTag(null);
+				iconThumb.setImageBitmap(result);
+				
+				final float targetAlpha = iconMime.isEnabled() ? 1f : 0.5f;
+				iconMime.setAlpha(targetAlpha);
+				iconMime.animate().alpha(0f).start();
+				iconThumb.setAlpha(0f);
+				iconThumb.animate().alpha(targetAlpha).start();
+			}
 		}
 	}
 }

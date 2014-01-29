@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Hari Krishna Dulipudi
  * Copyright (C) 2013 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,9 +56,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.text.format.Formatter;
-import android.text.format.Time;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -169,8 +168,8 @@ public class DirectoryFragment extends ListFragment {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
 	}
 
-	public static void showSearch(FragmentManager fm, RootInfo root, String query, int anim) {
-		show(fm, TYPE_SEARCH, root, null, query, anim);
+	public static void showSearch(FragmentManager fm, RootInfo root, DocumentInfo doc, String query, int anim) {
+		show(fm, TYPE_SEARCH, root, doc, query, anim);
 	}
 
 	public static void showRecentsOpen(FragmentManager fm, int anim) {
@@ -1206,7 +1205,7 @@ public class DirectoryFragment extends ListFragment {
 			if (docLastModified == -1) {
 				date.setText(null);
 			} else {
-				date.setText(formatTime(context, docLastModified));
+				date.setText(Utils.formatTime(context, docLastModified));
 				hasLine2 = true;
 			}
 
@@ -1423,8 +1422,7 @@ public class DirectoryFragment extends ListFragment {
 			try {
 				if(!TextUtils.isEmpty(mPath)){
 					File dir = new File(mPath);
-					//result = Formatter.formatFileSize(context, getDirectorySize(dir));
-					result = getDirectorySize(dir);
+					result = Utils.getDirectorySize(dir);
 				}
 			} catch (Exception e) {
 				if (!(e instanceof OperationCanceledException)) {
@@ -1443,26 +1441,6 @@ public class DirectoryFragment extends ListFragment {
 				mSizes.put(mPosition, result);
 			}
 		}
-	}
-
-	private static String formatTime(Context context, long when) {
-		// TODO: DateUtils should make this easier
-		Time then = new Time();
-		then.set(when);
-		Time now = new Time();
-		now.setToNow();
-
-		int flags = DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL;
-
-		if (then.year != now.year) {
-			flags |= DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE;
-		} else if (then.yearDay != now.yearDay) {
-			flags |= DateUtils.FORMAT_SHOW_DATE;
-		} else {
-			flags |= DateUtils.FORMAT_SHOW_TIME;
-		}
-
-		return DateUtils.formatDateTime(context, when, flags);
 	}
 
 	private String findCommonMimeType(ArrayList<String> mimeTypes) {
@@ -1522,17 +1500,5 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		return MimePredicate.mimeMatches(state.acceptMimes, docMimeType);
-	}
-
-	private static long getDirectorySize(File dir) {
-		long result = 0L;
-		if (dir.listFiles() != null && dir.listFiles().length > 0) {
-			for (File eachFile : dir.listFiles()) {
-				result += eachFile.isDirectory() && eachFile.canRead() ? getDirectorySize(eachFile) : eachFile.length();
-			}
-		} else if (!dir.isDirectory()) {
-			result = dir.length();
-		}
-		return result;
 	}
 }
