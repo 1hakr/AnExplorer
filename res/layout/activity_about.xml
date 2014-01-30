@@ -24,7 +24,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="10dp"
-                android:background="?attr/card"
                 android:orientation="vertical" >
 
                 <TextView
@@ -34,11 +33,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
-                    android:fontFamily="sans-serif-regular"
+                    android:drawableTop="@drawable/logo_big"
                     android:gravity="center_horizontal"
                     android:singleLine="true"
-                    android:drawablePadding="10dp"
-                    android:drawableTop="@drawable/logo_login"
                     android:text="@string/app_ver" />
 
                 <TextView
@@ -46,10 +43,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_margin="10dp"
-                    android:fontFamily="sans-serif-light"
                     android:text="@string/app_about"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?aboutColor" />
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -59,12 +55,12 @@
                     android:gravity="center"
                     android:text="@string/app_contrib"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?aboutColor" />
+                    android:textColor="@android:color/black" />
 
                 <View
                     android:layout_width="fill_parent"
-                    android:layout_height="2dp"
-                    android:background="?aboutColor" />
+                    android:layout_height="1dp"
+                    android:background="@android:color/black" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -78,11 +74,11 @@
                         android:layout_gravity="left"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="10dp"
-                        android:drawableRight="?dworksLogo"
+                        android:drawableRight="@drawable/dworks_dark"
                         android:gravity="center_vertical"
                         android:text="@string/app_company"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="?aboutColor" />
+                        android:textColor="@android:color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -92,13 +88,13 @@
                         android:gravity="center"
                         android:text="@string/app_about_info"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="?aboutColor" />
+                        android:textColor="@android:color/black" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="fill_parent"
-                    android:layout_height="2dp"
-                    android:background="?aboutColor" />
+                    android:layout_height="1dp"
+                    android:background="@android:color/black" />
 
                 <ImageView
                     android:layout_width="200dp"

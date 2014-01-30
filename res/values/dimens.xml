@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<!-- Copyright (C) 2013 The Android Open Source Project
 
-    <!-- <integer name="scrollbarStyle">0x02000000</integer> -->
-    <dimen name="preference_padding">15dp</dimen>
-    <dimen name="tablet_icon_size">58dp</dimen>
-    <dimen name="tablet_details_size">29dp</dimen>
-    <dimen name="drag_grip_ridge_size">4dp</dimen>
-    <dimen name="drag_grip_ridge_gap">2dp</dimen>
-    <dimen name="drag_grip_height">58dp</dimen>
-    <dimen name="drag_grip_height_tablet">68dp</dimen>
-    <integer name="left_pane">1</integer>
-    <integer name="right_pane">3</integer>
-    <dimen name="preference_margin">0dp</dimen>
-    <dimen name="preference_margin_single">0dp</dimen>
-    <dimen name="pane_list_width">150dp</dimen>
-    <dimen name="pane_main_width">300dp</dimen>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+    <dimen name="icon_size">32dp</dimen>
+    <dimen name="root_icon_size">24dp</dimen>
+    <dimen name="grid_width">160dp</dimen>
+    <dimen name="grid_height">170dp</dimen>
+
+    <dimen name="grid_padding">4dp</dimen>
+    <dimen name="grid_padding_horiz">4dp</dimen>
+
+    <bool name="show_as_dialog">false</bool>
+    <bool name="always_show_summary">false</bool>
 </resources>

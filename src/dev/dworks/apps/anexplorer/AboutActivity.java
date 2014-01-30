@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Hari Krishna Dulipudi
+ * Copyright (C) 2014 Hari Krishna Dulipudi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,76 @@
 
 package dev.dworks.apps.anexplorer;
 
+import dev.dworks.apps.anexplorer.misc.ViewCompat;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import dev.dworks.apps.anexplorer.util.ExplorerOperations;
-import dev.dworks.libs.actionbarplus.app.ActionBarActivityPlus;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.View.OnTouchListener;
+import android.widget.TextView;
 
-public class AboutActivity extends ActionBarActivityPlus {
+public class AboutActivity extends Activity {
 
-	private SharedPreferences preference;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		preference = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		int themeType = Integer.valueOf(preference.getString("ThemePref", "2"));
-		this.setTheme(ExplorerOperations.THEMES[themeType]);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		
+        final Resources res = getResources();
+        boolean mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
+
+        if (mShowAsDialog) {
+            // backgroundDimAmount from theme isn't applied; do it manually
+            final WindowManager.LayoutParams a = getWindow().getAttributes();
+            a.dimAmount = 0.6f;
+            getWindow().setAttributes(a);
+
+            getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+            getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+            // Inset ourselves to look like a dialog
+            final Point size = new Point();
+            getWindowManager().getDefaultDisplay().getSize(size);
+
+            final int width = (int) res.getFraction(R.dimen.dialog_about_width, size.x, size.x);
+            final int height = (int) res.getFraction(R.dimen.dialog_about_height, size.y, size.y);
+            final int insetX = (size.x - width) / 2;
+            final int insetY = (size.y - height) / 2;
+
+            final Drawable before = getWindow().getDecorView().getBackground();
+            final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
+            ViewCompat.setBackground(getWindow().getDecorView(), after);
+
+            // Dismiss when touch down in the dimmed inset area
+            getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        final float x = event.getX();
+                        final float y = event.getY();
+                        if (x < insetX || x > v.getWidth() - insetX || y < insetY
+                                || y > v.getHeight() - insetY) {
+                            finish();
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		TextView logo = (TextView)findViewById(R.id.logo);
+		logo.setText(logo.getText() + " v" + DocumentsApplication.APP_VERSION);
 	}
 
 	@Override

@@ -1,235 +1,166 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013 The Android Open Source Project
 
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <!-- Title of the documents application [CHAR LIMIT=32] -->
+    <string name="app_label">AnExplorer</string>
+
+    <!-- Action bar title prompting user to choose a location to open a document from [CHAR LIMIT=32] -->
+    <string name="title_open">Open from</string>
+    <!-- Action bar title prompting user to choose a location to save a document to [CHAR LIMIT=32] -->
+    <string name="title_save">Save to</string>
+
+    <!-- Menu item that creates a new directory/folder at the current location [CHAR LIMIT=24] -->
+    <string name="menu_create_dir">Create folder</string>
+    <!-- Menu item that switches view to show documents as a large-format grid of thumbnails [CHAR LIMIT=24] -->
+    <string name="menu_grid">Grid view</string>
+    <!-- Menu item that switches view to show documents as a list [CHAR LIMIT=24] -->
+    <string name="menu_list">List view</string>
+    <!-- Menu item that switches the criteria with which documents are sorted [CHAR LIMIT=24] -->
+    <string name="menu_sort">Sort by</string>
+    <!-- Menu item that enters a mode to search for documents [CHAR LIMIT=24] -->
+    <string name="menu_search">Search</string>
+    <!-- Menu item that enters activity to change settings [CHAR LIMIT=24] -->
+    <string name="menu_settings">Settings</string>
+
+    <!-- Menu item title that opens the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_open">Open</string>
+    <!-- Menu item title that saves the current document [CHAR LIMIT=24] -->
+    <string name="menu_save">Save</string>
+    <!-- Menu item title that shares the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_share">Share</string>
+    <!-- Menu item title that deletes the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_delete">Delete</string>
+
+    <!-- Action mode title summarizing the number of documents selected [CHAR LIMIT=32] -->
+    <string name="mode_selected_count"><xliff:g id="count" example="3">%1$d</xliff:g> selected</string>
+
+    <!-- Mode that sorts documents by their display name alphabetically [CHAR LIMIT=24] -->
+    <string name="sort_name">By name</string>
+    <!-- Mode that sorts documents by their last modified time in descending order; most recent first [CHAR LIMIT=24] -->
+    <string name="sort_date">By date modified</string>
+    <!-- Mode that sorts documents by their file size in descending order; largest first [CHAR LIMIT=24] -->
+    <string name="sort_size">By size</string>
+
+    <!-- Accessibility title to open the drawer showing all roots where documents can be stored [CHAR LIMIT=32] -->
+    <string name="drawer_open">Show roots</string>
+    <!-- Accessibility title to close the drawer showing all roots where documents can be stored [CHAR LIMIT=32] -->
+    <string name="drawer_close">Hide roots</string>
+
+    <!-- Toast shown when saving a document failed with an error [CHAR LIMIT=48] -->
+    <string name="save_error">Failed to save document</string>
+    <!-- Toast shown when creating a folder failed with an error [CHAR LIMIT=48] -->
+    <string name="create_error">Failed to create folder</string>
+    <!-- Error message shown when querying for a list of documents failed [CHAR LIMIT=48] -->
+    <string name="query_error">Failed to query documents</string>
+
+    <!-- Title of storage root location that contains recently modified or used documents [CHAR LIMIT=24] -->
+    <string name="root_recent">Recent</string>
+    <string name="root_images">Images</string>
+    <string name="root_audio">Audio</string>
+    <string name="root_videos">Video</string>
+    <string name="root_internal_storage">Internal Storage</string>
+    <string name="root_external_storage">External Storage</string>
+    <string name="root_phone_storage">Phone</string>
+    <string name="root_root_storage">Root</string>
+    <string name="root_bluetooth">Bluetooth</string>
+    <string name="root_downloads">Downloads</string>
+    <string name="root_hidden">Hidden</string>
+    <string name="root_apps">Apps</string>
+    <string name="root_processes">Processes</string>
+    <!-- Subtitle of storage root indicating the total free space available, in bytes [CHAR LIMIT=24] -->
+    <string name="root_available_bytes"><xliff:g id="size" example="3GB">%1$s</xliff:g> free</string>
+
+    <!-- Header title for list of storage roots that contains cloud services [CHAR LIMIT=24] -->
+    <string name="root_type_service">Storage services</string>
+    <!-- Header title for list of storage roots that contains shortcuts to documents that may be available elsewhere [CHAR LIMIT=24] -->
+    <string name="root_type_shortcut">Shortcuts</string>
+    <!-- Header title for list of storage roots that contains physical devices [CHAR LIMIT=24] -->
+    <string name="root_type_device">Devices</string>
+    <!-- Header title for list of additional apps that can provide documents [CHAR LIMIT=24] -->
+    <string name="root_type_apps">More apps</string>
+
+    <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
+    <string name="pref_advanced_devices">Display advanced devices</string>
+    <!-- Title for setting that will show file sizes for all documents [CHAR LIMIT=32] -->
+    <string name="pref_file_size">Display file size</string>
+    <string name="pref_device_size">Display device size</string>
+
+    <!-- Text shown when a directory of documents is empty [CHAR LIMIT=24] -->
+    <string name="empty">No items</string>
+
+    <!-- Toast shown when no app can be found to open the selected document [CHAR LIMIT=48] -->
+    <string name="toast_no_application">Can\'t open file</string>
+    <!-- Toast shown when some of the selected documents failed to be deleted [CHAR LIMIT=48] -->
+    <string name="toast_failed_delete">Unable to delete some documents</string>
+
+    <!-- Title of dialog when prompting user to select an app to share documents with [CHAR LIMIT=32] -->
+    <string name="share_via">Share via</string>
+
+    <!--
+         Status indicating that the download has been queued to start in the future.  Appears for an
+         individual item in the download list.  [CHAR LIMIT=24]
+    -->
+    <string name="download_queued">Queued</string>
+    <!--
+         Status indicating that the system is currently downloading the file.  Appears for an
+         individual item in the download list.  [CHAR LIMIT=24]
+    -->
+    <string name="download_running">In progress</string>
+    <!--
+         Status indicating that the download has ended without completing successfully.  Appears for
+         an individual item in the download list.  [CHAR LIMIT=24]
+    -->
+    <string name="download_error">Unsuccessful</string>
+
+    <!-- Representation of download progress percentage when running. [CHAR LIMIT=24] -->
+    <string name="download_running_percent">In progress, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
     <string name="app_name">AnExplorer</string>
-    <string name="app_ver">Another Explorer v1.9</string>
+    <string name="app_ver">Another Explorer</string>
     <string name="app_company">Developed By DWorkS</string>
     <string name="app_url">http://www.dworks.in</string>
     <string name="app_about_info">To make a small difference.</string>
-    <string name="app_contrib">Contributions by Hari Krishna Dulipudi, Neehar Doppalapudi</string>
-    <string name="app_about">This file explorer helps you  organise your files, save app, monitor process, hide folders and many more</string>
+    <string name="app_contrib">Contributions by Hari Krishna Dulipudi</string>
+    <string name="app_about">This file explorer helps you  organise your files, save app, monitor process and many more</string>
     <string name="twitter"><a href="https://twitter.com/1HaKr">  Twitter</a></string>
     <string name="gplus"><a href="https://plus.google.com/109240246596102887385">  Google+</a></string>
-    <string name="searchHint">Search</string>
-    <string name="searchGobal">Search SD Card</string>
-    <!-- Menu -->
-    <string name="menu_create">New</string>
-    <string name="menu_select">Select</string>
-    <string name="menu_search">Search</string>
-    <string name="menu_setting">Setting</string>
-    <string name="menu_about">About</string>
-    <string name="menu_exit">Exit</string>
-    <string name="menu_cancel">Cancel</string>
-    <string name="menu_copy">Copy</string>
-    <string name="menu_cut">Cut</string>
-    <string name="menu_paste">Paste</string>
-    <string name="menu_delete">Delete</string>
-    <string name="menu_share">Share</string>
-    <string name="menu_compress">Compress</string>
-    <string name="menu_save">Save App</string>
-    <string name="menu_uninstall">Uninstall App</string>
-    <string name="menu_select_mode">Select Mode</string>
-    <string name="menu_select_all">Select All</string>
-    <string name="menu_unselect_all">Unselect All</string>
-    <string name="menu_select_unselect">Select / Unselect all</string>
-    <string name="menu_help">Help</string>
-    <string name="menu_clear_cache">Clear Cache</string>
-    <string name="menu_edit">Edit</string>
-    <string name="menu_done">Done</string>
-    <string name="menu_reset">Reset</string>
+    <string name="pref_folder_size">Display folder size</string>
+    <string name="pref_thumbnail">Display file thumbnails</string>
+	<string name="pref_root_mode">Display Root Mode</string>
+	<string name="pref_translucent_mode">Display Translucent Mode</string>
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_header_login">Login</string>
+    <string name="pref_title_pin_enable">Enable PIN Protection</string>
+    <string name="pref_description_pin_enable">Gives security to your files</string>
+    <string name="pref_title_pin_set">Set PIN</string>
+    <string name="pref_default_pin_set">PIN protection disabled</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="enter_new_pin">Enter New PIN</string>
+    <string name="incorrect_pin">Incorrect PIN</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="pin_mismatch">PIN did not match</string>
+    <string name="pin_set">PIN protection enabled</string>
+    <string name="pin_disabled">PIN protection disabled</string>
+    <string name="pin_protection">PIN Protection</string>
+    <string name="loading">Loading...</string>
+
+    <string name="menu_rename">Rename</string>
     
-    <string name="name_phone">Phone</string>
-    <string name="name_tablet">Tablet</string>
-    <string name="name_sdcard">SD Card</string>
-    <string name="name_apps">Apps</string>
-    <string name="name_processes">Processes</string>
-    <string name="name_download">Downloads</string>
-    <string name="name_bluetooth">Bluetooth</string>
-    <string name="name_music">Music</string>
-    <string name="name_gallery">Gallery</string>
-    <string name="name_explorer">Explorer</string>
-    <string name="name_system">System</string>
-    <string name="name_media">Ringtones</string>
-    <string name="name_movies">Movies</string>
-    <string name="name_emmc">eMMC</string>
-    <string name="name_unscannable">Hidden Folders</string>
-    <string name="name_wallpaper">Wallpapers</string>
-    <string name="constant_search">Search</string>
-    <string name="constant_about">About</string>
-    <string name="constant_setting">Setting</string>
-    <string name="constant_rename">Rename</string>
-    <string name="constant_copy">Copy</string>
-    <string name="constant_delete">Delete</string>
-    <string name="constant_paste">Paste</string>
-    <string name="constant_cut">Cut</string>
-    <string name="constant_extract">Extract</string>
-    <string name="constant_details">Details</string>
-    <string name="constant_open_file">Open File Location</string>
-    <string name="constant_app_details">App details</string>
-    <string name="constant_open_app">Open App</string>
-    <string name="constant_market">Market Link</string>
-    <string name="constant_stop_process">Stop process</string>
-    <string name="constant_github">Github</string>
-    <string name="constant_gplus">Google+</string>
-    <string name="constant_twitter">Twitter</string>
-    <string name="constant_feedback">Feedback</string>
-    <string name="constant_rate">Rate app</string>
-    <string name="constant_support">Support</string>
-    <string name="constant_continue">Continue</string>
-    <string name="hide_folder">Hide from Gallery</string>
-    <string name="unhide_folder">Unhide from Gallery</string>
-    <string name="folder_option">Folder options</string>
-    <string name="app_option">App options</string>
-    <string name="hide_option">Hide options</string>
-    <string name="msg_loading">Loading\u2026</string>
-    <string name="msg_searching">Searching\u2026</string>
-    <string name="msg_file_not_found">No matching files found</string>
-    <string name="msg_file_not_selected">No file selected</string>
-    <string name="msg_file_not_copied">No file copied</string>
-    <string name="msg_cant_select">Can\'t Select More than 1 file</string>
-    <string name="msg_cant_rename">Can\'t Rename More than 1 file</string>
-    <string name="msg_cant_extract">Can\'t Extract More than 1 file</string>
-    <string name="msg_cant_extract_other">Can\'t Extract other than \'zip\' file</string>
-    <string name="msg_cant_extract_zip">Can\'t Extract \'zip\' file</string>
-    <string name="msg_cant_compress_zip">Can\'t Compress into \'zip\' file</string>
-    <string name="msg_cant_copy">Can\'t copy to the same folder</string>
-    <string name="msg_cant_open">Can\'t open file</string>
-    <string name="msg_files_copied">Files copied</string>
-    <string name="msg_files_cut">Files cut</string>
-    <string name="msg_search_results">Search Results</string>
-    <string name="msg_folder_empty">Folder is empty</string>
-    <string name="msg_sdcard_unmounted">SD Card is not mounted</string>
-    <string name="msg_folder_not_present">Folder is not present</string>
-    <string name="msg_share">Share using \u2026</string>
-    <string name="msg_unmounted">Unmounted</string>
-    <string name="msg_compress">Compress</string>
-    <string name="msg_uncompress">Uncompress</string>
-    <string name="msg_select">Select</string>
-    <string name="msg_selected">selected</string>
-    <string name="msg_new">New</string>
-    <string name="msg_properties">Properties</string>
-    <string name="msg_installed">Installed Apps</string>
-    <string name="msg_running">Running Apps</string>
-    <string name="msg_create_file">Create File</string>
-    <string name="msg_create_folder">Create Folder</string>
-    <string name="msg_rename_folder">Rename Folder</string>
-    <string name="msg_want_delete">Are you sure you want to Delete?</string>
-    <string name="msg_want_exit">Do you want to exit the app?</string>
-    <string name="msg_want_adfree">Want to support  AnExplorer? Buy the ad free version available in Android Market</string>
-    <string name="msg_adfree">Support AnExplorer!</string>
-    <string name="msg_dont_show">Don \'t show again</string>
-    <string name="msg_login">Login</string>
-    <string name="msg_wrong_password">wrong password</string>
-    <string name="msg_pwd_empty">Password cannot be empty</string>
-
-    <!-- progress -->
-    <string name="msg_creating_dir">Creating directory</string>
-    <string name="msg_creating_file">Creating File</string>
-    <string name="msg_renaming_file">Renaming selected file\u2026</string>
-    <string name="msg_deleting_file">Deleting Selected files\u2026</string>
-    <string name="msg_moving_file">Moving selected files\u2026</string>
-    <string name="msg_pasting_file">Pasting selected files\u2026</string>
-    <string name="msg_compressing_file">Compressing selected files\u2026</string>
-    <string name="msg_uncompressing_file">Uncompress selected files\u2026</string>
-    <string name="msg_saving_file">Saving Selected Apps\u2026</string>
-    <string name="msg_stopping_apps">Stopping Selected apps \u2026</string>
-    <string name="msg_gallery_hide">Hiding Selected folders \u2026</string>
-    <string name="msg_gallery_unhide">Unhiding Selected folders \u2026</string>
-    <string name="msg_clearing_cache">Clearing Apps Cache \u2026</string>
-    <string name="msg_setting_wallpaper">Setting Wallpaper \u2026</string>
-
-    <!-- About -->
-    <string name="constant_name">Name</string>
-    <string name="constant_path">Path</string>
-    <string name="constant_type">Type</string>
-    <string name="constant_size">Size</string>
-    <string name="constant_total">Total files</string>
-    <string name="constant_permission">Permission</string>
-
-    <!-- setting -->
-    <string name="display">Appearance</string>
-    <string name="preview">Preview</string>
-    <string name="themes">Themes</string>
-    <string name="views">Views</string>
-    <string name="splash">Splash screen</string>
-    <string name="sorting_type">Sorting Type</string>
-    <string name="sorting_order">Sorting Order</string>
-    <string name="others">Others</string>
-    <string name="advanced">For advanced Users ONLY</string>
-    <string name="themes_to_display">Theme</string>
-    <string name="view_to_display">View</string>
-    <string name="show_storage">Storage Mode</string>
-    <string name="show_sizes">Folder sizes</string>
-    <string name="show_hidden">Hidden Folders</string>
-    <string name="show_thumb">Thumb scroll</string>
-    <string name="show_pane">Dual Pane</string>
-    <string name="show_image">Image preview</string>
-    <string name="show_video">Video preview</string>
-    <string name="show_mp3">MP3 preview</string>
-    <string name="show_apk">APK preview</string>
-    <string name="sorting">Sorting</string>
-    <string name="choose_theme">Choose desired theme</string>
-    <string name="choose_view">Choose desired view</string>
-    <string name="display_memory">Displays memory bar for each folder</string>
-    <string name="display_space">Displays space occupied by each folder</string>
-    <string name="display_hidden">Displays files / folders starting with (.)</string>
-    <string name="display_thumb">Displays thumb scroll in the list</string>
-    <string name="display_pane">Display navigation pane</string>
-    <string name="display_image">Displays preview for images</string>
-    <string name="display_video">Displays preview for videos</string>
-    <string name="display_mp3">Displays album art for MP3</string>
-    <string name="display_apk">Displays icon for APK\'s</string>
-    <string name="choose_type">Choose sorting type</string>
-    <string name="choose_order">Choose sorting order</string>
-    <string name="dont_show_splash">Don\'t show splash screen</string>
-    <string name="visit_site">Visit developer\'s site</string>
-    <string name="site_dworks">D WorkS</string>
-    <string name="ads">Ad Type</string>
-    <string name="show_ads">Advertisement</string>
-    <string name="root_title">Access Root</string>
-    <string name="root_desc">Give root access to the app</string>
-    <string name="mount_title">Mount writable</string>
-    <string name="mount_desc">Mount phone file system as writable</string>
-    <string name="lang">Language</string>
-    <string name="auto_login">Auto Login</string>
-    <string name="auto_login_desc">Automatically login</string>
-    <string name="login_pwd">Login Password</string>
-    <string name="login_pwd_retype">Retype Login Password</string>
-    <string name="login_pwd_desc">Password for login</string>
-    <string name="change">change</string>
-    <string name="display_wallpaper">Enables Wallpaper changing</string>
-    <string name="enable_wallpaper">Enable wallpaper</string>
-    <string name="wallpaper_freq">Wallpaper frequency</string>
-
-    <!-- messages -->
-    <string name="msg_dir_create_success">Directory was created successfully</string>
-    <string name="msg_dir_create_unsuccess">Something wrong with creating directory</string>
-    <string name="msg_file_create_success">File was created successfully</string>
-    <string name="msg_file_create_unsuccess">Something wrong with creating file</string>
-    <string name="msg_file_rename_success">File was renamed successfully</string>
-    <string name="msg_file_rename_unsuccess">Something wrong with renaming File</string>
-    <string name="msg_file_delete_success">File(s) deleted successfully</string>
-    <string name="msg_file_delete_unsuccess">Something wrong with deleting File(s)</string>
-    <string name="msg_app_save_success">App(s) saved successfully to sdcard/AppBackup</string>
-    <string name="msg_app_save_unsuccess">Something wrong with saving Apps(s)</string>
-    <string name="msg_app_stop_success">App(s) stopped successfully</string>
-    <string name="msg_app_stop_unsuccess">Something wrong with stopping App(s)</string>
-    <string name="msg_folder_hidden_success">Folder(s) hidden successfully</string>
-    <string name="msg_folder_hidden_unsuccess">Something wrong with hiding folder(s)</string>
-    <string name="msg_folder_unhidden_success">Folder(s) unhidden successfully</string>
-    <string name="msg_folder_unhidden_unsuccess">Something wrong with unhiding folder(s)</string>
-    <string name="msg_clear_cache_success">Cache cleared successfully</string>
-    <string name="msg_clear_cache_unsuccess">Something wrong with Clearing Cache</string>
-    <string name="msg_set_wallpaper_success">Wallpaper set successfully</string>
-    <string name="msg_set_wallpaper_unsuccess">Something wrong with setting Wallpaper</string>
-
-    <!-- help -->
-    <string name="help_internal">Browse Internal memory</string>
-    <string name="help_sdcard">Browse SD Card</string>
-    <string name="help_apps">Manage apps</string>
-    <string name="help_process">Monitor processes</string>
-    <string name="help_folder">Hide Folders</string>
-    <string name="help_shortcut">Shortcuts</string>
-    <string name="welcome">Welcome to AnExplorer</string>
-
 </resources>
