@@ -1034,8 +1034,7 @@ public class DocumentsActivity extends Activity {
         
         final MoveFragment move = MoveFragment.get(fm);
         if (move != null) {
-            move.setReplaceTarget(cwd);
-            move.setSaveEnabled(cwd != null && cwd.isEditSupported());
+            move.setReplaceTarget(null);
         }
 
         final RootsFragment roots = RootsFragment.get(fm);
@@ -1148,6 +1147,10 @@ public class DocumentsActivity extends Activity {
             mState.stack.push(doc);
             mState.stackTouched = true;
             onCurrentDirectoryChanged(ANIM_DOWN);
+            final MoveFragment move = MoveFragment.get(fm);
+            if (move != null) {
+                move.setReplaceTarget(doc);
+            }
         } else if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
             // Explicit file picked, return
             //new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
