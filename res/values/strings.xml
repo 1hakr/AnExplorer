@@ -161,4 +161,6 @@
     <string name="pin_protection">PIN Protection</string>
     <string name="loading">Loading...</string>
 
+    <string name="menu_rename">Rename</string>
+    
 </resources>

@@ -57,7 +57,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
  */
 public class DetailFragment extends Fragment{
 	public static final String TAG = "DetailFragment";
-	private static final String EXTRA_DOC = "doc";
+	private static final String EXTRA_DOC = "document";
 	
 	private DocumentInfo doc;
 

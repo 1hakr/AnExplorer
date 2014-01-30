@@ -28,9 +28,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 public class FileUtils {
 
@@ -215,6 +218,57 @@ public class FileUtils {
         }
         return "";
     }
+    
+
+    public static String getTypeForFile(File file) {
+        if (file.isDirectory()) {
+            return Document.MIME_TYPE_DIR;
+        } else {
+            return getTypeForName(file.getName());
+        }
+    }
+
+    public static String getTypeForName(String name) {
+        final int lastDot = name.lastIndexOf('.');
+        if (lastDot >= 0) {
+            final String extension = name.substring(lastDot + 1).toLowerCase();
+            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (mime != null) {
+                return mime;
+            }
+        }
+
+        return "application/octet-stream";
+    }
+
+    /**
+     * Remove file extension from name, but only if exact MIME type mapping
+     * exists. This means we can reapply the extension later.
+     */
+    public static String removeExtension(String mimeType, String name) {
+        final int lastDot = name.lastIndexOf('.');
+        if (lastDot >= 0) {
+            final String extension = name.substring(lastDot + 1).toLowerCase();
+            final String nameMime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (mimeType.equals(nameMime)) {
+                return name.substring(0, lastDot);
+            }
+        }
+        return name;
+    }
+
+    /**
+     * Add file extension to name, but only if exact MIME type mapping exists.
+     */
+    public static String addExtension(String mimeType, String name) {
+        final String extension = MimeTypeMap.getSingleton()
+                .getExtensionFromMimeType(mimeType);
+        if (extension != null) {
+            return name + "." + extension;
+        }
+        return name;
+    }
+
 
 	private static class SearchFilter implements FilenameFilter{
 		String searchQuery;

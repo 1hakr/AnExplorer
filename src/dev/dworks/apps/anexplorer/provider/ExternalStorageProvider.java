@@ -403,13 +403,13 @@ public class ExternalStorageProvider extends StorageProvider {
                 throw new IllegalStateException("Failed to mkdir " + file);
             }
         } else {
-            displayName = removeExtension(mimeType, displayName);
-            file = new File(parent, addExtension(mimeType, displayName));
+            displayName = FileUtils.removeExtension(mimeType, displayName);
+            file = new File(parent, FileUtils.addExtension(mimeType, displayName));
 
             // If conflicting file, try adding counter suffix
             int n = 0;
             while (file.exists() && n++ < 32) {
-                file = new File(parent, addExtension(mimeType, displayName + " (" + n + ")"));
+                file = new File(parent, FileUtils.addExtension(mimeType, displayName + " (" + n + ")"));
             }
 
             try {
@@ -445,6 +445,26 @@ public class ExternalStorageProvider extends StorageProvider {
                 }
 			}
         }
+    }
+    
+    @Override
+    public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
+        final File parent = getFileForDocId(parentDocumentId);
+        File file;
+    	
+		if(parent.isDirectory()){
+			file = new File(parent.getParentFile(), FileUtils.removeExtension(mimeType, displayName));
+		}
+		else{
+			displayName = FileUtils.removeExtension(mimeType, displayName);
+            file = new File(parent.getParentFile(), FileUtils.addExtension(mimeType, displayName));
+		}
+		
+		if(parent.canWrite()){
+			parent.renameTo(file);
+		}
+		
+		return getDocIdForFile(file);
     }
 
     @Override
@@ -582,34 +602,6 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         return "application/octet-stream";
-    }
-
-    /**
-     * Remove file extension from name, but only if exact MIME type mapping
-     * exists. This means we can reapply the extension later.
-     */
-    private static String removeExtension(String mimeType, String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String nameMime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (mimeType.equals(nameMime)) {
-                return name.substring(0, lastDot);
-            }
-        }
-        return name;
-    }
-
-    /**
-     * Add file extension to name, but only if exact MIME type mapping exists.
-     */
-    private static String addExtension(String mimeType, String name) {
-        final String extension = MimeTypeMap.getSingleton()
-                .getExtensionFromMimeType(mimeType);
-        if (extension != null) {
-            return name + "." + extension;
-        }
-        return name;
     }
 
     private void startObserving(File file, Uri notifyUri) {

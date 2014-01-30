@@ -415,33 +415,6 @@ public class RootedStorageProvider extends StorageProvider {
         return "application/octet-stream";
     }
 
-    /**
-     * Remove file extension from name, but only if exact MIME type mapping
-     * exists. This means we can reapply the extension later.
-     */
-    private static String removeExtension(String mimeType, String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String nameMime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (mimeType.equals(nameMime)) {
-                return name.substring(0, lastDot);
-            }
-        }
-        return name;
-    }
-
-    /**
-     * Add file extension to name, but only if exact MIME type mapping exists.
-     */
-    private static String addExtension(String mimeType, String name) {
-        final String extension = MimeTypeMap.getSingleton()
-                .getExtensionFromMimeType(mimeType);
-        if (extension != null) {
-            return name + "." + extension;
-        }
-        return name;
-    }
     private class DirectoryCursor extends MatrixCursor {
 
         public DirectoryCursor(String[] columnNames, String docId, RootFile file) {

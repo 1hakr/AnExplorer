@@ -20,6 +20,7 @@ package dev.dworks.apps.anexplorer.provider;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.EXTRA_THUMBNAIL_SIZE;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_CREATE_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_DELETE_DOCUMENT;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_RENAME_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_MOVE_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getDocumentId;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getRootId;
@@ -195,6 +196,11 @@ public abstract class DocumentsProvider extends ContentProvider {
     public void moveDocument(String documentIdFrom, String documentIdTo, boolean deleteAfter) throws FileNotFoundException {
         throw new UnsupportedOperationException("Move not supported");
     }
+
+    public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
+        throw new UnsupportedOperationException("Move not supported");
+    }
+
 
     /**
      * Return all roots currently provided. A provider must define at least one
@@ -518,6 +524,13 @@ public abstract class DocumentsProvider extends ContentProvider {
                             Intent.FLAG_GRANT_READ_URI_PERMISSION
                             | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
+
+            } else if (METHOD_RENAME_DOCUMENT.equals(method)) {
+                final String mimeType = extras.getString(Document.COLUMN_MIME_TYPE);
+                final String displayName = extras.getString(Document.COLUMN_DISPLAY_NAME);
+
+                final String newDocumentId = renameDocument(documentId, mimeType, displayName);
+                out.putString(Document.COLUMN_DOCUMENT_ID, newDocumentId);
 
             } else if (METHOD_DELETE_DOCUMENT.equals(method)) {
                 deleteDocument(documentId);

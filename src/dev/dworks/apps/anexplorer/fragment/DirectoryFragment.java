@@ -553,14 +553,17 @@ public class DirectoryFragment extends ListFragment {
 			}
 			else{
 				if(editMode){
-					
 					final MenuItem info = menu.findItem(R.id.menu_info);
+					final MenuItem rename = menu.findItem(R.id.menu_rename);
+					
 					final MenuItem copy = menu.findItem(R.id.menu_copy);
 					final MenuItem cut = menu.findItem(R.id.menu_cut);
 					//final MenuItem compress = menu.findItem(R.id.menu_compress);
 					copy.setVisible(editMode);
 					cut.setVisible(editMode);
+					
 					info.setVisible(count == 1);
+					rename.setVisible(count == 1);
 				}
 			}
 			return true;
@@ -627,6 +630,11 @@ public class DirectoryFragment extends ListFragment {
 			case R.id.menu_info:
 				((DocumentsActivity) getActivity()).setInfoDrawerOpen(true);
 				DetailFragment.show(getFragmentManager(), docs.get(0));
+				mode.finish();
+				return true;
+
+			case R.id.menu_rename:
+				RenameFragment.show(getFragmentManager(), docs.get(0));
 				mode.finish();
 				return true;
 

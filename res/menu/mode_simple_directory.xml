@@ -35,7 +35,7 @@
         android:id="@+id/menu_select_all"
         android:icon="@drawable/ic_menu_select_all"
         android:showAsAction="ifRoom"
-        android:title="Selection"/>
+        android:title="Select All"/>
     <item
         android:id="@+id/menu_compress"
         android:icon="@drawable/ic_menu_compressed"

@@ -495,6 +495,7 @@ public final class DocumentsContract {
 
     public static final String METHOD_CREATE_DOCUMENT = "android:createDocument";
     public static final String METHOD_DELETE_DOCUMENT = "android:deleteDocument";
+    public static final String METHOD_RENAME_DOCUMENT = "android:renameDocument";
     public static final String METHOD_MOVE_DOCUMENT = "android:moveDocument";
 
     public static final String EXTRA_THUMBNAIL_SIZE = "thumbnail_size";
@@ -851,6 +852,39 @@ public final class DocumentsContract {
         	ContentProviderClientCompat.releaseQuietly(client);
         }
     }
+    
+    /**
+     * Rename a document with given MIME type and display name.
+     *
+     * @param parentDocumentUri directory with
+     *            {@link Document#FLAG_DIR_SUPPORTS_CREATE}
+     * @param mimeType MIME type of new document
+     * @param displayName name of new document
+     * @return newly created document, or {@code null} if failed
+     * @hide
+     */
+    public static Uri renameDocument(ContentResolver resolver, Uri parentDocumentUri,
+            String mimeType, String displayName) {
+        final ContentProviderClient client = resolver.acquireContentProviderClient(
+                parentDocumentUri.getAuthority());
+        try {
+            //return createDocument(client, parentDocumentUri, mimeType, displayName);
+            final Bundle in = new Bundle();
+            in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(parentDocumentUri));
+            in.putString(Document.COLUMN_MIME_TYPE, mimeType);
+            in.putString(Document.COLUMN_DISPLAY_NAME, displayName);
+
+            final Bundle out = resolver.call(parentDocumentUri, METHOD_RENAME_DOCUMENT, null, in);
+            return buildDocumentUri(
+                    parentDocumentUri.getAuthority(), out.getString(Document.COLUMN_DOCUMENT_ID));
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to rename document", e);
+            return null;
+        } finally {
+        	ContentProviderClientCompat.releaseQuietly(client);
+        }
+    }
+    
     /** {@hide} */
 /*    public static void deleteDocuments(ContentProviderClient client, Uri documentUri)
             throws RemoteException {

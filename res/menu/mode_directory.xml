@@ -12,7 +12,7 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
@@ -33,6 +33,12 @@
         android:showAsAction="always"
         android:title="Edit">
         <menu>
+            <item
+                android:id="@+id/menu_rename"
+                android:icon="@drawable/ic_menu_rename_file"
+                android:showAsAction="always"
+                android:visible="false"
+                android:title="Rename"/>
             <item
                 android:id="@+id/menu_copy"
                 android:icon="@drawable/ic_menu_copy"
@@ -59,7 +65,7 @@
         android:id="@+id/menu_select_all"
         android:icon="@drawable/ic_menu_select_all"
         android:showAsAction="ifRoom"
-        android:title="Selection"/>
+        android:title="Select All"/>
     <item
         android:id="@+id/menu_compress"
         android:icon="@drawable/ic_menu_compressed"
