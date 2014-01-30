@@ -1,8 +1,6 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:support="http://schemas.android.com/apk/res-auto" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-<<<<<<< HEAD
         android:id="@+id/action_feedback"
         android:icon="@drawable/ic_menu_feedback"
         android:orderInCategory="101"
@@ -38,41 +36,5 @@
         android:showAsAction="ifRoom"
         android:orderInCategory="106"
         android:title="Github"/>
-=======
-        android:id="@+id/action_github"
-        android:icon="@drawable/ic_menu_github"
-        android:title="Github"
-        support:showAsAction="always"/>
-    <item
-        android:id="@+id/action_gplus"
-        android:icon="@drawable/ic_menu_gplus"
-        android:orderInCategory="101"
-        android:title="Google+"
-        support:showAsAction="always"/>
-    <item
-        android:id="@+id/action_twitter"
-        android:icon="@drawable/ic_menu_twitter"
-        android:orderInCategory="102"
-        android:title="Twitter"
-        support:showAsAction="always"/>
-    <item
-        android:id="@+id/action_feedback"
-        android:icon="@drawable/ic_menu_feedback"
-        android:orderInCategory="103"
-        android:title="Feedback"
-        support:showAsAction="always"/>
-    <item
-        android:id="@+id/action_rate"
-        android:icon="@drawable/ic_menu_rate"
-        android:orderInCategory="104"
-        android:title="Rate"
-        support:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/action_support"
-        android:icon="@drawable/ic_menu_support"
-        android:orderInCategory="105"
-        android:title="Support"
-        support:showAsAction="ifRoom"/>
->>>>>>> bug fixes
 
 </menu>

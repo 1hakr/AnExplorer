@@ -32,8 +32,6 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import java.io.File;
 import java.util.ArrayList;
 
-import android.R.integer;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
