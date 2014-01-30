@@ -116,7 +116,6 @@ public class SettingsActivity extends PreferenceActivity {
 
             final Drawable before = getWindow().getDecorView().getBackground();
             final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-            getWindow().getDecorView().setBackground(after);
             ViewCompat.setBackground(getWindow().getDecorView(), after);
 
             // Dismiss when touch down in the dimmed inset area

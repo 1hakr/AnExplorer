@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.OperationCanceledException;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -202,6 +201,10 @@ public abstract class AsyncTaskLoader<D> extends Loader<D> {
             }
         }
         return false;
+    }
+    
+    public boolean cancelLoad() {
+        return onCancelLoad();
     }
 
     /**

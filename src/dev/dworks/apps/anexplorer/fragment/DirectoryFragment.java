@@ -32,6 +32,8 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import java.io.File;
 import java.util.ArrayList;
 
+import android.R.integer;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -55,12 +57,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.util.SparseLongArray;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
@@ -151,8 +153,8 @@ public class DirectoryFragment extends ListFragment {
 
 	private DocumentsAdapter mAdapter;
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
-	private SparseLongArray mSizes = new SparseLongArray();
-	private ArrayList<DocumentInfo> docsAppUninstall = new ArrayList<DocumentInfo>();
+	private ArrayMap<Integer, Long> mSizes = new ArrayMap<Integer, Long>();
+	private ArrayList<DocumentInfo> docsAppUninstall = Lists.newArrayList();
 	
 	private static final String EXTRA_TYPE = "type";
 	private static final String EXTRA_ROOT = "root";
@@ -1233,7 +1235,7 @@ public class DirectoryFragment extends ListFragment {
 				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
 					size.setText(null);
 					if(state.showFolderSize){
-						long sizeInBytes = mSizes.get(position, -1);
+						long sizeInBytes = mSizes.containsKey(position) ? mSizes.get(position) : -1;
 						if(sizeInBytes != -1){
 							size.setText(Formatter.formatFileSize(context, sizeInBytes));
 						}
@@ -1443,7 +1445,7 @@ public class DirectoryFragment extends ListFragment {
 					Log.w(TAG, "Failed to calculate size for " + mPath + ": " + e);
 				}
 			}
-			return result;
+			return result;	
 		}
 
 		@Override

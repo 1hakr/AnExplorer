@@ -185,7 +185,6 @@ public class DocumentsActivity extends Activity {
 
             final Drawable before = getWindow().getDecorView().getBackground();
             final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-            getWindow().getDecorView().setBackground(after);
             ViewCompat.setBackground(getWindow().getDecorView(), after);
 
             // Dismiss when touch down in the dimmed inset area
@@ -326,9 +325,9 @@ public class DocumentsActivity extends Activity {
 
         final Intent intent = getIntent();
         final String action = intent.getAction();
-        if (Intent.ACTION_OPEN_DOCUMENT.equals(action)) {
+        if (IntentUtils.ACTION_OPEN_DOCUMENT.equals(action)) {
             mState.action = ACTION_OPEN;
-        } else if (Intent.ACTION_CREATE_DOCUMENT.equals(action)) {
+        } else if (IntentUtils.ACTION_CREATE_DOCUMENT.equals(action)) {
             mState.action = ACTION_CREATE;
         } else if (Intent.ACTION_GET_CONTENT.equals(action)) {
             mState.action = ACTION_GET_CONTENT;
@@ -347,7 +346,7 @@ public class DocumentsActivity extends Activity {
             mState.acceptMimes = new String[] { "*/*" };
             mState.allowMultiple = true;
         }
-        else if (intent.hasExtra(Intent.EXTRA_MIME_TYPES)) {
+        else if (intent.hasExtra(IntentUtils.EXTRA_MIME_TYPES)) {
             mState.acceptMimes = intent.getStringArrayExtra(IntentUtils.EXTRA_MIME_TYPES);
         } else {
             mState.acceptMimes = new String[] { intent.getType() };
