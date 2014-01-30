@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
-    android:installLocation="auto"
     android:versionCode="34"
     android:versionName="2.0" >
 
@@ -36,8 +35,10 @@
             android:theme="@style/Theme" >
             <intent-filter android:priority="100" >
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
             <intent-filter android:priority="100" >
@@ -65,6 +66,7 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
