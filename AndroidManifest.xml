@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> updated manifest
     android:versionCode="34"
     android:versionName="2.0" >
 =======
@@ -54,6 +57,7 @@
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
 
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
 =======
@@ -74,6 +78,10 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
 >>>>>>> fixes for 2.3
+=======
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.OPENABLE" />
+>>>>>>> updated manifest
 
                 <data android:mimeType="*/*" />
             </intent-filter>
@@ -104,6 +112,9 @@
                 <action android:name="android.intent.action.MAIN" />
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> updated manifest
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
