@@ -15,7 +15,7 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="Theme" parent="@android:style/Theme.Holo.Light">
+    <style name="Theme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
         <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>

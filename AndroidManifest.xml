@@ -15,7 +15,7 @@
 
     <!-- <uses-permission android:name="android.permission.REMOVE_TASKS" /> -->
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
     <uses-feature
@@ -169,21 +169,6 @@
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
-        <!-- TODO: remove when we have real clients -->
-
-
-        <!--
-             <activity
-            android:name="dev.dworks.apps.anexplorer.TestActivity"
-            android:label="AnExplorer Test" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        -->
     </application>
 
 </manifest>

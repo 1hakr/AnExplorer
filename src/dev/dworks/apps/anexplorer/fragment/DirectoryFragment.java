@@ -628,8 +628,14 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 				
 			case R.id.menu_info:
-				((DocumentsActivity) getActivity()).setInfoDrawerOpen(true);
-				DetailFragment.show(getFragmentManager(), docs.get(0));
+				final DocumentsActivity activity = (DocumentsActivity) getActivity();
+				activity.setInfoDrawerOpen(true);
+				if(activity.isShowAsDialog()){
+					DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
+				}
+				else{
+					DetailFragment.show(getFragmentManager(), docs.get(0));	
+				}
 				mode.finish();
 				return true;
 

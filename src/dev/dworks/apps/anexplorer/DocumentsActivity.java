@@ -126,6 +126,7 @@ public class DocumentsActivity extends Activity {
     public static final String TAG = "Documents";
 
     private static final String EXTRA_STATE = "state";
+    private static final String EXTRA_AUTHENTICATED = "authenticated";
 
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
@@ -164,7 +165,6 @@ public class DocumentsActivity extends Activity {
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
-        initProtection();
         if (mShowAsDialog) {
             // backgroundDimAmount from theme isn't applied; do it manually
             final WindowManager.LayoutParams a = getWindow().getAttributes();
@@ -224,10 +224,13 @@ public class DocumentsActivity extends Activity {
 
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
+            authenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
         } else {
             buildDefaultState();
         }
 
+        initProtection();
+        
         // Hide roots when we're managing a specific root
         if (mState.action == ACTION_MANAGE) {
             if (mShowAsDialog) {
@@ -313,6 +316,7 @@ public class DocumentsActivity extends Activity {
         
         PINDialogFragment pinFragment = new PINDialogFragment();
         pinFragment.setDialog(d);
+        pinFragment.setCancelable(false);
         pinFragment.show(getFragmentManager(), "PIN Dialog");
 	}
 
@@ -858,6 +862,7 @@ public class DocumentsActivity extends Activity {
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putParcelable(EXTRA_STATE, mState);
+        state.putBoolean(EXTRA_AUTHENTICATED, authenticated);
     }
 
     @Override
@@ -973,6 +978,10 @@ public class DocumentsActivity extends Activity {
 
     public State getDisplayState() {
         return mState;
+    }
+    
+    public boolean isShowAsDialog() {
+    	return mShowAsDialog;
     }
 
     public void onCurrentDirectoryChanged(int anim) {

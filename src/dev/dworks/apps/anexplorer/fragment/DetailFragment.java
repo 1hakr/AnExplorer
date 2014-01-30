@@ -19,7 +19,7 @@ package dev.dworks.apps.anexplorer.fragment;
 
 import java.io.File;
 
-import android.app.Fragment;
+import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ContentProviderClient;
@@ -55,12 +55,14 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 /**
  * Display document title editor and save button.
  */
-public class DetailFragment extends Fragment{
-	public static final String TAG = "DetailFragment";
+public class DetailFragment extends DialogFragment{
+	public static final String TAG_DETAIL = "DetailFragment";
 	private static final String EXTRA_DOC = "document";
+	private static final String EXTRA_IS_DIALOG = "is_dialog";
 	
 	private DocumentInfo doc;
-
+	private boolean isDialog;
+	
 	private TextView name;
 	private TextView type;
 	private TextView size;
@@ -80,12 +82,22 @@ public class DetailFragment extends Fragment{
 		fragment.setArguments(args);
 
 		final FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.container_info, fragment, TAG);
+		ft.replace(R.id.container_info, fragment, TAG_DETAIL);
 		ft.commitAllowingStateLoss();
 	}
 
+    public static void showAsDialog(FragmentManager fm, DocumentInfo doc) {
+		final Bundle args = new Bundle();
+		args.putParcelable(EXTRA_DOC, doc);
+		args.putBoolean(EXTRA_IS_DIALOG, true);
+		
+		final DetailFragment fragment = new DetailFragment();
+		fragment.setArguments(args);
+		fragment.show(fm, TAG_DETAIL);
+    }
+        
 	public static DetailFragment get(FragmentManager fm) {
-		return (DetailFragment) fm.findFragmentByTag(TAG);
+		return (DetailFragment) fm.findFragmentByTag(TAG_DETAIL);
 	}
 	
 	public static void hide(FragmentManager fm){
@@ -100,6 +112,7 @@ public class DetailFragment extends Fragment{
 		Bundle args = getArguments();
 		if(null != args){
 			doc = args.getParcelable(EXTRA_DOC);
+			isDialog = args.getBoolean(EXTRA_IS_DIALOG);
 		}
 	}
 	
@@ -127,6 +140,9 @@ public class DetailFragment extends Fragment{
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		if(isDialog){
+			getDialog().setTitle("Details");
+		}
 		
 		name.setText(doc.displayName);
 		path.setText(doc.path);
@@ -168,7 +184,7 @@ public class DetailFragment extends Fragment{
 					}
 				} catch (Exception e) {
 					if (!(e instanceof OperationCanceledException)) {
-						Log.w(TAG, "Failed to load thumbnail for " + uri + ": " + e);
+						Log.w(TAG_DETAIL, "Failed to load thumbnail for " + uri + ": " + e);
 					}
 				} finally {
 					ContentProviderClientCompat.releaseQuietly(client);
@@ -202,10 +218,12 @@ public class DetailFragment extends Fragment{
 				iconMime.setImageDrawable(IconUtils.loadMimeIcon(getActivity(), doc.mimeType, doc.authority, doc.documentId, DocumentsActivity.State.MODE_GRID));
 			}
 			
-			if(null != result){
+			if(null != result || Document.MIME_TYPE_DIR.equals(doc.mimeType)){
 				ViewCompat.setBackground(icon, null);
 				icon.setForeground(null);
-				
+			}
+			
+			if(null != result){
 				iconThumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				iconThumb.setTag(null);
 				iconThumb.setImageBitmap(result);
