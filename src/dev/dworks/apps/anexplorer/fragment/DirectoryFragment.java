@@ -18,8 +18,8 @@
 package dev.dworks.apps.anexplorer.fragment;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
@@ -538,12 +538,13 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem share = menu.findItem(R.id.menu_share);
 			final MenuItem delete = menu.findItem(R.id.menu_delete);
 
-			final boolean manageMode = state.action == ACTION_GET_CONTENT;
+			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
 			isApp = root != null && root.isApp();
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
-			delete.setVisible(canDelete);
+			delete.setVisible(manageMode && canDelete);
+			
 			if(isApp){
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
@@ -553,6 +554,10 @@ public class DirectoryFragment extends ListFragment {
 			}
 			else{
 				if(editMode){
+					final MenuItem edit = menu.findItem(R.id.menu_edit);
+					if(edit != null){
+						edit.setVisible(manageMode);
+					}
 					final MenuItem info = menu.findItem(R.id.menu_info);
 					final MenuItem rename = menu.findItem(R.id.menu_rename);
 					

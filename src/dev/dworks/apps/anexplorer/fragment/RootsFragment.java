@@ -17,7 +17,7 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -156,7 +156,7 @@ public class RootsFragment extends Fragment {
                 | SettingsActivity.getDisplayAdvancedDevices(context);
         state.rootMode = SettingsActivity.getRootMode(getActivity());
         
-        if (state.action == ACTION_GET_CONTENT) {
+        if (state.action == ACTION_BROWSE) {
             mList.setOnItemLongClickListener(mItemLongClickListener);
         } else {
             mList.setOnItemLongClickListener(null);
@@ -365,15 +365,13 @@ public class RootsFragment extends Fragment {
             if (videos != null) add(videos);
             if (audio != null) add(audio);
             if (downloads != null) add(downloads);
-
             
-            add(new SpacerItem());
-            for (RootInfo cloud : clouds) {
-                add(new RootItem(cloud));
-            }
-            
-            if (includeApps != null) {
-                final PackageManager pm = context.getPackageManager();
+            if (includeApps == null) {
+            	add(new SpacerItem());
+                for (RootInfo cloud : clouds) {
+                    add(new RootItem(cloud));
+                }
+/*                final PackageManager pm = context.getPackageManager();
                 final List<ResolveInfo> infos = pm.queryIntentActivities(
                         includeApps, PackageManager.MATCH_DEFAULT_ONLY);
 
@@ -391,7 +389,7 @@ public class RootsFragment extends Fragment {
                     for (Item item : apps) {
                         add(item);
                     }
-                }
+                }*/
             }
         }
 

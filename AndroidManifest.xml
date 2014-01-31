@@ -4,6 +4,10 @@
     android:versionCode="34"
     android:versionName="2.0" >
 
+    <permission
+        android:name="android.permission.MANAGE_DOCUMENTS"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,7 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
 
-    <!-- <uses-permission android:name="android.permission.REMOVE_TASKS" /> -->
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
@@ -23,8 +26,8 @@
         android:required="false" />
 
     <application
-        android:allowBackup="true"
         android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="AnExplorer" >
 
@@ -123,8 +126,7 @@
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-        
-       <provider
+        <provider
             android:name="dev.dworks.apps.anexplorer.provider.RootedStorageProvider"
             android:authorities="dev.dworks.apps.anexplorer.rootedstorage.documents"
             android:exported="true"
@@ -134,7 +136,7 @@
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-       
+
         <!--
              <provider
             android:name="dev.dworks.apps.anexplorer.provider.DownloadStorageProvider"
@@ -145,7 +147,7 @@
             <intent-filter>
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>
+        </provider>
         -->
 
         <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver" >
@@ -168,7 +170,6 @@
         <activity
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
-
     </application>
 
 </manifest>
