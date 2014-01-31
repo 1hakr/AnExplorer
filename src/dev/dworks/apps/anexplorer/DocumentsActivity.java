@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer;
 
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
@@ -84,7 +85,6 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
@@ -245,13 +245,13 @@ public class DocumentsActivity extends Activity {
             SaveFragment.show(getFragmentManager(), mimeType, title);
         }
 
-        if (mState.action == ACTION_GET_CONTENT) {
+        if (mState.action == ACTION_BROWSE) {
             final Intent moreApps = new Intent(getIntent());
             moreApps.setComponent(null);
             moreApps.setPackage(null);
             RootsFragment.show(getFragmentManager(), null);
-        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE) {
-            RootsFragment.show(getFragmentManager(), null);
+        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
+            RootsFragment.show(getFragmentManager(), new Intent());
         }
 
         if (!mState.restored) {
@@ -269,24 +269,13 @@ public class DocumentsActivity extends Activity {
             if(SettingsActivity.getTranslucentMode(this)){
     	        SystemBarTintManager.setupTint(this);
     	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        mDirectoryContainer.setLayoutParams(getToggleParams(false));
+    	        mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
             }
             else{
-            	mDirectoryContainer.setLayoutParams(getToggleParams(true));
+            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
             }	
         }
     }
-    
-    RelativeLayout.LayoutParams getToggleParams(boolean toggle) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        if(toggle){
-            params.addRule(RelativeLayout.ABOVE, R.id.container_save);	
-        }
-        else{
-            params.removeRule(RelativeLayout.ABOVE);
-        }
-        return params;
-	}
 
 	private void initProtection() {
 
@@ -333,16 +322,16 @@ public class DocumentsActivity extends Activity {
             mState.action = ACTION_GET_CONTENT;
         } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
             //mState.action = ACTION_MANAGE;
-            mState.action = ACTION_GET_CONTENT;
+            mState.action = ACTION_BROWSE;
         } else{
-            mState.action = ACTION_GET_CONTENT;
+            mState.action = ACTION_BROWSE;
         }
 
         if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
             mState.allowMultiple = intent.getBooleanExtra(IntentUtils.EXTRA_ALLOW_MULTIPLE, false);
         }
         
-        if (mState.action == ACTION_GET_CONTENT) {
+        if (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
             mState.acceptMimes = new String[] { "*/*" };
             mState.allowMultiple = true;
         }
@@ -452,17 +441,17 @@ public class DocumentsActivity extends Activity {
 
             boolean showDrawer = false;
             if (!mRestoredStack) {
-                showDrawer = true;
+                showDrawer = false;
             }
             if (MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes)) {
                 showDrawer = false;
             }
-            if (mExternal && mState.action == ACTION_GET_CONTENT) {
-                showDrawer = true;
+            if (mExternal && (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE)) {
+                showDrawer = false;
             }
 
             if (showDrawer) {
-                //setRootsDrawerOpen(true);
+                setRootsDrawerOpen(true);
             }
 
             onCurrentDirectoryChanged(ANIM_NONE);
@@ -577,7 +566,7 @@ public class DocumentsActivity extends Activity {
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
             actionBar.setIcon(new ColorDrawable());
 
-            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
                 actionBar.setTitle(R.string.app_name);
                 actionBar.setIcon(R.drawable.ic_launcher);
             } else if (mState.action == ACTION_CREATE) {
@@ -734,6 +723,10 @@ public class DocumentsActivity extends Activity {
             }
             if(null != SaveFragment.get(fm))
             SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+        } else if (mState.action == ACTION_GET_CONTENT) {
+        	createDir.setVisible(false);
+            searchVisible = root != null
+                    && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
         } else {
         	createDir.setVisible(cwd != null && cwd.isCreateSupported());
         	//createFile.setVisible(cwd != null && cwd.isCreateSupported());
@@ -1159,16 +1152,23 @@ public class DocumentsActivity extends Activity {
             if (move != null) {
                 move.setReplaceTarget(doc);
             }
-        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
-            // Explicit file picked, return
-            //new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
-        	
+        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT){
+        	// Explicit file picked, return
+            new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
+        } else if (mState.action == ACTION_BROWSE) {
+            
         	/*if(doc.isZipFile()){
                 mState.stack.push(doc);
                 mState.stackTouched = true;
                 onCurrentDirectoryChanged(ANIM_DOWN);
         		return;
         	}*/
+/*            final long token = Binder.clearCallingIdentity();
+            try {
+
+            } finally {
+                Binder.restoreCallingIdentity(token);
+            }*/        	
             // Fall back to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1223,7 +1223,7 @@ public class DocumentsActivity extends Activity {
 	}	
 	
     public void onDocumentsPicked(List<DocumentInfo> docs) {
-        if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
+        if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
             final int size = docs.size();
             final Uri[] uris = new Uri[size];
             for (int i = 0; i < size; i++) {
@@ -1266,7 +1266,6 @@ public class DocumentsActivity extends Activity {
         resolver.insert(RecentsProvider.buildResume(packageName), values);
     }
 
-    @SuppressWarnings("unused")
 	private void onFinished(Uri... uris) {
         Log.d(TAG, "onFinished() " + Arrays.toString(uris));
 
@@ -1279,10 +1278,15 @@ public class DocumentsActivity extends Activity {
             for (int i = 1; i < uris.length; i++) {
                 clipData.addItem(new ClipData.Item(uris[i]));
             }
-            //intent.setClipData(clipData);
+            if(Utils.hasJellyBean()){
+                intent.setClipData(clipData);	
+            }
+            else{
+            	intent.setData(uris[0]);
+            }
         }
 
-        if (mState.action == ACTION_GET_CONTENT) {
+        if (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } else {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -1345,7 +1349,6 @@ public class DocumentsActivity extends Activity {
     }
 
     private class ExistingFinishTask extends AsyncTask<Void, Void, Void> {
-        @SuppressWarnings("unused")
 		private final Uri[] mUris;
 
         public ExistingFinishTask(Uri... uris) {
@@ -1360,8 +1363,10 @@ public class DocumentsActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-        	SaveFragment.hide(getFragmentManager());
-            //onFinished(mUris);
+        	if(mState.action != ACTION_GET_CONTENT){
+            	SaveFragment.hide(getFragmentManager());	
+        	}
+            onFinished(mUris);
         }
     }
     
@@ -1460,6 +1465,7 @@ public class DocumentsActivity extends Activity {
         public static final int ACTION_CREATE = 2;
         public static final int ACTION_GET_CONTENT = 3;
         public static final int ACTION_MANAGE = 4;
+        public static final int ACTION_BROWSE = 5;
 
         public static final int MODE_UNKNOWN = 0;
         public static final int MODE_LIST = 1;

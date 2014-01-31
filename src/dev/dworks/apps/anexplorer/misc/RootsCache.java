@@ -368,7 +368,7 @@ public class RootsCache {
 
             if(null != root.authority
             		&& root.authority.equals(RootedStorageProvider.AUTHORITY)){
-            	if(!state.rootMode){
+            	if(state.action != State.ACTION_BROWSE || !state.rootMode){
             		continue;
             	}
             }

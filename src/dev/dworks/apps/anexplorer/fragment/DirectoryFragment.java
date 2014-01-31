@@ -18,8 +18,8 @@
 package dev.dworks.apps.anexplorer.fragment;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
@@ -32,8 +32,6 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import java.io.File;
 import java.util.ArrayList;
 
-import android.R.integer;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -81,7 +79,6 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -248,25 +245,14 @@ public class DirectoryFragment extends ListFragment {
 				SystemBarTintManager.setInsets(getActivity(), mListView);
 				SystemBarTintManager.setInsets(getActivity(), mGridView);
 				SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
-				mListView.setLayoutParams(getToggleParams(false));
-				mGridView.setLayoutParams(getToggleParams(false));
+				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
+				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
 			}
 			else{
-				mListView.setLayoutParams(getToggleParams(true));
-				mGridView.setLayoutParams(getToggleParams(true));
+				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
+				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
 			}
 		}
-	}
-	
-    RelativeLayout.LayoutParams getToggleParams(boolean toggle) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        if(toggle){
-            params.addRule(RelativeLayout.ABOVE, R.id.adView);	
-        }
-        else{
-            params.removeRule(RelativeLayout.ABOVE);
-        }
-        return params;
 	}
 
 	@Override
@@ -540,12 +526,13 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem share = menu.findItem(R.id.menu_share);
 			final MenuItem delete = menu.findItem(R.id.menu_delete);
 
-			final boolean manageMode = state.action == ACTION_GET_CONTENT;
+			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
 			isApp = root != null && root.isApp();
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
-			delete.setVisible(canDelete);
+			delete.setVisible(manageMode && canDelete);
+			
 			if(isApp){
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
@@ -555,6 +542,10 @@ public class DirectoryFragment extends ListFragment {
 			}
 			else{
 				if(editMode){
+					final MenuItem edit = menu.findItem(R.id.menu_edit);
+					if(edit != null){
+						edit.setVisible(manageMode);
+					}
 					final MenuItem info = menu.findItem(R.id.menu_info);
 					final MenuItem rename = menu.findItem(R.id.menu_rename);
 					
