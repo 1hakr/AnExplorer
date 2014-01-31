@@ -34,6 +34,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.FrameLayout.LayoutParams;
 
 /**
@@ -549,5 +551,15 @@ public class SystemBarTintManager {
 	        view.setPadding(0, 0, 0, config.getPixelInsetBottom());
     	}
     }
-
+	
+	public static MarginLayoutParams getToggleParams(boolean toggle, int id) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        if(toggle){
+            params.addRule(RelativeLayout.ABOVE, id);	
+        }
+        else{
+            params.removeRule(RelativeLayout.ABOVE);
+        }
+        return params;
+	}
 }

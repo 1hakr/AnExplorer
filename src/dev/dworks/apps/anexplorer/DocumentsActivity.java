@@ -17,10 +17,10 @@
 
 package dev.dworks.apps.anexplorer;
 
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
@@ -85,7 +85,6 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
@@ -270,24 +269,13 @@ public class DocumentsActivity extends Activity {
             if(SettingsActivity.getTranslucentMode(this)){
     	        SystemBarTintManager.setupTint(this);
     	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        mDirectoryContainer.setLayoutParams(getToggleParams(false));
+    	        mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
             }
             else{
-            	mDirectoryContainer.setLayoutParams(getToggleParams(true));
+            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
             }	
         }
     }
-    
-    RelativeLayout.LayoutParams getToggleParams(boolean toggle) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        if(toggle){
-            params.addRule(RelativeLayout.ABOVE, R.id.container_save);	
-        }
-        else{
-            params.removeRule(RelativeLayout.ABOVE);
-        }
-        return params;
-	}
 
 	private void initProtection() {
 

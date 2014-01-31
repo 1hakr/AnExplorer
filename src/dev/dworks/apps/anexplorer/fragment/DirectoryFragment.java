@@ -79,7 +79,6 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -246,25 +245,14 @@ public class DirectoryFragment extends ListFragment {
 				SystemBarTintManager.setInsets(getActivity(), mListView);
 				SystemBarTintManager.setInsets(getActivity(), mGridView);
 				SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
-				mListView.setLayoutParams(getToggleParams(false));
-				mGridView.setLayoutParams(getToggleParams(false));
+				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
+				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
 			}
 			else{
-				mListView.setLayoutParams(getToggleParams(true));
-				mGridView.setLayoutParams(getToggleParams(true));
+				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
+				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
 			}
 		}
-	}
-	
-    RelativeLayout.LayoutParams getToggleParams(boolean toggle) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
-        if(toggle){
-            params.addRule(RelativeLayout.ABOVE, R.id.adView);	
-        }
-        else{
-            params.removeRule(RelativeLayout.ABOVE);
-        }
-        return params;
 	}
 
 	@Override
