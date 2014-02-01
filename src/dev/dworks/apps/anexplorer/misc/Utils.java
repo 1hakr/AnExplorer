@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
@@ -122,8 +123,12 @@ public class Utils {
     public static boolean isLowRamDevice() {
     	return !hasMoreHeap();
 	}
+
+    public static boolean isTablet(Context context) {
+		return context.getResources().getConfiguration().smallestScreenWidthDp >= 600;
+	}
     
-    public static int parseMode(String mode) {
+	public static int parseMode(String mode) {
         final int modeBits;
         if ("r".equals(mode)) {
             modeBits = ParcelFileDescriptor.MODE_READ_ONLY;

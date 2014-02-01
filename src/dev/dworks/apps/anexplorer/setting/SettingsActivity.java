@@ -45,6 +45,7 @@ public class SettingsActivity extends PreferenceActivity {
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
     public static final String KEY_ROOT_MODE = "rootMode";
     public static final String KEY_TRANSLUCENT_MODE = "translucentMode";
+    public static final String KEY_AS_DIALOG = "asDialog";
     
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
@@ -83,6 +84,11 @@ public class SettingsActivity extends PreferenceActivity {
                 .getBoolean(KEY_TRANSLUCENT_MODE, false);
     }
     
+    public static boolean getAsDialog(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_AS_DIALOG, false);
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,44 +103,45 @@ public class SettingsActivity extends PreferenceActivity {
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
         if (mShowAsDialog) {
-            // backgroundDimAmount from theme isn't applied; do it manually
-            final WindowManager.LayoutParams a = getWindow().getAttributes();
-            a.dimAmount = 0.6f;
-            getWindow().setAttributes(a);
+        	if(SettingsActivity.getAsDialog(this)){
+                // backgroundDimAmount from theme isn't applied; do it manually
+                final WindowManager.LayoutParams a = getWindow().getAttributes();
+                a.dimAmount = 0.6f;
+                getWindow().setAttributes(a);
 
-            getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-            getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+                getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-            // Inset ourselves to look like a dialog
-            final Point size = new Point();
-            getWindowManager().getDefaultDisplay().getSize(size);
+                // Inset ourselves to look like a dialog
+                final Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
 
-            final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-            final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
-            final int insetX = (size.x - width) / 2;
-            final int insetY = (size.y - height) / 2;
+                final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+                final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
+                final int insetX = (size.x - width) / 2;
+                final int insetY = (size.y - height) / 2;
 
-            final Drawable before = getWindow().getDecorView().getBackground();
-            final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-            ViewCompat.setBackground(getWindow().getDecorView(), after);
+                final Drawable before = getWindow().getDecorView().getBackground();
+                final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
+                ViewCompat.setBackground(getWindow().getDecorView(), after);
 
-            // Dismiss when touch down in the dimmed inset area
-            getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        final float x = event.getX();
-                        final float y = event.getY();
-                        if (x < insetX || x > v.getWidth() - insetX || y < insetY
-                                || y > v.getHeight() - insetY) {
-                            finish();
-                            return true;
+                // Dismiss when touch down in the dimmed inset area
+                getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            final float x = event.getX();
+                            final float y = event.getY();
+                            if (x < insetX || x > v.getWidth() - insetX || y < insetY
+                                    || y > v.getHeight() - insetY) {
+                                finish();
+                                return true;
+                            }
                         }
+                        return false;
                     }
-                    return false;
-                }
-            });
-
+                });	
+        	}
         }
         
         changed = getTranslucentMode(this);

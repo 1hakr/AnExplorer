@@ -27,5 +27,8 @@
         android:defaultValue="false"
         android:key="translucentMode"
         android:title="@string/pref_translucent_mode" />
-
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="asDialog"
+        android:title="@string/pref_as_dialog" />
 </PreferenceScreen>

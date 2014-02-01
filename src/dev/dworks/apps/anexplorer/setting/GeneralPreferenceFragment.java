@@ -1,5 +1,6 @@
 package dev.dworks.apps.anexplorer.setting;
 
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_AS_DIALOG;
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ROOT_MODE;
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_TRANSLUCENT_MODE;
 import android.os.Bundle;
@@ -17,7 +18,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.pref_general);
-
+		
 		if(!Utils.isRooted()){
 			Preference preference = findPreference(KEY_ROOT_MODE);
 			if(null != preference)
@@ -28,6 +29,12 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
 			Preference preference = findPreference(KEY_TRANSLUCENT_MODE);
 			if(null != preference)
 			getPreferenceScreen().removePreference(preference);				
+		}
+		
+		if(!Utils.isTablet(getActivity())){
+			Preference preference = findPreference(KEY_AS_DIALOG);
+			if(null != preference)
+			getPreferenceScreen().removePreference(preference);
 		}
 	}
 }
