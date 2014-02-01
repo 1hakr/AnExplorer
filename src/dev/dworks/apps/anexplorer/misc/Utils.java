@@ -19,8 +19,8 @@ package dev.dworks.apps.anexplorer.misc;
 import java.io.File;
 import java.util.Locale;
 
+import android.app.ActivityManager;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
@@ -120,7 +120,11 @@ public class Utils {
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }
     
-    public static boolean isLowRamDevice() {
+    public static boolean isLowRamDevice(Context context) {
+    	if(Utils.hasKitKat()){
+    		final ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+    		return am.isLowRamDevice();
+    	}
     	return !hasMoreHeap();
 	}
 

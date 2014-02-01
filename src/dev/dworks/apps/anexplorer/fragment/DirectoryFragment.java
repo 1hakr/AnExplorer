@@ -188,7 +188,6 @@ public class DirectoryFragment extends ListFragment {
 			args.putBoolean(EXTRA_IGNORE_STATE, true);
 			break;
 		case ANIM_DOWN:
-			args.putBoolean(EXTRA_IGNORE_STATE, true);
 			ft.setCustomAnimations(R.animator.dir_down, R.animator.dir_frozen);
 			break;
 		case ANIM_UP:
@@ -293,9 +292,7 @@ public class DirectoryFragment extends ListFragment {
 			mHideGridTitles = (doc != null) && doc.isGridTitlesHidden();
 		}
 
-		// final ActivityManager am = (ActivityManager)
-		// context.getSystemService(Context.ACTIVITY_SERVICE);
-		mSvelteRecents = !Utils.hasMoreHeap() && (mType == TYPE_RECENT_OPEN);
+		mSvelteRecents = Utils.isLowRamDevice(context) && (mType == TYPE_RECENT_OPEN);
 
 		mCallbacks = new LoaderCallbacks<DirectoryResult>() {
 			@Override

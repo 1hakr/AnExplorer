@@ -529,18 +529,15 @@ public class DocumentsActivity extends Activity {
     }
     
     public void setInfoDrawerOpen(boolean open) {
-    	if(mShowAsDialog){
-    		//TODO: show detail fragment as dialog
-    	}
-    	else{
-        	setRootsDrawerOpen(false);
+    	if(!mShowAsDialog){
+    		setRootsDrawerOpen(false);
             if (open) {
             	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
                 mDrawerLayout.openDrawer(Gravity.RIGHT);
             } else {
             	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
                 mDrawerLayout.closeDrawer(Gravity.RIGHT);
-            }	
+            }
     	}
     }
 
@@ -845,7 +842,6 @@ public class DocumentsActivity extends Activity {
             mState.stack.pop();
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
-            // TODO: open root drawer once we can capture back key
             super.onBackPressed();
         } else {
             super.onBackPressed();
@@ -1016,8 +1012,7 @@ public class DocumentsActivity extends Activity {
                 DirectoryFragment.showRecentsOpen(fm, anim);
 
                 // Start recents in grid when requesting visual things
-                final boolean visualMimes = MimePredicate.mimeMatches(
-                        MimePredicate.VISUAL_MIMES, mState.acceptMimes);
+                final boolean visualMimes = true;//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
                 mState.userMode = visualMimes ? MODE_GRID : MODE_LIST;
                 mState.derivedMode = mState.userMode;
             }
