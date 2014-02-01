@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The Android Open Source Project
+<!--
+     Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -11,19 +12,18 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
--->
+     limitations under the License.-->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:orientation="horizontal" >
 
     <FrameLayout
+        android:id="@+id/dialog_roots"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/dialog_roots">
+        android:layout_height="match_parent" >
 
         <FrameLayout
             android:id="@+id/container_roots"
@@ -36,26 +36,24 @@
             android:layout_gravity="end"
             android:scaleType="fitXY"
             android:src="@drawable/ic_drawer_shadow_tablet" />
-
     </FrameLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_weight="1" >
 
         <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
             android:id="@+id/container_directory"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_above="@+id/container_save" />
 
         <FrameLayout
             android:id="@+id/container_save"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
 
 </LinearLayout>

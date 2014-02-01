@@ -25,4 +25,6 @@
 
     <bool name="show_as_dialog">false</bool>
     <bool name="always_show_summary">false</bool>
+    
+    <dimen name="detail_width">300dp</dimen>
 </resources>

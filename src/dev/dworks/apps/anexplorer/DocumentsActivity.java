@@ -977,6 +977,10 @@ public class DocumentsActivity extends Activity {
     }
 
     public void onCurrentDirectoryChanged(int anim) {
+    	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
+    	if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
+    		return;
+    	}
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
