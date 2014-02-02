@@ -79,7 +79,8 @@ public class DownloadStorageProvider extends DocumentsProvider {
         return projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION;
     }
 
-    private void copyNotificationUri(MatrixCursor result, Uri uri) {
+    @SuppressWarnings("unused")
+	private void copyNotificationUri(MatrixCursor result, Uri uri) {
         result.setNotificationUri(getContext().getContentResolver(), uri);
     }
 

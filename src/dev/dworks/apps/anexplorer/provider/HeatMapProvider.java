@@ -18,14 +18,10 @@
 package dev.dworks.apps.anexplorer.provider;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -48,7 +44,6 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
-import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -58,14 +53,14 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 
 @SuppressLint("DefaultLocale")
-public class ExternalStorageProvider extends StorageProvider {
-    private static final String TAG = "ExternalStorage";
+public class HeatMapProvider extends StorageProvider {
+    private static final String TAG = "HeatMap";
 
     private static final boolean LOG_INOTIFY = false;
 
-    public static final String AUTHORITY = "dev.dworks.apps.anexplorer.externalstorage.documents";
+    public static final String AUTHORITY = "dev.dworks.apps.anexplorer.heatmap.documents";
 
-    // docId format: root:path/to/file
+    // docId heatmap:path/to/file
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
@@ -87,6 +82,7 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_PRIMARY_EMULATED = "primary";
     public static final String ROOT_ID_SECONDARY = "secondary";
     public static final String ROOT_ID_PHONE = "phone";
+    public static final String ROOT_ID_HEAT_MAP = "heatmap";
 
     private final Object mRootsLock = new Object();
 
@@ -107,14 +103,12 @@ public class ExternalStorageProvider extends StorageProvider {
         mIdToPath = Maps.newHashMap();
 
         updateVolumes();
-        includeOtherRoot();
         return true;
     }
 
     public void updateVolumes() {
         synchronized (mRootsLock) {
             updateVolumesLocked();
-            includeOtherRoot();
         }
     }
 
@@ -156,7 +150,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 final RootInfo root = new RootInfo();
                 
                 root.rootId = rootId;
-                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_SEARCH;
+                root.flags = Document.FLAG_SUPPORTS_THUMBNAIL;
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
@@ -176,64 +170,6 @@ public class ExternalStorageProvider extends StorageProvider {
         getContext().getContentResolver()
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
-    
-    private void includeOtherRoot() {
-    	try {
-            final String rootId = ROOT_ID_PHONE;
-            final File path = Environment.getRootDirectory();
-            mIdToPath.put(rootId, path);
-
-            final RootInfo root = new RootInfo();
-            root.rootId = rootId;
-            root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                    | Root.FLAG_SUPPORTS_SEARCH;
-            root.title = getContext().getString(R.string.root_phone_storage);
-            root.docId = getDocIdForFile(path);
-            mRoots.add(root);
-            mIdToRoot.put(rootId, root);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-    	
-    	try {
-            final String rootId = "download";
-            final File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            mIdToPath.put(rootId, path);
-
-            final RootInfo root = new RootInfo();
-            root.rootId = rootId;
-            root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                    | Root.FLAG_SUPPORTS_SEARCH;
-            root.title = getContext().getString(R.string.root_downloads);
-            root.docId = getDocIdForFile(path);
-            mRoots.add(root);
-            mIdToRoot.put(rootId, root);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-    	
-    	try {
-            final String rootId = "bluetooth";
-            File path = Environment.getExternalStoragePublicDirectory("Bluetooth");
-            if(null == path){
-            	path = Environment.getExternalStoragePublicDirectory("Download/Bluetooth");
-            }
-            if(null != path){
-                mIdToPath.put(rootId, path);
-
-                final RootInfo root = new RootInfo();
-                root.rootId = rootId;
-                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                        | Root.FLAG_SUPPORTS_SEARCH;
-                root.title = getContext().getString(R.string.root_bluetooth);
-                root.docId = getDocIdForFile(path);
-                mRoots.add(root);
-                mIdToRoot.put(rootId, root);	
-            }
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
 
     private static String[] resolveRootProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_ROOT_PROJECTION;
@@ -345,135 +281,56 @@ public class ExternalStorageProvider extends StorageProvider {
             row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
         }
     }
-    
-    private void includeZIPFile(MatrixCursor result, String docId, ZipEntry zipEntry)
-            throws FileNotFoundException {
-
-        int flags = 0;
-
-        final String displayName = zipEntry.getName();
-        final String mimeType = ""; //getTypeForFile(zipEntry);
-
-        final RowBuilder row = result.newRow();
-        row.add(Document.COLUMN_DOCUMENT_ID, docId);
-        row.add(Document.COLUMN_DISPLAY_NAME, displayName);
-        row.add(Document.COLUMN_SIZE, zipEntry.getSize());
-        row.add(Document.COLUMN_MIME_TYPE, mimeType);
-        row.add(Document.COLUMN_PATH, "");//zipEntry.getAbsolutePath());
-        row.add(Document.COLUMN_FLAGS, flags);
-        if(zipEntry.isDirectory()){
-        	row.add(Document.COLUMN_SUMMARY, "? files");
-        }
-
-        // Only publish dates reasonably after epoch
-        long lastModified = zipEntry.getTime();
-        if (lastModified > 31536000000L) {
-            row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
-        }
-    }
 
     @Override
     public Cursor queryRoots(String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
-        synchronized (mRootsLock) {
-            for (String rootId : mIdToPath.keySet()) {
-                final RootInfo root = mIdToRoot.get(rootId);
-                final File path = mIdToPath.get(rootId);
+        final RowBuilder row = result.newRow();
+        row.add(Root.COLUMN_ROOT_ID, ROOT_ID_HEAT_MAP);
+        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED);
+        row.add(Root.COLUMN_ICON, R.drawable.ic_root_usb);
+        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_heat_map));
+        row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_HEAT_MAP);
+        row.add(Root.COLUMN_AVAILABLE_BYTES, -1);
 
-                final RowBuilder row = result.newRow();
-                row.add(Root.COLUMN_ROOT_ID, root.rootId);
-                row.add(Root.COLUMN_FLAGS, root.flags);
-                row.add(Root.COLUMN_TITLE, root.title);
-                row.add(Root.COLUMN_DOCUMENT_ID, root.docId);
-                if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId) || root.rootId.startsWith(ROOT_ID_SECONDARY)){
-                	row.add(Root.COLUMN_AVAILABLE_BYTES, path.getFreeSpace());
-                }
-            }
-        }
         return result;
-    }
-
-    @Override
-    public String createDocument(String docId, String mimeType, String displayName)
-            throws FileNotFoundException {
-        final File parent = getFileForDocId(docId);
-        File file;
-
-        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            file = new File(parent, displayName);
-            if (!file.mkdir()) {
-                throw new IllegalStateException("Failed to mkdir " + file);
-            }
-        } else {
-            displayName = FileUtils.removeExtension(mimeType, displayName);
-            file = new File(parent, FileUtils.addExtension(mimeType, displayName));
-
-            // If conflicting file, try adding counter suffix
-            int n = 0;
-            while (file.exists() && n++ < 32) {
-                file = new File(parent, FileUtils.addExtension(mimeType, displayName + " (" + n + ")"));
-            }
-
-            try {
-                if (!file.createNewFile()) {
-                    throw new IllegalStateException("Failed to touch " + file);
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to touch " + file + ": " + e);
-            }
-        }
-        return getDocIdForFile(file);
-    }
-
-    @Override
-    public void deleteDocument(String docId) throws FileNotFoundException {
-        final File file = getFileForDocId(docId);
-        if (!FileUtils.deleteFile(file)) {
-            throw new IllegalStateException("Failed to delete " + file);
-        }
-    }
-    
-    @Override
-    public void moveDocument(String documentIdFrom, String documentIdTo, boolean deleteAfter) throws FileNotFoundException {
-    	final File fileFrom = getFileForDocId(documentIdFrom);
-    	final File fileTo = getFileForDocId(documentIdTo);
-        if (!FileUtils.moveFile(fileFrom, fileTo, null)) {
-            throw new IllegalStateException("Failed to copy " + fileFrom);
-        }
-        else{
-        	if (deleteAfter) {
-                if (!FileUtils.deleteFile(fileFrom)) {
-                    throw new IllegalStateException("Failed to delete " + fileFrom);
-                }
-			}
-        }
-    }
-    
-    @Override
-    public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
-        final File parent = getFileForDocId(parentDocumentId);
-        File file;
-    	
-		if(parent.isDirectory()){
-			file = new File(parent.getParentFile(), FileUtils.removeExtension(mimeType, displayName));
-		}
-		else{
-			displayName = FileUtils.removeExtension(mimeType, displayName);
-            file = new File(parent.getParentFile(), FileUtils.addExtension(mimeType, displayName));
-		}
-		
-		if(parent.canWrite()){
-			parent.renameTo(file);
-		}
-		
-		return getDocIdForFile(file);
     }
 
     @Override
     public Cursor queryDocument(String documentId, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-        includeFile(result, documentId, null);
+        //includeFile(result, documentId, null);
+		synchronized (mRootsLock) {
+			for (String rootId : mIdToPath.keySet()) {
+				final RootInfo root = mIdToRoot.get(rootId);
+				final File path = mIdToPath.get(rootId);
+				final String mimeType = getTypeForFile(path);
+				
+				final RowBuilder row = result.newRow();
+				//row.add(Document.COLUMN_DOCUMENT_ID, documentId);
+				row.add(Document.COLUMN_DOCUMENT_ID, root.docId);
+				row.add(Document.COLUMN_FLAGS, root.flags);
+				row.add(Document.COLUMN_DISPLAY_NAME, root.title);
+		        row.add(Document.COLUMN_MIME_TYPE, mimeType);
+		        row.add(Document.COLUMN_PATH, path.getAbsolutePath());
+		        
+				if (ROOT_ID_PRIMARY_EMULATED.equals(root.rootId) || root.rootId.startsWith(ROOT_ID_SECONDARY)) {
+					row.add(Document.COLUMN_SIZE, path.getFreeSpace());
+				}
+				
+		        if(path.isDirectory() && null != path.list()){
+		        	String summary = FileUtils.formatFileCount(path.list().length);
+		        	row.add(Document.COLUMN_SUMMARY, summary);
+		        }
+
+		        // Only publish dates reasonably after epoch
+		        long lastModified = path.lastModified();
+		        if (lastModified > 31536000000L) {
+		            row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
+		        }
+			}
+		}
         return result;
     }
 
@@ -481,60 +338,12 @@ public class ExternalStorageProvider extends StorageProvider {
     public Cursor queryChildDocuments(
             String parentDocumentId, String[] projection, String sortOrder)
             throws FileNotFoundException {
-    	String mimeType = getDocumentType(parentDocumentId);
         final File parent = getFileForDocId(parentDocumentId);
         final MatrixCursor result = new DirectoryCursor(
                 resolveDocumentProjection(projection), parentDocumentId, parent);
-        if(!MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, mimeType)){
-            for (File file : parent.listFiles()) {
-                includeFile(result, null, file);
-            }
+        for (File file : parent.listFiles()) {
+            includeFile(result, null, file);
         }
-        else{
-        	handleCompressedFile(result, parentDocumentId, parent);
-        }
-        return result;
-    }
-
-    @SuppressWarnings("resource")
-	private void handleCompressedFile(MatrixCursor result, String parentDocumentId, File parent) {
-    	try {
-        	ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(parent.getPath()));
-        	ZipEntry zipEntry;
-            
-            while ((zipEntry = zipInputStream.getNextEntry()) != null){
-            	includeZIPFile(result, null, zipEntry);
-            }
-		} catch (Exception e) {
-		}
-	}
-
-	@Override
-    public Cursor querySearchDocuments(String rootId, String query, String[] projection)
-            throws FileNotFoundException {
-        final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-
-        final File parent;
-        synchronized (mRootsLock) {
-            parent = mIdToPath.get(rootId);
-        }
-
-/*        final LinkedList<File> pending = new LinkedList<File>();
-        pending.add(parent);
-        while (!pending.isEmpty() && result.getCount() < 24) {
-            final File file = pending.removeFirst();
-            if (file.isDirectory()) {
-                for (File child : file.listFiles()) {
-                    pending.add(child);
-                }
-            }
-            if (file.getName().toLowerCase().contains(query)) {
-                includeFile(result, null, file);
-            }
-        }*/
-        for (File file : FileUtils.searchDirectory(parent.getPath(), query)) {
-        	includeFile(result, null, file);
-		}
         return result;
     }
 

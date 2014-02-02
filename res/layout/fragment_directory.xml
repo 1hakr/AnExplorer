@@ -74,8 +74,6 @@
                 android:fastScrollEnabled="true"
                 android:clipToPadding="false"
                 android:listSelector="@android:color/transparent"
-                android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
-                android:paddingRight="?android:attr/listPreferredItemPaddingRight"
                 android:scrollbarStyle="outsideOverlay" />
 
             <GridView
