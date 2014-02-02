@@ -812,7 +812,10 @@ public class DocumentsActivity extends Activity {
      */
     private void setUserSortOrder(int sortOrder) {
         mState.userSortOrder = sortOrder;
-        DirectoryFragment.get(getFragmentManager()).onUserSortOrderChanged();
+        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
+        if (directory != null) {
+        	directory.onUserSortOrderChanged();
+        }
     }
 
     /**
@@ -820,7 +823,10 @@ public class DocumentsActivity extends Activity {
      */
     private void setUserMode(int mode) {
         mState.userMode = mode;
-        DirectoryFragment.get(getFragmentManager()).onUserModeChanged();
+        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
+        if (directory != null) {
+        	directory.onUserModeChanged();
+        }
     }
 
     public void setPending(boolean pending) {

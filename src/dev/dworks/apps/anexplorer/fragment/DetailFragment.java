@@ -46,11 +46,13 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Display document title editor and save button.
@@ -137,6 +139,15 @@ public class DetailFragment extends DialogFragment{
 		return view;
 	}
 	
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+    	super.onViewCreated(view, savedInstanceState);
+    	if(SettingsActivity.getTranslucentMode(getActivity())){
+    		SystemBarTintManager.setInsets(getActivity(), view.findViewById(R.id.scroll_view));
+    	}
+    }
+
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -147,7 +158,7 @@ public class DetailFragment extends DialogFragment{
 		name.setText(doc.displayName);
 		path.setText(doc.path);
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
-		type.setText(doc.mimeType);
+		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
 		
 		if(!TextUtils.isEmpty(doc.summary)){
 			contents.setText(doc.summary);
