@@ -65,6 +65,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.StrictMode;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -155,6 +156,14 @@ public class DocumentsActivity extends Activity {
     	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
     		setTheme(R.style.Theme_Translucent);
     	}
+    	
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
+				.penaltyLog()
+				.build());
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
+				.penaltyLog()
+				.build());
+
         super.onCreate(icicle);
 
         mRoots = DocumentsApplication.getRootsCache(this);
