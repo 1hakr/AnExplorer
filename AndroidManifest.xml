@@ -29,6 +29,7 @@
         android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
+        android:logo="@drawable/logo"
         android:supportsRtl="true"
         android:label="AnExplorer" >
 
