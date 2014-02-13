@@ -1,34 +1,53 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="advancedDevices"
-        android:persistent="true"
-        android:title="@string/pref_advanced_devices" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="fileSize"
-        android:persistent="true"
-        android:title="@string/pref_file_size" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="folderSize"
-        android:title="@string/pref_folder_size" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="fileThumbnail"
-        android:persistent="true"
-        android:title="@string/pref_thumbnail" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="rootMode"
-        android:title="@string/pref_root_mode" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="translucentMode"
-        android:title="@string/pref_translucent_mode" />
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="asDialog"
-        android:title="@string/pref_as_dialog" />
+    <PreferenceCategory android:title="Theme" >
+        <dev.dworks.apps.anexplorer.ui.ColorPreference
+            android:defaultValue="@android:color/white"
+            android:dialogTitle="@string/pref_foreground_color_title"
+            android:key="actionBarColor"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="@string/pref_foreground_color_description"
+            android:title="@string/pref_foreground_color_title"
+            app:itemLayout="@layout/pref_layout_color"
+            app:numColumns="5" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="translucentMode"
+            android:title="@string/pref_translucent_mode" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="asDialog"
+            android:title="@string/pref_as_dialog" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Basic" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="fileSize"
+            android:persistent="true"
+            android:title="@string/pref_file_size" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="folderSize"
+            android:title="@string/pref_folder_size" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="fileThumbnail"
+            android:persistent="true"
+            android:title="@string/pref_thumbnail" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Advanced" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="advancedDevices"
+            android:persistent="true"
+            android:title="@string/pref_advanced_devices" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="rootMode"
+            android:title="@string/pref_root_mode" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

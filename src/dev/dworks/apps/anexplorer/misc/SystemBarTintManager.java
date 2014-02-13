@@ -16,7 +16,6 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import dev.dworks.apps.anexplorer.R;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -32,11 +31,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.RelativeLayout;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.RelativeLayout;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Class to manage status and navigation bar tint effects when using KitKat 
@@ -529,7 +529,7 @@ public class SystemBarTintManager {
         if (Utils.hasKitKat()) {
             SystemBarTintManager tintManager = new SystemBarTintManager(context);
             tintManager.setStatusBarTintEnabled(true);
-            tintManager.setStatusBarTintResource(R.color.status_bar_tint);
+            tintManager.setStatusBarTintColor(SettingsActivity.getActionBarColor(context));
         }
     }
 	

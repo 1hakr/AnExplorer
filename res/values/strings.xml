@@ -12,7 +12,7 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
@@ -115,17 +115,17 @@
 
     <!--
          Status indicating that the download has been queued to start in the future.  Appears for an
-         individual item in the download list.  [CHAR LIMIT=24]
+         individual item in the download list.  [CHAR LIMIT=24]
     -->
     <string name="download_queued">Queued</string>
     <!--
          Status indicating that the system is currently downloading the file.  Appears for an
-         individual item in the download list.  [CHAR LIMIT=24]
+         individual item in the download list.  [CHAR LIMIT=24]
     -->
     <string name="download_running">In progress</string>
     <!--
          Status indicating that the download has ended without completing successfully.  Appears for
-         an individual item in the download list.  [CHAR LIMIT=24]
+         an individual item in the download list.  [CHAR LIMIT=24]
     -->
     <string name="download_error">Unsuccessful</string>
 
@@ -142,9 +142,9 @@
     <string name="gplus"><a href="https://plus.google.com/109240246596102887385">  Google+</a></string>
     <string name="pref_folder_size">Display folder size</string>
     <string name="pref_thumbnail">Display file thumbnails</string>
-	<string name="pref_root_mode">Display Root Mode</string>
-	<string name="pref_translucent_mode">Display Translucent Mode</string>
-	<string name="pref_as_dialog">Display as Dailog</string>
+    <string name="pref_root_mode">Display Root Mode</string>
+    <string name="pref_translucent_mode">Display Translucent Mode</string>
+    <string name="pref_as_dialog">Display as Dailog</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
@@ -162,7 +162,9 @@
     <string name="pin_disabled">PIN protection disabled</string>
     <string name="pin_protection">PIN Protection</string>
     <string name="loading">Loading...</string>
-
-    <string name="menu_rename">Rename</string>
+    <string name="pref_foreground_color_title">ActionBar Color</string>
+    <string name="pref_foreground_color_description">The color of action bar</string>
     
+    <string name="menu_rename">Rename</string>
+
 </resources>

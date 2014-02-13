@@ -61,8 +61,12 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StrictMode;
@@ -150,7 +154,7 @@ public class DocumentsActivity extends Activity {
     private State mState;
 	private boolean authenticated;
 	private FrameLayout mSaveContainer;
-
+	
     @Override
     public void onCreate(Bundle icicle) {
     	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
@@ -173,7 +177,7 @@ public class DocumentsActivity extends Activity {
 
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
-
+        
         if (mShowAsDialog) {
         	if(SettingsActivity.getAsDialog(this)){
                 // backgroundDimAmount from theme isn't applied; do it manually
@@ -231,7 +235,7 @@ public class DocumentsActivity extends Activity {
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
-
+        changeActionBarColor();
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
             authenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
@@ -274,17 +278,6 @@ public class DocumentsActivity extends Activity {
             }
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
-        }
-        
-        if(Utils.hasKitKat()){
-            if(SettingsActivity.getTranslucentMode(this)){
-    	        SystemBarTintManager.setupTint(this);
-    	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
-            }
-            else{
-            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
-            }	
         }
     }
 
@@ -472,7 +465,7 @@ public class DocumentsActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-
+        changeActionBarColor();
         if (mState.action == ACTION_MANAGE) {
             mState.showSize = true;
             mState.showFolderSize = false;
@@ -1200,10 +1193,11 @@ public class DocumentsActivity extends Activity {
             	view.setDataAndType(doc.derivedUri, doc.mimeType);
             }
 
-            try {
-                startActivity(view);
-            } catch (ActivityNotFoundException ex2) {
-                Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+            if(null != view.resolveActivity(getPackageManager())){
+            	startActivity(view);
+            }
+            else{
+            	Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
@@ -1561,4 +1555,68 @@ public class DocumentsActivity extends Activity {
     public static DocumentsActivity get(Fragment fragment) {
         return (DocumentsActivity) fragment.getActivity();
     }
+
+	private final Handler handler = new Handler();
+	private Drawable oldBackground;
+	private void changeActionBarColor() {
+
+		int color = SettingsActivity.getActionBarColor(this);
+		Drawable colorDrawable = new ColorDrawable(color);
+		Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
+		LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
+
+		if (oldBackground == null || SettingsActivity.getTranslucentMode(this)) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				ld.setCallback(drawableCallback);
+			} else {
+				getActionBar().setBackgroundDrawable(ld);
+			}
+
+		} else {
+			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
+			// workaround for broken ActionBarContainer drawable handling on
+			// pre-API 17 builds
+			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				td.setCallback(drawableCallback);
+			} else {
+				getActionBar().setBackgroundDrawable(td);
+			}
+			td.startTransition(200);
+		}
+
+		oldBackground = ld;
+		
+		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
+		getActionBar().setDisplayShowTitleEnabled(false);
+		getActionBar().setDisplayShowTitleEnabled(true);
+        
+        if(Utils.hasKitKat()){
+            if(SettingsActivity.getTranslucentMode(this)){
+    	        SystemBarTintManager.setupTint(this);
+    	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
+    	        mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
+            }
+            else{
+            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
+            }	
+        }
+	}
+	
+	private Drawable.Callback drawableCallback = new Drawable.Callback() {
+		@Override
+		public void invalidateDrawable(Drawable who) {
+			getActionBar().setBackgroundDrawable(who);
+		}
+
+		@Override
+		public void scheduleDrawable(Drawable who, Runnable what, long when) {
+			handler.postAtTime(what, when);
+		}
+
+		@Override
+		public void unscheduleDrawable(Drawable who, Runnable what) {
+			handler.removeCallbacks(what);
+		}
+	};
 }

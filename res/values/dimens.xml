@@ -27,4 +27,8 @@
     <bool name="always_show_summary">false</bool>
     
     <dimen name="detail_width">300dp</dimen>
+    
+    <dimen name="color_grid_item_size">48dp</dimen>
+    <dimen name="color_grid_circle_size">36dp</dimen>
+    <dimen name="color_grid_extra_padding">32dp</dimen>
 </resources>
