@@ -79,6 +79,7 @@ import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -152,7 +153,7 @@ public class DirectoryFragment extends ListFragment {
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
 	private ArrayMap<Integer, Long> mSizes = new ArrayMap<Integer, Long>();
 	private ArrayList<DocumentInfo> docsAppUninstall = Lists.newArrayList();
-	
+
 	private static final String EXTRA_TYPE = "type";
 	private static final String EXTRA_ROOT = "root";
 	private static final String EXTRA_DOC = "doc";
@@ -162,6 +163,7 @@ public class DirectoryFragment extends ListFragment {
 	private final int mLoaderId = 42;
 	private RootInfo root;
 	private DocumentInfo doc;
+	private boolean isApp;
 
 	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -234,20 +236,19 @@ public class DirectoryFragment extends ListFragment {
 
 		return view;
 	}
-	
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
-		if(Utils.hasKitKat()){
-			if(SettingsActivity.getTranslucentMode(getActivity())){
+
+		if (Utils.hasKitKat()) {
+			if (SettingsActivity.getTranslucentMode(getActivity())) {
 				SystemBarTintManager.setInsets(getActivity(), mListView);
 				SystemBarTintManager.setInsets(getActivity(), mGridView);
 				SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
 				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
 				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
-			}
-			else{
+			} else {
 				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
 				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
 			}
@@ -280,6 +281,7 @@ public class DirectoryFragment extends ListFragment {
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
+		isApp = root != null && root.isApp();
 
 		mAdapter = new DocumentsAdapter();
 		mType = getArguments().getInt(EXTRA_TYPE);
@@ -342,11 +344,11 @@ public class DirectoryFragment extends ListFragment {
 				if (mType == TYPE_RECENT_OPEN && mAdapter.isEmpty() && !state.stackTouched) {
 					((DocumentsActivity) context).setRootsDrawerOpen(true);
 				}
-		        if (isResumed()) {
-		            setListShown(true);
-		        } else {
-		            setListShownNoAnimation(true);
-		        }	
+				if (isResumed()) {
+					setListShown(true);
+				} else {
+					setListShownNoAnimation(true);
+				}
 				// Restore any previous instance state
 				final SparseArray<Parcelable> container = state.dirState.remove(mStateKey);
 				if (container != null && !getArguments().getBoolean(EXTRA_IGNORE_STATE, false)) {
@@ -428,16 +430,14 @@ public class DirectoryFragment extends ListFragment {
 	private void updateDisplayState() {
 		final State state = getDisplayState(this);
 
-		if (mLastMode == state.derivedMode 
-				&& mLastShowSize == state.showSize
-				&& mLastShowFolderSize == state.showFolderSize 
+		if (mLastMode == state.derivedMode && mLastShowSize == state.showSize && mLastShowFolderSize == state.showFolderSize
 				&& mLastShowThumbnail == state.showThumbnail)
 			return;
 		mLastMode = state.derivedMode;
 		mLastShowSize = state.showSize;
 		mLastShowFolderSize = state.showFolderSize;
 		mLastShowThumbnail = state.showThumbnail;
-		
+
 		mListView.setVisibility(state.derivedMode == MODE_LIST ? View.VISIBLE : View.GONE);
 		mGridView.setVisibility(state.derivedMode == MODE_GRID ? View.VISIBLE : View.GONE);
 
@@ -480,10 +480,10 @@ public class DirectoryFragment extends ListFragment {
 				final String docId = getCursorString(cursor, Document.COLUMN_DOCUMENT_ID);
 				final String docMimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
 				final int docFlags = getCursorInt(cursor, Document.COLUMN_FLAGS);
-				if(null != root && root.isApp()){
-					startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + AppsProvider.getPackageForDocId(docId))));			
-				}
-				else if (isDocumentEnabled(docMimeType, docFlags)) {
+				if (null != root && root.isApp()) {
+					startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+							+ AppsProvider.getPackageForDocId(docId))));
+				} else if (isDocumentEnabled(docMimeType, docFlags)) {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 					((DocumentsActivity) getActivity()).onDocumentPicked(doc);
 				}
@@ -492,24 +492,23 @@ public class DirectoryFragment extends ListFragment {
 	};
 
 	private MultiChoiceModeListener mMultiListener = new MultiChoiceModeListener() {
-		
+
 		boolean selectAll = true;
-		private boolean isApp;
 		private boolean editMode;
-		
+		private boolean isApp;
+
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			editMode = root != null && root.isEditSupported();
 			int menuId = R.menu.mode_simple_directory;
-			if(null != root && root.isApp()){
-				menuId = R.menu.mode_apps;				
-			}
-			else{
-				if(editMode){
+			if (null != root && root.isApp()) {
+				menuId = R.menu.mode_apps;
+			} else {
+				if (editMode) {
 					menuId = R.menu.mode_directory;
 				}
 			}
-			
+
 			mode.getMenuInflater().inflate(menuId, menu);
 			return true;
 		}
@@ -518,40 +517,39 @@ public class DirectoryFragment extends ListFragment {
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 			final int count = mCurrentView.getCheckedItemCount();
 			final State state = getDisplayState(DirectoryFragment.this);
-			
+
 			final MenuItem open = menu.findItem(R.id.menu_open);
 			final MenuItem share = menu.findItem(R.id.menu_share);
 			final MenuItem delete = menu.findItem(R.id.menu_delete);
 
 			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
-			isApp = root != null && root.isApp();
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
-			
-			if(isApp){
+
+			if (isApp) {
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
 				save.setVisible(root.isAppPackage());
-				delete.setIcon(root.isAppProcess()? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
+				delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
 				delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
-			}
-			else{
-				if(editMode){
+			} else {
+				if (editMode) {
 					final MenuItem edit = menu.findItem(R.id.menu_edit);
-					if(edit != null){
+					if (edit != null) {
 						edit.setVisible(manageMode);
 					}
 					final MenuItem info = menu.findItem(R.id.menu_info);
 					final MenuItem rename = menu.findItem(R.id.menu_rename);
-					
+
 					final MenuItem copy = menu.findItem(R.id.menu_copy);
 					final MenuItem cut = menu.findItem(R.id.menu_cut);
-					//final MenuItem compress = menu.findItem(R.id.menu_compress);
+					// final MenuItem compress =
+					// menu.findItem(R.id.menu_compress);
 					copy.setVisible(editMode);
 					cut.setVisible(editMode);
-					
+
 					info.setVisible(count == 1);
 					rename.setVisible(count == 1);
 				}
@@ -583,48 +581,46 @@ public class DirectoryFragment extends ListFragment {
 				onShareDocuments(docs);
 				mode.finish();
 				return true;
-				
+
 			case R.id.menu_copy:
 				MoveFragment.show(getFragmentManager(), docs, false);
 				mode.finish();
 				return true;
-				
+
 			case R.id.menu_cut:
 				MoveFragment.show(getFragmentManager(), docs, true);
 				mode.finish();
 				return true;
-				
+
 			case R.id.menu_delete:
-				if(isApp && root.isAppPackage()){
+				if (isApp && root.isAppPackage()) {
 					docsAppUninstall = docs;
 					onUninstall();
-				}
-				else{
+				} else {
 					deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
 				}
 				mode.finish();
 				return true;
-				
+
 			case R.id.menu_save:
 				new OperationTask(docs, id).execute();
 				mode.finish();
 				return true;
-				
+
 			case R.id.menu_select_all:
 				for (int i = 0; i < mAdapter.getCount(); i++) {
 					mCurrentView.setItemChecked(i, selectAll);
 				}
 				selectAll = !selectAll;
 				return true;
-				
+
 			case R.id.menu_info:
 				final DocumentsActivity activity = (DocumentsActivity) getActivity();
 				activity.setInfoDrawerOpen(true);
-				if(activity.isShowAsDialog()){
+				if (activity.isShowAsDialog()) {
 					DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
-				}
-				else{
-					DetailFragment.show(getFragmentManager(), docs.get(0));	
+				} else {
+					DetailFragment.show(getFragmentManager(), docs.get(0));
 				}
 				mode.finish();
 				return true;
@@ -654,9 +650,9 @@ public class DirectoryFragment extends ListFragment {
 				if (cursor != null) {
 					final String docMimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
 					final int docFlags = getCursorInt(cursor, Document.COLUMN_FLAGS);
-					//if (!Document.MIME_TYPE_DIR.equals(docMimeType)) {
-						valid = isDocumentEnabled(docMimeType, docFlags);
-					//}
+					// if (!Document.MIME_TYPE_DIR.equals(docMimeType)) {
+					valid = isDocumentEnabled(docMimeType, docFlags);
+					// }
 				}
 
 				if (!valid) {
@@ -666,7 +662,7 @@ public class DirectoryFragment extends ListFragment {
 
 			int count = mCurrentView.getCheckedItemCount();
 			mode.setTitle(getResources().getString(R.string.mode_selected_count, count));
-			if(count == 1 || count == 2){
+			if (count == 1 || count == 2) {
 				mode.invalidate();
 			}
 		}
@@ -739,18 +735,18 @@ public class DirectoryFragment extends ListFragment {
 				hadTrouble = true;
 			}
 		}
-		
+
 		return hadTrouble;
 	}
-	
+
 	private void onUninstall() {
-		if(!docsAppUninstall.isEmpty()){
-			DocumentInfo doc = docsAppUninstall.get(docsAppUninstall.size()-1);
+		if (!docsAppUninstall.isEmpty()) {
+			DocumentInfo doc = docsAppUninstall.get(docsAppUninstall.size() - 1);
 			onUninstallApp(doc);
-			docsAppUninstall.remove(docsAppUninstall.size() -1);
+			docsAppUninstall.remove(docsAppUninstall.size() - 1);
 		}
 	}
-	
+
 	private boolean onUninstallApp(DocumentInfo doc) {
 		final Context context = getActivity();
 		final ContentResolver resolver = context.getContentResolver();
@@ -768,11 +764,11 @@ public class DirectoryFragment extends ListFragment {
 			Log.w(TAG, "Failed to delete " + doc);
 			hadTrouble = true;
 		}
-		
+
 		return hadTrouble;
 	}
-	
-	private class OperationTask extends AsyncTask<Void, Void, Boolean>{
+
+	private class OperationTask extends AsyncTask<Void, Void, Boolean> {
 
 		private ProgressDialog progressDialog;
 		private ArrayList<DocumentInfo> docs;
@@ -783,15 +779,14 @@ public class DirectoryFragment extends ListFragment {
 			this.id = id;
 			progressDialog = new ProgressDialog(getActivity());
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			//progressDialog.setIndeterminate(true);
+			// progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(false);
-			
+
 			switch (id) {
 			case R.id.menu_delete:
-				if(null != root && root.isApp()){
+				if (null != root && root.isApp()) {
 					progressDialog.setMessage("Stopping processes...");
-				}
-				else{
+				} else {
 					progressDialog.setMessage("Deleting files...");
 				}
 				break;
@@ -803,13 +798,13 @@ public class DirectoryFragment extends ListFragment {
 				break;
 			}
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
 			progressDialog.show();
 			super.onPreExecute();
 		}
-		
+
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			boolean result = false;
@@ -822,14 +817,14 @@ public class DirectoryFragment extends ListFragment {
 				result = onSaveDocuments(docs);
 				break;
 			}
-			
+
 			return result;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
-			
+
 			progressDialog.dismiss();
 			if (result) {
 				switch (id) {
@@ -843,34 +838,31 @@ public class DirectoryFragment extends ListFragment {
 				}
 
 			}
-			if(null != root && root.isAppProcess()){
+			if (null != root && root.isAppProcess()) {
 				AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
 				AppsProvider.notifyRootsChanged(getActivity());
 			}
-			if(!(null != root && root.isAppPackage())){
-				((DocumentsActivity)getActivity()).onCurrentDirectoryChanged(ANIM_NONE);	
+			if (!(null != root && root.isAppPackage())) {
+				((DocumentsActivity) getActivity()).onCurrentDirectoryChanged(ANIM_NONE);
 			}
 		}
 	}
-	
+
 	private void deleteFiles(final ArrayList<DocumentInfo> docs, final int id, String title) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(title)
-		.setCancelable(false)
-		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		builder.setMessage(title).setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int did) {
 				dialog.dismiss();
 				new OperationTask(docs, id).execute();
 			}
-		})
-		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int did) {
 				dialog.dismiss();
 			}
 		});
 		builder.create().show();
 	}
-	
+
 	private static State getDisplayState(Fragment fragment) {
 		return ((DocumentsActivity) fragment.getActivity()).getDisplayState();
 	}
@@ -894,7 +886,7 @@ public class DirectoryFragment extends ListFragment {
 				hadTrouble = true;
 			}
 		}
-		
+
 		return hadTrouble;
 	}
 
@@ -980,7 +972,7 @@ public class DirectoryFragment extends ListFragment {
 		public void swapResult(DirectoryResult result) {
 			mCursor = result != null ? result.cursor : null;
 			mCursorCount = mCursor != null ? mCursor.getCount() : 0;
-			
+
 			mSizes.clear();
 			mFooters.clear();
 
@@ -1087,9 +1079,12 @@ public class DirectoryFragment extends ListFragment {
 			final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
 			final TextView date = (TextView) convertView.findViewById(R.id.date);
 			final TextView size = (TextView) convertView.findViewById(R.id.size);
+			final View popupButton = convertView.findViewById(R.id.button_popup);
+
+			popupButton.setOnClickListener(this);
 
 			final View iconView = convertView.findViewById(android.R.id.icon);
-			if(null != iconView){
+			if (null != iconView) {
 				iconView.setOnClickListener(this);
 			}
 			final ThumbnailAsyncTask oldTask = (ThumbnailAsyncTask) iconThumb.getTag();
@@ -1110,7 +1105,9 @@ public class DirectoryFragment extends ListFragment {
 				final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
 				final Bitmap cachedResult = thumbs.get(uri);
 				if (cachedResult != null) {
-					iconThumb.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
+					iconThumb
+							.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
+									: ImageView.ScaleType.CENTER_CROP);
 					iconThumb.setImageBitmap(cachedResult);
 					cacheHit = true;
 				} else {
@@ -1222,12 +1219,11 @@ public class DirectoryFragment extends ListFragment {
 				size.setVisibility(View.VISIBLE);
 				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
 					size.setText(null);
-					if(state.showFolderSize){
+					if (state.showFolderSize) {
 						long sizeInBytes = mSizes.containsKey(position) ? mSizes.get(position) : -1;
-						if(sizeInBytes != -1){
+						if (sizeInBytes != -1) {
 							size.setText(Formatter.formatFileSize(context, sizeInBytes));
-						}
-						else{
+						} else {
 							final FolderSizeAsyncTask task = new FolderSizeAsyncTask(size, docPath, position);
 							size.setTag(task);
 							ProviderExecutor.forAuthority(docAuthority).execute(task);
@@ -1306,24 +1302,36 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		@Override
-		public void onClick(View v) {
-			
+		public void onClick(final View v) {
+
 			final int position = mCurrentView.getPositionForView(v);
 			if (position != ListView.INVALID_POSITION) {
 				int count = mCurrentView.getCheckedItemCount();
-				if(count == 0){
-		            ActionMode mChoiceActionMode = null;
-					if (mChoiceActionMode == null &&
-		                    (mChoiceActionMode = mCurrentView.startActionMode(mMultiListener)) != null) {
-		                mCurrentView.setItemChecked(position, true);
-		                mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-		            }
-				}
-				else{
-	                mCurrentView.setItemChecked(position, !mCurrentView.isItemChecked(position));
-	                mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+				switch (v.getId()) {
+				case android.R.id.icon:
+					if (count == 0) {
+						ActionMode mChoiceActionMode = null;
+						if (mChoiceActionMode == null && (mChoiceActionMode = mCurrentView.startActionMode(mMultiListener)) != null) {
+							mCurrentView.setItemChecked(position, true);
+							mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+						}
+					} else {
+						mCurrentView.setItemChecked(position, !mCurrentView.isItemChecked(position));
+						mCurrentView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+					}
+					break;
+
+				case R.id.button_popup:
+					v.post(new Runnable() {
+						@Override
+						public void run() {
+							showPopupMenu(v, position);
+						}
+					});
+					break;
 				}
 			}
+
 		}
 	}
 
@@ -1421,10 +1429,10 @@ public class DirectoryFragment extends ListFragment {
 			if (isCancelled())
 				return null;
 
-			//final Context context = mSizeView.getContext();
+			// final Context context = mSizeView.getContext();
 			Long result = null;
 			try {
-				if(!TextUtils.isEmpty(mPath)){
+				if (!TextUtils.isEmpty(mPath)) {
 					File dir = new File(mPath);
 					result = Utils.getDirectorySize(dir);
 				}
@@ -1433,7 +1441,7 @@ public class DirectoryFragment extends ListFragment {
 					Log.w(TAG, "Failed to calculate size for " + mPath + ": " + e);
 				}
 			}
-			return result;	
+			return result;
 		}
 
 		@Override
@@ -1495,7 +1503,7 @@ public class DirectoryFragment extends ListFragment {
 		}
 		// Directories are always enabled
 		if (Document.MIME_TYPE_DIR.equals(docMimeType)) {
-			//return true;
+			// return true;
 		}
 
 		// Read-only files are disabled when creating
@@ -1504,5 +1512,80 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		return MimePredicate.mimeMatches(state.acceptMimes, docMimeType);
+	}
+
+	private void showPopupMenu(View view, final int position) {
+		PopupMenu popup = new PopupMenu(getActivity(), view);
+		boolean editMode = root != null && root.isEditSupported();
+		int menuId = R.menu.popup_simple_directory;
+		if (null != root && root.isApp()) {
+			menuId = R.menu.popup_apps;
+		} else {
+			if (editMode) {
+				menuId = R.menu.popup_directory;
+			}
+		}
+
+		popup.getMenuInflater().inflate(menuId, popup.getMenu());
+		popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				return onPopupMenuItemClick(menuItem, position);
+			}
+		});
+
+		popup.show();
+	}
+
+	public boolean onPopupMenuItemClick(MenuItem item, int position) {
+		final ArrayList<DocumentInfo> docs = Lists.newArrayList();
+		final Cursor cursor = mAdapter.getItem(position);
+		final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
+		docs.add(doc);
+
+		final int id = item.getItemId();
+		switch (id) {
+		case R.id.menu_share:
+			onShareDocuments(docs);
+			return true;
+
+		case R.id.menu_copy:
+			MoveFragment.show(getFragmentManager(), docs, false);
+			return true;
+
+		case R.id.menu_cut:
+			MoveFragment.show(getFragmentManager(), docs, true);
+			return true;
+
+		case R.id.menu_delete:
+			if (isApp && root.isAppPackage()) {
+				docsAppUninstall = docs;
+				onUninstall();
+			} else {
+				deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
+			}
+			return true;
+
+		case R.id.menu_save:
+			new OperationTask(docs, id).execute();
+			return true;
+			
+		case R.id.menu_info:
+			final DocumentsActivity activity = (DocumentsActivity) getActivity();
+			activity.setInfoDrawerOpen(true);
+			if (activity.isShowAsDialog()) {
+				DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
+			} else {
+				DetailFragment.show(getFragmentManager(), docs.get(0));
+			}
+			return true;
+
+		case R.id.menu_rename:
+			RenameFragment.show(getFragmentManager(), docs.get(0));
+			return true;
+
+		default:
+			return false;
+		}
 	}
 }

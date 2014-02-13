@@ -300,7 +300,6 @@ public class ColorPreference extends Preference {
 
         private class ColorGridAdapter extends BaseAdapter {
             private List<Integer> mChoices = new ArrayList<Integer>();
-            private int mSelectedColor;
 
             private ColorGridAdapter() {
                 for (int color : mPreference.mColorChoices) {
@@ -338,7 +337,6 @@ public class ColorPreference extends Preference {
             }
 
             public void setSelectedColor(int selectedColor) {
-                mSelectedColor = selectedColor;
                 notifyDataSetChanged();
             }
         }

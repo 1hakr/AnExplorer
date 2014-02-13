@@ -265,7 +265,7 @@ public class SettingsActivity extends PreferenceActivity {
 		Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
 		LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
 
-		if (oldBackground == null || SettingsActivity.getTranslucentMode(this)) {
+		if (oldBackground == null) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				ld.setCallback(drawableCallback);
 			} else {

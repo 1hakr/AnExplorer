@@ -236,6 +236,7 @@ public class DocumentsActivity extends Activity {
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         changeActionBarColor();
+        
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
             authenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
