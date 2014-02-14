@@ -30,6 +30,8 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -495,7 +497,6 @@ public class DirectoryFragment extends ListFragment {
 
 		boolean selectAll = true;
 		private boolean editMode;
-		private boolean isApp;
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -1516,14 +1517,23 @@ public class DirectoryFragment extends ListFragment {
 
 	private void showPopupMenu(View view, final int position) {
 		PopupMenu popup = new PopupMenu(getActivity(), view);
+		
+/*        try {
+			Field mPopup = popup.getClass().getDeclaredField("mPopup");
+			mPopup.setAccessible(true);
+			Object menuPopupHelper = mPopup.get(popup);
+			Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+			Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+			setForceIcons.invoke(menuPopupHelper, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
 		boolean editMode = root != null && root.isEditSupported();
 		int menuId = R.menu.popup_simple_directory;
-		if (null != root && root.isApp()) {
+		if (isApp) {
 			menuId = R.menu.popup_apps;
-		} else {
-			if (editMode) {
-				menuId = R.menu.popup_directory;
-			}
+		} else if(editMode){
+			menuId = R.menu.popup_directory;
 		}
 
 		popup.getMenuInflater().inflate(menuId, popup.getMenu());
@@ -1533,6 +1543,24 @@ public class DirectoryFragment extends ListFragment {
 				return onPopupMenuItemClick(menuItem, position);
 			}
 		});
+		
+		if (isApp) {
+			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
+			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
+			save.setVisible(root.isAppPackage());
+			delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
+			delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
+		}
+		else{
+			final State state = getDisplayState(DirectoryFragment.this);
+			final MenuItem share = popup.getMenu().findItem(R.id.menu_share);
+			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
+
+			final boolean manageMode = state.action == ACTION_BROWSE;
+			final boolean canDelete = doc != null && doc.isDeleteSupported();
+			share.setVisible(manageMode);
+			delete.setVisible(manageMode && canDelete);
+		}
 
 		popup.show();
 	}

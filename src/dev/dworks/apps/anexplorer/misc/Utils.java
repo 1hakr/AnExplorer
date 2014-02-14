@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
 import android.text.format.Time;
+import dev.dworks.apps.anexplorer.R;
 
 public class Utils {
 
@@ -134,7 +135,7 @@ public class Utils {
 	}
 
     public static boolean isTablet(Context context) {
-		return context.getResources().getConfiguration().smallestScreenWidthDp >= 720;
+		return context.getResources().getBoolean(R.bool.show_as_dialog);//().smallestScreenWidthDp >= 720;
 	}
     
 	public static int parseMode(String mode) {
