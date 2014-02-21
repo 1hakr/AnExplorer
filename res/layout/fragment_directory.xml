@@ -30,7 +30,7 @@
         android:visibility="gone" >
 
         <ProgressBar
-            style="?android:attr/progressBarStyleLarge"
+            style="@style/ListProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
