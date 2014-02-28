@@ -30,8 +30,6 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -662,7 +660,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			int count = mCurrentView.getCheckedItemCount();
-			mode.setTitle(getResources().getString(R.string.mode_selected_count, count));
+			mode.setTitle(count+"");//getResources().getString(R.string.mode_selected_count, count));
 			if (count == 1 || count == 2) {
 				mode.invalidate();
 			}
@@ -851,12 +849,12 @@ public class DirectoryFragment extends ListFragment {
 
 	private void deleteFiles(final ArrayList<DocumentInfo> docs, final int id, String title) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(title).setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		builder.setMessage(title).setCancelable(false).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int did) {
 				dialog.dismiss();
 				new OperationTask(docs, id).execute();
 			}
-		}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		}).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int did) {
 				dialog.dismiss();
 			}
