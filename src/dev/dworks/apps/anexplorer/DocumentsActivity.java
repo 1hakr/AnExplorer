@@ -132,6 +132,7 @@ public class DocumentsActivity extends Activity {
 
     private static final String EXTRA_STATE = "state";
     private static final String EXTRA_AUTHENTICATED = "authenticated";
+    private static final String EXTRA_ACTIONMODE = "actionmode";
 
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
@@ -152,10 +153,12 @@ public class DocumentsActivity extends Activity {
 
     private RootsCache mRoots;
     private State mState;
-	private boolean authenticated;
+	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
-	
-    @Override
+
+	private boolean mActionMode;
+
+	@Override
     public void onCreate(Bundle icicle) {
     	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
     		setTheme(R.style.Theme_Translucent);
@@ -239,7 +242,8 @@ public class DocumentsActivity extends Activity {
         
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
-            authenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
+            mAuthenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
+            mActionMode = icicle.getBoolean(EXTRA_ACTIONMODE);
         } else {
             buildDefaultState();
         }
@@ -284,7 +288,7 @@ public class DocumentsActivity extends Activity {
 
 	private void initProtection() {
 
-		if(authenticated || !SettingsActivity.isPinEnabled(this)){
+		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
 			return;
 		}
         final Dialog d = new Dialog(this, R.style.Theme_DailogPIN);
@@ -292,7 +296,7 @@ public class DocumentsActivity extends Activity {
             public void onEnter(String password) {
                 super.onEnter(password);
                 if (SettingsActivity.checkPin(DocumentsActivity.this, password)) {
-                	authenticated = true;
+                	mAuthenticated = true;
                 	d.dismiss();
                 }
                 else {
@@ -861,7 +865,8 @@ public class DocumentsActivity extends Activity {
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putParcelable(EXTRA_STATE, mState);
-        state.putBoolean(EXTRA_AUTHENTICATED, authenticated);
+        state.putBoolean(EXTRA_AUTHENTICATED, mAuthenticated);
+        state.putBoolean(EXTRA_ACTIONMODE, mActionMode);
     }
 
     @Override
@@ -1594,9 +1599,16 @@ public class DocumentsActivity extends Activity {
         
         if(Utils.hasKitKat()){
             if(SettingsActivity.getTranslucentMode(this)){
-    	        SystemBarTintManager.setupTint(this);
-    	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
+                if(mActionMode){
+        			SystemBarTintManager.setupTint(this, R.color.contextual_actionbar_color);
+        		}
+        		else{
+        			SystemBarTintManager.setupTint(this);
+        		}
+    	        if(Utils.hasSoftNavBar(this)){
+        	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
+    	        	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
+    	        }
             }
             else{
             	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
@@ -1620,4 +1632,12 @@ public class DocumentsActivity extends Activity {
 			handler.removeCallbacks(what);
 		}
 	};
+	
+	public boolean getActionMode() {
+		return mActionMode;
+	}
+
+	public void setActionMode(boolean actionMode) {
+		mActionMode = actionMode;
+	}
 }

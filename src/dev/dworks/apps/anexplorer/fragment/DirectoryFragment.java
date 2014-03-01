@@ -221,7 +221,7 @@ public class DirectoryFragment extends ListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// final Context context = inflater.getContext();
 		final View view = inflater.inflate(R.layout.fragment_directory, container, false);
-
+		
 		mEmptyView = view.findViewById(android.R.id.empty);
 
 		mListView = (ListView) view.findViewById(R.id.list);
@@ -245,9 +245,11 @@ public class DirectoryFragment extends ListFragment {
 			if (SettingsActivity.getTranslucentMode(getActivity())) {
 				SystemBarTintManager.setInsets(getActivity(), mListView);
 				SystemBarTintManager.setInsets(getActivity(), mGridView);
-				SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
-				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
-				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
+				if(Utils.hasSoftNavBar(getActivity())){
+					SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
+					mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
+					mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));	
+				}
 			} else {
 				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
 				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
@@ -514,6 +516,15 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			
+			final Context context = getActivity();
+			if(null != context){
+				final DocumentsActivity activity = (DocumentsActivity) context;
+				if(!activity.getActionMode()){
+					SystemBarTintManager.setupTint(getActivity(), R.color.contextual_actionbar_color);
+					activity.setActionMode(true);
+				}
+			}
 			final int count = mCurrentView.getCheckedItemCount();
 			final State state = getDisplayState(DirectoryFragment.this);
 
@@ -636,6 +647,12 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+			final Context context = getActivity();
+			if(null != context){
+				final DocumentsActivity activity = (DocumentsActivity) context;
+				activity.setActionMode(false);
+			}
+			SystemBarTintManager.setupTint(getActivity());
 			// ignored
 		}
 

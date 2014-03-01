@@ -26,7 +26,9 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
 import android.text.format.Time;
-import dev.dworks.apps.anexplorer.R;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
+import android.view.ViewConfiguration;
 
 public class Utils {
 
@@ -135,7 +137,7 @@ public class Utils {
 	}
 
     public static boolean isTablet(Context context) {
-		return context.getResources().getBoolean(R.bool.show_as_dialog);//().smallestScreenWidthDp >= 720;
+		return context.getResources().getConfiguration().smallestScreenWidthDp >= 600;
 	}
     
 	public static int parseMode(String mode) {
@@ -230,5 +232,16 @@ public class Utils {
         return ((30 * Color.red(color) +
                 59 * Color.green(color) +
                 11 * Color.blue(color)) / 100) <= BRIGHTNESS_THRESHOLD;
+    }
+    
+    public static boolean hasSoftNavBar(Context context){
+    	boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
+    	boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+
+    	if(!hasMenuKey && !hasBackKey) {
+    		return true;
+    	}
+		return false;
+
     }
 }

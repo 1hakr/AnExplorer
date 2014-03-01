@@ -532,6 +532,15 @@ public class SystemBarTintManager {
             tintManager.setStatusBarTintColor(SettingsActivity.getActionBarColor(context));
         }
     }
+    
+    public static void setupTint(Activity context, int resource) {
+        // Only set the tint if the device is running KitKat or above
+        if (Utils.hasKitKat()) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setStatusBarTintResource(resource);
+        }
+    }
 	
     public static void setInsets(Activity context, View view) {
     	if (Utils.hasKitKat()) {
