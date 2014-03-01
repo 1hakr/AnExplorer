@@ -550,6 +550,14 @@ public class SystemBarTintManager {
     	}
     }
     
+    public static void setInsetsTop(Activity context, View view) {
+    	if (Utils.hasKitKat()) {
+	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
+	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 0);
+    	}
+    }
+    
     public static void setNavigationInsets(Activity context, View view) {
     	if (Utils.hasKitKat()) {
     		//final android.view.ViewGroup.MarginLayoutParams a = (android.view.ViewGroup.MarginLayoutParams) view.getLayoutParams();

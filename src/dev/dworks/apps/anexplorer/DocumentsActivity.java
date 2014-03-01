@@ -238,7 +238,6 @@ public class DocumentsActivity extends Activity {
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
-        changeActionBarColor();
         
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
@@ -248,6 +247,7 @@ public class DocumentsActivity extends Activity {
             buildDefaultState();
         }
 
+        changeActionBarColor();
         initProtection();
         
         // Hide roots when we're managing a specific root

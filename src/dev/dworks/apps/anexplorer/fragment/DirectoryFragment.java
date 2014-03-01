@@ -243,12 +243,16 @@ public class DirectoryFragment extends ListFragment {
 
 		if (Utils.hasKitKat()) {
 			if (SettingsActivity.getTranslucentMode(getActivity())) {
-				SystemBarTintManager.setInsets(getActivity(), mListView);
-				SystemBarTintManager.setInsets(getActivity(), mGridView);
 				if(Utils.hasSoftNavBar(getActivity())){
+					SystemBarTintManager.setInsets(getActivity(), mListView);
+					SystemBarTintManager.setInsets(getActivity(), mGridView);
 					SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
 					mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
 					mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));	
+				}
+				else{
+					SystemBarTintManager.setInsetsTop(getActivity(), mListView);
+					SystemBarTintManager.setInsetsTop(getActivity(), mGridView);					
 				}
 			} else {
 				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
