@@ -1,9 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <PreferenceCategory android:title="Theme" >
+    <PreferenceCategory android:title="Theme" android:key="theme">
         <dev.dworks.apps.anexplorer.ui.ColorPreference
-            android:defaultValue="@android:color/white"
+            android:defaultValue="@color/actionbar_color"
             android:dialogTitle="@string/pref_foreground_color_title"
             android:key="actionBarColor"
             android:negativeButtonText="@null"
@@ -38,7 +38,7 @@
             android:persistent="true"
             android:title="@string/pref_thumbnail" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Advanced" >
+    <PreferenceCategory android:title="Advanced" android:key="advanced">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="advancedDevices"

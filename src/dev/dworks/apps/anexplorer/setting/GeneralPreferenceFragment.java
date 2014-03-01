@@ -6,6 +6,7 @@ import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACTIONBAR_
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_TRANSLUCENT_MODE;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import dev.dworks.apps.anexplorer.R;
@@ -25,21 +26,25 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 		preferenceActionBar.setOnPreferenceChangeListener(this);
 		
 		if(!Utils.isRooted()){
+			PreferenceCategory pref = (PreferenceCategory) getPreferenceManager().findPreference("advanced");
 			Preference preference = findPreference(KEY_ROOT_MODE);
 			if(null != preference)
-			getPreferenceScreen().removePreference(preference);
+				pref.removePreference(preference);
 		}
 		
 		if(!Utils.hasKitKat()){
+			PreferenceCategory pref = (PreferenceCategory) getPreferenceManager().findPreference("theme");
 			Preference preference = findPreference(KEY_TRANSLUCENT_MODE);
 			if(null != preference)
-			getPreferenceScreen().removePreference(preference);				
+				pref.removePreference(preference);				
+			
 		}
 		
 		if(!Utils.isTablet(getActivity())){
+			PreferenceCategory pref = (PreferenceCategory) getPreferenceManager().findPreference("theme");
 			Preference preference = findPreference(KEY_AS_DIALOG);
 			if(null != preference)
-			getPreferenceScreen().removePreference(preference);
+				pref.removePreference(preference);
 		}
 	}
 
