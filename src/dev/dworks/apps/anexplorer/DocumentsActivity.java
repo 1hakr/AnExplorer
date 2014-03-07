@@ -104,6 +104,7 @@ import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
@@ -481,6 +482,24 @@ public class DocumentsActivity extends Activity {
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
             invalidateOptionsMenu();
         }
+        AppRate.with(this).listener(new AppRate.OnShowListener() {
+            @Override
+            public void onRateAppShowing() {
+                // View is shown
+            }
+
+            @Override
+            public void onRateAppDismissed() {
+                // User has dismissed it
+            }
+
+            @Override
+            public void onRateAppClicked() {
+    			Intent intentMarket = new Intent("android.intent.action.VIEW");
+    			intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
+    			startActivity(intentMarket);
+            }
+        }).checkAndShow();
     }
 
     private DrawerListener mDrawerListener = new DrawerListener() {
