@@ -109,7 +109,7 @@ public class AboutActivity extends Activity {
 			break;
 		case R.id.action_gplus:
 			startActivity(new Intent("android.intent.action.VIEW",
-					Uri.parse("https://plus.google.com/109240246596102887385")));
+					Uri.parse("https://plus.google.com/+HariKrishnaDulipudi")));
 			break;
 		case R.id.action_twitter:
 			startActivity(new Intent("android.intent.action.VIEW",

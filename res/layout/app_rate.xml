@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_toLeftOf="@+id/close"
             android:gravity="center_vertical"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:drawablePadding="10dp"
             android:drawableLeft="@drawable/ic_menu_rate"
             android:fontFamily="sans-serif-light"
