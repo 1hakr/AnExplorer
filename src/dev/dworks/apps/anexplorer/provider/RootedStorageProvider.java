@@ -27,6 +27,7 @@ import java.util.Scanner;
 import org.sufficientlysecure.rootcommands.Shell;
 import org.sufficientlysecure.rootcommands.command.SimpleCommand;
 
+import android.annotation.SuppressLint;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
@@ -219,7 +220,7 @@ public class RootedStorageProvider extends StorageProvider {
         synchronized (mRootsLock) {
             for (String rootId : mIdToPath.keySet()) {
                 final RootInfo root = mIdToRoot.get(rootId);
-                final RootFile path = mIdToPath.get(rootId);
+                //final RootFile path = mIdToPath.get(rootId);
                 
                 final RowBuilder row = result.newRow();
                 row.add(Root.COLUMN_ROOT_ID, root.rootId);
@@ -239,7 +240,7 @@ public class RootedStorageProvider extends StorageProvider {
 
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
-        final RootFile file = getRootFileForDocId(docId);
+        //final RootFile file = getRootFileForDocId(docId);
 /*        if (!FileUtils.deleteFile(file)) {
             throw new IllegalStateException("Failed to delete " + file);
         }*/
@@ -309,7 +310,9 @@ public class RootedStorageProvider extends StorageProvider {
     public static String getCmdPath(String path){
         return path.replace(" ", "\\ ").replace("'", "\\'");
     }
-    @Override
+    
+    @SuppressWarnings("unused")
+	@Override
     public Cursor querySearchDocuments(String rootId, String query, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
@@ -386,7 +389,8 @@ public class RootedStorageProvider extends StorageProvider {
         }
     }
 
-    private static String getTypeForFile(File file) {
+    @SuppressWarnings("unused")
+	private static String getTypeForFile(File file) {
         if (file.isDirectory()) {
             return Document.MIME_TYPE_DIR;
         } else {
@@ -402,7 +406,8 @@ public class RootedStorageProvider extends StorageProvider {
         }
     }
     
-    private static String getTypeForName(String name) {
+    @SuppressLint("DefaultLocale")
+	private static String getTypeForName(String name) {
         final int lastDot = name.lastIndexOf('.');
         if (lastDot >= 0) {
             final String extension = name.substring(lastDot + 1).toLowerCase();

@@ -21,9 +21,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -52,6 +52,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
  * Presents a {@link DocumentsContract} view of {@link Apps}
  * contents.
  */
+@SuppressLint("DefaultLocale")
 public class AppsProvider extends DocumentsProvider {
     public static final String AUTHORITY = "dev.dworks.apps.anexplorer.apps.documents";
     public static final String ROOT_ID_APP = "apps";
@@ -114,7 +115,7 @@ public class AppsProvider extends DocumentsProvider {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
         final RowBuilder row = result.newRow();
         row.add(Root.COLUMN_ROOT_ID, ROOT_ID_APP);
-        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_SEARCH);
+        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row.add(Root.COLUMN_ICON, R.drawable.ic_root_apps);
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_apps));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_APP);
@@ -122,7 +123,7 @@ public class AppsProvider extends DocumentsProvider {
         
         final RowBuilder row1 = result.newRow();
         row1.add(Root.COLUMN_ROOT_ID, ROOT_ID_PROCESS);
-        row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_SEARCH);
+        row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row1.add(Root.COLUMN_ICON, R.drawable.ic_root_process);
         row1.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_processes));
         row1.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_PROCESS);
@@ -241,8 +242,8 @@ public class AppsProvider extends DocumentsProvider {
         // Delegate to real provider
         final long token = Binder.clearCallingIdentity();
         try {
-            final long id = Long.parseLong(docId);
-            final ContentResolver resolver = getContext().getContentResolver();
+            //final long id = Long.parseLong(docId);
+            //final ContentResolver resolver = getContext().getContentResolver();
             return null;//resolver.openFileDescriptor(mDm.getUriForDownloadedFile(id), mode);
         } finally {
             Binder.restoreCallingIdentity(token);

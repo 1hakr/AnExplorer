@@ -85,6 +85,7 @@ public class RenameFragment extends DialogFragment {
 
         String nameOnly = FileUtils.removeExtension(doc.mimeType, doc.displayName);
         text1.setText(nameOnly);
+        text1.setSelection(text1.getText().length());
         
         builder.setTitle(R.string.menu_rename);
         builder.setView(view);

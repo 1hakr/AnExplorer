@@ -287,4 +287,67 @@ public class IconUtils {
             return res.getDrawable(R.drawable.ic_doc_generic);
         }
     }
+    
+    public static String getTypeNameFromMimeType(Context context, String mimeType) {
+        int resource = 0;
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+        	return "folder";
+        }
+
+        // Look for exact match first
+        Integer resId = sMimeIcons.get(mimeType);
+        if (resId != null) {
+        	resource = resId;
+        }
+        
+        
+        switch (resource) {
+		case R.drawable.ic_doc_apk:
+			return "apk";
+		case R.drawable.ic_doc_audio:
+			return "audio";
+		case R.drawable.ic_doc_certificate:
+			return "certificate";
+		case R.drawable.ic_doc_codes:
+			return "source code";
+		case R.drawable.ic_doc_compressed:
+			return "compressed";
+		case R.drawable.ic_doc_contact:
+			return "contact";
+		case R.drawable.ic_doc_event:
+			return "event";
+		case R.drawable.ic_doc_font:
+			return "font";
+		case R.drawable.ic_doc_image:
+			return "image";
+		case R.drawable.ic_doc_pdf:
+			return "pdf";
+		case R.drawable.ic_doc_presentation:
+			return "presentation";
+		case R.drawable.ic_doc_spreadsheet:
+			return "spreadsheet";
+		case R.drawable.ic_doc_text:
+			return "text";
+		case R.drawable.ic_doc_video:
+			return "video";
+		}
+
+        if (mimeType == null) {
+        	return "file";
+        }
+
+        // Otherwise look for partial match
+        final String typeOnly = mimeType.split("/")[0];
+        if ("audio".equals(typeOnly)) {
+        	return typeOnly;
+        } else if ("image".equals(typeOnly)) {
+        	return typeOnly;
+        } else if ("text".equals(typeOnly)) {
+        	return typeOnly;
+        } else if ("video".equals(typeOnly)) {
+        	return typeOnly;
+        }
+
+        return "file";
+    }
 }

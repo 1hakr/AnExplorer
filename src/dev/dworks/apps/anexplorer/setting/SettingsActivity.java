@@ -23,9 +23,14 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -45,13 +50,16 @@ public class SettingsActivity extends PreferenceActivity {
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
     public static final String KEY_ROOT_MODE = "rootMode";
     public static final String KEY_TRANSLUCENT_MODE = "translucentMode";
+    public static final String KEY_AS_DIALOG = "asDialog";
+    public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
     
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
 	
-	public boolean changed = false;
+	public boolean translucentMode = false;
 	private boolean mShowAsDialog;
 	private Resources res;
+	private int actionBarColor;
     
     public static boolean getDisplayAdvancedDevices(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -83,6 +91,17 @@ public class SettingsActivity extends PreferenceActivity {
                 .getBoolean(KEY_TRANSLUCENT_MODE, false);
     }
     
+    public static boolean getAsDialog(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_AS_DIALOG, false);
+    }
+    
+    public static int getActionBarColor(Context context) {
+    	int newColor = context.getResources().getColor(R.color.actionbar_color);
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(KEY_ACTIONBAR_COLOR, newColor);
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,49 +114,51 @@ public class SettingsActivity extends PreferenceActivity {
         
         res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
-
+        changeActionBarColor(0);
         if (mShowAsDialog) {
-            // backgroundDimAmount from theme isn't applied; do it manually
-            final WindowManager.LayoutParams a = getWindow().getAttributes();
-            a.dimAmount = 0.6f;
-            getWindow().setAttributes(a);
+        	if(SettingsActivity.getAsDialog(this)){
+                // backgroundDimAmount from theme isn't applied; do it manually
+                final WindowManager.LayoutParams a = getWindow().getAttributes();
+                a.dimAmount = 0.6f;
+                getWindow().setAttributes(a);
 
-            getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-            getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+                getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-            // Inset ourselves to look like a dialog
-            final Point size = new Point();
-            getWindowManager().getDefaultDisplay().getSize(size);
+                // Inset ourselves to look like a dialog
+                final Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
 
-            final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-            final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
-            final int insetX = (size.x - width) / 2;
-            final int insetY = (size.y - height) / 2;
+                final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+                final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
+                final int insetX = (size.x - width) / 2;
+                final int insetY = (size.y - height) / 2;
 
-            final Drawable before = getWindow().getDecorView().getBackground();
-            final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-            ViewCompat.setBackground(getWindow().getDecorView(), after);
+                final Drawable before = getWindow().getDecorView().getBackground();
+                final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
+                ViewCompat.setBackground(getWindow().getDecorView(), after);
 
-            // Dismiss when touch down in the dimmed inset area
-            getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        final float x = event.getX();
-                        final float y = event.getY();
-                        if (x < insetX || x > v.getWidth() - insetX || y < insetY
-                                || y > v.getHeight() - insetY) {
-                            finish();
-                            return true;
+                // Dismiss when touch down in the dimmed inset area
+                getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            final float x = event.getX();
+                            final float y = event.getY();
+                            if (x < insetX || x > v.getWidth() - insetX || y < insetY
+                                    || y > v.getHeight() - insetY) {
+                                finish();
+                                return true;
+                            }
                         }
+                        return false;
                     }
-                    return false;
-                }
-            });
-
+                });	
+        	}
         }
         
-        changed = getTranslucentMode(this);
+        translucentMode = getTranslucentMode(this);
+        actionBarColor = getActionBarColor(this);
     }
 
 	/** {@inheritDoc} */
@@ -159,10 +180,6 @@ public class SettingsActivity extends PreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
     	recreate();
     	return true;
-    }
-    
-    public void setRestart(boolean restart){
-    	this.changed = restart;
     }
     
 	public static final boolean isPinEnabled(Context context) {
@@ -212,8 +229,16 @@ public class SettingsActivity extends PreferenceActivity {
     }*/
     
     @Override
+    protected void onResume() {
+    	super.onResume();
+    	if(getActionBarColor(this) != actionBarColor){
+    		changeActionBarColor(0);
+    	}
+    }
+    
+    @Override
     public void finish() {
-    	if(getTranslucentMode(this) != changed){
+    	if((getTranslucentMode(this) != translucentMode)){
     		setResult(RESULT_FIRST_USER);
     	}
     	super.finish();
@@ -222,12 +247,65 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
-    	outState.putBoolean("changed", changed);
+    	outState.putBoolean("changed", translucentMode);
     }
     
     @Override
     protected void onRestoreInstanceState(Bundle state) {
     	super.onRestoreInstanceState(state);
-    	changed = state.getBoolean("changed");
+    	translucentMode = state.getBoolean("changed");
     }
+    
+    private final Handler handler = new Handler();
+	private Drawable oldBackground;
+	public void changeActionBarColor(int newColor) {
+
+		int color = newColor != 0 ? newColor : SettingsActivity.getActionBarColor(this);
+		Drawable colorDrawable = new ColorDrawable(color);
+		Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
+		LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
+
+		if (oldBackground == null) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				ld.setCallback(drawableCallback);
+			} else {
+				getActionBar().setBackgroundDrawable(ld);
+			}
+
+		} else {
+			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
+			// workaround for broken ActionBarContainer drawable handling on
+			// pre-API 17 builds
+			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				td.setCallback(drawableCallback);
+			} else {
+				getActionBar().setBackgroundDrawable(td);
+			}
+			td.startTransition(200);
+		}
+
+		oldBackground = ld;
+		
+		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
+		getActionBar().setDisplayShowTitleEnabled(false);
+		getActionBar().setDisplayShowTitleEnabled(true);
+	}
+	
+	private Drawable.Callback drawableCallback = new Drawable.Callback() {
+		@Override
+		public void invalidateDrawable(Drawable who) {
+			getActionBar().setBackgroundDrawable(who);
+		}
+
+		@Override
+		public void scheduleDrawable(Drawable who, Runnable what, long when) {
+			handler.postAtTime(what, when);
+		}
+
+		@Override
+		public void unscheduleDrawable(Drawable who, Runnable what) {
+			handler.removeCallbacks(what);
+		}
+	};
 }

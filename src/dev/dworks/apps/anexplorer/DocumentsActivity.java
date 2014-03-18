@@ -61,10 +61,15 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.StrictMode;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -99,6 +104,7 @@ import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
@@ -127,6 +133,7 @@ public class DocumentsActivity extends Activity {
 
     private static final String EXTRA_STATE = "state";
     private static final String EXTRA_AUTHENTICATED = "authenticated";
+    private static final String EXTRA_ACTIONMODE = "actionmode";
 
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
@@ -147,14 +154,24 @@ public class DocumentsActivity extends Activity {
 
     private RootsCache mRoots;
     private State mState;
-	private boolean authenticated;
+	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
 
-    @Override
+	private boolean mActionMode;
+
+	@Override
     public void onCreate(Bundle icicle) {
     	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
     		setTheme(R.style.Theme_Translucent);
     	}
+    	
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
+				.penaltyLog()
+				.build());
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
+				.penaltyLog()
+				.build());
+
         super.onCreate(icicle);
 
         mRoots = DocumentsApplication.getRootsCache(this);
@@ -164,45 +181,47 @@ public class DocumentsActivity extends Activity {
 
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
-
+        
         if (mShowAsDialog) {
-            // backgroundDimAmount from theme isn't applied; do it manually
-            final WindowManager.LayoutParams a = getWindow().getAttributes();
-            a.dimAmount = 0.6f;
-            getWindow().setAttributes(a);
+        	if(SettingsActivity.getAsDialog(this)){
+                // backgroundDimAmount from theme isn't applied; do it manually
+                final WindowManager.LayoutParams a = getWindow().getAttributes();
+                a.dimAmount = 0.6f;
+                getWindow().setAttributes(a);
 
-            getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-            getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+                getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
-            // Inset ourselves to look like a dialog
-            final Point size = new Point();
-            getWindowManager().getDefaultDisplay().getSize(size);
+                // Inset ourselves to look like a dialog
+                final Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
 
-            final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-            final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
-            final int insetX = (size.x - width) / 2;
-            final int insetY = (size.y - height) / 2;
+                final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+                final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
+                final int insetX = (size.x - width) / 2;
+                final int insetY = (size.y - height) / 2;
 
-            final Drawable before = getWindow().getDecorView().getBackground();
-            final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-            ViewCompat.setBackground(getWindow().getDecorView(), after);
+                final Drawable before = getWindow().getDecorView().getBackground();
+                final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
+                ViewCompat.setBackground(getWindow().getDecorView(), after);
 
-            // Dismiss when touch down in the dimmed inset area
-            getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        final float x = event.getX();
-                        final float y = event.getY();
-                        if (x < insetX || x > v.getWidth() - insetX || y < insetY
-                                || y > v.getHeight() - insetY) {
-                            finish();
-                            return true;
+                // Dismiss when touch down in the dimmed inset area
+                getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            final float x = event.getX();
+                            final float y = event.getY();
+                            if (x < insetX || x > v.getWidth() - insetX || y < insetY
+                                    || y > v.getHeight() - insetY) {
+                                finish();
+                                return true;
+                            }
                         }
+                        return false;
                     }
-                    return false;
-                }
-            });
+                });        		
+        	}
 
         } else {
             // Non-dialog means we have a drawer
@@ -220,14 +239,16 @@ public class DocumentsActivity extends Activity {
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
-
+        
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
-            authenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
+            mAuthenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
+            mActionMode = icicle.getBoolean(EXTRA_ACTIONMODE);
         } else {
             buildDefaultState();
         }
 
+        changeActionBarColor();
         initProtection();
         
         // Hide roots when we're managing a specific root
@@ -264,22 +285,11 @@ public class DocumentsActivity extends Activity {
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
-        
-        if(Utils.hasKitKat()){
-            if(SettingsActivity.getTranslucentMode(this)){
-    	        SystemBarTintManager.setupTint(this);
-    	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
-            }
-            else{
-            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
-            }	
-        }
     }
 
 	private void initProtection() {
 
-		if(authenticated || !SettingsActivity.isPinEnabled(this)){
+		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
 			return;
 		}
         final Dialog d = new Dialog(this, R.style.Theme_DailogPIN);
@@ -287,7 +297,7 @@ public class DocumentsActivity extends Activity {
             public void onEnter(String password) {
                 super.onEnter(password);
                 if (SettingsActivity.checkPin(DocumentsActivity.this, password)) {
-                	authenticated = true;
+                	mAuthenticated = true;
                 	d.dismiss();
                 }
                 else {
@@ -461,7 +471,7 @@ public class DocumentsActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-
+        changeActionBarColor();
         if (mState.action == ACTION_MANAGE) {
             mState.showSize = true;
             mState.showFolderSize = false;
@@ -472,6 +482,24 @@ public class DocumentsActivity extends Activity {
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
             invalidateOptionsMenu();
         }
+        AppRate.with(this).listener(new AppRate.OnShowListener() {
+            @Override
+            public void onRateAppShowing() {
+                // View is shown
+            }
+
+            @Override
+            public void onRateAppDismissed() {
+                // User has dismissed it
+            }
+
+            @Override
+            public void onRateAppClicked() {
+    			Intent intentMarket = new Intent("android.intent.action.VIEW");
+    			intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
+    			startActivity(intentMarket);
+            }
+        }).checkAndShow();
     }
 
     private DrawerListener mDrawerListener = new DrawerListener() {
@@ -527,18 +555,15 @@ public class DocumentsActivity extends Activity {
     }
     
     public void setInfoDrawerOpen(boolean open) {
-    	if(mShowAsDialog){
-    		//TODO: show detail fragment as dialog
-    	}
-    	else{
-        	setRootsDrawerOpen(false);
+    	if(!mShowAsDialog){
+    		setRootsDrawerOpen(false);
             if (open) {
             	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
                 mDrawerLayout.openDrawer(Gravity.RIGHT);
             } else {
             	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
                 mDrawerLayout.closeDrawer(Gravity.RIGHT);
-            }	
+            }
     	}
     }
 
@@ -813,7 +838,10 @@ public class DocumentsActivity extends Activity {
      */
     private void setUserSortOrder(int sortOrder) {
         mState.userSortOrder = sortOrder;
-        DirectoryFragment.get(getFragmentManager()).onUserSortOrderChanged();
+        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
+        if (directory != null) {
+        	directory.onUserSortOrderChanged();
+        }
     }
 
     /**
@@ -821,7 +849,10 @@ public class DocumentsActivity extends Activity {
      */
     private void setUserMode(int mode) {
         mState.userMode = mode;
-        DirectoryFragment.get(getFragmentManager()).onUserModeChanged();
+        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
+        if (directory != null) {
+        	directory.onUserModeChanged();
+        }
     }
 
     public void setPending(boolean pending) {
@@ -843,7 +874,6 @@ public class DocumentsActivity extends Activity {
             mState.stack.pop();
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
-            // TODO: open root drawer once we can capture back key
             super.onBackPressed();
         } else {
             super.onBackPressed();
@@ -854,7 +884,8 @@ public class DocumentsActivity extends Activity {
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putParcelable(EXTRA_STATE, mState);
-        state.putBoolean(EXTRA_AUTHENTICATED, authenticated);
+        state.putBoolean(EXTRA_AUTHENTICATED, mAuthenticated);
+        state.putBoolean(EXTRA_ACTIONMODE, mActionMode);
     }
 
     @Override
@@ -977,6 +1008,10 @@ public class DocumentsActivity extends Activity {
     }
 
     public void onCurrentDirectoryChanged(int anim) {
+    	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
+    	if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
+    		return;
+    	}
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
@@ -1010,8 +1045,7 @@ public class DocumentsActivity extends Activity {
                 DirectoryFragment.showRecentsOpen(fm, anim);
 
                 // Start recents in grid when requesting visual things
-                final boolean visualMimes = MimePredicate.mimeMatches(
-                        MimePredicate.VISUAL_MIMES, mState.acceptMimes);
+                final boolean visualMimes = true;//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
                 mState.userMode = visualMimes ? MODE_GRID : MODE_LIST;
                 mState.derivedMode = mState.userMode;
             }
@@ -1184,10 +1218,11 @@ public class DocumentsActivity extends Activity {
             	view.setDataAndType(doc.derivedUri, doc.mimeType);
             }
 
-            try {
-                startActivity(view);
-            } catch (ActivityNotFoundException ex2) {
-                Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+            if(null != view.resolveActivity(getPackageManager())){
+            	startActivity(view);
+            }
+            else{
+            	Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
@@ -1545,4 +1580,83 @@ public class DocumentsActivity extends Activity {
     public static DocumentsActivity get(Fragment fragment) {
         return (DocumentsActivity) fragment.getActivity();
     }
+
+	private final Handler handler = new Handler();
+	private Drawable oldBackground;
+	private void changeActionBarColor() {
+
+		int color = SettingsActivity.getActionBarColor(this);
+		Drawable colorDrawable = new ColorDrawable(color);
+		Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
+		LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
+
+		if (oldBackground == null || SettingsActivity.getTranslucentMode(this)) {
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				ld.setCallback(drawableCallback);
+			} else {
+				getActionBar().setBackgroundDrawable(ld);
+			}
+
+		} else {
+			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
+			// workaround for broken ActionBarContainer drawable handling on
+			// pre-API 17 builds
+			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+				td.setCallback(drawableCallback);
+			} else {
+				getActionBar().setBackgroundDrawable(td);
+			}
+			td.startTransition(200);
+		}
+
+		oldBackground = ld;
+		
+		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
+		getActionBar().setDisplayShowTitleEnabled(false);
+		getActionBar().setDisplayShowTitleEnabled(true);
+        
+        if(Utils.hasKitKat()){
+            if(SettingsActivity.getTranslucentMode(this)){
+                if(mActionMode){
+        			SystemBarTintManager.setupTint(this, R.color.contextual_actionbar_color);
+        		}
+        		else{
+        			SystemBarTintManager.setupTint(this);
+        		}
+    	        if(Utils.hasSoftNavBar(this)){
+        	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
+    	        	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
+    	        }
+            }
+            else{
+            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
+            }	
+        }
+	}
+	
+	private Drawable.Callback drawableCallback = new Drawable.Callback() {
+		@Override
+		public void invalidateDrawable(Drawable who) {
+			getActionBar().setBackgroundDrawable(who);
+		}
+
+		@Override
+		public void scheduleDrawable(Drawable who, Runnable what, long when) {
+			handler.postAtTime(what, when);
+		}
+
+		@Override
+		public void unscheduleDrawable(Drawable who, Runnable what) {
+			handler.removeCallbacks(what);
+		}
+	};
+	
+	public boolean getActionMode() {
+		return mActionMode;
+	}
+
+	public void setActionMode(boolean actionMode) {
+		mActionMode = actionMode;
+	}
 }

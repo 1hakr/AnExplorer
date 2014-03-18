@@ -16,7 +16,6 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import dev.dworks.apps.anexplorer.R;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -32,11 +31,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.RelativeLayout;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.RelativeLayout;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Class to manage status and navigation bar tint effects when using KitKat 
@@ -529,7 +529,16 @@ public class SystemBarTintManager {
         if (Utils.hasKitKat()) {
             SystemBarTintManager tintManager = new SystemBarTintManager(context);
             tintManager.setStatusBarTintEnabled(true);
-            tintManager.setStatusBarTintResource(R.color.status_bar_tint);
+            tintManager.setStatusBarTintColor(SettingsActivity.getActionBarColor(context));
+        }
+    }
+    
+    public static void setupTint(Activity context, int resource) {
+        // Only set the tint if the device is running KitKat or above
+        if (Utils.hasKitKat()) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setStatusBarTintResource(resource);
         }
     }
 	
@@ -538,6 +547,14 @@ public class SystemBarTintManager {
 	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
 	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
 	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 2*config.getPixelInsetBottom());
+    	}
+    }
+    
+    public static void setInsetsTop(Activity context, View view) {
+    	if (Utils.hasKitKat()) {
+	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
+	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 0);
     	}
     }
     

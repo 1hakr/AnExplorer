@@ -34,7 +34,8 @@
         android:id="@android:id/icon"
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
-        android:layout_marginRight="12dp" >
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="20dp" >
 
         <ImageView
             android:id="@+id/icon_mime"
@@ -70,7 +71,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="middle"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textAlignment="viewStart" />
 
             <ImageView
                 android:id="@android:id/icon1"
@@ -95,7 +97,8 @@
                 android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/size"
@@ -104,7 +107,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:ellipsize="end"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@android:id/summary"
@@ -114,16 +118,16 @@
                 android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textAlignment="viewStart" />
         </LinearLayout>
     </LinearLayout>
-<!-- 
+
     <ImageView
         android:id="@+id/button_popup"
-        android:layout_width="56dip"
-        android:layout_height="match_parent"
-        android:background="@android:style/Widget.Holo.Button.Borderless"
+        android:layout_width="40dip"
+        android:layout_height="wrap_content"
         android:contentDescription="null"
-        android:src="@drawable/ic_menu_overflow" />
- -->
+        android:src="@drawable/ic_menu_moreoverflow" />
+
 </LinearLayout>

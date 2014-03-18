@@ -12,7 +12,7 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
@@ -31,7 +31,7 @@
 
     <!--
          Normally just a redirection, but this is used to make ourselves a
-         dialog on large tablets
+         dialog on large tablets
     -->
     <style name="Theme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
         <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
@@ -80,5 +80,7 @@
     <style name="DialogExitNoAnimation">
         <item name="android:windowExitAnimation">@anim/no_animation</item>
     </style>
+
+    <style name="ListProgress" parent="@android:style/Widget.Holo.Light.ProgressBar"/>
 
 </resources>

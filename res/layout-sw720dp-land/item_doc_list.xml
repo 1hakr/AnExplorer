@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The Android Open Source Project
+<!--
+     Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -12,101 +13,108 @@
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
      limitations under the License.
+
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/item_background"
+    android:baselineAligned="false"
+    android:gravity="center_vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingBottom="8dp"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
     android:paddingRight="?android:attr/listPreferredItemPaddingRight"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:paddingTop="8dp" >
 
     <FrameLayout
         android:id="@android:id/icon"
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
         android:layout_marginLeft="12dp"
-        android:layout_marginRight="20dp">
+        android:layout_marginRight="20dp" >
 
         <ImageView
             android:id="@+id/icon_mime"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:contentDescription="@null" />
+            android:contentDescription="@null"
+            android:scaleType="centerInside" />
 
         <ImageView
             android:id="@+id/icon_thumb"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:contentDescription="@null" />
-
+            android:contentDescription="@null"
+            android:scaleType="centerCrop" />
     </FrameLayout>
 
     <!-- This is the one special case where we want baseline alignment! -->
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@android:id/title"
+            style="@style/TextAppearance.Medium"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
             android:layout_marginRight="12dp"
-            android:singleLine="true"
+            android:layout_weight="0.5"
             android:ellipsize="middle"
-            style="@style/TextAppearance.Medium" />
+            android:singleLine="true" />
 
         <ImageView
             android:id="@android:id/icon1"
             android:layout_width="@dimen/root_icon_size"
             android:layout_height="@dimen/root_icon_size"
             android:layout_marginRight="8dp"
-            android:scaleType="centerInside"
-            android:contentDescription="@null" />
+            android:contentDescription="@null"
+            android:scaleType="centerInside" />
 
         <TextView
             android:id="@android:id/summary"
+            style="@style/TextAppearance.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
             android:layout_marginRight="12dp"
-            android:singleLine="true"
+            android:layout_weight="0.25"
             android:ellipsize="end"
-            style="@style/TextAppearance.Small" />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/size"
+            style="@style/TextAppearance.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.125"
             android:layout_marginRight="12dp"
-            android:minWidth="70dp"
-            android:singleLine="true"
+            android:layout_weight="0.125"
             android:ellipsize="end"
-            style="@style/TextAppearance.Small" />
+            android:minWidth="70dp"
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/date"
+            style="@style/TextAppearance.Small"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.125"
             android:layout_marginRight="12dp"
-            android:minWidth="70dp"
-            android:singleLine="true"
+            android:layout_weight="0.125"
             android:ellipsize="end"
-            style="@style/TextAppearance.Small" />
-
+            android:minWidth="70dp"
+            android:singleLine="true" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/button_popup"
+        android:layout_width="56dip"
+        android:layout_height="wrap_content"
+        android:contentDescription="null"
+        android:src="@drawable/ic_menu_moreoverflow" />
 
 </LinearLayout>

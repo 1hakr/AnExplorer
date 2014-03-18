@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
-    android:versionCode="35"
-    android:versionName="2.0.1" >
+    android:versionCode="36"
+    android:versionName="2.1" >
 
     <permission
         android:name="android.permission.MANAGE_DOCUMENTS"
@@ -29,9 +29,10 @@
         android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
+        android:logo="@drawable/logo"
+        android:supportsRtl="true"
         android:label="AnExplorer" >
 
-        <!-- android:supportsRtl="true" -->
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
             android:name="dev.dworks.apps.anexplorer.DocumentsActivity"
@@ -136,7 +137,18 @@
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-
+        
+<!--         <provider
+            android:name="dev.dworks.apps.anexplorer.provider.HeatMapProvider"
+            android:authorities="dev.dworks.apps.anexplorer.heatmap.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" >
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+         -->
         <!--
              <provider
             android:name="dev.dworks.apps.anexplorer.provider.DownloadStorageProvider"

@@ -169,7 +169,7 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
         // Keep clients around on high-RAM devices, since we'd be spinning them
         // up moments later to fetch thumbnails anyway.
         mQueryPermits = new Semaphore(
-                Utils.isLowRamDevice() ? MAX_OUTSTANDING_RECENTS_SVELTE : MAX_OUTSTANDING_RECENTS);
+                Utils.isLowRamDevice(context) ? MAX_OUTSTANDING_RECENTS_SVELTE : MAX_OUTSTANDING_RECENTS);
     }
 
     @Override

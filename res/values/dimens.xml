@@ -18,11 +18,17 @@
     <dimen name="icon_size">32dp</dimen>
     <dimen name="root_icon_size">24dp</dimen>
     <dimen name="grid_width">160dp</dimen>
-    <dimen name="grid_height">170dp</dimen>
+    <dimen name="grid_height">180dp</dimen>
 
     <dimen name="grid_padding">4dp</dimen>
     <dimen name="grid_padding_horiz">4dp</dimen>
 
     <bool name="show_as_dialog">false</bool>
     <bool name="always_show_summary">false</bool>
+    
+    <dimen name="detail_width">300dp</dimen>
+    
+    <dimen name="color_grid_item_size">48dp</dimen>
+    <dimen name="color_grid_circle_size">36dp</dimen>
+    <dimen name="color_grid_extra_padding">32dp</dimen>
 </resources>

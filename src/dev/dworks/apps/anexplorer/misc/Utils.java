@@ -19,11 +19,16 @@ package dev.dworks.apps.anexplorer.misc;
 import java.io.File;
 import java.util.Locale;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.format.DateUtils;
 import android.text.format.Time;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
+import android.view.ViewConfiguration;
 
 public class Utils {
 
@@ -99,10 +104,18 @@ public class Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
     }
 
+    public static boolean hasIceCreamSandwich() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+    }
+
     public static boolean hasJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }
 
+    public static boolean hasJellyBeanMR1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1;
+    }
+    
     public static boolean hasJellyBeanMR2() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
     }
@@ -115,11 +128,19 @@ public class Utils {
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }
     
-    public static boolean isLowRamDevice() {
+    public static boolean isLowRamDevice(Context context) {
+    	if(Utils.hasKitKat()){
+    		final ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
+    		return am.isLowRamDevice();
+    	}
     	return !hasMoreHeap();
 	}
+
+    public static boolean isTablet(Context context) {
+		return context.getResources().getConfiguration().smallestScreenWidthDp >= 600;
+	}
     
-    public static int parseMode(String mode) {
+	public static int parseMode(String mode) {
         final int modeBits;
         if ("r".equals(mode)) {
             modeBits = ParcelFileDescriptor.MODE_READ_ONLY;
@@ -205,4 +226,22 @@ public class Utils {
 		}
 		return result;
 	}
+    
+    private static final int BRIGHTNESS_THRESHOLD = 150;
+    public static boolean isColorDark(int color) {
+        return ((30 * Color.red(color) +
+                59 * Color.green(color) +
+                11 * Color.blue(color)) / 100) <= BRIGHTNESS_THRESHOLD;
+    }
+    
+    public static boolean hasSoftNavBar(Context context){
+    	boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
+    	boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+
+    	if(!hasMenuKey && !hasBackKey) {
+    		return true;
+    	}
+		return false;
+
+    }
 }

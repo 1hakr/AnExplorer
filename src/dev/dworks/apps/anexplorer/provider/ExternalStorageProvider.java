@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
@@ -56,6 +57,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 
+@SuppressLint("DefaultLocale")
 public class ExternalStorageProvider extends StorageProvider {
     private static final String TAG = "ExternalStorage";
 
@@ -494,7 +496,8 @@ public class ExternalStorageProvider extends StorageProvider {
         return result;
     }
 
-    private void handleCompressedFile(MatrixCursor result, String parentDocumentId, File parent) {
+    @SuppressWarnings("resource")
+	private void handleCompressedFile(MatrixCursor result, String parentDocumentId, File parent) {
     	try {
         	ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(parent.getPath()));
         	ZipEntry zipEntry;
@@ -656,6 +659,8 @@ public class ExternalStorageProvider extends StorageProvider {
             if ((event & NOTIFY_EVENTS) != 0) {
                 if (LOG_INOTIFY) Log.d(TAG, "onEvent() " + event + " at " + path);
                 mResolver.notifyChange(mNotifyUri, null, false);
+                //notify roots changed
+                mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
             }
         }
 
