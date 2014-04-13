@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer;
 
+import com.crashlytics.android.Crashlytics;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
@@ -165,16 +166,17 @@ public class DocumentsActivity extends Activity {
     		setTheme(R.style.Theme_Translucent);
     	}
     	
-		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
+/*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog()
 				.build());
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
 				.penaltyLog()
 				.build());
-
+*/
         super.onCreate(icicle);
 
-        mRoots = DocumentsApplication.getRootsCache(this);
+        Crashlytics.start(this);
+		mRoots = DocumentsApplication.getRootsCache(this);
 
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
