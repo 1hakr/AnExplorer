@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
-    android:versionCode="36"
-    android:versionName="2.1" >
+    android:versionCode="38"
+    android:versionName="2.2" >
 
     <permission
         android:name="android.permission.MANAGE_DOCUMENTS"
@@ -29,9 +29,9 @@
         android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
+        android:label="AnExplorer"
         android:logo="@drawable/logo"
-        android:supportsRtl="true"
-        android:label="AnExplorer" >
+        android:supportsRtl="true" >
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
@@ -137,8 +137,9 @@
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-        
-<!--         <provider
+
+        <!--
+             <provider
             android:name="dev.dworks.apps.anexplorer.provider.HeatMapProvider"
             android:authorities="dev.dworks.apps.anexplorer.heatmap.documents"
             android:exported="true"
@@ -147,8 +148,8 @@
             <intent-filter>
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>
-         -->
+        </provider>
+        -->
         <!--
              <provider
             android:name="dev.dworks.apps.anexplorer.provider.DownloadStorageProvider"
@@ -159,7 +160,7 @@
             <intent-filter>
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>
+        </provider>
         -->
 
         <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver" >
@@ -182,6 +183,10 @@
         <activity
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="8d9d245a1d53a9ea0d140f5ea40de7cf4b3ab098" />
     </application>
 
 </manifest>

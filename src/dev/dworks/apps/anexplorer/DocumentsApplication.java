@@ -34,7 +34,6 @@ import android.text.format.DateUtils;
 
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
-import com.joshdholtz.sentry.Sentry;
 
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
@@ -79,8 +78,6 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
     	
-		Sentry.init(this, "https://adf863ae0013482a9e052d062d0326df:30ec3caf684c4606ac1a659b7e63ef66@app.getsentry.com/14229");
-		
 		GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
 		googleAnalytics.getTracker(getString(R.string.ga_trackingId));
 		tracker = googleAnalytics.getDefaultTracker();
