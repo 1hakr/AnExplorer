@@ -32,6 +32,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.text.format.DateUtils;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
 
@@ -78,6 +79,7 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
     	
+    	Crashlytics.start(this);
 		GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
 		googleAnalytics.getTracker(getString(R.string.ga_trackingId));
 		tracker = googleAnalytics.getDefaultTracker();

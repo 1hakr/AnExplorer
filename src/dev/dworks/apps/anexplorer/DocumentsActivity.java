@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer;
 
-import com.crashlytics.android.Crashlytics;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
@@ -70,7 +69,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.StrictMode;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -175,7 +173,6 @@ public class DocumentsActivity extends Activity {
 */
         super.onCreate(icicle);
 
-        Crashlytics.start(this);
 		mRoots = DocumentsApplication.getRootsCache(this);
 
         setResult(Activity.RESULT_CANCELED);
