@@ -515,6 +515,8 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			mode.getMenuInflater().inflate(menuId, menu);
+			int count = mCurrentView.getCheckedItemCount();
+			mode.setTitle(count+"");
 			return true;
 		}
 

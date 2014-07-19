@@ -26,7 +26,8 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 public class MountReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		final ContentProviderClient client = context.getContentResolver().acquireContentProviderClient(ExternalStorageProvider.AUTHORITY);
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(), 
+    			ExternalStorageProvider.AUTHORITY);
 		try {
 			((ExternalStorageProvider) client.getLocalContentProvider()).updateVolumes();
 		} finally {

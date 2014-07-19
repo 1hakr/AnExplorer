@@ -679,8 +679,8 @@ public final class DocumentsContract {
      */
     public static Bitmap getDocumentThumbnail(
             ContentResolver resolver, Uri documentUri, Point size, CancellationSignal signal) {
-        final ContentProviderClient client = resolver.acquireContentProviderClient(
-                documentUri.getAuthority());
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
+    			documentUri.getAuthority());
         try {
             return getDocumentThumbnails(client, documentUri, size, signal);
         } catch (Exception e) {
@@ -775,16 +775,18 @@ public final class DocumentsContract {
      */
     public static Uri createDocument(ContentResolver resolver, Uri parentDocumentUri,
             String mimeType, String displayName) {
-        final ContentProviderClient client = resolver.acquireContentProviderClient(
-                parentDocumentUri.getAuthority());
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
+    			parentDocumentUri.getAuthority());
         try {
+        	
             //return createDocument(client, parentDocumentUri, mimeType, displayName);
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(parentDocumentUri));
             in.putString(Document.COLUMN_MIME_TYPE, mimeType);
             in.putString(Document.COLUMN_DISPLAY_NAME, displayName);
 
-            final Bundle out = resolver.call(parentDocumentUri, METHOD_CREATE_DOCUMENT, null, in);
+            //final Bundle out = resolver.call(parentDocumentUri, METHOD_CREATE_DOCUMENT, null, in);
+            final Bundle out = ContentProviderClientCompat.call(resolver, client, parentDocumentUri, METHOD_CREATE_DOCUMENT, null, in);
             return buildDocumentUri(
                     parentDocumentUri.getAuthority(), out.getString(Document.COLUMN_DOCUMENT_ID));
         } catch (Exception e) {
@@ -815,14 +817,15 @@ public final class DocumentsContract {
      * @return if the document was deleted successfully.
      */
     public static boolean deleteDocument(ContentResolver resolver, Uri documentUri) {
-        final ContentProviderClient client = resolver.acquireContentProviderClient(
-                documentUri.getAuthority());
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
+    			documentUri.getAuthority());
         try {
             //deleteDocument(resolver, documentUri);
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(documentUri));
 
-            resolver.call(documentUri, METHOD_DELETE_DOCUMENT, null, in);
+            //resolver.call(documentUri, METHOD_DELETE_DOCUMENT, null, in);
+            ContentProviderClientCompat.call(resolver, client, documentUri, METHOD_DELETE_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
             Log.w(TAG, "Failed to delete document", e);
@@ -833,8 +836,8 @@ public final class DocumentsContract {
     }
 
     public static boolean moveDocument(ContentResolver resolver, Uri fromDocumentUri, Uri toDocumentUri, boolean deleteAfter) {
-        final ContentProviderClient client = resolver.acquireContentProviderClient(
-                fromDocumentUri.getAuthority());
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
+    			fromDocumentUri.getAuthority());
         try {
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
@@ -843,7 +846,8 @@ public final class DocumentsContract {
             }
             in.putBoolean(DocumentsContract.EXTRA_DELETE_AFTER, deleteAfter);
 
-            resolver.call(fromDocumentUri, METHOD_MOVE_DOCUMENT, null, in);
+            //resolver.call(fromDocumentUri, METHOD_MOVE_DOCUMENT, null, in);
+            ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_MOVE_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
             Log.w(TAG, "Failed to delete document", e);
@@ -865,8 +869,8 @@ public final class DocumentsContract {
      */
     public static Uri renameDocument(ContentResolver resolver, Uri parentDocumentUri,
             String mimeType, String displayName) {
-        final ContentProviderClient client = resolver.acquireContentProviderClient(
-                parentDocumentUri.getAuthority());
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
+    			parentDocumentUri.getAuthority());
         try {
             //return createDocument(client, parentDocumentUri, mimeType, displayName);
             final Bundle in = new Bundle();
@@ -874,7 +878,8 @@ public final class DocumentsContract {
             in.putString(Document.COLUMN_MIME_TYPE, mimeType);
             in.putString(Document.COLUMN_DISPLAY_NAME, displayName);
 
-            final Bundle out = resolver.call(parentDocumentUri, METHOD_RENAME_DOCUMENT, null, in);
+            //final Bundle out = resolver.call(parentDocumentUri, METHOD_RENAME_DOCUMENT, null, in);
+            final Bundle out = ContentProviderClientCompat.call(resolver, client, parentDocumentUri, METHOD_RENAME_DOCUMENT, null, in);
             return buildDocumentUri(
                     parentDocumentUri.getAuthority(), out.getString(Document.COLUMN_DOCUMENT_ID));
         } catch (Exception e) {

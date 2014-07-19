@@ -24,16 +24,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
-
+import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
 public class FileUtils {
 
@@ -296,4 +298,27 @@ public class FileUtils {
 			return false;
 		}	
 	}
+	
+	private static final int KILO = 1024;
+    private static final int MEGA = KILO * KILO;
+    /**
+     * @return A string suitable for display in bytes, kilobytes or megabytes
+     *         depending on its size.
+     */
+    public static String convertToHumanReadableSize(Context context, long size) {
+        final String count;
+        if (size == 0) {
+            return "";
+        } else if (size < KILO) {
+            count = String.valueOf(size);
+            return context.getString(R.string.bytes, count);
+        } else if (size < MEGA) {
+            count = String.valueOf(size / KILO);
+            return context.getString(R.string.kilobytes, count);
+        } else {
+            DecimalFormat onePlace = new DecimalFormat("0.#");
+            count = onePlace.format((float) size / (float) MEGA);
+            return context.getString(R.string.megabytes, count);
+        }
+    }
 }

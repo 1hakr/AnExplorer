@@ -74,6 +74,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
@@ -160,8 +165,7 @@
             <intent-filter>
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>
-        -->
+        </provider>        -->
 
         <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver" >
             <intent-filter>
@@ -183,6 +187,19 @@
         <activity
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+        <activity
+            android:name=".NoteActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="sensor"
+            android:theme="@style/Theme" >
+            <intent-filter android:label="Text Viewer" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/*" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.crashlytics.ApiKey"
