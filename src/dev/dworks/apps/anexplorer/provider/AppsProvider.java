@@ -276,18 +276,17 @@ public class AppsProvider extends DocumentsProvider {
 			ApplicationInfo appInfo = null;
 			try {
 				appInfo = packageManager.getPackageInfo(processInfo.processName, PackageManager.GET_ACTIVITIES).applicationInfo;
-				displayName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
+				displayName = process ;//(String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
 			} catch (Exception e) { }
 			
 			if (TextUtils.isEmpty(displayName)) {
-				return;
-			} else {
 				displayName = process;
 			}
+			
 			if (null != query && !displayName.toLowerCase().contains(query)) {
 				return;
 			}
-			final String path = appInfo.sourceDir;
+			final String path = null != appInfo ? appInfo.sourceDir : "";
 			final String mimeType = Document.MIME_TYPE_APK;
 			
 	        int flags = Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_THUMBNAIL;
@@ -314,10 +313,12 @@ public class AppsProvider extends DocumentsProvider {
 		if(isAppUseful(appInfo)){
 			String summary = "";
 			String displayName = "";
-			try {
+			final String packageName = packageInfo.packageName;
+	        displayName = packageName;
+/*			try {
 				displayName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
 				summary = packageInfo.versionName == null ? "" : packageInfo.versionName;
-			} catch (Exception e) { }
+			} catch (Exception e) { }*/
 
 			if (null != query && !displayName.toLowerCase().contains(query)) {
 				return;
@@ -328,12 +329,10 @@ public class AppsProvider extends DocumentsProvider {
 			int flags = Document.FLAG_SUPPORTS_EDIT | Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_THUMBNAIL;
 			
 	        final long size = new File(appInfo.sourceDir).length();
-			final String packageName = packageInfo.packageName;
 	        final long lastModified = packageInfo.lastUpdateTime;
-	
 	        final RowBuilder row = result.newRow();
 	        row.add(Document.COLUMN_DOCUMENT_ID, getDocIdForApp(docId, packageName));
-	        row.add(Document.COLUMN_DISPLAY_NAME, displayName);
+	        row.add(Document.COLUMN_DISPLAY_NAME, getAppName(displayName));
 	        row.add(Document.COLUMN_SUMMARY, summary);
 	        row.add(Document.COLUMN_SIZE, size);
 	        row.add(Document.COLUMN_MIME_TYPE, mimeType);
@@ -342,6 +341,21 @@ public class AppsProvider extends DocumentsProvider {
 	        row.add(Document.COLUMN_FLAGS, flags);
 		}
     }
+	
+	private String getAppName(String packageName){
+		String name = packageName;
+		try {
+			int start = packageName.lastIndexOf('.');
+			name = start != -1 ? packageName.substring(start+1) : packageName;
+			if(name.equalsIgnoreCase("android")){
+				start = packageName.substring(0, start).lastIndexOf('.');
+				name = start != -1 ? packageName.substring(start+1) : packageName;
+			}	
+		} catch (Exception e) {
+		}
+		return name;
+	}
+	
 	private boolean isAppUseful(ApplicationInfo appInfo) {
 		 if (appInfo.flags != 0 
 				 && ((appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
