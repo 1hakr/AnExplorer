@@ -701,6 +701,14 @@ public class DirectoryFragment extends ListFragment {
 					iconThumb.setTag(null);
 				}
 			}
+			final TextView size = (TextView) view.findViewById(R.id.size);
+			if (size != null) {
+				final FolderSizeAsyncTask oldTask = (FolderSizeAsyncTask) size.getTag();
+				if (oldTask != null) {
+					oldTask.preempt();
+					size.setTag(null);
+				}
+			}
 		}
 	};
 

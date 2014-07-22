@@ -12,7 +12,7 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
@@ -20,27 +20,39 @@
     <item
         android:id="@+id/menu_create_file"
         android:showAsAction="always"
-        android:visible="false"
-        android:title="Create File"/>
+        android:title="Create File"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_create_dir"
         android:icon="@drawable/ic_menu_new_folder"
         android:showAsAction="always"
-        android:visible="false"
-        android:title="@string/menu_create_dir"/>
+        android:title="@string/menu_create_dir"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_search"
         android:actionViewClass="android.widget.SearchView"
         android:icon="@drawable/ic_menu_search"
         android:showAsAction="always|collapseActionView"
-        android:visible="false"
-        android:title="@string/menu_search"/>
+        android:title="@string/menu_search"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_list"
+        android:icon="@drawable/ic_menu_view_list"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_list"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_grid"
+        android:icon="@drawable/ic_menu_view_grid"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_grid"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_sort"
         android:icon="@drawable/ic_menu_sortby"
         android:showAsAction="ifRoom"
-        android:visible="false"
-        android:title="@string/menu_sort">
+        android:title="@string/menu_sort"
+        android:visible="false">
         <menu>
             <item
                 android:id="@+id/menu_sort_name"
@@ -53,18 +65,6 @@
                 android:title="@string/sort_size"/>
         </menu>
     </item>
-    <item
-        android:id="@+id/menu_grid"
-        android:icon="@drawable/ic_menu_view_grid"
-        android:showAsAction="ifRoom"
-        android:visible="false"
-        android:title="@string/menu_grid"/>
-    <item
-        android:id="@+id/menu_list"
-        android:icon="@drawable/ic_menu_view_list"
-        android:showAsAction="ifRoom"
-        android:visible="false"
-        android:title="@string/menu_list"/>
     <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_menu_settings"
