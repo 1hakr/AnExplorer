@@ -26,8 +26,8 @@
                 android:layout_width="@dimen/icon_size"
                 android:layout_height="@dimen/icon_size"
                 android:layout_gravity="center"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="20dp" >
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="12dp" >
 
                 <ImageView
                     android:id="@+id/icon_mime"
@@ -64,8 +64,8 @@
 
             <ImageView
                 android:id="@android:id/icon1"
-                android:layout_width="@dimen/root_icon_size"
-                android:layout_height="@dimen/root_icon_size"
+                android:layout_width="@dimen/grid_icon_size"
+                android:layout_height="@dimen/grid_icon_size"
                 android:layout_marginRight="8dp"
                 android:contentDescription="@null"
                 android:scaleType="centerInside" />

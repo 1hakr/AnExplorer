@@ -1225,8 +1225,8 @@ public class DirectoryFragment extends ListFragment {
 
 			if (iconDrawable != null) {
 				if (hasLine1) {
-					icon1.setVisibility(View.VISIBLE);
-					icon1.setImageDrawable(iconDrawable);
+					icon1.setVisibility(View.INVISIBLE);
+					//icon1.setImageDrawable(iconDrawable);
 				} else {
 					icon2.setVisibility(View.VISIBLE);
 					icon2.setImageDrawable(iconDrawable);
