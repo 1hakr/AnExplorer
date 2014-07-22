@@ -1015,6 +1015,9 @@ public class DocumentsActivity extends Activity {
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
         
+        if(!SettingsActivity.getFolderAnimation(this)){
+        	anim = 0;
+        }
         //TODO : this has to be done nicely
         if(cwd == null){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
