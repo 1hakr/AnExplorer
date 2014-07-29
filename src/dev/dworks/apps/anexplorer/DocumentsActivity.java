@@ -121,6 +121,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
@@ -269,7 +270,7 @@ public class DocumentsActivity extends Activity {
             final Intent moreApps = new Intent(getIntent());
             moreApps.setComponent(null);
             moreApps.setPackage(null);
-            RootsFragment.show(getFragmentManager(), null);
+            RootsFragment.show(getFragmentManager(), moreApps);
         } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
             RootsFragment.show(getFragmentManager(), new Intent());
         }
@@ -279,7 +280,12 @@ public class DocumentsActivity extends Activity {
                 final Uri rootUri = getIntent().getData();
                 new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
             } else {
-                new RestoreStackTask().execute();
+            	if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
+            		onRootPicked(getDownloadRoot(), true);
+            	}
+            	else{
+                    new RestoreStackTask().execute();	
+            	}
             }
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
@@ -978,6 +984,10 @@ public class DocumentsActivity extends Activity {
         } else {
             return mRoots.getDefaultRoot();
         }
+    }
+    
+    public RootInfo getDownloadRoot() {
+    	return mRoots.getDownloadRoot();
     }
 
     public DocumentInfo getCurrentDirectory() {

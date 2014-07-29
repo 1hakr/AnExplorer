@@ -61,6 +61,7 @@ import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
@@ -74,7 +75,7 @@ public class RootsFragment extends Fragment {
     private LoaderCallbacks<Collection<RootInfo>> mCallbacks;
 
     private static final String EXTRA_INCLUDE_APPS = "includeApps";
-
+    
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();
         args.putParcelable(EXTRA_INCLUDE_APPS, includeApps);
@@ -135,7 +136,12 @@ public class RootsFragment extends Fragment {
                 mAdapter = new RootsAdapter(context, result, includeApps);
                 mList.setAdapter(mAdapter);
 
-                onCurrentRootChanged();
+                if(ExternalStorageProvider.isDownloadAuthority(includeApps)){
+                    onDownloadRootChanged();
+                }
+                else{
+                    onCurrentRootChanged();	
+                }
             }
 
             @Override
@@ -170,6 +176,22 @@ public class RootsFragment extends Fragment {
         if (mAdapter == null) return;
 
         final RootInfo root = ((DocumentsActivity) getActivity()).getCurrentRoot();
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            final Object item = mAdapter.getItem(i);
+            if (item instanceof RootItem) {
+                final RootInfo testRoot = ((RootItem) item).root;
+                if (Objects.equal(testRoot, root)) {
+                    mList.setItemChecked(i, true);
+                    return;
+                }
+            }
+        }
+    }
+    
+    public void onDownloadRootChanged() {
+        if (mAdapter == null) return;
+
+        final RootInfo root = ((DocumentsActivity) getActivity()).getDownloadRoot();
         for (int i = 0; i < mAdapter.getCount(); i++) {
             final Object item = mAdapter.getItem(i);
             if (item instanceof RootItem) {
