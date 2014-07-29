@@ -323,7 +323,7 @@ public class RootsFragment extends Fragment {
     }
 
     private static class RootsAdapter extends ArrayAdapter<Item> {
-        public RootsAdapter(Context context, Collection<RootInfo> roots, Intent includeApps) {
+        public RootsAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
             super(context, 0);
 
             RootItem recents = null;
@@ -388,7 +388,7 @@ public class RootsFragment extends Fragment {
             if (audio != null) add(audio);
             if (downloads != null) add(downloads);
             
-            if (includeApps == null) {
+            //if (includeApps == null) {
             	add(new SpacerItem());
                 for (RootInfo cloud : clouds) {
                     add(new RootItem(cloud));
@@ -412,7 +412,7 @@ public class RootsFragment extends Fragment {
                         add(item);
                     }
                 }*/
-            }
+            //}
         }
 
         @Override
