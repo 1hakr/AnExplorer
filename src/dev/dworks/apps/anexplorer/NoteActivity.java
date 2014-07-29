@@ -72,7 +72,9 @@ public class NoteActivity extends Activity {
 			mState = STATE_EDIT;
 		}
 
-		setContentView(R.layout.note_editor);
+		setContentView(R.layout.activity_note);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setTitle("Text Viewer");
 		mText = (EditText) findViewById(R.id.note);
 
 		if (savedInstanceState != null) {
@@ -130,7 +132,7 @@ public class NoteActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+/*		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.note_options, menu);
 
 		if (mState == STATE_EDIT) {
@@ -142,7 +144,7 @@ public class NoteActivity extends Activity {
 			Intent intent = new Intent(null, mUri);
 			intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
 			menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, new ComponentName(this, NoteActivity.class), null, intent, 0, null);
-		}
+		}*/
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -165,6 +167,9 @@ public class NoteActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle all of the possible menu actions.
 		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			break;
 		case R.id.menu_save:
 			String text = mText.getText().toString();
 			updateNote(text, null);
@@ -180,6 +185,7 @@ public class NoteActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
 
 	// BEGIN_INCLUDE(paste)
 	/**

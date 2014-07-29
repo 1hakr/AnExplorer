@@ -6,7 +6,8 @@
     android:background="@android:color/transparent"
     android:fadingEdge="vertical"
     android:gravity="top"
-    android:inputType="textCapSentences"
+    android:inputType="textMultiLine"
+    android:singleLine="false"
     android:padding="5dp"
     android:scrollbars="vertical"
-    android:textSize="22sp" />
+    android:textSize="16sp" />

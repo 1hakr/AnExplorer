@@ -1071,7 +1071,7 @@ public class DocumentsActivity extends Activity {
         
         final MoveFragment move = MoveFragment.get(fm);
         if (move != null) {
-            move.setReplaceTarget(null);
+            move.setReplaceTarget(cwd);
         }
 
         final RootsFragment roots = RootsFragment.get(fm);
