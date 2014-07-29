@@ -515,6 +515,8 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			mode.getMenuInflater().inflate(menuId, menu);
+			int count = mCurrentView.getCheckedItemCount();
+			mode.setTitle(count+"");
 			return true;
 		}
 
@@ -697,6 +699,14 @@ public class DirectoryFragment extends ListFragment {
 				if (oldTask != null) {
 					oldTask.preempt();
 					iconThumb.setTag(null);
+				}
+			}
+			final TextView size = (TextView) view.findViewById(R.id.size);
+			if (size != null) {
+				final FolderSizeAsyncTask oldTask = (FolderSizeAsyncTask) size.getTag();
+				if (oldTask != null) {
+					oldTask.preempt();
+					size.setTag(null);
 				}
 			}
 		}
@@ -1215,8 +1225,8 @@ public class DirectoryFragment extends ListFragment {
 
 			if (iconDrawable != null) {
 				if (hasLine1) {
-					icon1.setVisibility(View.VISIBLE);
-					icon1.setImageDrawable(iconDrawable);
+					icon1.setVisibility(View.INVISIBLE);
+					//icon1.setImageDrawable(iconDrawable);
 				} else {
 					icon2.setVisibility(View.VISIBLE);
 					icon2.setImageDrawable(iconDrawable);

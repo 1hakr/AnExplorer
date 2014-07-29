@@ -1,7 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
-    <PreferenceCategory android:title="Theme" android:key="theme">
+    <PreferenceCategory
+        android:key="theme"
+        android:title="Theme" >
         <dev.dworks.apps.anexplorer.ui.ColorPreference
             android:defaultValue="@color/actionbar_color"
             android:dialogTitle="@string/pref_foreground_color_title"
@@ -38,7 +40,9 @@
             android:persistent="true"
             android:title="@string/pref_thumbnail" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Advanced" android:key="advanced">
+    <PreferenceCategory
+        android:key="advanced"
+        android:title="Advanced" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="advancedDevices"
@@ -48,6 +52,11 @@
             android:defaultValue="false"
             android:key="rootMode"
             android:title="@string/pref_root_mode" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="folderAnimations"
+            android:persistent="true"
+            android:title="@string/pref_folder_animations" />
     </PreferenceCategory>
 
 </PreferenceScreen>

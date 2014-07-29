@@ -37,8 +37,8 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 
@@ -52,6 +52,7 @@ public class SettingsActivity extends PreferenceActivity {
     public static final String KEY_TRANSLUCENT_MODE = "translucentMode";
     public static final String KEY_AS_DIALOG = "asDialog";
     public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
+    public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
     
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
@@ -100,6 +101,11 @@ public class SettingsActivity extends PreferenceActivity {
     	int newColor = context.getResources().getColor(R.color.actionbar_color);
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_ACTIONBAR_COLOR, newColor);
+    }
+    
+    public static boolean getFolderAnimation(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_FOLDER_ANIMATIONS, false);
     }
     
     @Override

@@ -35,6 +35,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -107,7 +108,7 @@ public class CreateDirectoryFragment extends DialogFragment {
             final ContentResolver resolver = mActivity.getContentResolver();
             ContentProviderClient client = null;
             try {
-				//client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mCwd.derivedUri.getAuthority());
+				client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mCwd.derivedUri.getAuthority());
                 final Uri childUri = DocumentsContract.createDocument(
                 		resolver, mCwd.derivedUri, Document.MIME_TYPE_DIR, mDisplayName);
                 return DocumentInfo.fromUri(resolver, childUri);

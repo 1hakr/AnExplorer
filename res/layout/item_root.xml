@@ -28,8 +28,8 @@
 
     <ImageView
         android:id="@android:id/icon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
+        android:layout_width="@dimen/root_icon_size"
+        android:layout_height="@dimen/root_icon_size"
         android:layout_marginRight="8dp"
         android:contentDescription="@null"
         android:scaleType="centerInside" />

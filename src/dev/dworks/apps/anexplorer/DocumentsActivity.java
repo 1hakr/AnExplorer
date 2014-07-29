@@ -69,7 +69,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.StrictMode;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -122,6 +121,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
@@ -165,16 +165,16 @@ public class DocumentsActivity extends Activity {
     		setTheme(R.style.Theme_Translucent);
     	}
     	
-		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
+/*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog()
 				.build());
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
 				.penaltyLog()
 				.build());
-
+*/
         super.onCreate(icicle);
 
-        mRoots = DocumentsApplication.getRootsCache(this);
+		mRoots = DocumentsApplication.getRootsCache(this);
 
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
@@ -270,7 +270,7 @@ public class DocumentsActivity extends Activity {
             final Intent moreApps = new Intent(getIntent());
             moreApps.setComponent(null);
             moreApps.setPackage(null);
-            RootsFragment.show(getFragmentManager(), null);
+            RootsFragment.show(getFragmentManager(), moreApps);
         } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
             RootsFragment.show(getFragmentManager(), new Intent());
         }
@@ -280,7 +280,12 @@ public class DocumentsActivity extends Activity {
                 final Uri rootUri = getIntent().getData();
                 new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
             } else {
-                new RestoreStackTask().execute();
+            	if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
+            		onRootPicked(getDownloadRoot(), true);
+            	}
+            	else{
+                    new RestoreStackTask().execute();	
+            	}
             }
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
@@ -980,6 +985,10 @@ public class DocumentsActivity extends Activity {
             return mRoots.getDefaultRoot();
         }
     }
+    
+    public RootInfo getDownloadRoot() {
+    	return mRoots.getDownloadRoot();
+    }
 
     public DocumentInfo getCurrentDirectory() {
         return mState.stack.peek();
@@ -1016,6 +1025,9 @@ public class DocumentsActivity extends Activity {
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
         
+        if(!SettingsActivity.getFolderAnimation(this)){
+        	anim = 0;
+        }
         //TODO : this has to be done nicely
         if(cwd == null){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
@@ -1069,7 +1081,7 @@ public class DocumentsActivity extends Activity {
         
         final MoveFragment move = MoveFragment.get(fm);
         if (move != null) {
-            move.setReplaceTarget(null);
+            move.setReplaceTarget(cwd);
         }
 
         final RootsFragment roots = RootsFragment.get(fm);

@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
+import dev.dworks.apps.anexplorer.misc.DownloadManagerUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -67,6 +68,7 @@ public class DownloadStorageProvider extends DocumentsProvider {
     @Override
     public boolean onCreate() {
         mDm = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManagerUtils.setAccessAllDownloads(mDm);
         //mDm.setAccessAllDownloads(true);
         return true;
     }
@@ -187,8 +189,11 @@ public class DownloadStorageProvider extends DocumentsProvider {
         final long token = Binder.clearCallingIdentity();
         Cursor cursor = null;
         try {
-        	Query query = new DownloadManager.Query();
-        	query.setFilterByStatus(DownloadManager.STATUS_PENDING | DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_FAILED);
+        	Query query = new Query();
+        	DownloadManagerUtils.setOnlyIncludeVisibleInDownloadsUi(query);
+        	//query.setOnlyIncludeVisibleInDownloadsUi(true);
+            query.setFilterByStatus(DownloadManager.STATUS_SUCCESSFUL);
+        	//query.setFilterByStatus(DownloadManager.STATUS_PENDING | DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_FAILED);
             cursor = mDm.query(query);//.setOnlyIncludeVisibleInDownloadsUi(true)
                     //.setFilterByStatus(DownloadManager.STATUS_SUCCESSFUL));
             //copyNotificationUri(result, cursor);

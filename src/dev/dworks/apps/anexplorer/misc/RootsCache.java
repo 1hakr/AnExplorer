@@ -333,6 +333,15 @@ public class RootsCache {
         return getRecentsRoot();
     }
     
+    public RootInfo getDownloadRoot() {
+    	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+    		if (root.isDownloads() || root.isDownloadsFolder()) {
+                return root;
+            }
+		}
+        return getRecentsRoot();
+    }
+    
     public RootInfo getRecentsRoot() {
         return mRecentsRoot;
     }

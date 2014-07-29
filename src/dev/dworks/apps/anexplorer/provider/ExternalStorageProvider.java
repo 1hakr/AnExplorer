@@ -29,6 +29,7 @@ import java.util.zip.ZipInputStream;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
@@ -64,7 +65,7 @@ public class ExternalStorageProvider extends StorageProvider {
     private static final boolean LOG_INOTIFY = false;
 
     public static final String AUTHORITY = "dev.dworks.apps.anexplorer.externalstorage.documents";
-
+    public static final String DOWNLOAD_AUTHORITY = "com.android.providers.downloads.documents";
     // docId format: root:path/to/file
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
@@ -241,6 +242,14 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private static String[] resolveDocumentProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION;
+    }
+    
+    public static boolean isDownloadAuthority(Intent intent){
+    	if(null != intent.getData()){
+        	String authority = intent.getData().getAuthority();
+        	return ExternalStorageProvider.DOWNLOAD_AUTHORITY.equals(authority);
+    	}
+    	return false;
     }
 
     private String getDocIdForFile(File file) throws FileNotFoundException {

@@ -29,14 +29,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.RemoteException;
 import android.text.format.DateUtils;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.google.analytics.tracking.android.Tracker;
-import com.joshdholtz.sentry.Sentry;
 
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.RemoteException;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 
@@ -67,10 +67,9 @@ public class DocumentsApplication extends Application {
 
     public static ContentProviderClient acquireUnstableProviderOrThrow(
             ContentResolver resolver, String authority) throws RemoteException {
-        final ContentProviderClient client = resolver.acquireContentProviderClient(
-                authority);
+    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, authority);
         if (client == null) {
-            throw new RemoteException();//"Failed to acquire provider for " + authority);
+            throw new RemoteException("Failed to acquire provider for " + authority);
         }
         ContentProviderClientCompat.setDetectNotResponding(client, PROVIDER_ANR_TIMEOUT);
         return client;
@@ -79,8 +78,7 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
     	
-		Sentry.init(this, "https://adf863ae0013482a9e052d062d0326df:30ec3caf684c4606ac1a659b7e63ef66@app.getsentry.com/14229");
-		
+    	Crashlytics.start(this);
 		GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
 		googleAnalytics.getTracker(getString(R.string.ga_trackingId));
 		tracker = googleAnalytics.getDefaultTracker();

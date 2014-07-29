@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.dworks.apps.anexplorer.ui.LinedEditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/note"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:fadingEdge="vertical"
+    android:gravity="top"
+    android:inputType="textMultiLine"
+    android:singleLine="false"
+    android:padding="5dp"
+    android:scrollbars="vertical"
+    android:textSize="16sp" />

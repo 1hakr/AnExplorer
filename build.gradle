@@ -3,21 +3,21 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
+        classpath 'com.android.tools.build:gradle:0.12.+'
     }
 }
 apply plugin: 'android'
 
 dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "17"
-
+    compileSdkVersion 19
+    buildToolsVersion '20.0.0'
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 17
+        targetSdkVersion 19
     }
     sourceSets {
         main {
@@ -31,5 +31,7 @@ android {
         }
 
         instrumentTest.setRoot('tests')
+    }
+    productFlavors {
     }
 }
