@@ -31,7 +31,6 @@ import org.mozilla.universalchardet.UniversalDetector;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -39,10 +38,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class NoteActivity extends Activity {
 	private static final String ORIGINAL_CONTENT = "origContent";
@@ -54,6 +56,7 @@ public class NoteActivity extends Activity {
 	private Uri mUri;
 	private EditText mText;
 	private String mOriginalContent;
+	private View editor_progress;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +79,7 @@ public class NoteActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setTitle("Text Viewer");
 		mText = (EditText) findViewById(R.id.note);
-
+		editor_progress = findViewById(R.id.editor_progress);
 		if (savedInstanceState != null) {
 			mOriginalContent = savedInstanceState.getString(ORIGINAL_CONTENT);
 		}
@@ -98,13 +101,7 @@ public class NoteActivity extends Activity {
 		} else if (mState == STATE_VIEW) {
 			// setTitle(getText(R.string.title_create));
 		}
-
-		SpannableStringBuilder note = openFile(mUri.toString(), "UTF-8");
-		mText.setTextKeepState(note);
-
-		if (mOriginalContent == null) {
-			 mOriginalContent = note.toString();
-		}
+		new ReadFile().execute();
 	}
 
 	@Override
@@ -464,5 +461,36 @@ public class NoteActivity extends Activity {
 		static public final int CR = 0;
 		static public final int LF = 1;
 		static public final int CRLF = 2;
+	}
+	
+	private class ReadFile extends AsyncTask<Void, Void, SpannableStringBuilder>{
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			editor_progress.setVisibility(View.VISIBLE);
+		}
+		
+		@Override
+		protected SpannableStringBuilder doInBackground(Void... params) {
+			SpannableStringBuilder note = openFile(mUri.toString(), "UTF-8");
+			return note;
+		}
+		
+		@Override
+		protected void onPostExecute(SpannableStringBuilder result) {
+			super.onPostExecute(result);
+			if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
+	    		return;
+	    	}
+			if(!TextUtils.isEmpty(result)){
+				mText.setTextKeepState(result);
+			}
+
+			if (mOriginalContent == null) {
+				 mOriginalContent = result.toString();
+			}
+			editor_progress.setVisibility(View.GONE);
+		}
 	}
 }
