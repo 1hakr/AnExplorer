@@ -22,6 +22,8 @@ import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_CREATE_D
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_DELETE_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_RENAME_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_MOVE_DOCUMENT;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_COMPRESS_DOCUMENT;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_UNCOMPRESS_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getDocumentId;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getRootId;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getSearchDocumentsQuery;
@@ -48,6 +50,8 @@ import android.util.Log;
 
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Base class for a document provider. A document provider offers read and write
@@ -198,6 +202,14 @@ public abstract class DocumentsProvider extends ContentProvider {
     }
 
     public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
+        throw new UnsupportedOperationException("Move not supported");
+    }
+
+    public String compressDocument(String parentDocumentId, ArrayList<String> documentIds) throws FileNotFoundException {
+        throw new UnsupportedOperationException("Move not supported");
+    }
+
+    public String uncompressDocument(String parentDocumentId) throws FileNotFoundException {
         throw new UnsupportedOperationException("Move not supported");
     }
 
@@ -494,8 +506,6 @@ public abstract class DocumentsProvider extends ContentProvider {
         }
 
         final String documentId = extras.getString(Document.COLUMN_DOCUMENT_ID);
-        final String documentIdTo = extras.getString(DocumentsContract.EXTRA_DOCUMENT_TO);
-        final boolean deleteAfter = extras.getBoolean(DocumentsContract.EXTRA_DELETE_AFTER);
         final Uri documentUri = DocumentsContract.buildDocumentUri(mAuthority, documentId);
 
         // Require that caller can manage requested document
@@ -539,7 +549,25 @@ public abstract class DocumentsProvider extends ContentProvider {
                 context.revokeUriPermission(documentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             } else if (METHOD_MOVE_DOCUMENT.equals(method)) {
+                final String documentIdTo = extras.getString(DocumentsContract.EXTRA_DOCUMENT_TO);
+                final boolean deleteAfter = extras.getBoolean(DocumentsContract.EXTRA_DELETE_AFTER);
                 moveDocument(documentId, documentIdTo, deleteAfter);
+
+                // Document no longer exists, clean up any grants
+                context.revokeUriPermission(documentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            } else if (METHOD_COMPRESS_DOCUMENT.equals(method)) {
+                final String documentIdTo = extras.getString(DocumentsContract.EXTRA_DOCUMENT_TO);
+                final ArrayList<String> documentIdToCompress = extras.getStringArrayList(DocumentsContract.EXTRA_DOCUMENTS_COMPRESS);
+                compressDocument(documentId, documentIdToCompress);
+
+                // Document no longer exists, clean up any grants
+                context.revokeUriPermission(documentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            } else if (METHOD_UNCOMPRESS_DOCUMENT.equals(method)) {
+                final String documentIdTo = extras.getString(DocumentsContract.EXTRA_DOCUMENT_TO);
+                final String documentIdToCompress = extras.getString(DocumentsContract.EXTRA_DOCUMENTS_COMPRESS);
+                uncompressDocument(documentId);
 
                 // Document no longer exists, clean up any grants
                 context.revokeUriPermission(documentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION

@@ -561,10 +561,10 @@ public class DirectoryFragment extends ListFragment {
 
 					final MenuItem copy = menu.findItem(R.id.menu_copy);
 					final MenuItem cut = menu.findItem(R.id.menu_cut);
-					// final MenuItem compress =
-					// menu.findItem(R.id.menu_compress);
+					final MenuItem compress = menu.findItem(R.id.menu_compress);
 					copy.setVisible(editMode);
 					cut.setVisible(editMode);
+                    compress.setVisible(editMode);
 
 					info.setVisible(count == 1);
 					rename.setVisible(count == 1);
@@ -619,6 +619,7 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 
 			case R.id.menu_save:
+            case R.id.menu_compress:
 				new OperationTask(docs, id).execute();
 				mode.finish();
 				return true;
@@ -824,6 +825,15 @@ public class DirectoryFragment extends ListFragment {
 			case R.id.menu_save:
 				progressDialog.setMessage("Saving apps...");
 				break;
+
+            case R.id.menu_uncompress:
+                progressDialog.setMessage("Uncompressing files...");
+                break;
+
+            case R.id.menu_compress:
+                progressDialog.setMessage("Compressing files...");
+                break;
+
 			default:
 				break;
 			}
@@ -846,6 +856,13 @@ public class DirectoryFragment extends ListFragment {
 			case R.id.menu_save:
 				result = onSaveDocuments(docs);
 				break;
+
+            case R.id.menu_uncompress:
+                result = onUncompressDocuments(docs);
+                break;
+            case R.id.menu_compress:
+                result = onCompressDocuments(doc, docs);
+                break;
 			}
 
 			return result;
@@ -919,6 +936,53 @@ public class DirectoryFragment extends ListFragment {
 
 		return hadTrouble;
 	}
+
+    public boolean onCompressDocuments(DocumentInfo parent, ArrayList<DocumentInfo> docs) {
+        final Context context = getActivity();
+        final ContentResolver resolver = context.getContentResolver();
+
+        boolean hadTrouble = false;
+        if (!parent.isEditSupported()) {
+            Log.w(TAG, "Skipping " + doc);
+            hadTrouble = true;
+        }
+
+        try {
+            ArrayList<String> documentIds = Lists.newArrayList();
+            for (DocumentInfo doc : docs){
+                documentIds.add(DocumentsContract.getDocumentId(doc.derivedUri));
+            }
+            DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to Compress " + doc);
+            hadTrouble = true;
+        }
+
+        return hadTrouble;
+    }
+
+    public boolean onUncompressDocuments(ArrayList<DocumentInfo> docs) {
+        final Context context = getActivity();
+        final ContentResolver resolver = context.getContentResolver();
+
+        boolean hadTrouble = false;
+        for (DocumentInfo doc : docs) {
+            if (!doc.isEditSupported()) {
+                Log.w(TAG, "Skipping " + doc);
+                hadTrouble = true;
+                continue;
+            }
+
+            try {
+                DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to Uncompress " + doc);
+                hadTrouble = true;
+            }
+        }
+
+        return hadTrouble;
+    }
 
 	private static abstract class Footer {
 		private final int mItemViewType;
@@ -1585,8 +1649,17 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem share = popup.getMenu().findItem(R.id.menu_share);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
 
+            final Cursor cursor = mAdapter.getItem(position);
+            final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
+            final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
+            if(isCompressed){
+                final MenuItem compress = popup.getMenu().findItem(R.id.menu_compress);
+                final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
+                compress.setVisible(!isCompressed);
+                uncompress.setVisible(isCompressed);
+            }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
 		}
@@ -1624,6 +1697,8 @@ public class DirectoryFragment extends ListFragment {
 			return true;
 
 		case R.id.menu_save:
+        case R.id.menu_uncompress:
+        case R.id.menu_compress:
 			new OperationTask(docs, id).execute();
 			return true;
 			

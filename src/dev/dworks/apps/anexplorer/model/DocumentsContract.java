@@ -22,6 +22,7 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentProviderClient;
@@ -497,10 +498,14 @@ public final class DocumentsContract {
     public static final String METHOD_DELETE_DOCUMENT = "android:deleteDocument";
     public static final String METHOD_RENAME_DOCUMENT = "android:renameDocument";
     public static final String METHOD_MOVE_DOCUMENT = "android:moveDocument";
+    public static final String METHOD_COMPRESS_DOCUMENT = "android:compressDocument";
+    public static final String METHOD_UNCOMPRESS_DOCUMENT = "android:uncompressDocument";
 
     public static final String EXTRA_THUMBNAIL_SIZE = "thumbnail_size";
     public static final String EXTRA_DOCUMENT_TO= "document_to";
     public static final String EXTRA_DELETE_AFTER = "delete_after";
+    public static final String EXTRA_DOCUMENTS_COMPRESS = "documents_compress";
+    public static final String EXTRA_DOCUMENTS_UNCOMPRESS = "documents_uncompress";
 
     private static final String PATH_ROOT = "root";
     private static final String PATH_RECENT = "recent";
@@ -887,6 +892,43 @@ public final class DocumentsContract {
             return null;
         } finally {
         	ContentProviderClientCompat.releaseQuietly(client);
+        }
+    }
+
+
+    public static boolean compressDocument(ContentResolver resolver, Uri fromDocumentUri, ArrayList<String> fromDocumentIds) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                fromDocumentUri.getAuthority());
+        try {
+            final Bundle in = new Bundle();
+            in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
+            in.putStringArrayList(DocumentsContract.EXTRA_DOCUMENTS_COMPRESS, fromDocumentIds);
+            //resolver.call(fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_COMPRESS_DOCUMENT, null, in);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to delete document", e);
+            return false;
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
+    }
+
+    public static boolean uncompressDocument(ContentResolver resolver, Uri fromDocumentUri) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                fromDocumentUri.getAuthority());
+        try {
+            final Bundle in = new Bundle();
+            in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
+
+            //resolver.call(fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to delete document", e);
+            return false;
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
         }
     }
     

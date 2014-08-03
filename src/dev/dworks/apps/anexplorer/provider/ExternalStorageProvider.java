@@ -479,6 +479,28 @@ public class ExternalStorageProvider extends StorageProvider {
     }
 
     @Override
+    public String compressDocument(String parentDocumentId, ArrayList<String> documentIds) throws FileNotFoundException {
+        final File fileFrom = getFileForDocId(parentDocumentId);
+        ArrayList<File> files = Lists.newArrayList();
+        for (String documentId : documentIds){
+            files.add(getFileForDocId(documentId));
+        }
+        if (!FileUtils.compressFile(fileFrom, files)) {
+            throw new IllegalStateException("Failed to extract " + fileFrom);
+        }
+        return getDocIdForFile(fileFrom);
+    }
+
+    @Override
+    public String uncompressDocument(String documentId) throws FileNotFoundException {
+        final File fileFrom = getFileForDocId(documentId);
+        if (!FileUtils.uncompress(fileFrom)) {
+            throw new IllegalStateException("Failed to extract " + fileFrom);
+        }
+        return getDocIdForFile(fileFrom);
+    }
+
+    @Override
     public Cursor queryDocument(String documentId, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));

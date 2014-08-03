@@ -28,7 +28,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
@@ -203,7 +207,70 @@ public class FileUtils {
 		}
 		return false;
     }
-    
+
+    public static boolean compressFile(File parent, List<File> files){
+        boolean success = false;
+        try {
+            File dest = new File(parent, FileUtils.getNameFromFilename(files.get(0).getName()) + ".zip");
+            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(dest));
+            compressFile("", zout, files.toArray(new File[0]));
+            zout.close();
+            success = true;
+        }
+        catch (Exception e){
+
+        }
+        return success;
+    }
+    private static void compressFile(String currentDir, ZipOutputStream zout, File[] files) throws Exception {
+        byte[] buffer = new byte[1024];
+        for (File fi : files) {
+            if (fi.isDirectory()) {
+                compressFile(currentDir + "/" + fi.getName(), zout, fi.listFiles());
+                continue;
+            }
+            ZipEntry ze = new ZipEntry(currentDir + "/" + fi.getName());
+            FileInputStream fin = new FileInputStream(fi.getPath());
+            zout.putNextEntry(ze);
+            int length;
+            while ((length = fin.read(buffer)) > 0) {
+                zout.write(buffer, 0, length);
+            }
+            zout.closeEntry();
+            fin.close();
+        }
+    }
+
+    public static boolean uncompress(File zipFile){
+        boolean success = false;
+        try {
+            FileInputStream fis = new FileInputStream(zipFile);
+            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+            ZipEntry entry;
+            File destFolder = new File(zipFile.getParent(), FileUtils.getNameFromFilename(zipFile.getName()));
+            //destFolder.mkdirs();
+            while ((entry = zis.getNextEntry()) != null) {
+                File dest = new File(destFolder, entry.getName());
+                dest.getParentFile().mkdirs();
+                int size;
+                byte[] buffer = new byte[2048];
+                FileOutputStream fos = new FileOutputStream(dest);
+                BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length);
+                while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+                    bos.write(buffer, 0, size);
+                }
+                bos.flush();
+                bos.close();
+            }
+            zis.close();
+            fis.close();
+            success = true;
+        }
+        catch (Exception e){
+
+        }
+        return success;
+    }
 
     public static String getExtFromFilename(String filename) {
         int dotPosition = filename.lastIndexOf('.');

@@ -12,7 +12,9 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.
+
+
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
@@ -46,6 +48,10 @@
     <string name="menu_share">Share</string>
     <!-- Menu item title that deletes the selected documents [CHAR LIMIT=24] -->
     <string name="menu_delete">Delete</string>
+    <!-- Menu item title that compress the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_compress">Compress</string>
+    <!-- Menu item title that uncompress the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_uncompress">Uncompress</string>
 
     <!-- Action mode title summarizing the number of documents selected [CHAR LIMIT=32] -->
     <string name="mode_selected_count"><xliff:g id="count" example="3">%1$d</xliff:g> selected</string>
@@ -115,17 +121,23 @@
 
     <!--
          Status indicating that the download has been queued to start in the future.  Appears for an
-         individual item in the download list.  [CHAR LIMIT=24]
+         individual item in the download list.  [CHAR LIMIT=24]
+
+
     -->
     <string name="download_queued">Queued</string>
     <!--
          Status indicating that the system is currently downloading the file.  Appears for an
-         individual item in the download list.  [CHAR LIMIT=24]
+         individual item in the download list.  [CHAR LIMIT=24]
+
+
     -->
     <string name="download_running">In progress</string>
     <!--
          Status indicating that the download has ended without completing successfully.  Appears for
-         an individual item in the download list.  [CHAR LIMIT=24]
+         an individual item in the download list.  [CHAR LIMIT=24]
+
+
     -->
     <string name="download_error">Unsuccessful</string>
 
