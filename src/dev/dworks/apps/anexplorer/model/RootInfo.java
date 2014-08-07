@@ -184,7 +184,9 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
             derivedIcon = R.drawable.ic_root_bluetooth;
-        } else if (isHiddenFolder()) {
+        }else if (isAppBackupFolder()) {
+            derivedIcon = R.drawable.ic_root_folder_am;
+        }else if (isHiddenFolder()) {
             derivedIcon = R.drawable.ic_root_hidden;
         } else if (isDownloads()) {
             derivedIcon = R.drawable.ic_root_download;
@@ -211,17 +213,17 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isExternalStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "primary".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_PRIMARY_EMULATED.equals(rootId);
     }
 
     public boolean isPhoneStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "phone".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_PHONE.equals(rootId);
     }
     
     public boolean isSecondayStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& rootId.startsWith("secondary");
+        		&& rootId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
     }
 
     public boolean isSecondayStorageSD() {
@@ -240,17 +242,23 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isDownloadsFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "download".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_DOWNLOAD.equals(rootId);
     }
-    
+
+    public boolean isAppBackupFolder() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && ExternalStorageProvider.ROOT_ID_APP_BACKUP.equals(rootId);
+    }
+
+
     public boolean isBluetoothFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "bluetooth".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_BLUETOOTH.equals(rootId);
     }
 
     public boolean isHiddenFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "hidden".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_HIDDEN.equals(rootId);
     }
     
     public boolean isDownloads() {
@@ -259,17 +267,17 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isImages() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
-                && "images_root".equals(rootId);
+                && MediaDocumentsProvider.TYPE_IMAGES_ROOT.equals(rootId);
     }
 
     public boolean isVideos() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
-                && "videos_root".equals(rootId);
+                && MediaDocumentsProvider.TYPE_VIDEOS_ROOT.equals(rootId);
     }
 
     public boolean isAudio() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
-                && "audio_root".equals(rootId);
+                && MediaDocumentsProvider.TYPE_AUDIO_ROOT.equals(rootId);
     }
 
     public boolean isApp() {

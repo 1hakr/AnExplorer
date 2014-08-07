@@ -341,7 +341,7 @@ public class RootsFragment extends Fragment {
             for (RootInfo root : roots) {
                 if (root.isRecents()) {
                     recents = new RootItem(root);
-                } else if (root.isBluetoothFolder() || root.isDownloadsFolder()) {
+                } else if (root.isBluetoothFolder() || root.isDownloadsFolder() || root.isAppBackupFolder()) {
                     extras.add(root);
                 } else if (root.isPhoneStorage()) {
                 	phone = new RootItem(root);

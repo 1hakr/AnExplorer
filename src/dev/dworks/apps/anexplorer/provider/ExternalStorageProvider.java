@@ -88,6 +88,11 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_PRIMARY_EMULATED = "primary";
     public static final String ROOT_ID_SECONDARY = "secondary";
     public static final String ROOT_ID_PHONE = "phone";
+    public static final String ROOT_ID_DOWNLOAD = "download";
+    public static final String ROOT_ID_BLUETOOTH = "bluetooth";
+    public static final String ROOT_ID_APP_BACKUP = "app_backup";
+    public static final String ROOT_ID_HIDDEN = "hidden";
+    public static final String ROOT_ID_BOOKMARK = "bookmark";
 
     private final Object mRootsLock = new Object();
 
@@ -109,6 +114,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
         updateVolumes();
         includeOtherRoot();
+        includeBookmarkRoot();
         return true;
     }
 
@@ -116,6 +122,7 @@ public class ExternalStorageProvider extends StorageProvider {
         synchronized (mRootsLock) {
             updateVolumesLocked();
             includeOtherRoot();
+            includeBookmarkRoot();
         }
     }
 
@@ -197,7 +204,7 @@ public class ExternalStorageProvider extends StorageProvider {
 		}
     	
     	try {
-            final String rootId = "download";
+            final String rootId = ROOT_ID_DOWNLOAD;
             final File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             mIdToPath.put(rootId, path);
 
@@ -212,9 +219,26 @@ public class ExternalStorageProvider extends StorageProvider {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
+        try {
+            final String rootId = ROOT_ID_APP_BACKUP;
+            final File path = Environment.getExternalStoragePublicDirectory("AppBackup");
+            mIdToPath.put(rootId, path);
+
+            final RootInfo root = new RootInfo();
+            root.rootId = rootId;
+            root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                    | Root.FLAG_SUPPORTS_SEARCH;
+            root.title = getContext().getString(R.string.root_app_backup);
+            root.docId = getDocIdForFile(path);
+            mRoots.add(root);
+            mIdToRoot.put(rootId, root);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     	
     	try {
-            final String rootId = "bluetooth";
+            final String rootId = ROOT_ID_BLUETOOTH;
             File path = Environment.getExternalStoragePublicDirectory("Bluetooth");
             if(null == path){
             	path = Environment.getExternalStoragePublicDirectory("Download/Bluetooth");
@@ -235,6 +259,10 @@ public class ExternalStorageProvider extends StorageProvider {
 			e.printStackTrace();
 		}
 	}
+
+    private void includeBookmarkRoot() {
+
+    }
 
     private static String[] resolveRootProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_ROOT_PROJECTION;

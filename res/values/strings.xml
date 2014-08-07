@@ -13,10 +13,7 @@
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
      limitations under the License.
-
-
 -->
-
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Title of the documents application [CHAR LIMIT=32] -->
@@ -86,6 +83,7 @@
     <string name="root_root_storage">Root</string>
     <string name="root_bluetooth">Bluetooth</string>
     <string name="root_downloads">Downloads</string>
+    <string name="root_app_backup">App Backup</string>
     <string name="root_hidden">Hidden</string>
     <string name="root_apps">Apps</string>
     <string name="root_heat_map">Heat map</string>
@@ -122,22 +120,16 @@
     <!--
          Status indicating that the download has been queued to start in the future.  Appears for an
          individual item in the download list.  [CHAR LIMIT=24]
-
-
     -->
     <string name="download_queued">Queued</string>
     <!--
          Status indicating that the system is currently downloading the file.  Appears for an
          individual item in the download list.  [CHAR LIMIT=24]
-
-
     -->
     <string name="download_running">In progress</string>
     <!--
          Status indicating that the download has ended without completing successfully.  Appears for
          an individual item in the download list.  [CHAR LIMIT=24]
-
-
     -->
     <string name="download_error">Unsuccessful</string>
 
@@ -180,10 +172,13 @@
     <string name="menu_rename">Rename</string>
 
     <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
-    <string name="bytes"><xliff:g id="count">%s</xliff:g>&#160;B</string>
+    <string name="bytes"><xliff:g id="count">%s</xliff:g> B</string>
     <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
-    <string name="kilobytes"><xliff:g id="count">%s</xliff:g>&#160;KB</string>
+    <string name="kilobytes"><xliff:g id="count">%s</xliff:g> KB</string>
     <!-- Size unit, displayed in a button next to an attachment  [CHAR LIMIT=5] -->
-    <string name="megabytes"><xliff:g id="count">%s</xliff:g>&#160;MB</string>
+    <string name="megabytes"><xliff:g id="count">%s</xliff:g> MB</string>
+    <string name="title_activity_donate">Donate</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

@@ -10,10 +10,15 @@
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
         <item>#222222</item>
-        <item>#0099cc</item>
-        <item>#669900</item>
-        <item>#ff8800</item>
-        <item>#cc0000</item>
+        <item>#03a9f4</item>
+        <item>#3f52b5</item>
+        <item>#009688</item>
+        <item>#259b24</item>
+        <item>#e51c23</item>
+        <item>#ff9800</item>
+        <item>#ffc107</item>
+        <item>#795548</item>
+        <item>#607d8b</item>
     </string-array>
 
 </resources>

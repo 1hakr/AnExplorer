@@ -78,15 +78,15 @@ public class MediaDocumentsProvider extends StorageProvider {
     private static final String AUDIO_MIME_TYPES = joinNewline(
             "audio/*", "application/ogg", "application/x-flac");
 
-    private static final String TYPE_IMAGES_ROOT = "images_root";
+    public static final String TYPE_IMAGES_ROOT = "images_root";
     private static final String TYPE_IMAGES_BUCKET = "images_bucket";
     private static final String TYPE_IMAGE = "image";
 
-    private static final String TYPE_VIDEOS_ROOT = "videos_root";
+    public static final String TYPE_VIDEOS_ROOT = "videos_root";
     private static final String TYPE_VIDEOS_BUCKET = "videos_bucket";
     private static final String TYPE_VIDEO = "video";
 
-    private static final String TYPE_AUDIO_ROOT = "audio_root";
+    public static final String TYPE_AUDIO_ROOT = "audio_root";
     private static final String TYPE_AUDIO = "audio";
     private static final String TYPE_ARTIST = "artist";
     private static final String TYPE_ALBUM = "album";

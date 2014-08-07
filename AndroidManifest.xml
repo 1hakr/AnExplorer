@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
+    <!-- For In-App Billing -->
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -26,7 +28,7 @@
         android:required="false" />
 
     <application
-        android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
+        android:name=".DocumentsApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="AnExplorer"
@@ -35,7 +37,7 @@
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
-            android:name="dev.dworks.apps.anexplorer.DocumentsActivity"
+            android:name=".DocumentsActivity"
             android:theme="@style/Theme" >
             <intent-filter android:priority="100" >
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
@@ -81,19 +83,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
+            android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
         <activity
-            android:name="dev.dworks.apps.anexplorer.AboutActivity"
+            android:name=".AboutActivity"
             android:label="About"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
 
         <provider
-            android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"
+            android:name=".provider.RecentsProvider"
             android:authorities="dev.dworks.apps.anexplorer.recents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -103,7 +105,7 @@
             </intent-filter>
         </provider>
         <provider
-            android:name="dev.dworks.apps.anexplorer.provider.ExternalStorageProvider"
+            android:name=".provider.ExternalStorageProvider"
             android:authorities="dev.dworks.apps.anexplorer.externalstorage.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -113,7 +115,7 @@
             </intent-filter>
         </provider>
         <provider
-            android:name="dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider"
+            android:name=".provider.MediaDocumentsProvider"
             android:authorities="dev.dworks.apps.anexplorer.media.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -123,7 +125,7 @@
             </intent-filter>
         </provider>
         <provider
-            android:name="dev.dworks.apps.anexplorer.provider.AppsProvider"
+            android:name=".provider.AppsProvider"
             android:authorities="dev.dworks.apps.anexplorer.apps.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -133,7 +135,7 @@
             </intent-filter>
         </provider>
         <provider
-            android:name="dev.dworks.apps.anexplorer.provider.RootedStorageProvider"
+            android:name=".provider.RootedStorageProvider"
             android:authorities="dev.dworks.apps.anexplorer.rootedstorage.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -153,7 +155,7 @@
             <intent-filter>
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>
+        </provider>
         -->
         <!--
              <provider
@@ -165,9 +167,10 @@
             <intent-filter>
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
-        </provider>        -->
+        </provider>
+        -->
 
-        <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver" >
+        <receiver android:name=".receiver.PackageReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
@@ -175,7 +178,7 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name="dev.dworks.apps.anexplorer.receiver.MountReceiver" >
+        <receiver android:name=".receiver.MountReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
@@ -204,6 +207,12 @@
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="8d9d245a1d53a9ea0d140f5ea40de7cf4b3ab098" />
+
+        <activity
+            android:name=".DonateActivity"
+            android:theme="@style/Theme"
+            android:label="@string/title_activity_donate" >
+        </activity>
     </application>
 
 </manifest>
