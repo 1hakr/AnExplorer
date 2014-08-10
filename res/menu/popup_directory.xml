@@ -22,6 +22,11 @@
         android:showAsAction="always"
         android:title="Info" />
     <item
+        android:id="@+id/menu_bookmark"
+        android:icon="@drawable/ic_menu_info"
+        android:showAsAction="always"
+        android:title="Bookmark" />
+    <item
         android:id="@+id/menu_rename"
         android:icon="@drawable/ic_menu_rename_file"
         android:showAsAction="always"

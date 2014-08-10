@@ -14,8 +14,7 @@ Features present :
 * Storage Mode / Themes option
 * App Manager
 * Process Manager
-* Hidden Folders
-* Wallpaper Mod
+* Bookmark folders
 * All types of storage like emmc, internal SD card
 * Tablet optimized
 * Root support

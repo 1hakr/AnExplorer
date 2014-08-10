@@ -28,7 +28,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import android.annotation.SuppressLint;
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
@@ -47,7 +49,9 @@ import com.google.common.collect.Maps;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
+import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
+import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
@@ -57,6 +61,8 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
+
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 @SuppressLint("DefaultLocale")
 public class ExternalStorageProvider extends StorageProvider {
@@ -70,7 +76,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -83,6 +89,7 @@ public class ExternalStorageProvider extends StorageProvider {
         public int flags;
         public String title;
         public String docId;
+        public String path;
     }
 
     public static final String ROOT_ID_PRIMARY_EMULATED = "primary";
@@ -261,7 +268,33 @@ public class ExternalStorageProvider extends StorageProvider {
 	}
 
     private void includeBookmarkRoot() {
+        Cursor cursor = null;
+        try {
+            cursor = getContext().getContentResolver().query(ExplorerProvider.buildBookmark(), null, null, null, null);
+            while (cursor.moveToNext()) {
+                try {
+                    final String rootId = ROOT_ID_BOOKMARK + " " +getCursorString(cursor, ExplorerProvider.BookmarkColumns.ROOT_ID);
+                    final File path = new File(getCursorString(cursor, ExplorerProvider.BookmarkColumns.PATH));
+                    mIdToPath.put(rootId, path);
 
+                    final RootInfo root = new RootInfo();
+                    root.rootId = rootId;
+                    root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                            | Root.FLAG_SUPPORTS_SEARCH;
+                    root.title = getCursorString(cursor, ExplorerProvider.BookmarkColumns.TITLE);
+                    root.docId = getDocIdForFile(path);
+                    root.path = path.getPath();
+                    mRoots.add(root);
+                    mIdToRoot.put(rootId, root);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+        } finally {
+            IoUtils.closeQuietly(cursor);
+        }
     }
 
     private static String[] resolveRootProjection(String[] projection) {
@@ -270,6 +303,21 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private static String[] resolveDocumentProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION;
+    }
+
+    public static void notifyRootsChanged(Context context) {
+        context.getContentResolver()
+                .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+    }
+
+    public static void updateVolumes(Context context){
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(),
+                ExternalStorageProvider.AUTHORITY);
+        try {
+            ((ExternalStorageProvider) client.getLocalContentProvider()).updateVolumes();
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
     }
     
     public static boolean isDownloadAuthority(Intent intent){
@@ -422,6 +470,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 row.add(Root.COLUMN_FLAGS, root.flags);
                 row.add(Root.COLUMN_TITLE, root.title);
                 row.add(Root.COLUMN_DOCUMENT_ID, root.docId);
+                row.add(Root.COLUMN_PATH, root.path);
                 if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId) || root.rootId.startsWith(ROOT_ID_SECONDARY)){
                 	row.add(Root.COLUMN_AVAILABLE_BYTES, path.getFreeSpace());
                 }

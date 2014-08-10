@@ -60,6 +60,7 @@ public class RootInfo implements Durable, Parcelable {
     public String documentId;
     public long availableBytes;
     public String mimeTypes;
+    public String path;
 
     /** Derived fields that aren't persisted */
     public String derivedPackageName;
@@ -81,6 +82,7 @@ public class RootInfo implements Durable, Parcelable {
         documentId = null;
         availableBytes = -1;
         mimeTypes = null;
+        path = null;
 
         derivedPackageName = null;
         derivedMimeTypes = null;
@@ -157,6 +159,7 @@ public class RootInfo implements Durable, Parcelable {
         root.documentId = getCursorString(cursor, Root.COLUMN_DOCUMENT_ID);
         root.availableBytes = getCursorLong(cursor, Root.COLUMN_AVAILABLE_BYTES);
         root.mimeTypes = getCursorString(cursor, Root.COLUMN_MIME_TYPES);
+        root.path = getCursorString(cursor, Root.COLUMN_PATH);
         root.deriveFields();
         return root;
     }
@@ -171,12 +174,12 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_root;
         } else if (isPhoneStorage()) {
             derivedIcon = R.drawable.ic_root_phone;
-        } else if (isSecondayStorage()) {
-	        if (isSecondayStorageSD()) {
+        } else if (isSecondaryStorage()) {
+	        if (isSecondaryStorageSD()) {
 	            derivedIcon = R.drawable.ic_root_sdcard;
-	        } else if (isSecondayStorageUSB()) {
+	        } else if (isSecondaryStorageUSB()) {
 	            derivedIcon = R.drawable.ic_root_usb;
-	        } else if (isSecondayStorageHDD()) {
+	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;
 	        }
             derivedIcon = R.drawable.ic_root_sdcard;
@@ -184,9 +187,11 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
             derivedIcon = R.drawable.ic_root_bluetooth;
-        }else if (isAppBackupFolder()) {
+        } else if (isAppBackupFolder()) {
             derivedIcon = R.drawable.ic_root_folder_am;
-        }else if (isHiddenFolder()) {
+        } else if (isBookmarkFolder()) {
+            derivedIcon = R.drawable.ic_root_folder_am;
+        } else if (isHiddenFolder()) {
             derivedIcon = R.drawable.ic_root_hidden;
         } else if (isDownloads()) {
             derivedIcon = R.drawable.ic_root_download;
@@ -221,22 +226,22 @@ public class RootInfo implements Durable, Parcelable {
                 && ExternalStorageProvider.ROOT_ID_PHONE.equals(rootId);
     }
     
-    public boolean isSecondayStorage() {
+    public boolean isSecondaryStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
         		&& rootId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
     }
 
-    public boolean isSecondayStorageSD() {
+    public boolean isSecondaryStorageSD() {
         return rootId.toLowerCase().contains("sd")
 				|| rootId.toLowerCase().contains("card")
 				|| rootId.toLowerCase().contains("emmc");
     }
     
-    public boolean isSecondayStorageUSB() {
+    public boolean isSecondaryStorageUSB() {
         return rootId.toLowerCase().contains("usd");
     }
     
-    public boolean isSecondayStorageHDD() {
+    public boolean isSecondaryStorageHDD() {
         return rootId.toLowerCase().contains("hdd");
     }
 
@@ -250,10 +255,14 @@ public class RootInfo implements Durable, Parcelable {
                 && ExternalStorageProvider.ROOT_ID_APP_BACKUP.equals(rootId);
     }
 
-
     public boolean isBluetoothFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
                 && ExternalStorageProvider.ROOT_ID_BLUETOOTH.equals(rootId);
+    }
+
+    public boolean isBookmarkFolder() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && rootId.startsWith(ExternalStorageProvider.ROOT_ID_BOOKMARK);
     }
 
     public boolean isHiddenFolder() {

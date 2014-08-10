@@ -170,6 +170,12 @@
         </provider>
         -->
 
+        <provider
+            android:name=".provider.ExplorerProvider"
+            android:authorities="dev.dworks.apps.anexplorer.explorer"
+            android:enabled="true"
+            android:exported="false" >
+        </provider>
         <receiver android:name=".receiver.PackageReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
@@ -210,8 +216,8 @@
 
         <activity
             android:name=".DonateActivity"
-            android:theme="@style/Theme"
-            android:label="@string/title_activity_donate" >
+            android:label="@string/title_activity_donate"
+            android:theme="@style/Theme" >
         </activity>
     </application>
 

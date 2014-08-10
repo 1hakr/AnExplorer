@@ -24,11 +24,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -48,6 +51,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -57,10 +61,12 @@ import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
+import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -233,11 +239,39 @@ public class RootsFragment extends Fragment {
             if (item instanceof AppItem) {
                 showAppDetails(((AppItem) item).info);
                 return true;
-            } else {
+            } else if (item instanceof BookmarkItem) {
+                removeBookark((BookmarkItem)item);
+                return true;
+            }  else {
                 return false;
             }
         }
     };
+
+    private void removeBookark(final BookmarkItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Remove bookmark?")
+        .setCancelable(false)
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int did) {
+                dialog.dismiss();
+                int rows = getActivity().getContentResolver().delete(ExplorerProvider.buildBookmark(),
+                        ExplorerProvider.BookmarkColumns.PATH + " = ? AND " +
+                                ExplorerProvider.BookmarkColumns.TITLE + " = ? ",
+                        new String[]{item.root.path, item.root.title}
+                );
+                if (rows > 0) {
+                    Toast.makeText(getActivity(), "Bookmark removed", Toast.LENGTH_SHORT).show();
+                    ExternalStorageProvider.updateVolumes(getActivity());
+                }
+            }
+        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int did) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
 
     private static abstract class Item {
         private final int mLayoutId;
@@ -322,6 +356,12 @@ public class RootsFragment extends Fragment {
         }
     }
 
+    private static class BookmarkItem extends RootItem {
+        public BookmarkItem(RootInfo root) {
+            super(root);
+        }
+    }
+
     private static class RootsAdapter extends ArrayAdapter<Item> {
         public RootsAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
             super(context, 0);
@@ -337,12 +377,15 @@ public class RootsFragment extends Fragment {
             final List<RootInfo> clouds = Lists.newArrayList();
             final List<RootInfo> locals = Lists.newArrayList();
             final List<RootInfo> extras = Lists.newArrayList();
+            final List<RootInfo> bookmarks = Lists.newArrayList();
             
             for (RootInfo root : roots) {
                 if (root.isRecents()) {
                     recents = new RootItem(root);
                 } else if (root.isBluetoothFolder() || root.isDownloadsFolder() || root.isAppBackupFolder()) {
                     extras.add(root);
+                } else if (root.isBookmarkFolder()) {
+                    bookmarks.add(root);
                 } else if (root.isPhoneStorage()) {
                 	phone = new RootItem(root);
                 } else if (root.isStorage()) {
@@ -380,7 +423,14 @@ public class RootsFragment extends Fragment {
             	add(new SpacerItem());
             	add(root_root);
             }
-            
+
+            if(bookmarks.size() > 0) {
+                add(new SpacerItem());
+                for (RootInfo bookmark : bookmarks) {
+                    add(new BookmarkItem(bookmark));
+                }
+            }
+
             add(new SpacerItem());
             if (recents != null) add(recents);
             if (images != null) add(images);

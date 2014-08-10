@@ -77,6 +77,7 @@
         android:id="@+id/menu_donate"
         android:icon="@drawable/ic_dialog_info"
         android:showAsAction="never"
+        android:visible="false"
         android:title="Donate"/>
     <item
         android:id="@+id/menu_about"

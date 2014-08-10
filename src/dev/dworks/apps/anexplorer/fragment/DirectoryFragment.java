@@ -111,6 +111,8 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
+import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
+import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
@@ -776,6 +778,12 @@ public class DirectoryFragment extends ListFragment {
 			onUninstallApp(doc);
 			docsAppUninstall.remove(docsAppUninstall.size() - 1);
 		}
+        else{
+            if (null != root && root.isAppPackage()) {
+                AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
+                //((DocumentsActivity) getActivity()).onCurrentDirectoryChanged(ANIM_NONE);
+            }
+        }
 	}
 
 	private boolean onUninstallApp(DocumentInfo doc) {
@@ -885,13 +893,11 @@ public class DirectoryFragment extends ListFragment {
 				}
 
 			}
-			if (null != root && root.isAppProcess()) {
-				AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
-				AppsProvider.notifyRootsChanged(getActivity());
-			}
-			if (!(null != root && root.isAppPackage())) {
-				((DocumentsActivity) getActivity()).onCurrentDirectoryChanged(ANIM_NONE);
-			}
+
+            if (null != root && root.isAppProcess()) {
+                AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
+                AppsProvider.notifyRootsChanged(getActivity());
+            }
 		}
 	}
 
@@ -1648,6 +1654,7 @@ public class DirectoryFragment extends ListFragment {
 			final State state = getDisplayState(DirectoryFragment.this);
 			final MenuItem share = popup.getMenu().findItem(R.id.menu_share);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
+            final MenuItem bookmark = popup.getMenu().findItem(R.id.menu_bookmark);
 
             final Cursor cursor = mAdapter.getItem(position);
             final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
@@ -1659,6 +1666,9 @@ public class DirectoryFragment extends ListFragment {
                 final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
                 compress.setVisible(!isCompressed);
                 uncompress.setVisible(isCompressed);
+            }
+            if(null != bookmark) {
+                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType));
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
@@ -1716,6 +1726,18 @@ public class DirectoryFragment extends ListFragment {
 			RenameFragment.show(getFragmentManager(), docs.get(0));
 			return true;
 
+        case R.id.menu_bookmark:
+            DocumentInfo document = docs.get(0);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ExplorerProvider.BookmarkColumns.PATH, document.path);
+            contentValues.put(ExplorerProvider.BookmarkColumns.TITLE, document.displayName);
+            contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
+            Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
+            if(null != uri) {
+                Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+                ExternalStorageProvider.updateVolumes(getActivity());
+            }
+            return true;
 		default:
 			return false;
 		}

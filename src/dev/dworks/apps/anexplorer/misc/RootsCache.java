@@ -91,7 +91,6 @@ public class RootsCache {
 
         @Override
         public void onChange(boolean selfChange) {
-        	//FIXME: update authority
         	super.onChange(selfChange);
         }
         
@@ -326,7 +325,7 @@ public class RootsCache {
     
     public RootInfo getDefaultRoot() {
     	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (root.isExternalStorage() || root.isSecondayStorage()) {
+    		if (root.isExternalStorage() || root.isSecondaryStorage()) {
                 return root;
             }
 		}

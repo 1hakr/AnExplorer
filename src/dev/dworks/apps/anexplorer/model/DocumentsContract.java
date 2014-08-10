@@ -384,6 +384,7 @@ public final class DocumentsContract {
          */
         public static final String COLUMN_AVAILABLE_BYTES = "available_bytes";
         public static final String COLUMN_TOTAL_BYTES = "total_bytes";
+        public static final String COLUMN_PATH = "path";
 
         /**
          * MIME types supported by this root. This column is optional, and if
