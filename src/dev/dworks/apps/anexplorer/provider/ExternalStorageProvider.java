@@ -768,7 +768,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (LOG_INOTIFY) Log.d(TAG, "onEvent() " + event + " at " + path);
                 mResolver.notifyChange(mNotifyUri, null, false);
                 //notify roots changed
-                mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+                //mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
             }
         }
 

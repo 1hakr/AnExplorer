@@ -133,7 +133,7 @@ public class AppRate {
      */
     public void reset() {
         editor.putInt(KEY_COUNT, 0);
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -146,7 +146,7 @@ public class AppRate {
     private void incrementViews() {
 
         editor.putInt(KEY_COUNT, settings.getInt(KEY_COUNT, 0) + 1);
-        editor.commit();
+        editor.apply();
     }
 
     private void showAppRate() {
@@ -172,7 +172,7 @@ public class AppRate {
                 if (onShowListener != null)onShowListener.onRateAppClicked();
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);
-                editor.commit();
+                editor.apply();
 
             }
         });
