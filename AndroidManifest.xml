@@ -16,8 +16,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
-    <!-- For In-App Billing -->
-    <uses-permission android:name="com.android.vending.BILLING" />
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -214,11 +212,6 @@
             android:name="com.crashlytics.ApiKey"
             android:value="8d9d245a1d53a9ea0d140f5ea40de7cf4b3ab098" />
 
-        <activity
-            android:name=".DonateActivity"
-            android:label="@string/title_activity_donate"
-            android:theme="@style/Theme" >
-        </activity>
     </application>
 
 </manifest>
