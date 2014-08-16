@@ -2,27 +2,21 @@ AnExplorer
 ==========
 ![AnExplorer](https://github.com/DWorkS/AnExplorer/raw/master/header.png)
 
-Another Android Explorer (AnExplorer) is simple, fast, lightweight. 
-It has all the basic features of a File browser and the best thing is its small and tablet optimized. 
+AnExplorer is fully Open Source Minimalist Holo Designed File Manager built for Phones and Tablets with Android 4.0+. With AnExplorer File Manager you can easily find, browse, move, compress, and otherwise manage your apps easily!
+
 Features present : 
-* List / Grid View
-* Cut / Copy / Paste / Rename / Delete
-* Multiselect / Sorting / Sharing / Extract / Compress
-* Standalone File Picker
-* Folder / File sizes
-* Preview for Images / Videos / MP3 / APK option (Android 2.2+)
-* Storage Mode / Themes option
-* App Manager
-* Process Manager
-* Hidden Folders
-* Wallpaper Mod
-* All types of storage like emmc, internal SD card
-* Tablet optimized
-* Root support
-* Login for security
-* Two-pane navigation for both phones and tablets
-* Android 2.1+, 3.0+, 4.0+ fully ready
-* Same experience in any device
+* All types of storage like emmc, internal SD card, external SD cards USB OTG On-The-Go
+* Different theme of colors
+* Intuitive left/right swiping to browse folders and files
+* App Manager and Process Manager for your installed Android apps and games
+* Built-in Text Viewer
+* Perform all the file operations like Cut / Copy / Paste / Rename / Delete / Compress to zip easily
+* Acts as a Standalone File Picker
+* Only app to Show Folder sizes
+* Thumbnails for Images / Videos / Audio / Application files
+* Tablet optimized and has Root support
+
+A File Explorer which serves all your needs all the time. Compatible with Android 4.4 KitKat and latest Nexus tablets. It supports Immersive full-screen mode for better experience.
 
 
 Developed By
@@ -34,7 +28,7 @@ Developed By
 License
 =======
 
-    Copyright 2013 Hari Krishna Dulipudi
+    Copyright 2014 Hari Krishna Dulipudi
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
