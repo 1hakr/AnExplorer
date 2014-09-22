@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import java.io.File;
-
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -40,6 +38,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.File;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -152,6 +153,7 @@ public class DetailFragment extends DialogFragment{
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if(isDialog){
+            setShowsDialog(isDialog);
 			getDialog().setTitle("Details");
 		}
 		

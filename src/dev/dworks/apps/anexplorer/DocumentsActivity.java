@@ -598,7 +598,7 @@ public class DocumentsActivity extends Activity {
 
             if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
                 actionBar.setTitle(R.string.app_name);
-                actionBar.setIcon(R.drawable.ic_launcher);
+                actionBar.setIcon(R.drawable.logo);
             } else if (mState.action == ACTION_CREATE) {
                 actionBar.setTitle(R.string.title_save);
             }

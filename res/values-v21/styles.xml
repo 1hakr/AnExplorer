@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme" parent="@android:style/Theme.Material.Light.DarkActionBar">
+        <item name="android:actionModeBackground">@android:color/transparent</item>
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+    </style>
+
+    <style name="ListProgress" parent="@android:style/Widget.Material.ProgressBar"/>
+
+    <style name="ActionBar" parent="@android:style/Widget.Material.ActionBar.Solid">
+        <item name="android:displayOptions">showHome|useLogo</item>
+    </style>
+</resources>

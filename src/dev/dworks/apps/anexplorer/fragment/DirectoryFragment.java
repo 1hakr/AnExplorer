@@ -17,21 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
-
-import java.io.File;
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -85,6 +70,9 @@ import android.widget.Toast;
 
 import com.google.common.collect.Lists;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
@@ -116,6 +104,18 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 /**
  * Display the documents inside a single directory.
@@ -1664,7 +1664,9 @@ public class DirectoryFragment extends ListFragment {
             if(isCompressed){
                 final MenuItem compress = popup.getMenu().findItem(R.id.menu_compress);
                 final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
+                if(null != compress)
                 compress.setVisible(!isCompressed);
+                if(null != uncompress)
                 uncompress.setVisible(isCompressed);
             }
             if(null != bookmark) {
