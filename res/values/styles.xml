@@ -35,17 +35,18 @@
          dialog on large tablets
 
     -->
-    <style name="Theme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+    <style name="Theme.Document" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
         <item name="android:actionModeBackground">@android:color/transparent</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="actionBarSize">@dimen/activity_actionbar_size</item>
     </style>
 
     <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_menu_overflow</item>
     </style>
 
-    <style name="ActionBar" parent="@android:style/Widget.ActionBar">
+    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:displayOptions">showHome|useLogo</item>
     </style>
 
@@ -77,7 +78,7 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="Theme.DailogPIN">
+    <style name="Theme.Document.DailogPIN">
         <item name="android:windowNoTitle">true</item>
     </style>
 

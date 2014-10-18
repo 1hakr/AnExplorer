@@ -41,4 +41,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 	<!-- The max limit of file size that the internal editor can open. Default: 4Mb -->
     <integer name="editor_max_file_size">4194304</integer>
+
+    <dimen name="activity_actionbar_size">48dp</dimen>
 </resources>

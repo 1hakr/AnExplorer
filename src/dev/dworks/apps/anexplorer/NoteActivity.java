@@ -16,19 +16,6 @@ package dev.dworks.apps.anexplorer;
  * limitations under the License.
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-
-import org.mozilla.universalchardet.UniversalDetector;
-
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
@@ -43,10 +30,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import org.mozilla.universalchardet.UniversalDetector;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class NoteActivity extends Activity {
+public class NoteActivity extends ActionBarActivity {
 	private static final String ORIGINAL_CONTENT = "origContent";
 	private static final int STATE_EDIT = 0;
 	private static final int STATE_VIEW = 1;
@@ -76,8 +76,8 @@ public class NoteActivity extends Activity {
 		}
 
 		setContentView(R.layout.activity_note);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setTitle("Text Viewer");
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setTitle("Text Viewer");
 		mText = (EditText) findViewById(R.id.note);
 		editor_progress = findViewById(R.id.editor_progress);
 		if (savedInstanceState != null) {

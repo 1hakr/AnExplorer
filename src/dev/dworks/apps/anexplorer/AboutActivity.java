@@ -16,9 +16,6 @@
 
 package dev.dworks.apps.anexplorer;
 
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
-import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -30,11 +27,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.TextView;
 
-public class AboutActivity extends Activity {
+import dev.dworks.apps.anexplorer.misc.ViewCompat;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+public class AboutActivity extends ActionBarActivity {
 
 
 	@Override
@@ -86,7 +86,7 @@ public class AboutActivity extends Activity {
                 });	
         	}
         }
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setText(logo.getText() + " v" + DocumentsApplication.APP_VERSION);
 	}

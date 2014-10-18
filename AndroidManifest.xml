@@ -36,7 +36,7 @@
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
             android:name=".DocumentsActivity"
-            android:theme="@style/Theme" >
+            android:theme="@style/Theme.Document" >
             <intent-filter android:priority="100" >
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
 
@@ -84,11 +84,11 @@
             android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
-            android:theme="@style/Theme" />
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
         <activity
             android:name=".AboutActivity"
             android:label="About"
-            android:theme="@style/Theme"
+            android:theme="@style/Theme.Document"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
 
@@ -198,7 +198,7 @@
             android:name=".NoteActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="sensor"
-            android:theme="@style/Theme" >
+            android:theme="@style/Theme.Document" >
             <intent-filter android:label="Text Viewer" >
                 <action android:name="android.intent.action.VIEW" />
 

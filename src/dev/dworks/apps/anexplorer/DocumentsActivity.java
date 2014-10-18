@@ -17,30 +17,7 @@
 
 package dev.dworks.apps.anexplorer;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Executor;
-
-import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -69,17 +46,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.OnNavigationListener;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuItem.OnActionExpandListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -89,12 +69,20 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.collect.Maps;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
@@ -128,7 +116,19 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 
-public class DocumentsActivity extends Activity {
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
+
+public class DocumentsActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
 
     private static final String EXTRA_STATE = "state";
@@ -162,7 +162,7 @@ public class DocumentsActivity extends Activity {
 	@Override
     public void onCreate(Bundle icicle) {
     	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
-    		setTheme(R.style.Theme_Translucent);
+    		setTheme(R.style.Theme_Document_Translucent);
     	}
     	
 /*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
@@ -228,7 +228,7 @@ public class DocumentsActivity extends Activity {
             mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                    R.drawable.ic_drawer_glyph, R.string.drawer_open, R.string.drawer_close);
+                    R.string.drawer_open, R.string.drawer_close);
 
             mDrawerLayout.setDrawerListener(mDrawerListener);
             mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
@@ -297,7 +297,7 @@ public class DocumentsActivity extends Activity {
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
 			return;
 		}
-        final Dialog d = new Dialog(this, R.style.Theme_DailogPIN);
+        final Dialog d = new Dialog(this, R.style.Theme_Document_DailogPIN);
         d.setContentView(new PinViewHelper((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
             public void onEnter(String password) {
                 super.onEnter(password);
@@ -582,7 +582,7 @@ public class DocumentsActivity extends Activity {
     }
 
     public void updateActionBar() {
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
 
         actionBar.setDisplayShowHomeEnabled(true);
 
@@ -594,11 +594,11 @@ public class DocumentsActivity extends Activity {
 
         if (isRootsDrawerOpen()) {
             actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(new ColorDrawable());
+            //actionBar.setIcon(new ColorDrawable());
 
             if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
                 actionBar.setTitle(R.string.app_name);
-                actionBar.setIcon(R.drawable.logo);
+                //actionBar.setIcon(R.drawable.logo);
             } else if (mState.action == ACTION_CREATE) {
                 actionBar.setTitle(R.string.title_save);
             }
@@ -633,7 +633,7 @@ public class DocumentsActivity extends Activity {
 */
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchMenu.getActionView();
-        mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mState.currentSearch = query;
@@ -648,7 +648,7 @@ public class DocumentsActivity extends Activity {
             }
         });
 
-        searchMenu.setOnActionExpandListener(new OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(searchMenu, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 return true;
@@ -1016,6 +1016,7 @@ public class DocumentsActivity extends Activity {
     	return mShowAsDialog;
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onCurrentDirectoryChanged(int anim) {
     	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
     	if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
@@ -1313,7 +1314,8 @@ public class DocumentsActivity extends Activity {
         resolver.insert(RecentsProvider.buildResume(packageName), values);
     }
 
-	private void onFinished(Uri... uris) {
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void onFinished(Uri... uris) {
         Log.d(TAG, "onFinished() " + Arrays.toString(uris));
 
         final Intent intent = new Intent();
@@ -1606,7 +1608,7 @@ public class DocumentsActivity extends Activity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				ld.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(ld);
+				getSupportActionBar().setBackgroundDrawable(ld);
 			}
 
 		} else {
@@ -1617,7 +1619,7 @@ public class DocumentsActivity extends Activity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				td.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(td);
+				getSupportActionBar().setBackgroundDrawable(td);
 			}
 			td.startTransition(200);
 		}
@@ -1625,8 +1627,8 @@ public class DocumentsActivity extends Activity {
 		oldBackground = ld;
 		
 		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-		getActionBar().setDisplayShowTitleEnabled(false);
-		getActionBar().setDisplayShowTitleEnabled(true);
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
+		getSupportActionBar().setDisplayShowTitleEnabled(true);
         
         if(Utils.hasKitKat()){
             if(SettingsActivity.getTranslucentMode(this)){
@@ -1650,7 +1652,7 @@ public class DocumentsActivity extends Activity {
 	private Drawable.Callback drawableCallback = new Drawable.Callback() {
 		@Override
 		public void invalidateDrawable(Drawable who) {
-			getActionBar().setBackgroundDrawable(who);
+			getSupportActionBar().setBackgroundDrawable(who);
 		}
 
 		@Override

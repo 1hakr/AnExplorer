@@ -15,12 +15,13 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="Theme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+    <style name="Theme.Document" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
         <item name="android:actionModeBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="actionBarSize">@dimen/activity_actionbar_size</item>
         <item name="android:windowAnimationStyle">@*android:style/Animation.Holo.Dialog</item>
     </style>
     

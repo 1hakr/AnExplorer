@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.setting;
 
-import java.util.List;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
@@ -39,6 +37,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 

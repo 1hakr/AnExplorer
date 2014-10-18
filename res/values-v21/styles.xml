@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme" parent="@android:style/Theme.Material.Light.DarkActionBar">
+    <style name="Theme.Document" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:actionModeBackground">@android:color/transparent</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="actionBarSize">@dimen/activity_actionbar_size</item>
     </style>
 
     <style name="ListProgress" parent="@android:style/Widget.Material.ProgressBar"/>

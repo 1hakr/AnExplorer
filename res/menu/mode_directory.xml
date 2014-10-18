@@ -16,49 +16,50 @@
 
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_open"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="@string/menu_open"/>
     <item
         android:id="@+id/menu_info"
         android:icon="@drawable/ic_menu_info"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Info"
         android:visible="false"/>
     <item
         android:id="@+id/menu_edit"
         android:icon="@drawable/ic_menu_rename"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Edit">
         <menu>
             <item
                 android:id="@+id/menu_rename"
                 android:icon="@drawable/ic_menu_rename_file"
-                android:showAsAction="always"
+                support:showAsAction="always"
                 android:visible="false"
                 android:title="Rename"/>
             <item
                 android:id="@+id/menu_copy"
                 android:icon="@drawable/ic_menu_copy"
-                android:showAsAction="always"
+                support:showAsAction="always"
                 android:title="Copy"/>
             <item
                 android:id="@+id/menu_cut"
                 android:icon="@drawable/ic_menu_cut"
-                android:showAsAction="always"
+                support:showAsAction="always"
                 android:title="Cut"/>
             <item
                 android:id="@+id/menu_delete"
                 android:icon="@drawable/ic_menu_delete"
-                android:showAsAction="always"
+                support:showAsAction="always"
                 android:title="@string/menu_delete"/>
             <item
                 android:id="@+id/menu_compress"
                 android:icon="@drawable/ic_menu_compressed"
-                android:showAsAction="ifRoom"
+                support:showAsAction="ifRoom"
                 android:title="@string/menu_compress"
                 android:visible="false"/>
         </menu>
@@ -66,12 +67,12 @@
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_menu_share"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="@string/menu_share"/>
     <item
         android:id="@+id/menu_select_all"
         android:icon="@drawable/ic_menu_select_all"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Select All"/>
 
 </menu>
