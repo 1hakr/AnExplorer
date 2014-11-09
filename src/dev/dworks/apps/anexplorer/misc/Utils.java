@@ -16,9 +16,6 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import java.io.File;
-import java.util.Locale;
-
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Color;
@@ -29,6 +26,9 @@ import android.text.format.Time;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
+
+import java.io.File;
+import java.util.Locale;
 
 public class Utils {
 
@@ -123,7 +123,10 @@ public class Utils {
     public static boolean hasKitKat() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     }
-    
+
+    public static boolean hasLollipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
     public static boolean hasMoreHeap(){
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }

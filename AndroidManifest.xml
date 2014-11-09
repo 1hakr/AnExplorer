@@ -88,7 +88,7 @@
         <activity
             android:name=".AboutActivity"
             android:label="About"
-            android:theme="@style/Theme.Document"
+            android:theme="@style/Theme.About"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
 

@@ -16,15 +16,6 @@
 
 package dev.dworks.apps.anexplorer.model;
 
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ProtocolException;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,6 +23,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ProtocolException;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
@@ -41,6 +38,10 @@ import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 /**
  * Representation of a {@link Root}.
@@ -315,6 +316,32 @@ public class RootInfo implements Durable, Parcelable {
     public Drawable loadIcon(Context context) {
         if (derivedIcon != 0) {
             return context.getResources().getDrawable(derivedIcon);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadDrawerIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintColor(context, derivedIcon, R.color.item_root_icon);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadGridIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.textColorPrimaryInverse);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadToolbarIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.colorControlNormal);
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }

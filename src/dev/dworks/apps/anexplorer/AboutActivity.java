@@ -19,19 +19,13 @@ package dev.dworks.apps.anexplorer;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class AboutActivity extends ActionBarActivity {
@@ -47,43 +41,13 @@ public class AboutActivity extends ActionBarActivity {
 
         if (mShowAsDialog) {
         	if(SettingsActivity.getAsDialog(this)){
-                // backgroundDimAmount from theme isn't applied; do it manually
                 final WindowManager.LayoutParams a = getWindow().getAttributes();
-                a.dimAmount = 0.6f;
-                getWindow().setAttributes(a);
 
-                getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-                getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-                // Inset ourselves to look like a dialog
                 final Point size = new Point();
                 getWindowManager().getDefaultDisplay().getSize(size);
+                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
 
-                final int width = (int) res.getFraction(R.dimen.dialog_about_width, size.x, size.x);
-                final int height = (int) res.getFraction(R.dimen.dialog_about_height, size.y, size.y);
-                final int insetX = (size.x - width) / 2;
-                final int insetY = (size.y - height) / 2;
-
-                final Drawable before = getWindow().getDecorView().getBackground();
-                final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-                ViewCompat.setBackground(getWindow().getDecorView(), after);
-
-                // Dismiss when touch down in the dimmed inset area
-                getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                            final float x = event.getX();
-                            final float y = event.getY();
-                            if (x < insetX || x > v.getWidth() - insetX || y < insetY
-                                    || y > v.getHeight() - insetY) {
-                                finish();
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                });	
+                getWindow().setAttributes(a);
         	}
         }
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);

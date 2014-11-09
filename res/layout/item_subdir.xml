@@ -17,39 +17,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="@dimen/list_item_height"
-    android:paddingStart="@dimen/list_item_padding"
-    android:paddingEnd="@dimen/list_item_padding"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+    android:paddingRight="?attr/listPreferredItemPaddingRight"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:baselineAligned="false">
 
-    <FrameLayout
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginLeft="16dp">
-
-        <ImageView
-            android:id="@android:id/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:contentDescription="@null" />
-
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/subdir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="8dp"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        android:src="@drawable/ic_subdirectory_arrow"
+        android:contentDescription="@null" />
 
     <TextView
         android:id="@android:id/title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:gravity="start"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:ellipsize="middle"
+        android:layout_gravity="start"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         android:textColor="?android:attr/textColorPrimary" />
 
 </LinearLayout>

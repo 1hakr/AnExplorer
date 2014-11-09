@@ -19,4 +19,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    android:divider="@drawable/ic_drawer_hairline_divider" />
+    android:paddingTop="8dp"
+    android:divider="@null" />

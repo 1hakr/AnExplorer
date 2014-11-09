@@ -19,7 +19,7 @@
     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/ic_dir_shadow" >
+    android:background="@color/material_grey_50" >
 
     <LinearLayout
         android:id="@+id/progressContainer"
@@ -55,49 +55,53 @@
 
         <TextView
             android:id="@android:id/empty"
-            style="@style/TextAppearance.Medium"
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/empty"
             android:visibility="gone" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
             <ListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@+id/adView"
                 android:clipToPadding="false"
-                android:listSelector="@android:color/transparent"
                 android:scrollbarStyle="outsideOverlay" />
 
             <GridView
                 android:id="@+id/grid"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@+id/adView"
-                android:clipToPadding="false"
-                android:listSelector="@android:color/transparent"
-                android:paddingBottom="@dimen/grid_padding"
                 android:paddingLeft="@dimen/grid_padding_horiz"
                 android:paddingRight="@dimen/grid_padding_horiz"
-                android:paddingTop="@dimen/grid_padding"
+                android:paddingTop="@dimen/grid_padding_vert"
+                android:paddingBottom="@dimen/grid_padding_vert"
+                android:horizontalSpacing="@dimen/grid_item_padding"
+                android:verticalSpacing="@dimen/grid_item_padding"
+                android:clipToPadding="false"
                 android:scrollbarStyle="outsideOverlay"
+                android:drawSelectorOnTop="true"
                 android:visibility="gone" />
-
+            </LinearLayout>
             <com.google.ads.AdView
                 android:id="@+id/adView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 ads:adSize="SMART_BANNER"
                 ads:adUnitId="a14e25123e38970"
                 ads:loadAdOnCreate="true" />
-        </RelativeLayout>
+        </LinearLayout>
     </FrameLayout>
 
 </dev.dworks.apps.anexplorer.ui.DirectoryView>

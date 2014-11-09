@@ -12,42 +12,90 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.-->
-
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+     limitations under the License.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="8dp"
+        app:theme="?attr/actionBarTheme"
+        app:popupTheme="?attr/actionBarPopupTheme">
 
-        <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
-            android:id="@+id/container_directory"
+        <Spinner
+            android:id="@+id/stack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:overlapAnchor="true" />
+
+    </android.support.v7.widget.Toolbar>
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/container_save" />
+            android:orientation="vertical">
+
+            <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
+                android:id="@+id/container_directory"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <FrameLayout
+                android:id="@+id/container_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/material_grey_50"
+                android:elevation="8dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/drawer_roots"
+            android:layout_width="256dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:orientation="vertical"
+            android:elevation="16dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/roots_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:elevation="8dp"
+                app:theme="?attr/actionBarTheme"
+                android:visibility="gone"
+                app:popupTheme="?attr/actionBarPopupTheme"/>
+
+            <FrameLayout
+                android:id="@+id/container_roots"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@android:color/white"
+                android:layout_weight="1" />
+
+        </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/container_save"
-            android:layout_width="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
+            android:id="@+id/container_info"
+            android:layout_width="@dimen/detail_width"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:background="#fff" />
 
-    <FrameLayout
-        android:id="@+id/container_roots"
-        android:layout_width="250dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="left"
-        android:background="#fff" />
-
-    <FrameLayout
-        android:id="@+id/container_info"
-        android:layout_width="@dimen/detail_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        android:background="#fff" />
-
-</android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>

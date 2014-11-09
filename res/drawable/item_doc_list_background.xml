@@ -14,16 +14,8 @@
      limitations under the License.
 -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/grid_height"
-    android:orientation="horizontal">
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        style="?android:attr/progressBarStyle" />
-
-</FrameLayout>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:state_activated="true" android:drawable="@color/item_doc_list_background_activated" />
+    <item android:state_focused="false" android:state_activated="true" android:drawable="@color/item_doc_list_background_activated" />
+    <item android:drawable="@android:color/transparent" />
+</selector>

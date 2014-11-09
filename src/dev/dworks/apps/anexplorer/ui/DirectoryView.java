@@ -17,12 +17,14 @@
 
 package dev.dworks.apps.anexplorer.ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+
+import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class DirectoryView extends FrameLayout {
     private float mPosition = 0f;
@@ -38,7 +40,7 @@ public class DirectoryView extends FrameLayout {
     }
 
     
-    @SuppressWarnings("deprecation")
+/*    @SuppressWarnings("deprecation")
 	@Override
     public void setBackgroundDrawable(Drawable background) {
         final Rect rect = new Rect();
@@ -53,7 +55,7 @@ public class DirectoryView extends FrameLayout {
         background.getPadding(rect);
         final InsetDrawable inset = new InsetDrawable(background, -rect.left, 0, -rect.right, 0);
         super.setBackground(inset);
-    }
+    }*/
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -66,8 +68,17 @@ public class DirectoryView extends FrameLayout {
         return mPosition;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setPosition(float position) {
         mPosition = position;
         setX((mWidth > 0) ? (mPosition * mWidth) : 0);
+
+        if(Utils.hasLollipop()){
+            if (mPosition != 0) {
+                setTranslationZ(getResources().getDimensionPixelSize(R.dimen.dir_elevation));
+            } else {
+                setTranslationZ(0);
+            }
+        }
     }
 }

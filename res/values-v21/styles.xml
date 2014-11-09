@@ -1,15 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Document" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:actionModeBackground">@android:color/transparent</item>
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-        <item name="actionBarSize">@dimen/activity_actionbar_size</item>
+<!--    <style name="DialogWhenReallyLarge" parent="@style/Theme.AppCompat.Light.NoActionBar"/>
+    <style name="Theme.Document" parent="@style/DialogWhenReallyLarge">
+&lt;!&ndash;        <item name="actionModeBackground">@android:color/transparent</item>
+        <item name="actionBarStyle">@style/ActionBar</item>&ndash;&gt;
+        <item name="actionBarWidgetTheme">@null</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+
+        <item name="colorPrimaryDark">@*android:color/material_blue_grey_900</item>
+        <item name="colorPrimary">@*android:color/material_blue_grey_800</item>
+        <item name="colorAccent">@*android:color/material_deep_teal_500</item>
+
+        <item name="android:listDivider">@drawable/list_divider_material</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+
+        <item name="*android:windowFixedWidthMajor">@null</item>
+        <item name="*android:windowFixedWidthMinor">@null</item>
+        <item name="*android:windowMinWidthMajor">@null</item>
+        <item name="*android:windowMinWidthMinor">@null</item>
+        <item name="*android:windowFixedHeightMajor">80%</item>
+        <item name="*android:windowFixedHeightMinor">90%</item>
+
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
     </style>
 
     <style name="ListProgress" parent="@android:style/Widget.Material.ProgressBar"/>
 
     <style name="ActionBar" parent="@android:style/Widget.Material.ActionBar.Solid">
         <item name="android:displayOptions">showHome|useLogo</item>
-    </style>
+    </style>-->
 </resources>
