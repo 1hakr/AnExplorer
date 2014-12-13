@@ -146,7 +146,7 @@
     <TextView
         android:id="@+id/button_popup"
         android:layout_width="40dip"
-        android:layout_height="50dp"
+        android:layout_height="30dp"
         android:layout_gravity="bottom|right"
         android:drawableBottom="@drawable/ic_menu_moreoverflow"
         android:paddingBottom="5dp" />

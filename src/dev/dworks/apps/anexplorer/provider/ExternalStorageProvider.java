@@ -17,17 +17,8 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -37,14 +28,26 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.FileObserver;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
@@ -101,6 +104,8 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_HIDDEN = "hidden";
     public static final String ROOT_ID_BOOKMARK = "bookmark";
 
+    private Handler mHandler;
+
     private final Object mRootsLock = new Object();
 
     @GuardedBy("mRootsLock")
@@ -115,6 +120,8 @@ public class ExternalStorageProvider extends StorageProvider {
 
     @Override
     public boolean onCreate() {
+        mHandler = new Handler();
+
         mRoots = Lists.newArrayList();
         mIdToRoot = Maps.newHashMap();
         mIdToPath = Maps.newHashMap();
@@ -133,6 +140,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void updateVolumesLocked() {
         mRoots.clear();
         mIdToPath.clear();
@@ -171,7 +179,8 @@ public class ExternalStorageProvider extends StorageProvider {
                 final RootInfo root = new RootInfo();
                 
                 root.rootId = rootId;
-                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_SEARCH;
+                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                        | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
@@ -395,8 +404,12 @@ public class ExternalStorageProvider extends StorageProvider {
         if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
+                flags |= Document.FLAG_SUPPORTS_DELETE;
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             } else {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
+                flags |= Document.FLAG_SUPPORTS_DELETE;
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             }
             flags |= Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_EDIT ;
         }
@@ -418,11 +431,12 @@ public class ExternalStorageProvider extends StorageProvider {
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
         row.add(Document.COLUMN_PATH, file.getAbsolutePath());
         row.add(Document.COLUMN_FLAGS, flags);
-        if(file.isDirectory() && null != file.list()){
+        //FIXME
+/*        if(file.isDirectory() && null != file.list()){
         	String summary = FileUtils.formatFileCount(file.list().length);
         	
         	row.add(Document.COLUMN_SUMMARY, summary);
-        }
+        }*/
 
         // Only publish dates reasonably after epoch
         long lastModified = file.lastModified();
@@ -480,11 +494,26 @@ public class ExternalStorageProvider extends StorageProvider {
     }
 
     @Override
+    public boolean isChildDocument(String parentDocId, String docId) {
+        try {
+            final File parent = getFileForDocId(parentDocId).getCanonicalFile();
+            final File doc = getFileForDocId(docId).getCanonicalFile();
+            return FileUtils.contains(parent, doc);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(
+                    "Failed to determine if " + docId + " is child of " + parentDocId + ": " + e);
+        }
+    }
+
+    @Override
     public String createDocument(String docId, String mimeType, String displayName)
             throws FileNotFoundException {
         final File parent = getFileForDocId(docId);
-        File file;
+        if (!parent.isDirectory()) {
+            throw new IllegalArgumentException("Parent document isn't a directory");
+        }
 
+        File file;
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
             file = new File(parent, displayName);
             if (!file.mkdir()) {
@@ -652,12 +681,36 @@ public class ExternalStorageProvider extends StorageProvider {
         return getTypeForFile(file);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public ParcelFileDescriptor openDocument(
             String documentId, String mode, CancellationSignal signal)
             throws FileNotFoundException {
         final File file = getFileForDocId(documentId);
-        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);//ParcelFileDescriptor.parseMode(mode));
+        if(Utils.hasKitKat()){
+            final int pfdMode = ParcelFileDescriptor.parseMode(mode);
+            if (pfdMode == ParcelFileDescriptor.MODE_READ_ONLY) {
+                return ParcelFileDescriptor.open(file, pfdMode);
+            } else {
+                try {
+                    // When finished writing, kick off media scanner
+                    return ParcelFileDescriptor.open(file, pfdMode, mHandler, new ParcelFileDescriptor.OnCloseListener() {
+                        @Override
+                        public void onClose(IOException e) {
+                            final Intent intent = new Intent(
+                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            intent.setData(Uri.fromFile(file));
+                            getContext().sendBroadcast(intent);
+                        }
+                    });
+                } catch (IOException e) {
+                    throw new FileNotFoundException("Failed to open for writing: " + e);
+                }
+            }
+        }
+        else{
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);//ParcelFileDescriptor.parseMode(mode));
+        }
     }
 
     @Override

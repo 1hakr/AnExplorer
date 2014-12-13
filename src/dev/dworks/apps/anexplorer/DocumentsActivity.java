@@ -32,12 +32,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
@@ -59,9 +59,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
@@ -104,7 +102,6 @@ import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -148,8 +145,6 @@ public class DocumentsActivity extends ActionBarActivity {
     private Toolbar mToolbar;
     private Spinner mToolbarStack;
 
-    //private Toolbar mRootsToolbar;
-
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private View mRootsContainer;
@@ -169,10 +164,17 @@ public class DocumentsActivity extends ActionBarActivity {
 
 	private boolean mActionMode;
 
-	@Override
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
     public void onCreate(Bundle icicle) {
-    	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
-    		//setTheme(R.style.Theme_Document_Translucent);
+    	if(SettingsActivity.getTranslucentMode(this)){
+            if(Utils.hasLollipop()){
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                getWindow().setStatusBarColor(SettingsActivity.getActionBarColor(this));
+            }
+            else if(Utils.hasKitKat()){
+                setTheme(R.style.Theme_Document_Translucent);
+            }
     	}
     	
 /*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
@@ -207,9 +209,7 @@ public class DocumentsActivity extends ActionBarActivity {
             // Non-dialog means we have a drawer
             mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                    R.string.drawer_open, R.string.drawer_close);
-
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
             mDrawerLayout.setDrawerListener(mDrawerListener);
             mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
@@ -229,19 +229,10 @@ public class DocumentsActivity extends ActionBarActivity {
         }
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitleTextAppearance(context,
-                android.R.style.TextAppearance_DeviceDefault_Widget_ActionBar_Title);
+        mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
 
         mToolbarStack = (Spinner) findViewById(R.id.stack);
         mToolbarStack.setOnItemSelectedListener(mStackListener);
-
-/*
-        mRootsToolbar = (Toolbar) findViewById(R.id.roots_toolbar);
-        if (mRootsToolbar != null) {
-            mRootsToolbar.setTitleTextAppearance(context,
-                    android.R.style.TextAppearance_DeviceDefault_Widget_ActionBar_Title);
-        }
-*/
 
         setSupportActionBar(mToolbar);
 
@@ -334,7 +325,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.action = ACTION_CREATE;
         } else if (Intent.ACTION_GET_CONTENT.equals(action)) {
             mState.action = ACTION_GET_CONTENT;
-        } else if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
+        } else if (IntentUtils.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
             mState.action = ACTION_OPEN_TREE;
         } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
             //mState.action = ACTION_MANAGE;
@@ -543,6 +534,14 @@ public class DocumentsActivity extends ActionBarActivity {
     };
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.onConfigurationChanged(newConfig);
+        }
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (mDrawerToggle != null) {
@@ -582,46 +581,6 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
-/*
-    public void updateActionBar() {
-        final ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setDisplayShowHomeEnabled(true);
-
-        final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
-        actionBar.setDisplayHomeAsUpEnabled(showIndicator);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
-        }
-
-        if (isRootsDrawerOpen()) {
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            //actionBar.setIcon(new ColorDrawable());
-
-            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
-                actionBar.setTitle(R.string.app_name);
-                //actionBar.setIcon(R.drawable.logo);
-            } else if (mState.action == ACTION_CREATE) {
-                actionBar.setTitle(R.string.title_save);
-            }
-        } else {
-            final RootInfo root = getCurrentRoot();
-            //actionBar.setIcon(root != null ? root.loadIcon(this) : null);
-
-            if (mState.stack.size() <= 1) {
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                actionBar.setTitle(root.title);
-            } else {
-                mIgnoreNextNavigation = true;
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-                actionBar.setTitle(null);
-                actionBar.setListNavigationCallbacks(mStackAdapter, mStackListener);
-                actionBar.setSelectedNavigationItem(mStackAdapter.getCount() - 1);
-            }
-        }
-    }
-*/
-
     public void updateActionBar() {
         if (mToolbar != null) {
             if (mState.action == DocumentsActivity.State.ACTION_OPEN || mState.action == DocumentsActivity.State.ACTION_GET_CONTENT
@@ -645,7 +604,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setRootsDrawerOpen(true);
+                    setRootsDrawerOpen(!isRootsDrawerOpen());
                 }
             });
         }
@@ -759,13 +718,13 @@ public class DocumentsActivity extends ActionBarActivity {
         final MenuItem settings = menu.findItem(R.id.menu_settings);
 
         // Open drawer means we hide most actions
+        createDir.setVisible(false);
+        //createFile.setVisible(false);
+        search.setVisible(!isRootsDrawerOpen());
+        sort.setVisible(!isRootsDrawerOpen());
+        grid.setVisible(!isRootsDrawerOpen());
+        list.setVisible(!isRootsDrawerOpen());
         if (isRootsDrawerOpen()) {
-            createDir.setVisible(false);
-            //createFile.setVisible(false);
-            search.setVisible(false);
-            sort.setVisible(false);
-            grid.setVisible(false);
-            list.setVisible(false);
             mIgnoreNextCollapse = true;
             search.collapseActionView();
             return true;
@@ -1360,10 +1319,9 @@ public class DocumentsActivity extends ActionBarActivity {
     }
 
     public void onPickRequested(DocumentInfo pickTarget) {
-        //FIXME
-/*        final Uri viaUri = DocumentsContract.buildTreeDocumentUri(pickTarget.authority,
+        final Uri viaUri = DocumentsContract.buildTreeDocumentUri(pickTarget.authority,
                 pickTarget.documentId);
-        new PickFinishTask(viaUri).executeOnExecutor(getCurrentExecutor());*/
+        new PickFinishTask(viaUri).executeOnExecutor(getCurrentExecutor());
     }
 
     public void onMoveRequested(ArrayList<DocumentInfo> docs, DocumentInfo toDoc, boolean deleteAfter) {
@@ -1700,7 +1658,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
 	private final Handler handler = new Handler();
 	private Drawable oldBackground;
-	private void changeActionBarColor() {
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void changeActionBarColor() {
 
 		int color = SettingsActivity.getActionBarColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
@@ -1732,8 +1692,13 @@ public class DocumentsActivity extends ActionBarActivity {
 		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 		getSupportActionBar().setDisplayShowTitleEnabled(true);
-        
-        if(Utils.hasKitKat()){
+
+        if(SettingsActivity.getTranslucentMode(this)){
+            if(Utils.hasLollipop()){
+                getWindow().setStatusBarColor(SettingsActivity.getActionBarColor(this));
+            }
+        }
+        else if(Utils.hasKitKat()){
             if(SettingsActivity.getTranslucentMode(this)){
                 if(mActionMode){
         			SystemBarTintManager.setupTint(this, R.color.contextual_actionbar_color);

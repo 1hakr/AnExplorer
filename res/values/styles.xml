@@ -125,6 +125,9 @@
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="ListProgress" parent="@android:style/Widget.Holo.Light.ProgressBar"/>
+    <style name="ListProgress" parent="@style/Widget.AppCompat.ProgressBar"/>
 
+    <style name="Theme.Note" parent="@style/DocumentsTheme">
+        <item name="windowActionBar">true</item>
+    </style>
 </resources>

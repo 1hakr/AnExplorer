@@ -40,7 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:contentDescription="@null" />
+                android:contentDescription="@null"
+                android:layout_gravity="center" />
 
             <ImageView
                 android:id="@+id/icon_thumb"

@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_gravity="top"
-        android:background="#aa000000"
+        android:layout_gravity="bottom"
+        android:background="#aa323232"
+        android:orientation="horizontal"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
+        android:paddingRight="10dp">
 
         <TextView
             android:id="@+id/text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@+id/close"
-            android:gravity="center_vertical"
-            android:textSize="18sp"
-            android:drawablePadding="10dp"
+            android:layout_weight="1"
             android:drawableLeft="@drawable/ic_menu_rate"
+            android:drawablePadding="10dp"
             android:fontFamily="sans-serif-light"
-            android:textColor="@android:color/white" />
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_action_close"
-            android:layout_centerVertical="true"  />
-    </RelativeLayout>
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
 
 </FrameLayout>

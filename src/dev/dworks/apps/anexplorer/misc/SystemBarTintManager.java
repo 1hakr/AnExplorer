@@ -609,7 +609,8 @@ public class SystemBarTintManager {
     	}
     }
 	
-	public static MarginLayoutParams getToggleParams(boolean toggle, int id) {
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static MarginLayoutParams getToggleParams(boolean toggle, int id) {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
         if(toggle){
             params.addRule(RelativeLayout.ABOVE, id);	

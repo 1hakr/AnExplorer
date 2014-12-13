@@ -16,6 +16,15 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
+import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
+import android.os.storage.StorageManager;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
@@ -23,13 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
-import android.content.Context;
-import android.os.Environment;
-import android.os.StatFs;
-import android.os.storage.StorageManager;
 
 public final class StorageUtils {
 
@@ -133,7 +135,8 @@ public final class StorageUtils {
 		return size;
 	}
 	
-	private long getSizeTotalRAM(boolean isTotal) { 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private long getSizeTotalRAM(boolean isTotal) {
 		long sizeInBytes = 1000;
 		MemoryInfo mi = new MemoryInfo();
 		activityManager.getMemoryInfo(mi);

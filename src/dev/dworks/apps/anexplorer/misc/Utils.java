@@ -16,6 +16,7 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Color;
@@ -131,6 +132,7 @@ public class Utils {
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }
     
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static boolean isLowRamDevice(Context context) {
     	if(Utils.hasKitKat()){
     		final ActivityManager am = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);

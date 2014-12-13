@@ -3,25 +3,25 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:support-v4:20+'
-    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.android.support:support-v4:+'
+    compile 'com.android.support:appcompat-v7:+'
     //compile 'com.afollestad:material-dialogs:0.0.1.3'
     //compile 'com.github.mrengineer13:snackbar:0.4.0'
 }
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '20.0.0'
+    buildToolsVersion '21.1.2'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
     }
     sourceSets {
         main {
@@ -36,6 +36,14 @@ android {
 
         instrumentTest.setRoot('tests')
     }
-    productFlavors {
-    }
+/*    productFlavors {
+        pro {
+            applicationId "dev.dworks.apps.anexplorer.pro"
+            versionName "2.5"
+        }
+        main {
+            applicationId "dev.dworks.apps.anexplorer"
+            versionName "2.5"
+        }
+    }*/
 }

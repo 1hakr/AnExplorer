@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2013 The Android Open Source Project
+<!-- Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,10 +13,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Title of the documents application [CHAR LIMIT=32] -->
-    <string name="app_label">AnExplorer</string>
 
     <!-- Action bar title prompting user to choose a location to open a document from [CHAR LIMIT=32] -->
     <string name="title_open">Open from</string>
@@ -45,12 +43,18 @@
     <string name="menu_share">Share</string>
     <!-- Menu item title that deletes the selected documents [CHAR LIMIT=24] -->
     <string name="menu_delete">Delete</string>
-    <!-- Menu item title that compress the selected documents [CHAR LIMIT=24] -->
-    <string name="menu_compress">Compress</string>
-    <!-- Menu item title that uncompress the selected documents [CHAR LIMIT=24] -->
-    <string name="menu_uncompress">Uncompress</string>
     <!-- Menu item title that selects the current directory [CHAR LIMIT=48] -->
     <string name="menu_select">Select \"<xliff:g id="directory" example="My Directory">^1</xliff:g>\"</string>
+
+    <!-- Menu item that reveals internal storage built into the device [CHAR LIMIT=24] -->
+    <string name="menu_advanced_show" product="default">Show internal storage</string>
+    <!-- Menu item that hides internal storage built into the device [CHAR LIMIT=24] -->
+    <string name="menu_advanced_hide" product="default">Hide internal storage</string>
+
+    <!-- Menu item that reveals the sizes of displayed files [CHAR LIMIT=24] -->
+    <string name="menu_file_size_show">Show file size</string>
+    <!-- Menu item that hides the sizes of displayed files [CHAR LIMIT=24] -->
+    <string name="menu_file_size_hide">Hide file size</string>
 
     <!-- Action mode title summarizing the number of documents selected [CHAR LIMIT=32] -->
     <string name="mode_selected_count"><xliff:g id="count" example="3">%1$d</xliff:g> selected</string>
@@ -76,20 +80,6 @@
 
     <!-- Title of storage root location that contains recently modified or used documents [CHAR LIMIT=24] -->
     <string name="root_recent">Recent</string>
-    <string name="root_images">Images</string>
-    <string name="root_audio">Audio</string>
-    <string name="root_videos">Video</string>
-    <string name="root_internal_storage">Internal Storage</string>
-    <string name="root_external_storage">External Storage</string>
-    <string name="root_phone_storage">Phone</string>
-    <string name="root_root_storage">Root</string>
-    <string name="root_bluetooth">Bluetooth</string>
-    <string name="root_downloads">Downloads</string>
-    <string name="root_app_backup">App Backup</string>
-    <string name="root_hidden">Hidden</string>
-    <string name="root_apps">Apps</string>
-    <string name="root_heat_map">Heat map</string>
-    <string name="root_processes">Processes</string>
     <!-- Subtitle of storage root indicating the total free space available, in bytes [CHAR LIMIT=24] -->
     <string name="root_available_bytes"><xliff:g id="size" example="3GB">%1$s</xliff:g> free</string>
 
@@ -102,12 +92,6 @@
     <!-- Header title for list of additional apps that can provide documents [CHAR LIMIT=24] -->
     <string name="root_type_apps">More apps</string>
 
-    <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
-    <string name="pref_advanced_devices">Display advanced</string>
-    <!-- Title for setting that will show file sizes for all documents [CHAR LIMIT=32] -->
-    <string name="pref_file_size">Display file size</string>
-    <string name="pref_device_size">Display device size</string>
-
     <!-- Text shown when a directory of documents is empty [CHAR LIMIT=24] -->
     <string name="empty">No items</string>
 
@@ -119,68 +103,5 @@
     <!-- Title of dialog when prompting user to select an app to share documents with [CHAR LIMIT=32] -->
     <string name="share_via">Share via</string>
 
-    <!--
-         Status indicating that the download has been queued to start in the future.  Appears for an
-         individual item in the download list.  [CHAR LIMIT=24]
-    -->
-    <string name="download_queued">Queued</string>
-    <!--
-         Status indicating that the system is currently downloading the file.  Appears for an
-         individual item in the download list.  [CHAR LIMIT=24]
-    -->
-    <string name="download_running">In progress</string>
-    <!--
-         Status indicating that the download has ended without completing successfully.  Appears for
-         an individual item in the download list.  [CHAR LIMIT=24]
-    -->
-    <string name="download_error">Unsuccessful</string>
-
-    <!-- Representation of download progress percentage when running. [CHAR LIMIT=24] -->
-    <string name="download_running_percent">In progress, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
-    <string name="app_name">AnExplorer</string>
-    <string name="app_ver">Another Explorer</string>
-    <string name="app_company">Developed By DWorkS</string>
-    <string name="app_url">http://www.dworks.in</string>
-    <string name="app_about_info">To make a small difference.</string>
-    <string name="app_contrib">Contributions by Hari Krishna Dulipudi</string>
-    <string name="app_about">This file explorer helps you  organise your files, save app, monitor process and many more</string>
-    <string name="twitter"><a href="https://twitter.com/1HaKr">  Twitter</a></string>
-    <string name="gplus"><a href="https://plus.google.com/109240246596102887385">  Google+</a></string>
-    <string name="pref_folder_size">Display folder size</string>
-    <string name="pref_thumbnail">Display file thumbnails</string>
-    <string name="pref_root_mode">Display Root Mode</string>
-    <string name="pref_translucent_mode">Display Translucent Mode</string>
-    <string name="pref_as_dialog">Display as Dailog</string>
-    <string name="pref_folder_animations">Enable folder animations</string>
-
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-    <string name="pref_header_login">Login</string>
-    <string name="pref_title_pin_enable">Enable PIN Protection</string>
-    <string name="pref_description_pin_enable">Gives security to your files</string>
-    <string name="pref_title_pin_set">Set PIN</string>
-    <string name="pref_default_pin_set">PIN protection disabled</string>
-    <string name="enter_pin">Enter PIN</string>
-    <string name="enter_new_pin">Enter New PIN</string>
-    <string name="incorrect_pin">Incorrect PIN</string>
-    <string name="confirm_pin">Confirm PIN</string>
-    <string name="pin_mismatch">PIN did not match</string>
-    <string name="pin_set">PIN protection enabled</string>
-    <string name="pin_disabled">PIN protection disabled</string>
-    <string name="pin_protection">PIN Protection</string>
-    <string name="loading">Loading...</string>
-    <string name="pref_foreground_color_title">ActionBar Color</string>
-    <string name="pref_foreground_color_description">The color of action bar</string>
-    <string name="menu_rename">Rename</string>
-
-    <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
-    <string name="bytes"><xliff:g id="count">%s</xliff:g> B</string>
-    <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
-    <string name="kilobytes"><xliff:g id="count">%s</xliff:g> KB</string>
-    <!-- Size unit, displayed in a button next to an attachment  [CHAR LIMIT=5] -->
-    <string name="megabytes"><xliff:g id="count">%s</xliff:g> MB</string>
-    <string name="title_activity_donate">Donate</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
+    ---
 </resources>

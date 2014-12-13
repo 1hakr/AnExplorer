@@ -476,7 +476,7 @@ public class DirectoryFragment extends ListFragment {
 			mListView.setAdapter(null);
 			mListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
 			mGridView.setAdapter(mAdapter);
-			mGridView.setColumnWidth(getResources().getDimensionPixelSize(R.dimen.grid_width));
+			mGridView.setColumnWidth(thumbSize);
 			mGridView.setNumColumns(GridView.AUTO_FIT);
 			mGridView.setChoiceMode(choiceMode);
 			mCurrentView = mGridView;
@@ -1154,7 +1154,7 @@ public class DirectoryFragment extends ListFragment {
 
 					// Apply padding to grid items
 					final FrameLayout grid = (FrameLayout) convertView;
-					final int gridPadding = getResources().getDimensionPixelSize(R.dimen.grid_padding);
+					final int gridPadding = 0;//getResources().getDimensionPixelSize(R.dimen.grid_padding);
 
 					// Tricksy hobbitses! We need to fully clear the drawable so
 					// the view doesn't clobber the new InsetDrawable callback
@@ -1322,7 +1322,7 @@ public class DirectoryFragment extends ListFragment {
 
 			if (iconDrawable != null) {
 				if (hasLine1) {
-					icon1.setVisibility(View.INVISIBLE);
+					icon1.setVisibility(View.GONE);
 					//icon1.setImageDrawable(iconDrawable);
 				} else {
 					icon2.setVisibility(View.VISIBLE);

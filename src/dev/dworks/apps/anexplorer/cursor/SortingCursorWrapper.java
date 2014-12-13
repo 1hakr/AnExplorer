@@ -229,7 +229,7 @@ public class SortingCursorWrapper extends AbstractCursor {
 
                 final long lhs = pivotValue;
                 final long rhs = value[mid];
-                final int compare = Long.compare(lhs, rhs);
+                final int compare = longCompare(lhs, rhs);
                 if (compare > 0) {
                     right = mid;
                 } else {
@@ -254,5 +254,13 @@ public class SortingCursorWrapper extends AbstractCursor {
             position[left] = pivotPosition;
             value[left] = pivotValue;
         }
+    }
+
+    /**
+     * Compares two {@code long} values.
+     * @return 0 if lhs = rhs, less than 0 if lhs &lt; rhs, and greater than 0 if lhs &gt; rhs.
+     */
+    public static int longCompare(long lhs, long rhs) {
+        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 }
