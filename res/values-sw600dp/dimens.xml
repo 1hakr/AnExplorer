@@ -31,5 +31,5 @@
     <dimen name="grid_padding_vert">16dp</dimen>
 
     <dimen name="grid_item_padding">8dp</dimen>
-
+    <dimen name="progress_bar_size">80dp</dimen>
 </resources>

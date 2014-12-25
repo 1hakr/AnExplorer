@@ -79,17 +79,17 @@ public class MediaDocumentsProvider extends StorageProvider {
             "audio/*", "application/ogg", "application/x-flac");
 
     public static final String TYPE_IMAGES_ROOT = "images_root";
-    private static final String TYPE_IMAGES_BUCKET = "images_bucket";
-    private static final String TYPE_IMAGE = "image";
+    public static final String TYPE_IMAGES_BUCKET = "images_bucket";
+    public static final String TYPE_IMAGE = "image";
 
     public static final String TYPE_VIDEOS_ROOT = "videos_root";
-    private static final String TYPE_VIDEOS_BUCKET = "videos_bucket";
-    private static final String TYPE_VIDEO = "video";
+    public static final String TYPE_VIDEOS_BUCKET = "videos_bucket";
+    public static final String TYPE_VIDEO = "video";
 
     public static final String TYPE_AUDIO_ROOT = "audio_root";
-    private static final String TYPE_AUDIO = "audio";
-    private static final String TYPE_ARTIST = "artist";
-    private static final String TYPE_ALBUM = "album";
+    public static final String TYPE_AUDIO = "audio";
+    public static final String TYPE_ARTIST = "artist";
+    public static final String TYPE_ALBUM = "album";
 
     private static boolean sReturnedImagesEmpty = false;
     private static boolean sReturnedVideosEmpty = false;

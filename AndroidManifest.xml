@@ -81,7 +81,7 @@
             android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
+            android:theme="@style/Theme.Setting" />
         <activity
             android:name=".AboutActivity"
             android:label="About"

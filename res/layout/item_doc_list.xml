@@ -17,6 +17,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingRight="10dp"
     android:background="@drawable/item_doc_list_background">
 
     <LinearLayout
@@ -34,6 +35,13 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_marginRight="16dp">
+
+            <dev.dworks.apps.anexplorer.ui.CircleImage
+                android:id="@+id/icon_mime_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="invisible"/>
 
             <ImageView
                 android:id="@+id/icon_mime"
@@ -138,10 +146,10 @@
 
     <TextView
         android:id="@+id/button_popup"
-        android:layout_width="40dip"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:drawableBottom="@drawable/ic_menu_moreoverflow"
+        android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
         android:paddingBottom="10dp" />
 
 

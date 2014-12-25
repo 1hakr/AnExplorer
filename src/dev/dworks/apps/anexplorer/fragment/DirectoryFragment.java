@@ -67,8 +67,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.collect.Lists;
 
 import java.io.File;
@@ -84,6 +84,7 @@ import dev.dworks.apps.anexplorer.loader.RecentLoader;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
@@ -103,6 +104,10 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
+import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
+import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
@@ -144,6 +149,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean mLastShowSize = false;
 	private boolean mLastShowFolderSize = false;
 	private boolean mLastShowThumbnail = false;
+    private int mLastShowColor = 0;
 
 	private boolean mHideGridTitles = false;
 
@@ -165,8 +171,14 @@ public class DirectoryFragment extends ListFragment {
 	private RootInfo root;
 	private DocumentInfo doc;
 	private boolean isApp;
+    private int mDefaultColor;
+    private MaterialProgressBar mProgressBar;
+    private FloatingActionsMenu mActionMenu;
+    private FloatingActionButton mCreateFile;
+    private FloatingActionButton mCreateFolder;
+    private FloatingActionButton mPaste;
 
-	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
+    public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
 	}
 
@@ -223,7 +235,18 @@ public class DirectoryFragment extends ListFragment {
 		final Context context = inflater.getContext();
         final Resources res = context.getResources();
 		final View view = inflater.inflate(R.layout.fragment_directory, container, false);
-		
+
+        mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
+        mActionMenu = (FloatingActionsMenu) view.findViewById(R.id.fab);
+        mCreateFile = (FloatingActionButton) view.findViewById(R.id.fab_create_file);
+        mCreateFile.setOnClickListener(mOnClickListener);
+
+        mCreateFolder = (FloatingActionButton) view.findViewById(R.id.fab_create_folder);
+        mCreateFolder.setOnClickListener(mOnClickListener);
+
+        mPaste = (FloatingActionButton) view.findViewById(R.id.fab_paste);
+        mPaste.setOnClickListener(mOnClickListener);
+
 		mEmptyView = view.findViewById(android.R.id.empty);
 
 		mListView = (ListView) view.findViewById(R.id.list);
@@ -247,30 +270,6 @@ public class DirectoryFragment extends ListFragment {
 		mGridView.setRecyclerListener(mRecycleListener);
 
 		return view;
-	}
-
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-
-/*		if (Utils.hasKitKat()) {
-			if (SettingsActivity.getTranslucentMode(getActivity())) {
-				if(Utils.hasSoftNavBar(getActivity())){
-					SystemBarTintManager.setInsets(getActivity(), mListView);
-					SystemBarTintManager.setInsets(getActivity(), mGridView);
-					SystemBarTintManager.setNavigationInsets(getActivity(), view.findViewById(R.id.adView));
-					mListView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
-					mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.adView));
-				}
-				else{
-					SystemBarTintManager.setInsetsTop(getActivity(), mListView);
-					SystemBarTintManager.setInsetsTop(getActivity(), mGridView)
-				}
-			} else {
-				mListView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
-				mGridView.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.adView));
-			}
-		}*/
 	}
 
 	@Override
@@ -452,14 +451,17 @@ public class DirectoryFragment extends ListFragment {
 	private void updateDisplayState() {
 		final State state = getDisplayState(this);
 
+        mDefaultColor = SettingsActivity.getActionBarColor(getActivity());
 		if (mLastMode == state.derivedMode && mLastShowSize == state.showSize && mLastShowFolderSize == state.showFolderSize
-				&& mLastShowThumbnail == state.showThumbnail)
+				&& mLastShowThumbnail == state.showThumbnail && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
 			return;
 		mLastMode = state.derivedMode;
 		mLastShowSize = state.showSize;
 		mLastShowFolderSize = state.showFolderSize;
 		mLastShowThumbnail = state.showThumbnail;
 
+        mLastShowColor = mDefaultColor;
+        mProgressBar.setColor(mLastShowColor);
 		mListView.setVisibility(state.derivedMode == MODE_LIST ? View.VISIBLE : View.GONE);
 		mGridView.setVisibility(state.derivedMode == MODE_GRID ? View.VISIBLE : View.GONE);
 
@@ -491,10 +493,53 @@ public class DirectoryFragment extends ListFragment {
 			throw new IllegalStateException("Unknown state " + state.derivedMode);
 		}
 
+        mActionMenu.attachToListView(mCurrentView);
+
+        upadateActionItems();
 		mThumbSize = new Point(thumbSize, thumbSize);
 	}
 
-	private OnItemClickListener mItemListener = new OnItemClickListener() {
+    private void upadateActionItems() {
+        int complimentaryColor = Utils.getComplementaryColor(mDefaultColor);
+
+        mActionMenu.setVisibility(isCreateSupported(this) ? View.VISIBLE : View.GONE);
+        mActionMenu.setColorNormal(complimentaryColor);
+        mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
+
+        mCreateFile.setColorNormal(mDefaultColor);
+        mCreateFile.setColorPressed(Utils.getLightColor(complimentaryColor));
+
+        mCreateFolder.setColorNormal(mDefaultColor);
+        mCreateFolder.setColorPressed(Utils.getLightColor(complimentaryColor));
+
+        mPaste.setColorNormal(mDefaultColor);
+        mPaste.setColorPressed(Utils.getLightColor(complimentaryColor));
+    }
+
+    private OnClickListener mOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.fab_create_file:
+                    ((DocumentsActivity) getActivity()).onStateChanged();
+                    SaveFragment.show(getFragmentManager(), "text/plain", "File");
+                    mActionMenu.collapse();
+                    break;
+
+                case R.id.fab_create_folder:
+                    CreateDirectoryFragment.show(getFragmentManager());
+                    mActionMenu.collapse();
+                    break;
+
+                case R.id.fab_paste:
+                    mActionMenu.collapse();
+                    break;
+
+            }
+        }
+    };
+
+    private OnItemClickListener mItemListener = new OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			final Cursor cursor = mAdapter.getItem(position);
@@ -538,12 +583,12 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			
+
 			final Context context = getActivity();
 			if(null != context){
 				final DocumentsActivity activity = (DocumentsActivity) context;
 				if(!activity.getActionMode()){
-					//SystemBarTintManager.setupTint(getActivity(), R.color.contextual_actionbar_color);
+                    activity.setUpDefaultStatusBar();
 					activity.setActionMode(true);
 				}
 			}
@@ -674,9 +719,8 @@ public class DirectoryFragment extends ListFragment {
 			if(null != context){
 				final DocumentsActivity activity = (DocumentsActivity) context;
 				activity.setActionMode(false);
+                activity.setUpStatusBar();
 			}
-			//SystemBarTintManager.setupTint(getActivity());
-			// ignored
 		}
 
 		@Override
@@ -784,7 +828,11 @@ public class DirectoryFragment extends ListFragment {
 		}
 
         if (hadTrouble) {
-            Toast.makeText(context, R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
+            new SnackBar.Builder(getActivity())
+                    .withMessageId(R.string.toast_failed_delete)
+                    .withStyle(SnackBar.Style.DEFAULT)
+                    .withDuration(SnackBar.SHORT_SNACK)
+                    .show();
         }
 
 		return hadTrouble;
@@ -902,11 +950,19 @@ public class DirectoryFragment extends ListFragment {
 			if (result) {
 				switch (id) {
 				case R.id.menu_delete:
-					Toast.makeText(getActivity(), R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
+                    new SnackBar.Builder(getActivity())
+                            .withMessageId(R.string.toast_failed_delete)
+                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withDuration(SnackBar.SHORT_SNACK)
+                            .show();
 					break;
 
 				case R.id.menu_save:
-					Toast.makeText(getActivity(), R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
+                    new SnackBar.Builder(getActivity())
+                            .withMessageId(R.string.save_error)
+                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withDuration(SnackBar.SHORT_SNACK)
+                            .show();
 					break;
 				}
 
@@ -937,6 +993,10 @@ public class DirectoryFragment extends ListFragment {
 	private static State getDisplayState(Fragment fragment) {
 		return ((DocumentsActivity) fragment.getActivity()).getDisplayState();
 	}
+
+    private static boolean isCreateSupported(Fragment fragment) {
+        return ((DocumentsActivity) fragment.getActivity()).isCreateSupported();
+    }
 
 	public boolean onSaveDocuments(ArrayList<DocumentInfo> docs) {
 		final Context context = getActivity();
@@ -1191,6 +1251,7 @@ public class DirectoryFragment extends ListFragment {
 
 			final ImageView iconMime = (ImageView) convertView.findViewById(R.id.icon_mime);
 			final ImageView iconThumb = (ImageView) convertView.findViewById(R.id.icon_thumb);
+            final View iconMimeBackground = convertView.findViewById(R.id.icon_mime_background);
 			final TextView title = (TextView) convertView.findViewById(android.R.id.title);
 			final ImageView icon1 = (ImageView) convertView.findViewById(android.R.id.icon1);
 			final ImageView icon2 = (ImageView) convertView.findViewById(android.R.id.icon2);
@@ -1221,19 +1282,21 @@ public class DirectoryFragment extends ListFragment {
             final boolean enabled = isDocumentEnabled(docMimeType, docFlags);
             final float iconAlpha = (state.derivedMode == MODE_LIST && !enabled) ? 0.5f : 1f;
 
-			boolean cacheHit = false;
+            iconMimeBackground.setVisibility(View.VISIBLE);
+            iconMimeBackground.setBackgroundColor(IconColorUtils.loadMimeColor(context, docMimeType, docAuthority, docId, mDefaultColor));
+            boolean cacheHit = false;
 			if (showThumbnail) {
 				final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
 				final Bitmap cachedResult = thumbs.get(uri);
 				if (cachedResult != null) {
-					iconThumb
-							.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
+					iconThumb.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
 									: ImageView.ScaleType.CENTER_CROP);
 					iconThumb.setImageBitmap(cachedResult);
+                    iconMimeBackground.setVisibility(View.INVISIBLE);
 					cacheHit = true;
 				} else {
 					iconThumb.setImageDrawable(null);
-					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, mThumbSize,
+					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, iconMimeBackground, mThumbSize,
 							docMimeType.equals(Document.MIME_TYPE_APK) ? docPath : null, iconAlpha);
 					iconThumb.setTag(task);
 					ProviderExecutor.forAuthority(docAuthority).execute(task);
@@ -1454,16 +1517,18 @@ public class DirectoryFragment extends ListFragment {
 		private final Uri mUri;
 		private final ImageView mIconMime;
 		private final ImageView mIconThumb;
+        private final View mIconMimeBackground;
 		private final Point mThumbSize;
         private final float mTargetAlpha;
 		private final CancellationSignal mSignal;
 		private final String mPath;
 
-        public ThumbnailAsyncTask(Uri uri, ImageView iconMime, ImageView iconThumb, Point thumbSize,
+        public ThumbnailAsyncTask(Uri uri, ImageView iconMime, ImageView iconThumb, View iconMimeBackground, Point thumbSize,
                 String path, float targetAlpha) {
 			mUri = uri;
 			mIconMime = iconMime;
 			mIconThumb = iconThumb;
+            mIconMimeBackground = iconMimeBackground;
 			mThumbSize = thumbSize;
             mTargetAlpha = targetAlpha;
 			mSignal = new CancellationSignal();
@@ -1513,6 +1578,7 @@ public class DirectoryFragment extends ListFragment {
 				mIconThumb.setScaleType(!TextUtils.isEmpty(mPath) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
 				mIconThumb.setTag(null);
 				mIconThumb.setImageBitmap(result);
+                mIconMimeBackground.setVisibility(View.INVISIBLE);
 
 				final float targetAlpha = mIconMime.isEnabled() ? 1f : 0.5f;
 				mIconMime.setAlpha(targetAlpha);
@@ -1672,6 +1738,8 @@ public class DirectoryFragment extends ListFragment {
 			final State state = getDisplayState(DirectoryFragment.this);
 			final MenuItem share = popup.getMenu().findItem(R.id.menu_share);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
+            final MenuItem compress = popup.getMenu().findItem(R.id.menu_compress);
+            final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
             final MenuItem bookmark = popup.getMenu().findItem(R.id.menu_bookmark);
 
             final Cursor cursor = mAdapter.getItem(position);
@@ -1679,14 +1747,10 @@ public class DirectoryFragment extends ListFragment {
 			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
             final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
-            if(isCompressed){
-                final MenuItem compress = popup.getMenu().findItem(R.id.menu_compress);
-                final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
-                if(null != compress)
+            if(null != compress)
                 compress.setVisible(!isCompressed);
-                if(null != uncompress)
+            if(null != uncompress)
                 uncompress.setVisible(isCompressed);
-            }
             if(null != bookmark) {
                 bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType));
             }
@@ -1754,7 +1818,11 @@ public class DirectoryFragment extends ListFragment {
             contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
             Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
             if(null != uri) {
-                Toast.makeText(getActivity(), "Bookmark added", Toast.LENGTH_SHORT).show();
+                new SnackBar.Builder(getActivity())
+                        .withMessage("Bookmark added")
+                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withDuration(SnackBar.SHORT_SNACK)
+                        .show();
                 ExternalStorageProvider.updateVolumes(getActivity());
             }
             return true;

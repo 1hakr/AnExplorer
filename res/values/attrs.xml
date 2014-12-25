@@ -7,4 +7,16 @@
         <attr name="numColumns" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="View">
+        <attr name="background" />
+    </declare-styleable>
+
+    <declare-styleable name="MaterialProgressBar">
+        <attr name="color" />
+        <attr name="stroke_width" format="dimension" />
+        <attr name="min_sweep_angle" format="integer" />
+        <attr name="max_sweep_angle" format="integer" />
+        <attr name="sweep_speed" format="float" />
+        <attr name="rotation_speed" format="float" />
+    </declare-styleable>
 </resources>

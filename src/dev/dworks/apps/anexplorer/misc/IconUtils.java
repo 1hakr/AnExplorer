@@ -154,10 +154,6 @@ public class IconUtils {
 
         // Presentation
         icon = R.drawable.ic_doc_presentation;
-        add("application/vnd.ms-powerpoint", icon);
-        add("application/vnd.openxmlformats-officedocument.presentationml.presentation", icon);
-        add("application/vnd.openxmlformats-officedocument.presentationml.template", icon);
-        add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
         add("application/vnd.stardivision.impress", icon);
         add("application/vnd.sun.xml.impress", icon);
         add("application/vnd.sun.xml.impress.template", icon);
@@ -168,9 +164,6 @@ public class IconUtils {
         icon = R.drawable.ic_doc_spreadsheet;
         add("application/vnd.oasis.opendocument.spreadsheet", icon);
         add("application/vnd.oasis.opendocument.spreadsheet-template", icon);
-        add("application/vnd.ms-excel", icon);
-        add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", icon);
-        add("application/vnd.openxmlformats-officedocument.spreadsheetml.template", icon);
         add("application/vnd.stardivision.calc", icon);
         add("application/vnd.sun.xml.calc", icon);
         add("application/vnd.sun.xml.calc.template", icon);
@@ -182,9 +175,6 @@ public class IconUtils {
         add("application/vnd.oasis.opendocument.text-master", icon);
         add("application/vnd.oasis.opendocument.text-template", icon);
         add("application/vnd.oasis.opendocument.text-web", icon);
-        add("application/msword", icon);
-        add("application/vnd.openxmlformats-officedocument.wordprocessingml.document", icon);
-        add("application/vnd.openxmlformats-officedocument.wordprocessingml.template", icon);
         add("application/vnd.stardivision.writer", icon);
         add("application/vnd.stardivision.writer-global", icon);
         add("application/vnd.sun.xml.writer", icon);
@@ -197,7 +187,27 @@ public class IconUtils {
         icon = R.drawable.ic_doc_video;
         add("application/x-quicktimeplayer", icon);
         add("application/x-shockwave-flash", icon);
-        
+
+        // Word
+        icon = R.drawable.ic_doc_word;
+        add("application/msword", icon);
+        add("application/vnd.openxmlformats-officedocument.wordprocessingml.document", icon);
+        add("application/vnd.openxmlformats-officedocument.wordprocessingml.template", icon);
+
+        // Excel
+        icon = R.drawable.ic_doc_excel;
+        add("application/vnd.ms-excel", icon);
+        add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", icon);
+        add("application/vnd.openxmlformats-officedocument.spreadsheetml.template", icon);
+
+        // Powerpoint
+        icon = R.drawable.ic_doc_powerpoint;
+        add("application/vnd.ms-powerpoint", icon);
+        add("application/vnd.openxmlformats-officedocument.presentationml.presentation", icon);
+        add("application/vnd.openxmlformats-officedocument.presentationml.template", icon);
+        add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
+
+        //folder
         icon = R.drawable.ic_root_folder;
         add(Document.MIME_TYPE_HIDDEN, icon);
     }
@@ -242,15 +252,22 @@ public class IconUtils {
         final Resources res = context.getResources();
 
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            if (MediaDocumentsProvider.AUTHORITY.equals(authority)
-                    && docId.startsWith("album")) {
-                return res.getDrawable(R.drawable.ic_doc_album);
+            if (MediaDocumentsProvider.AUTHORITY.equals(authority)) {
+                if(docId.startsWith(MediaDocumentsProvider.TYPE_ALBUM)){
+                    return res.getDrawable(R.drawable.ic_doc_album);
+                }
+                else if(docId.startsWith(MediaDocumentsProvider.TYPE_IMAGES_BUCKET)){
+                    return res.getDrawable(R.drawable.ic_doc_folder);
+                }
+                else if(docId.startsWith(MediaDocumentsProvider.TYPE_VIDEOS_BUCKET)){
+                    return res.getDrawable(R.drawable.ic_doc_folder);
+                }
             }
 
             if (mode == DocumentsActivity.State.MODE_GRID) {
-                return res.getDrawable(R.drawable.ic_grid_folder);
+                return res.getDrawable(R.drawable.ic_doc_folder);
             } else {
-                return res.getDrawable(R.drawable.ic_root_folder);
+                return res.getDrawable(R.drawable.ic_doc_folder);
             }
         }
 
@@ -353,6 +370,58 @@ public class IconUtils {
 
         return "file";
     }
+
+    public static boolean isMimeSpecial(String mimeType) {
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+            return false;
+        }
+
+        if (mimeType == null) {
+            // TODO: generic icon?
+            return false;
+        }
+
+        // Otherwise look for partial match
+        final String typeOnly = mimeType.split("/")[0];
+        if ("audio".equals(typeOnly)) {
+            return true;
+        } else if ("image".equals(typeOnly)) {
+            return true;
+        } else if ("video".equals(typeOnly)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static int getMimeColor(Context context, String mimeType) {
+        final Resources res = context.getResources();
+
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+            return res.getColor(R.color.item_doc_folder);
+        }
+
+        if (mimeType == null) {
+            // TODO: generic icon?
+            return res.getColor(R.color.item_doc_generic);
+        }
+
+        if("application/vnd.android.package-archive".equals(mimeType)){
+            return res.getColor(R.color.item_doc_apk);
+        }
+        // Otherwise look for partial match
+        final String typeOnly = mimeType.split("/")[0];
+        if ("audio".equals(typeOnly)) {
+            return res.getColor(R.color.item_doc_audio);
+        } else if ("image".equals(typeOnly)) {
+            return res.getColor(R.color.item_doc_image);
+        } else if ("video".equals(typeOnly)) {
+            return res.getColor(R.color.item_doc_video);
+        } else {
+            return res.getColor(R.color.item_doc_file);
+        }
+    }
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Drawable applyTintColor(Context context, int drawableId, int tintColorId) {

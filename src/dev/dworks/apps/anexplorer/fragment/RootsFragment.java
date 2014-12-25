@@ -43,8 +43,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
@@ -105,14 +105,6 @@ public class RootsFragment extends Fragment {
         mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         return view;
-    }
-    
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-    	super.onViewCreated(view, savedInstanceState);
-/*    	if(SettingsActivity.getTranslucentMode(getActivity())){
-    		SystemBarTintManager.setInsets(getActivity(), mList);
-    	}*/
     }
 
     @Override
@@ -258,7 +250,11 @@ public class RootsFragment extends Fragment {
                         new String[]{item.root.path, item.root.title}
                 );
                 if (rows > 0) {
-                    Toast.makeText(getActivity(), "Bookmark removed", Toast.LENGTH_SHORT).show();
+                    new SnackBar.Builder(getActivity())
+                            .withMessage("Bookmark removed")
+                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withDuration(SnackBar.SHORT_SNACK)
+                            .show();
                     ExternalStorageProvider.updateVolumes(getActivity());
                 }
             }

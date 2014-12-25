@@ -15,8 +15,8 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true" android:state_activated="true" android:color="@color/material_deep_teal_500" />
-    <item android:state_focused="false" android:state_activated="true" android:color="@color/material_deep_teal_500" />
+    <item android:state_focused="true" android:state_activated="true" android:color="@color/accentColor" />
+    <item android:state_focused="false" android:state_activated="true" android:color="@color/accentColor" />
     <item android:state_enabled="false" android:alpha="@dimen/disabled_alpha_material_light" android:color="@color/primary_text_default_material_light" />
     <item android:color="@color/primary_text_default_material_light" />
 </selector>

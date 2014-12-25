@@ -36,6 +36,13 @@
             android:layout_marginLeft="0dp"
             android:layout_marginRight="16dp">
 
+            <dev.dworks.apps.anexplorer.ui.CircleImage
+                android:id="@+id/icon_mime_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="visible"/>
+
             <ImageView
                 android:id="@+id/icon_mime"
                 android:layout_width="wrap_content"
@@ -125,5 +132,13 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/button_popup"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
+        android:paddingBottom="10dp" />
 
 </FrameLayout>

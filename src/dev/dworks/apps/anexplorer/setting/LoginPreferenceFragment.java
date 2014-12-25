@@ -9,6 +9,9 @@ import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
+
+import com.github.mrengineer13.snackbar.SnackBar;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 
@@ -45,13 +48,21 @@ public class LoginPreferenceFragment extends PreferenceFragment {
                 	SettingsActivity.setPin(getActivity(), password);
                 	pin_set_preference.setSummary(SettingsActivity.isPinProtected(getActivity()) ? R.string.pin_set : R.string.pin_disabled);
                     if (password != null && password.length() > 0){
-                        Toast.makeText(getActivity(), getString(R.string.pin_set), Toast.LENGTH_SHORT).show();
+                        new SnackBar.Builder(getActivity())
+                                .withMessageId(R.string.pin_set)
+                                .withStyle(SnackBar.Style.DEFAULT)
+                                .withDuration(SnackBar.SHORT_SNACK)
+                                .show();
                         setInstruction(R.string.pin_set);
                     }
                     d.dismiss();
                     return;
                 }
-                Toast.makeText(getActivity(), getString(R.string.pin_mismatch), Toast.LENGTH_SHORT).show();
+                new SnackBar.Builder(getActivity())
+                        .withMessageId(R.string.pin_mismatch)
+                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withDuration(SnackBar.SHORT_SNACK)
+                        .show();
                 setInstruction(R.string.pin_mismatch);
             };
             
@@ -97,12 +108,20 @@ public class LoginPreferenceFragment extends PreferenceFragment {
                         super.onEnter(password);
                         SettingsActivity.setPin(getActivity(), "");
                         pin_set_preference.setSummary(R.string.pin_disabled);
-                        Toast.makeText(getActivity(), getString(R.string.pin_disabled), Toast.LENGTH_SHORT).show();
+                        new SnackBar.Builder(getActivity())
+                                .withMessageId(R.string.pin_disabled)
+                                .withStyle(SnackBar.Style.DEFAULT)
+                                .withDuration(SnackBar.SHORT_SNACK)
+                                .show();
                         setInstruction(R.string.pin_disabled);
                         d.dismiss();
                         return;
                     }
-                    Toast.makeText(getActivity(), getString(R.string.incorrect_pin), Toast.LENGTH_SHORT).show();
+                    new SnackBar.Builder(getActivity())
+                            .withMessageId(R.string.incorrect_pin)
+                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withDuration(SnackBar.SHORT_SNACK)
+                            .show();
                     setInstruction(R.string.incorrect_pin);
                 };
                 

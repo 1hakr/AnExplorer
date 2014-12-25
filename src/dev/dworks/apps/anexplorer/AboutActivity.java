@@ -52,6 +52,7 @@ public class AboutActivity extends ActionBarActivity {
         }
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
+        logo.setTextColor(SettingsActivity.getActionBarColor(this));
 		logo.setText(logo.getText() + " v" + DocumentsApplication.APP_VERSION);
 	}
 

@@ -18,19 +18,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
-
-    <!-- Le sigh, this really should be an asset -->
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#ccc" />
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#ddd"
+        android:background="#323232"
         android:baselineAligned="false"
         android:gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
@@ -42,7 +35,7 @@
             android:layout_height="match_parent"
             android:background="?android:attr/selectableItemBackground"
             android:padding="8dp"
-            android:src="@drawable/ic_cab_cancel"
+            android:src="@drawable/ic_action_close"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
@@ -51,6 +44,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:selectAllOnFocus="true"
+            android:text="764454"
+            android:textColor="@android:color/white"
             android:singleLine="true" />
 
         <FrameLayout
@@ -63,12 +58,12 @@
                 android:layout_height="match_parent"
                 android:background="?android:attr/selectableItemBackground"
                 android:padding="8dp"
-                android:src="@drawable/ic_cab_accept"
+                android:src="@drawable/ic_action_done"
                 android:text="@string/menu_save"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <ProgressBar
+            <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
                 android:id="@android:id/progress"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"

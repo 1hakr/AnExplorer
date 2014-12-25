@@ -34,7 +34,6 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -57,6 +56,7 @@ import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -184,8 +184,8 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
-                	count++;
-                    root.title = getContext().getString(R.string.root_external_storage) + " " + count;// + volume.getLabel();
+                    root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " "+count : "");// + volume.getLabel();
+                    count++;
                 }
                 root.docId = getDocIdForFile(path);
                 mRoots.add(root);
@@ -431,12 +431,9 @@ public class ExternalStorageProvider extends StorageProvider {
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
         row.add(Document.COLUMN_PATH, file.getAbsolutePath());
         row.add(Document.COLUMN_FLAGS, flags);
-        //FIXME
-/*        if(file.isDirectory() && null != file.list()){
-        	String summary = FileUtils.formatFileCount(file.list().length);
-        	
-        	row.add(Document.COLUMN_SUMMARY, summary);
-        }*/
+        if(file.isDirectory() && null != file.list()){
+        	row.add(Document.COLUMN_SUMMARY, FileUtils.formatFileCount(file.list().length));
+        }
 
         // Only publish dates reasonably after epoch
         long lastModified = file.lastModified();
@@ -444,7 +441,7 @@ public class ExternalStorageProvider extends StorageProvider {
             row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
         }
     }
-    
+
     private void includeZIPFile(MatrixCursor result, String docId, ZipEntry zipEntry)
             throws FileNotFoundException {
 
@@ -759,7 +756,7 @@ public class ExternalStorageProvider extends StorageProvider {
         final int lastDot = name.lastIndexOf('.');
         if (lastDot >= 0) {
             final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            final String mime = MimeTypes.getMimeTypeFromExtension(extension);
             if (mime != null) {
                 return mime;
             }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +16,10 @@
 
 <dev.dworks.apps.anexplorer.ui.DirectoryView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/material_grey_50" >
+    android:background="@color/material_grey_50">
 
     <LinearLayout
         android:id="@+id/progressContainer"
@@ -27,12 +27,13 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone">
 
-        <ProgressBar
+        <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
+            android:id="@+id/progressBar"
             style="@style/ListProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
             android:layout_gravity="center"
             android:indeterminate="true" />
 
@@ -44,14 +45,14 @@
             android:paddingTop="4dip"
             android:singleLine="true"
             android:text="@string/loading"
-            android:visibility="gone"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="gone" />
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/listContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@android:id/empty"
@@ -67,33 +68,35 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-            <ListView
-                android:id="@+id/list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:scrollbarStyle="outsideOverlay" />
+                android:layout_weight="1">
 
-            <GridView
-                android:id="@+id/grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/grid_padding_horiz"
-                android:paddingRight="@dimen/grid_padding_horiz"
-                android:paddingTop="@dimen/grid_padding_vert"
-                android:paddingBottom="@dimen/grid_padding_vert"
-                android:horizontalSpacing="@dimen/grid_item_padding"
-                android:verticalSpacing="@dimen/grid_item_padding"
-                android:clipToPadding="false"
-                android:scrollbarStyle="outsideOverlay"
-                android:drawSelectorOnTop="true"
-                android:visibility="gone" />
-            </LinearLayout>
+                <ListView
+                    android:id="@+id/list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:scrollbarStyle="outsideOverlay" />
+
+                <GridView
+                    android:id="@+id/grid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:drawSelectorOnTop="true"
+                    android:horizontalSpacing="@dimen/grid_item_padding"
+                    android:paddingBottom="@dimen/grid_padding_vert"
+                    android:paddingLeft="@dimen/grid_padding_horiz"
+                    android:paddingRight="@dimen/grid_padding_horiz"
+                    android:paddingTop="@dimen/grid_padding_vert"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:verticalSpacing="@dimen/grid_item_padding"
+                    android:visibility="gone" />
+
+                <include layout="@layout/fab_layout" />
+            </FrameLayout>
             <com.google.ads.AdView
                 android:id="@+id/adView"
                 android:layout_width="wrap_content"

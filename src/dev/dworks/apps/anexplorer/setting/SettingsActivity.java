@@ -41,6 +41,7 @@ import android.view.WindowManager;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -99,7 +100,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
     
     public static int getActionBarColor(Context context) {
-    	int newColor = context.getResources().getColor(R.color.actionbar_color);
+    	int newColor = context.getResources().getColor(R.color.defaultColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_ACTIONBAR_COLOR, newColor);
     }
@@ -115,7 +116,9 @@ public class SettingsActivity extends PreferenceActivity {
 
         final ActionBar bar = getActionBar();
         if (bar != null) {
-            bar.setDisplayShowHomeEnabled(true);
+            if(!Utils.hasLollipop()) {
+                bar.setDisplayShowHomeEnabled(true);
+            }
             bar.setDisplayHomeAsUpEnabled(true);
         }
         

@@ -22,7 +22,8 @@
     android:paddingEnd="@dimen/list_item_padding"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:background="@drawable/item_root">
 
     <FrameLayout
         android:layout_width="@dimen/icon_size"

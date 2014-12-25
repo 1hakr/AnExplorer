@@ -24,6 +24,8 @@
     <!-- Menu item title that uncompress the selected documents [CHAR LIMIT=24] -->
     <string name="menu_uncompress">Uncompress</string>
     <string name="menu_rename">Rename</string>
+    <string name="menu_paste">Paste</string>
+    <string name="menu_create_file">Create folder</string>
 
     <string name="root_images">Images</string>
     <string name="root_audio">Audio</string>

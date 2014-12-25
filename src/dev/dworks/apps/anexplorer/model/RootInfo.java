@@ -169,7 +169,9 @@ public class RootInfo implements Durable, Parcelable {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
 
         // TODO: remove these special case icons
-        if (isExternalStorage()) {
+        if (isInternalStorage()) {
+            derivedIcon = R.drawable.ic_root_internal;
+        } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
@@ -220,6 +222,11 @@ public class RootInfo implements Durable, Parcelable {
     public boolean isExternalStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
                 && ExternalStorageProvider.ROOT_ID_PRIMARY_EMULATED.equals(rootId);
+    }
+
+    public boolean isInternalStorage() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && title.toLowerCase().contains("internal");
     }
 
     public boolean isPhoneStorage() {

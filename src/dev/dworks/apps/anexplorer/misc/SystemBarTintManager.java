@@ -31,7 +31,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout.LayoutParams;
@@ -39,7 +38,6 @@ import android.widget.RelativeLayout;
 
 import java.lang.reflect.Method;
 
-import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
@@ -64,6 +62,8 @@ public class SystemBarTintManager {
             }
         }
     }
+
+
     /**
      * The default system bar tint color value.
      */
@@ -392,8 +392,8 @@ public class SystemBarTintManager {
             int result = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 TypedValue tv = new TypedValue();
-                context.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
-                result = context.getResources().getDimensionPixelSize(tv.resourceId);
+                context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
+                result = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
             }
             return result;
         }
@@ -562,8 +562,10 @@ public class SystemBarTintManager {
                 return 0;
             }
         }
+
     }
-    
+
+
     public static void setupTint(Activity context) {
         // Only set the tint if the device is running KitKat or above
         if (Utils.hasKitKat()) {
@@ -572,7 +574,7 @@ public class SystemBarTintManager {
             tintManager.setStatusBarTintColor(SettingsActivity.getActionBarColor(context));
         }
     }
-    
+
     public static void setupTint(Activity context, int resource) {
         // Only set the tint if the device is running KitKat or above
         if (Utils.hasKitKat()) {
@@ -581,43 +583,44 @@ public class SystemBarTintManager {
             tintManager.setStatusBarTintResource(resource);
         }
     }
-	
+
     public static void setInsets(Activity context, View view) {
-    	if (Utils.hasKitKat()) {
-	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 2*config.getPixelInsetBottom());
-    	}
+        if (Utils.hasKitKat()) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+            view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 2*config.getPixelInsetBottom());
+        }
     }
-    
+
     public static void setInsetsTop(Activity context, View view) {
-    	if (Utils.hasKitKat()) {
-	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 0);
-    	}
+        if (Utils.hasKitKat()) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+            view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 0);
+        }
     }
-    
+
     public static void setNavigationInsets(Activity context, View view) {
-    	if (Utils.hasKitKat()) {
-    		//final android.view.ViewGroup.MarginLayoutParams a = (android.view.ViewGroup.MarginLayoutParams) view.getLayoutParams();
-	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-    		//a.bottomMargin = config.getPixelInsetBottom();
-    		//view.setLayoutParams(a);
-	        view.setPadding(0, 0, 0, config.getPixelInsetBottom());
-    	}
+        if (Utils.hasKitKat()) {
+            //final android.view.ViewGroup.MarginLayoutParams a = (android.view.ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+            //a.bottomMargin = config.getPixelInsetBottom();
+            //view.setLayoutParams(a);
+            view.setPadding(0, 0, 0, config.getPixelInsetBottom());
+        }
     }
-	
-	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public static MarginLayoutParams getToggleParams(boolean toggle, int id) {
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static ViewGroup.MarginLayoutParams getToggleParams(boolean toggle, int id) {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
         if(toggle){
-            params.addRule(RelativeLayout.ABOVE, id);	
+            params.addRule(RelativeLayout.ABOVE, id);
         }
         else{
             params.removeRule(RelativeLayout.ABOVE);
         }
         return params;
-	}
+    }
+
 }

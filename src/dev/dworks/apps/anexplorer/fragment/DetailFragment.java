@@ -46,12 +46,14 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Display document title editor and save button.
@@ -74,8 +76,9 @@ public class DetailFragment extends DialogFragment{
 	private ImageView iconThumb;
 	private FrameLayout icon;
 	private View contents_layout;
+    private View name_section;
 
-	public static void show(FragmentManager fm, DocumentInfo doc) {
+    public static void show(FragmentManager fm, DocumentInfo doc) {
 		final Bundle args = new Bundle();
 		args.putParcelable(EXTRA_DOC, doc);
 		
@@ -122,6 +125,7 @@ public class DetailFragment extends DialogFragment{
 		final View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
 		name = (TextView) view.findViewById(R.id.name);
+        name_section = view.findViewById(R.id.name_section);
 		type = (TextView) view.findViewById(R.id.type);
 		size = (TextView) view.findViewById(R.id.size);
 		contents = (TextView) view.findViewById(R.id.contents);
@@ -137,16 +141,7 @@ public class DetailFragment extends DialogFragment{
 		
 		return view;
 	}
-	
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-    	super.onViewCreated(view, savedInstanceState);
-/*    	if(SettingsActivity.getTranslucentMode(getActivity())){
-    		SystemBarTintManager.setInsets(getActivity(), view.findViewById(R.id.scroll_view));
-    	}*/
-    }
 
-	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -156,6 +151,7 @@ public class DetailFragment extends DialogFragment{
 		}
 		
 		name.setText(doc.displayName);
+        name_section.setBackgroundColor(Utils.getLightColor(SettingsActivity.getActionBarColor(getActivity())));
 		path.setText(doc.path);
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
 		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
@@ -164,7 +160,16 @@ public class DetailFragment extends DialogFragment{
 			contents.setText(doc.summary);
 			contents_layout.setVisibility(View.VISIBLE);
 		}
+        int docIcon = doc.icon;
+        iconMime.setAlpha(1f);
+        iconThumb.setAlpha(0f);
+        iconThumb.setImageDrawable(null);
 
+        if (docIcon != 0) {
+            iconMime.setImageDrawable(IconUtils.loadPackageIcon(getActivity(), doc.authority, docIcon));
+        } else {
+            iconMime.setImageDrawable(IconUtils.loadMimeIcon(getActivity(), doc.mimeType, doc.authority, doc.documentId, DocumentsActivity.State.MODE_GRID));
+        }
 		new DetailTask().execute();
 	}
 	
@@ -179,6 +184,7 @@ public class DetailFragment extends DialogFragment{
 			filePath = doc.path;
 
 			if (!Document.MIME_TYPE_DIR.equals(doc.mimeType)) {
+                final boolean allowThumbnail = MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, doc.mimeType);
 				int thumbSize = getResources().getDimensionPixelSize(R.dimen.grid_width);
 				Point mThumbSize = new Point(thumbSize, thumbSize);
 				final Uri uri = DocumentsContract.buildDocumentUri(doc.authority, doc.documentId);
@@ -186,7 +192,7 @@ public class DetailFragment extends DialogFragment{
 				final ContentResolver resolver = context.getContentResolver();
 				ContentProviderClient client = null;
 				try {
-					
+
 					if (doc.mimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(filePath)) {
 						result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, filePath, Document.MIME_TYPE_APK)).getBitmap();
 					} else {
@@ -200,7 +206,7 @@ public class DetailFragment extends DialogFragment{
 				} finally {
 					ContentProviderClientCompat.releaseQuietly(client);
 				}
-				
+
 				sizeString = Formatter.formatFileSize(context, doc.size);
 			}
 			else{
@@ -216,19 +222,10 @@ public class DetailFragment extends DialogFragment{
 		@Override
 		protected void onPostExecute(Void e) {
 			super.onPostExecute(e);
-			int docIcon = doc.icon;
 			if(!TextUtils.isEmpty(filePath)){
 				size.setText(sizeString);
 			}			
-			iconMime.setAlpha(1f);
-			iconThumb.setAlpha(0f);
-			iconThumb.setImageDrawable(null);
-			if (docIcon != 0) {
-				iconMime.setImageDrawable(IconUtils.loadPackageIcon(getActivity(), doc.authority, docIcon));
-			} else {
-				iconMime.setImageDrawable(IconUtils.loadMimeIcon(getActivity(), doc.mimeType, doc.authority, doc.documentId, DocumentsActivity.State.MODE_GRID));
-			}
-			
+
 			if(null != result || Document.MIME_TYPE_DIR.equals(doc.mimeType)){
 				ViewCompat.setBackground(icon, null);
 				icon.setForeground(null);

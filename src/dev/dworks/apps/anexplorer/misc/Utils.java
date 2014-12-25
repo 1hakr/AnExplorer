@@ -249,4 +249,43 @@ public class Utils {
 		return false;
 
     }
+
+    public static final int PRESSED_COLOR_LIGHTUP = 255 / 25;
+
+    public static int getLightColor(int color, int amount) {
+        return Color.argb(Math.min(255, Color.alpha(color)), Math.min(255, Color.red(color) + amount),
+                Math.min(255, Color.green(color) + amount), Math.min(255, Color.blue(color) + amount));
+    }
+
+    public static int getLightColor(int color) {
+        int amount = PRESSED_COLOR_LIGHTUP;
+        return Color.argb(Math.min(255, Color.alpha(color)), Math.min(255, Color.red(color) + amount),
+                Math.min(255, Color.green(color) + amount), Math.min(255, Color.blue(color) + amount));
+    }
+
+    public static int getStatusBarColor(int color1) {
+        int color2 = Color.parseColor("#000000");
+        return blendColors(color1, color2, 0.9f);
+    }
+
+    public static int getActionButtonColor(int color1) {
+        int color2 = Color.parseColor("#ffffff");
+        return blendColors(color1, color2, 0.9f);
+    }
+
+    public static int blendColors(int color1, int color2, float ratio) {
+        final float inverseRation = 1f - ratio;
+        float r = (Color.red(color1) * ratio) + (Color.red(color2) * inverseRation);
+        float g = (Color.green(color1) * ratio) + (Color.green(color2) * inverseRation);
+        float b = (Color.blue(color1) * ratio) + (Color.blue(color2) * inverseRation);
+        return Color.rgb((int) r, (int) g, (int) b);
+    }
+
+    public static int getComplementaryColor(int colorToInvert) {
+        float[] hsv = new float[3];
+        Color.RGBToHSV(Color.red(colorToInvert), Color.green(colorToInvert),
+                Color.blue(colorToInvert), hsv);
+        hsv[0] = (hsv[0] + 180) % 360;
+        return Color.HSVToColor(hsv);
+    }
 }

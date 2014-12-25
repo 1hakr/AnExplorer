@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -33,7 +32,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
+
+import com.github.mrengineer13.snackbar.SnackBar;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -43,6 +44,8 @@ import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 
 /**
  * Dialog to create a new directory.
@@ -141,7 +144,11 @@ public class RenameFragment extends DialogFragment {
         @Override
         protected void onPostExecute(DocumentInfo result) {
             if (result == null) {
-            	Toast.makeText(mActivity,"Fialed to rename", Toast.LENGTH_SHORT).show();
+                new SnackBar.Builder(getActivity())
+                        .withMessage("Failed to rename")
+                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withDuration(SnackBar.SHORT_SNACK)
+                        .show();
             }
 
             mActivity.setPending(false);

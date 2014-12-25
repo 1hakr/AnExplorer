@@ -18,6 +18,7 @@
 package dev.dworks.apps.anexplorer;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -46,6 +47,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.util.LruCache;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -55,6 +57,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -67,10 +70,11 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -161,21 +165,22 @@ public class DocumentsActivity extends ActionBarActivity {
     private State mState;
 	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
-
 	private boolean mActionMode;
+    private LruCache<String, Long> mFileSizeCache;
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate(Bundle icicle) {
-    	if(SettingsActivity.getTranslucentMode(this)){
+
+        if(SettingsActivity.getTranslucentMode(this)){
             if(Utils.hasLollipop()){
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                getWindow().setStatusBarColor(SettingsActivity.getActionBarColor(this));
             }
             else if(Utils.hasKitKat()){
                 setTheme(R.style.Theme_Document_Translucent);
             }
-    	}
+        }
+        setUpStatusBar();
     	
 /*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog()
@@ -187,6 +192,8 @@ public class DocumentsActivity extends ActionBarActivity {
         super.onCreate(icicle);
 
 		mRoots = DocumentsApplication.getRootsCache(this);
+
+        mFileSizeCache = new LruCache<String, Long>(100);
 
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
@@ -230,6 +237,12 @@ public class DocumentsActivity extends ActionBarActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
+        if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat() && !Utils.hasLollipop()) {
+            //mToolbar.getLayoutParams().height = getActionBarHeight(this)+ getStatusBarHeight(this);
+            ((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
+            mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
+        }
+
 
         mToolbarStack = (Spinner) findViewById(R.id.stack);
         mToolbarStack.setOnItemSelectedListener(mStackListener);
@@ -282,7 +295,7 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
-	private void initProtection() {
+    private void initProtection() {
 
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
 			return;
@@ -296,7 +309,11 @@ public class DocumentsActivity extends ActionBarActivity {
                 	d.dismiss();
                 }
                 else {
-                    Toast.makeText(DocumentsActivity.this, getString(R.string.incorrect_pin), Toast.LENGTH_SHORT).show();
+                    new SnackBar.Builder(DocumentsActivity.this)
+                            .withMessageId(R.string.incorrect_pin)
+                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withDuration(SnackBar.SHORT_SNACK)
+                            .show();
                 }
             };
             
@@ -477,7 +494,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showSize = SettingsActivity.getDisplayFileSize(this);
             mState.showFolderSize = SettingsActivity.getDisplayFolderSize(this);
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
-            invalidateOptionsMenu();
+            invalidateMenu();
         }
         AppRate.with(this).listener(new AppRate.OnShowListener() {
             @Override
@@ -509,7 +526,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public void onDrawerOpened(View drawerView) {
             mDrawerToggle.onDrawerOpened(drawerView);
             updateActionBar();
-            invalidateOptionsMenu();
+            invalidateMenu();
         }
 
         @Override
@@ -518,10 +535,11 @@ public class DocumentsActivity extends ActionBarActivity {
 			case R.id.container_roots:
 	            mDrawerToggle.onDrawerClosed(drawerView);
 	            updateActionBar();
-	            invalidateOptionsMenu();
+                invalidateMenu();
 				break;
 				
 			case R.id.container_info:
+                mDrawerToggle.onDrawerClosed(drawerView);
 				mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
 				break;
 			}
@@ -629,9 +647,46 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
+/*    public void updateActionBar() {
+        final ActionBar actionBar = getActionBar();
+
+        actionBar.setDisplayShowHomeEnabled(true);
+
+        final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
+        actionBar.setDisplayHomeAsUpEnabled(showIndicator);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
+        }
+
+        if (isRootsDrawerOpen()) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            actionBar.setIcon(new ColorDrawable());
+
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
+                actionBar.setTitle(R.string.app_name);
+                actionBar.setIcon(R.drawable.ic_launcher);
+            } else if (mState.action == ACTION_CREATE) {
+                actionBar.setTitle(R.string.title_save);
+            }
+        } else {
+            final RootInfo root = getCurrentRoot();
+            //actionBar.setIcon(root != null ? root.loadIcon(this) : null);
+
+            if (mState.stack.size() <= 1) {
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+                actionBar.setTitle(root.title);
+            } else {
+                mIgnoreNextNavigation = true;
+                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+                actionBar.setTitle(null);
+                actionBar.setListNavigationCallbacks(mStackAdapter, mStackListener);
+                actionBar.setSelectedNavigationItem(mStackAdapter.getCount() - 1);
+            }
+        }
+    }*/
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.activity, menu);
 
         // Actions are always visible when showing as dialog
@@ -641,6 +696,7 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         }
 */
+
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchMenu.getActionView();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -696,19 +752,21 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         });
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
+        updateMenuItems(menu);
+        return super.onPrepareOptionsMenu(menu);
+    }
 
+    public void updateMenuItems(Menu menu){
         final FragmentManager fm = getFragmentManager();
-
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        final MenuItem createDir = menu.findItem(R.id.menu_create_dir);
+        //final MenuItem createDir = menu.findItem(R.id.menu_create_dir);
         //final MenuItem createFile = menu.findItem(R.id.menu_create_file);
         final MenuItem search = menu.findItem(R.id.menu_search);
         final MenuItem sort = menu.findItem(R.id.menu_sort);
@@ -717,17 +775,18 @@ public class DocumentsActivity extends ActionBarActivity {
         final MenuItem list = menu.findItem(R.id.menu_list);
         final MenuItem settings = menu.findItem(R.id.menu_settings);
 
+        boolean canShow = !isRootsDrawerOpen();
         // Open drawer means we hide most actions
-        createDir.setVisible(false);
-        //createFile.setVisible(false);
-        search.setVisible(!isRootsDrawerOpen());
-        sort.setVisible(!isRootsDrawerOpen());
-        grid.setVisible(!isRootsDrawerOpen());
-        list.setVisible(!isRootsDrawerOpen());
+        //createDir.setVisible(canShow);
+        //createFile.setVisible(canShow);
+        search.setVisible(canShow);
+        sort.setVisible(canShow);
+        grid.setVisible(canShow);
+        list.setVisible(canShow);
         if (isRootsDrawerOpen()) {
             mIgnoreNextCollapse = true;
             search.collapseActionView();
-            return true;
+            return;
         }
 
         sort.setVisible(cwd != null);
@@ -757,7 +816,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         final boolean searchVisible;
         if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
-            createDir.setVisible(cwd != null && cwd.isCreateSupported());
+            //createDir.setVisible(cwd != null && cwd.isCreateSupported());
             //createFile.setVisible(cwd != null && cwd.isCreateSupported());
             searchVisible = false;
 
@@ -767,32 +826,31 @@ public class DocumentsActivity extends ActionBarActivity {
                 list.setVisible(false);
             }
             if(null != SaveFragment.get(fm))
-            SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+                SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
         } else if (mState.action == ACTION_GET_CONTENT) {
-        	createDir.setVisible(false);
+            //createDir.setVisible(false);
+            //createFile.setVisible(false);
             searchVisible = root != null
                     && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
         } else {
-        	createDir.setVisible(cwd != null && cwd.isCreateSupported());
-        	//createFile.setVisible(cwd != null && cwd.isCreateSupported());
+            //createDir.setVisible(cwd != null && cwd.isCreateSupported());
+            //createFile.setVisible(cwd != null && cwd.isCreateSupported());
             //createDir.setVisible(false);
 
             searchVisible = root != null
                     && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
-            
+
             if(null != SaveFragment.get(fm))
-            SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
-            
+                SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+
             if(null != MoveFragment.get(fm))
-            	MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isEditSupported());
+                MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isEditSupported());
         }
 
         // TODO: close any search in-progress when hiding
         search.setVisible(searchVisible);
 
         settings.setVisible(mState.action != ACTION_MANAGE);
-
-        return true;
     }
 
     @Override
@@ -810,14 +868,14 @@ public class DocumentsActivity extends ActionBarActivity {
         if (id == android.R.id.home) {
             onBackPressed();
             return true;
-        } else if (id == R.id.menu_create_dir) {
+/*        } else if (id == R.id.menu_create_dir) {
             CreateDirectoryFragment.show(getFragmentManager());
             return true;
         } else if (id == R.id.menu_create_file) {
         	onStateChanged();
             SaveFragment.show(getFragmentManager(), "text/plain", "File.txt");
             //SaveFragment.get(getFragmentManager()).setReplaceTarget(getCurrentDirectory());
-            return true;
+            return true;*/
         } else if (id == R.id.menu_search) {
             return false;
         } else if (id == R.id.menu_sort_name) {
@@ -850,7 +908,7 @@ public class DocumentsActivity extends ActionBarActivity {
      * Update UI to reflect internal state changes not from user.
      */
     public void onStateChanged() {
-        invalidateOptionsMenu();
+        invalidateMenu();
     }
 
     /**
@@ -1036,6 +1094,17 @@ public class DocumentsActivity extends ActionBarActivity {
     	return mShowAsDialog;
     }
 
+    public boolean isCreateSupported() {
+        final DocumentInfo cwd = getCurrentDirectory();
+        if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+            return cwd != null && cwd.isCreateSupported();
+        } else if (mState.action == ACTION_GET_CONTENT) {
+            return false;
+        } else {
+            return cwd != null && cwd.isCreateSupported();
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onCurrentDirectoryChanged(int anim) {
     	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
@@ -1120,7 +1189,7 @@ public class DocumentsActivity extends ActionBarActivity {
         }
 
         updateActionBar();
-        invalidateOptionsMenu();
+        invalidateMenu();
         dumpStack();
     }
 
@@ -1264,7 +1333,11 @@ public class DocumentsActivity extends ActionBarActivity {
             	startActivity(view);
             }
             else{
-            	Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                new SnackBar.Builder(this)
+                        .withMessageId(R.string.toast_no_application)
+                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withDuration(SnackBar.SHORT_SNACK)
+                        .show();
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
@@ -1286,7 +1359,11 @@ public class DocumentsActivity extends ActionBarActivity {
                 try {
                     startActivity(view);
                 } catch (ActivityNotFoundException ex2) {
-                    Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                    new SnackBar.Builder(this)
+                            .withMessageId(R.string.toast_no_application)
+                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withDuration(SnackBar.SHORT_SNACK)
+                            .show();
                 }
             }
         }
@@ -1431,7 +1508,11 @@ public class DocumentsActivity extends ActionBarActivity {
             if (result != null) {
                 //onFinished(result);
             } else {
-                Toast.makeText(DocumentsActivity.this, R.string.save_error, Toast.LENGTH_SHORT).show();
+                new SnackBar.Builder(DocumentsActivity.this)
+                        .withMessageId(R.string.save_error)
+                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withDuration(SnackBar.SHORT_SNACK)
+                        .show();
             }
             SaveFragment.hide(getFragmentManager());
             setPending(false);
@@ -1523,7 +1604,11 @@ public class DocumentsActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result){
-                Toast.makeText(DocumentsActivity.this, R.string.save_error, Toast.LENGTH_SHORT).show();
+                new SnackBar.Builder(DocumentsActivity.this)
+                        .withMessageId(R.string.save_error)
+                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withDuration(SnackBar.SHORT_SNACK)
+                        .show();
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
@@ -1688,33 +1773,8 @@ public class DocumentsActivity extends ActionBarActivity {
 		}
 
 		oldBackground = ld;
-		
-		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-		getSupportActionBar().setDisplayShowTitleEnabled(false);
-		getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-        if(SettingsActivity.getTranslucentMode(this)){
-            if(Utils.hasLollipop()){
-                getWindow().setStatusBarColor(SettingsActivity.getActionBarColor(this));
-            }
-        }
-        else if(Utils.hasKitKat()){
-            if(SettingsActivity.getTranslucentMode(this)){
-                if(mActionMode){
-        			SystemBarTintManager.setupTint(this, R.color.contextual_actionbar_color);
-        		}
-        		else{
-        			SystemBarTintManager.setupTint(this);
-        		}
-    	        if(Utils.hasSoftNavBar(this)){
-        	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        	//mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
-    	        }
-            }
-            else{
-            	//mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
-            }	
-        }
+        setUpStatusBar();
 	}
 	
 	private Drawable.Callback drawableCallback = new Drawable.Callback() {
@@ -1741,4 +1801,58 @@ public class DocumentsActivity extends ActionBarActivity {
 	public void setActionMode(boolean actionMode) {
 		mActionMode = actionMode;
 	}
+
+    public void invalidateMenu(){
+        supportInvalidateOptionsMenu();
+        mToolbar.forceLayout();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpStatusBar() {
+        int color = getResources().getColor(R.color.contextual_actionbar_color);
+        if(SettingsActivity.getTranslucentMode(this)){
+            color = SettingsActivity.getActionBarColor(this);
+        }
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(Utils.getStatusBarColor(color));
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpDefaultStatusBar() {
+        int color = getResources().getColor(R.color.contextual_actionbar_color);
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public static int getActionBarHeight(Context context) {
+        int result = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            TypedValue tv = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
+            result = context.getResources().getDimensionPixelSize(tv.resourceId);
+        }
+        return result;
+    }
+
 }

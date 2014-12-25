@@ -41,6 +41,11 @@
         <!--        <item name="actionOverflowButtonStyle">@style/DarkerOverflow</item>
                 <item name="actionModeBackground">@android:color/transparent</item>
                 <item name="actionBarStyle">@style/ActionBar</item>-->
+        <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
+        <item name="colorPrimary">@color/material_blue_grey_800</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
+
     </style>
 
 
@@ -49,12 +54,11 @@
     <style name="DocumentsTheme" parent="@style/DialogWhenReallyLarge">
         <item name="actionBarWidgetTheme">@null</item>
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
 
         <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
         <item name="colorPrimary">@color/material_blue_grey_800</item>
-        <item name="colorAccent">@color/material_deep_teal_500</item>
+        <item name="colorAccent">@color/accentColor</item>
         <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
 
         <!--<item name="android:listDivider">@drawable/list_divider_material</item>-->
@@ -70,11 +74,18 @@
         <item name="*android:windowFixedHeightMinor">90%</item>
 
         <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
+
+        <!-- android transitions -->
+        <item name="*android:windowContentTransitions">true</item>
+        <item name="*android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="*android:windowAllowReturnTransitionOverlap">true</item>
     </style>
 
     <style name="Theme.Document.DailogPIN">
         <item name="android:windowNoTitle">true</item>
     </style>
+
+    <style name="Theme.Setting" parent="@android:style/Theme.Holo.Light.DarkActionBar"/>
 
     <style name="DialogEnterNoAnimation">
         <item name="android:windowEnterAnimation">@anim/no_animation</item>
@@ -99,7 +110,7 @@
 
     <style name="MyTitleText">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">#ff49c0ec</item>
+        <item name="android:textColor">@color/accentColor</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">5dip</item>
@@ -112,7 +123,7 @@
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">#666666</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="*android:fontFamily">sans-serif-condensed</item>
     </style>
 
     <style name="Title">
@@ -120,9 +131,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textSize">30sp</item>
-        <item name="android:textColor">@color/blue</item>
+        <item name="android:textColor">@color/accentColor</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="*android:fontFamily">sans-serif-light</item>
     </style>
 
     <style name="ListProgress" parent="@style/Widget.AppCompat.ProgressBar"/>

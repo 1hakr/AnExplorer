@@ -100,7 +100,7 @@
                     android:minHeight="48dp"
                     android:minWidth="200dp"
                     android:padding="4dp"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/accentColor"
                     android:textSize="24sp"
                     android:visibility="gone" />
 
@@ -117,7 +117,7 @@
                     android:minWidth="200dp"
                     android:padding="4dp"
                     android:text="Enter PIN"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/accentColor"
                     android:textSize="24sp" />
             </RelativeLayout>
         </LinearLayout>
