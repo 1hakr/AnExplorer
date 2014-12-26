@@ -61,6 +61,12 @@
                 android:background="@color/material_grey_50"
                 android:elevation="8dp" />
 
+            <FrameLayout
+                android:id="@+id/container_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="8dp" />
+
         </LinearLayout>
 
         <LinearLayout

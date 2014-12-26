@@ -17,6 +17,7 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Color;
@@ -54,7 +55,7 @@ public class Utils {
 		}
 	}
 
-	public static class Preconditions {
+    public static class Preconditions {
 
 	    /**
 	     * Ensures that an object reference passed as a parameter to the calling
@@ -287,5 +288,26 @@ public class Utils {
                 Color.blue(colorToInvert), hsv);
         hsv[0] = (hsv[0] + 180) % 360;
         return Color.HSVToColor(hsv);
+    }
+
+
+    public static void showErrorDialog(Activity context, String localizedMessage) {
+        context.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+/*                new MaterialDialog.Builder(context)
+                        .positiveColorRes(R.color.cabinet_accent_color)
+                        .theme(ThemeUtils.getDialogTheme(context))
+                        .title(R.string.error)
+                        .content(message)
+                        .positiveText(android.R.string.ok)
+                        .callback(new MaterialDialog.SimpleCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                            }
+                        })
+                        .build().show();*/
+            }
+        });
     }
 }

@@ -57,7 +57,7 @@
             android:gravity="start"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/item_root_primary_text" />
+            android:textColor="@color/primary_text_default_material_light" />
 
         <TextView
             android:id="@android:id/summary"
@@ -67,8 +67,9 @@
             android:ellipsize="end"
             android:gravity="start"
             android:textAlignment="viewStart"
+            android:textSize="12sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/item_root_primary_text" />
+            android:textColor="@color/primary_dark_material_light" />
 
     </LinearLayout>
 

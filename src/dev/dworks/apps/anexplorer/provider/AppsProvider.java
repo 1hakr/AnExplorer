@@ -17,10 +17,6 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
@@ -38,6 +34,11 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.SparseArray;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -49,8 +50,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
 /**
- * Presents a {@link DocumentsContract} view of {@link Apps}
- * contents.
+ * Presents a {@link DocumentsContract} view of Apps contents.
  */
 @SuppressLint("DefaultLocale")
 public class AppsProvider extends DocumentsProvider {
@@ -197,6 +197,9 @@ public class AppsProvider extends DocumentsProvider {
     	}
         if (!FileUtils.moveFile(fileFrom, fileTo, fileName)) {
             throw new IllegalStateException("Failed to copy " + fileFrom);
+        }
+        else{
+            FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(), fileName));
         }
     }
 

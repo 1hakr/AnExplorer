@@ -68,7 +68,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.collect.Lists;
 
 import java.io.File;
@@ -108,6 +107,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
+import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
@@ -548,8 +548,8 @@ public class DirectoryFragment extends ListFragment {
 				final String docMimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
 				final int docFlags = getCursorInt(cursor, Document.COLUMN_FLAGS);
 				if (null != root && root.isApp()) {
-					startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
-							+ AppsProvider.getPackageForDocId(docId))));
+/*					startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+							+ AppsProvider.getPackageForDocId(docId))));*/
 				} else if (isDocumentEnabled(docMimeType, docFlags)) {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 					((DocumentsActivity) getActivity()).onDocumentPicked(doc);
@@ -828,11 +828,7 @@ public class DirectoryFragment extends ListFragment {
 		}
 
         if (hadTrouble) {
-            new SnackBar.Builder(getActivity())
-                    .withMessageId(R.string.toast_failed_delete)
-                    .withStyle(SnackBar.Style.DEFAULT)
-                    .withDuration(SnackBar.SHORT_SNACK)
-                    .show();
+            ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
         }
 
 		return hadTrouble;
@@ -875,16 +871,17 @@ public class DirectoryFragment extends ListFragment {
 
 	private class OperationTask extends AsyncTask<Void, Void, Boolean> {
 
-		private ProgressDialog progressDialog;
+		private MaterialProgressDialog progressDialog;
 		private ArrayList<DocumentInfo> docs;
 		private int id;
 
 		public OperationTask(ArrayList<DocumentInfo> docs, int id) {
 			this.docs = docs;
 			this.id = id;
-			progressDialog = new ProgressDialog(getActivity());
+			progressDialog = new MaterialProgressDialog(getActivity());
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			// progressDialog.setIndeterminate(true);
+            progressDialog.setColor(mDefaultColor);
 			progressDialog.setCancelable(false);
 
 			switch (id) {
@@ -950,22 +947,13 @@ public class DirectoryFragment extends ListFragment {
 			if (result) {
 				switch (id) {
 				case R.id.menu_delete:
-                    new SnackBar.Builder(getActivity())
-                            .withMessageId(R.string.toast_failed_delete)
-                            .withStyle(SnackBar.Style.DEFAULT)
-                            .withDuration(SnackBar.SHORT_SNACK)
-                            .show();
+                    ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
 					break;
 
 				case R.id.menu_save:
-                    new SnackBar.Builder(getActivity())
-                            .withMessageId(R.string.save_error)
-                            .withStyle(SnackBar.Style.DEFAULT)
-                            .withDuration(SnackBar.SHORT_SNACK)
-                            .show();
+                    ((DocumentsActivity) getActivity()).showError(R.string.save_error);
 					break;
 				}
-
 			}
 
             if (null != root && root.isAppProcess()) {
@@ -1210,8 +1198,11 @@ public class DirectoryFragment extends ListFragment {
 				if (state.derivedMode == MODE_LIST) {
 					convertView = inflater.inflate(R.layout.item_doc_list, parent, false);
 				} else if (state.derivedMode == MODE_GRID) {
-					convertView = inflater.inflate(R.layout.item_doc_grid, parent, false);
-
+                    int layoutId = R.layout.item_doc_grid;
+                    if(isApp){
+                        layoutId = R.layout.item_doc_app_grid;
+                    }
+                    convertView = inflater.inflate(layoutId, parent, false);
 					// Apply padding to grid items
 					final FrameLayout grid = (FrameLayout) convertView;
 					final int gridPadding = 0;//getResources().getDimensionPixelSize(R.dimen.grid_padding);
@@ -1687,7 +1678,7 @@ public class DirectoryFragment extends ListFragment {
 		}
 		// Directories are always enabled
 		if (Document.MIME_TYPE_DIR.equals(docMimeType)) {
-			// return true;
+			return true;
 		}
 
 		// Read-only files are disabled when creating
@@ -1728,6 +1719,7 @@ public class DirectoryFragment extends ListFragment {
 		});
 		
 		if (isApp) {
+            final MenuItem details = popup.getMenu().findItem(R.id.menu_delete);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
 			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
 			save.setVisible(root.isAppPackage());
@@ -1795,7 +1787,10 @@ public class DirectoryFragment extends ListFragment {
         case R.id.menu_compress:
 			new OperationTask(docs, id).execute();
 			return true;
-			
+        case R.id.menu_details:
+            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+                    + AppsProvider.getPackageForDocId(docs.get(0).documentId))));
+            return true;
 		case R.id.menu_info:
 			final DocumentsActivity activity = (DocumentsActivity) getActivity();
 			activity.setInfoDrawerOpen(true);
@@ -1818,11 +1813,7 @@ public class DirectoryFragment extends ListFragment {
             contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
             Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
             if(null != uri) {
-                new SnackBar.Builder(getActivity())
-                        .withMessage("Bookmark added")
-                        .withStyle(SnackBar.Style.DEFAULT)
-                        .withDuration(SnackBar.SHORT_SNACK)
-                        .show();
+                ((DocumentsActivity) getActivity()).showInfo("Bookmark added");
                 ExternalStorageProvider.updateVolumes(getActivity());
             }
             return true;

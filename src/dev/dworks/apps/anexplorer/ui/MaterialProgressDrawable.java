@@ -55,12 +55,14 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
     private static final Interpolator EASE_INTERPOLATOR = new AccelerateDecelerateInterpolator();
 
     @Retention(RetentionPolicy.CLASS)
-    @IntDef({LARGE, DEFAULT})
-    public @interface ProgressDrawableSize {}
+    @IntDef({DEFAULT,LARGE,XLARGE})
+    private @interface ProgressDrawableSize {}
     // Maps to ProgressBar.Large style
-    public static final int LARGE = 0;
+    public static final int LARGE = 1;
     // Maps to ProgressBar default style
-    public static final int DEFAULT = 1;
+    public static final int DEFAULT = 0;
+
+    public static final int XLARGE = 2;
 
     // Maps to ProgressBar default style
     private static final int CIRCLE_DIAMETER = 40;
@@ -71,6 +73,10 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
     private static final int CIRCLE_DIAMETER_LARGE = 56;
     private static final float CENTER_RADIUS_LARGE = 12.5f;
     private static final float STROKE_WIDTH_LARGE = 3f;
+
+    private static final int CIRCLE_DIAMETER_XLARGE = 56;
+    private static final float CENTER_RADIUS_XLARGE = 20.5f;
+    private static final float STROKE_WIDTH_XLARGE = 3f;
 
     private final int[] COLORS = new int[] {
         Color.BLACK
@@ -138,11 +144,12 @@ public class MaterialProgressDrawable extends Drawable implements Animatable {
      * Set the overall size for the progress spinner. This updates the radius
      * and stroke width of the ring.
      *
-     * @param size One of {@link dev.dworks.apps.anexplorer.ui.MaterialProgressDrawable.LARGE} or
-     *            {@link dev.dworks.apps.anexplorer.ui.MaterialProgressDrawable.DEFAULT}
      */
     public void updateSizes(@ProgressDrawableSize int size) {
-        if (size == LARGE) {
+        if (size == XLARGE) {
+            setSizeParameters(CIRCLE_DIAMETER_XLARGE, CIRCLE_DIAMETER_XLARGE, CENTER_RADIUS_XLARGE,
+                    STROKE_WIDTH_XLARGE, ARROW_WIDTH_LARGE, ARROW_HEIGHT_LARGE);
+        } else if (size == LARGE) {
             setSizeParameters(CIRCLE_DIAMETER_LARGE, CIRCLE_DIAMETER_LARGE, CENTER_RADIUS_LARGE,
                     STROKE_WIDTH_LARGE, ARROW_WIDTH_LARGE, ARROW_HEIGHT_LARGE);
         } else {

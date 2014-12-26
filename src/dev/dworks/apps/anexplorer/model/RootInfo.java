@@ -193,7 +193,7 @@ public class RootInfo implements Durable, Parcelable {
         } else if (isAppBackupFolder()) {
             derivedIcon = R.drawable.ic_root_folder_am;
         } else if (isBookmarkFolder()) {
-            derivedIcon = R.drawable.ic_root_folder_am;
+            derivedIcon = R.drawable.ic_root_bookmark;
         } else if (isHiddenFolder()) {
             derivedIcon = R.drawable.ic_root_hidden;
         } else if (isDownloads()) {

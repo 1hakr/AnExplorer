@@ -11,11 +11,13 @@
     <item
         android:id="@+id/menu_revert"
         android:icon="@drawable/ic_menu_undo"
+        support:showAsAction="ifRoom|withText"
         android:title="Revert"/>
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_menu_delete"
-        support:showAsAction="ifRoom|withText"
-        android:title="@string/menu_delete"/>
+        support:showAsAction="never|withText"
+        android:title="@string/menu_delete"
+        android:visible="false"/>
 
 </menu>

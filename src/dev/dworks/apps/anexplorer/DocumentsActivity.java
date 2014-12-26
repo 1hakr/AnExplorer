@@ -18,7 +18,6 @@
 package dev.dworks.apps.anexplorer;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -41,6 +40,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,6 +55,7 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -75,6 +76,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -87,7 +89,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.MoveFragment;
 import dev.dworks.apps.anexplorer.fragment.PickFragment;
@@ -98,6 +99,7 @@ import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
@@ -165,6 +167,7 @@ public class DocumentsActivity extends ActionBarActivity {
     private State mState;
 	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
+    private FrameLayout mAlertContainer;
 	private boolean mActionMode;
     private LruCache<String, Long> mFileSizeCache;
 
@@ -226,6 +229,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
+        mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
 
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
@@ -309,11 +313,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 	d.dismiss();
                 }
                 else {
-                    new SnackBar.Builder(DocumentsActivity.this)
-                            .withMessageId(R.string.incorrect_pin)
-                            .withStyle(SnackBar.Style.DEFAULT)
-                            .withDuration(SnackBar.SHORT_SNACK)
-                            .show();
+                    showError(R.string.incorrect_pin);
                 }
             };
             
@@ -524,9 +524,19 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
-            mDrawerToggle.onDrawerOpened(drawerView);
-            updateActionBar();
-            invalidateMenu();
+            switch (drawerView.getId()) {
+                case R.id.container_roots:
+                    if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
+                        mDrawerLayout.closeDrawer(Gravity.RIGHT);
+                    }
+                    mDrawerToggle.onDrawerOpened(drawerView);
+                    updateActionBar();
+                    invalidateMenu();
+                    break;
+
+                case R.id.container_info:
+                    break;
+            }
         }
 
         @Override
@@ -647,55 +657,9 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
-/*    public void updateActionBar() {
-        final ActionBar actionBar = getActionBar();
-
-        actionBar.setDisplayShowHomeEnabled(true);
-
-        final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
-        actionBar.setDisplayHomeAsUpEnabled(showIndicator);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
-        }
-
-        if (isRootsDrawerOpen()) {
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(new ColorDrawable());
-
-            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
-                actionBar.setTitle(R.string.app_name);
-                actionBar.setIcon(R.drawable.ic_launcher);
-            } else if (mState.action == ACTION_CREATE) {
-                actionBar.setTitle(R.string.title_save);
-            }
-        } else {
-            final RootInfo root = getCurrentRoot();
-            //actionBar.setIcon(root != null ? root.loadIcon(this) : null);
-
-            if (mState.stack.size() <= 1) {
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                actionBar.setTitle(root.title);
-            } else {
-                mIgnoreNextNavigation = true;
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-                actionBar.setTitle(null);
-                actionBar.setListNavigationCallbacks(mStackAdapter, mStackListener);
-                actionBar.setSelectedNavigationItem(mStackAdapter.getCount() - 1);
-            }
-        }
-    }*/
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity, menu);
-
-        // Actions are always visible when showing as dialog
-/*        if (mShowAsDialog) {
-            for (int i = 0; i < menu.size(); i++) {
-                menu.getItem(i).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            }
-        }
-*/
 
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchMenu.getActionView();
@@ -766,8 +730,6 @@ public class DocumentsActivity extends ActionBarActivity {
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        //final MenuItem createDir = menu.findItem(R.id.menu_create_dir);
-        //final MenuItem createFile = menu.findItem(R.id.menu_create_file);
         final MenuItem search = menu.findItem(R.id.menu_search);
         final MenuItem sort = menu.findItem(R.id.menu_sort);
         final MenuItem sortSize = menu.findItem(R.id.menu_sort_size);
@@ -775,10 +737,8 @@ public class DocumentsActivity extends ActionBarActivity {
         final MenuItem list = menu.findItem(R.id.menu_list);
         final MenuItem settings = menu.findItem(R.id.menu_settings);
 
-        boolean canShow = !isRootsDrawerOpen();
+        boolean canShow = true; //!isRootsDrawerOpen();
         // Open drawer means we hide most actions
-        //createDir.setVisible(canShow);
-        //createFile.setVisible(canShow);
         search.setVisible(canShow);
         sort.setVisible(canShow);
         grid.setVisible(canShow);
@@ -816,8 +776,6 @@ public class DocumentsActivity extends ActionBarActivity {
 
         final boolean searchVisible;
         if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
-            //createDir.setVisible(cwd != null && cwd.isCreateSupported());
-            //createFile.setVisible(cwd != null && cwd.isCreateSupported());
             searchVisible = false;
 
             // No display options in recent directories
@@ -828,15 +786,9 @@ public class DocumentsActivity extends ActionBarActivity {
             if(null != SaveFragment.get(fm))
                 SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
         } else if (mState.action == ACTION_GET_CONTENT) {
-            //createDir.setVisible(false);
-            //createFile.setVisible(false);
             searchVisible = root != null
                     && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
         } else {
-            //createDir.setVisible(cwd != null && cwd.isCreateSupported());
-            //createFile.setVisible(cwd != null && cwd.isCreateSupported());
-            //createDir.setVisible(false);
-
             searchVisible = root != null
                     && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
 
@@ -868,14 +820,6 @@ public class DocumentsActivity extends ActionBarActivity {
         if (id == android.R.id.home) {
             onBackPressed();
             return true;
-/*        } else if (id == R.id.menu_create_dir) {
-            CreateDirectoryFragment.show(getFragmentManager());
-            return true;
-        } else if (id == R.id.menu_create_file) {
-        	onStateChanged();
-            SaveFragment.show(getFragmentManager(), "text/plain", "File.txt");
-            //SaveFragment.get(getFragmentManager()).setReplaceTarget(getCurrentDirectory());
-            return true;*/
         } else if (id == R.id.menu_search) {
             return false;
         } else if (id == R.id.menu_sort_name) {
@@ -1333,11 +1277,7 @@ public class DocumentsActivity extends ActionBarActivity {
             	startActivity(view);
             }
             else{
-                new SnackBar.Builder(this)
-                        .withMessageId(R.string.toast_no_application)
-                        .withStyle(SnackBar.Style.DEFAULT)
-                        .withDuration(SnackBar.SHORT_SNACK)
-                        .show();
+                showError(R.string.toast_no_application);
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
@@ -1359,11 +1299,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 try {
                     startActivity(view);
                 } catch (ActivityNotFoundException ex2) {
-                    new SnackBar.Builder(this)
-                            .withMessageId(R.string.toast_no_application)
-                            .withStyle(SnackBar.Style.DEFAULT)
-                            .withDuration(SnackBar.SHORT_SNACK)
-                            .show();
+                    showError(R.string.toast_no_application);
                 }
             }
         }
@@ -1508,11 +1444,7 @@ public class DocumentsActivity extends ActionBarActivity {
             if (result != null) {
                 //onFinished(result);
             } else {
-                new SnackBar.Builder(DocumentsActivity.this)
-                        .withMessageId(R.string.save_error)
-                        .withStyle(SnackBar.Style.DEFAULT)
-                        .withDuration(SnackBar.SHORT_SNACK)
-                        .show();
+                showError(R.string.save_error);
             }
             SaveFragment.hide(getFragmentManager());
             setPending(false);
@@ -1604,17 +1536,13 @@ public class DocumentsActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result){
-                new SnackBar.Builder(DocumentsActivity.this)
-                        .withMessageId(R.string.save_error)
-                        .withStyle(SnackBar.Style.DEFAULT)
-                        .withDuration(SnackBar.SHORT_SNACK)
-                        .show();
+                showError(R.string.save_error);
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
         }
     }
-    
+
     public void setMovePending(boolean pending) {
         final MoveFragment move = MoveFragment.get(getFragmentManager());
         if (move != null) {
@@ -1853,6 +1781,48 @@ public class DocumentsActivity extends ActionBarActivity {
             result = context.getResources().getDimensionPixelSize(tv.resourceId);
         }
         return result;
+    }
+
+    public void showMsg(int msg){
+        showToast(msg, SnackBar.Style.DEFAULT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showError(int msg){
+        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showInfo(int msg){
+        showToast(msg, SnackBar.Style.INFO, SnackBar.SHORT_SNACK);
+    }
+
+    public void showMsg(String msg){
+        showToast(msg, SnackBar.Style.DEFAULT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showError(String msg){
+        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showInfo(String msg){
+        showToast(msg, SnackBar.Style.INFO,SnackBar.SHORT_SNACK);
+    }
+
+    public void showToast(String msg, SnackBar.Style style, short duration){
+        new SnackBar.Builder(this, mAlertContainer)
+                .withMessage(msg)
+                .withStyle(style)
+                .withActionMessageId(android.R.string.ok)
+                .withDuration(duration)
+                .show();
+    }
+
+    public void showToast(int msgId, SnackBar.Style style, short duration){
+        new SnackBar.Builder(this, mAlertContainer)
+                .withMessageId(msgId)
+                .withStyle(style)
+                .withActionMessageId(android.R.string.ok)
+                .withDuration(duration)
+                .show();
     }
 
 }

@@ -17,7 +17,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="10dp"
     android:background="@drawable/item_doc_list_background">
 
     <LinearLayout
@@ -100,6 +99,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
+                android:layout_marginRight="10dp"
                 android:baselineAligned="false">
 
                 <TextView
@@ -150,7 +150,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
+        android:paddingRight="10dp"
         android:paddingBottom="10dp" />
-
 
 </FrameLayout>

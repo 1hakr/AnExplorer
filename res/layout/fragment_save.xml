@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -23,10 +23,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#323232"
         android:baselineAligned="false"
-        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:background="#323232"
         android:orientation="horizontal" >
 
         <ImageButton
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="?android:attr/selectableItemBackground"
-            android:padding="8dp"
+            android:padding="16dp"
             android:src="@drawable/ic_action_close"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -44,7 +44,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:selectAllOnFocus="true"
-            android:text="764454"
+            android:textSize="16sp"
+            android:layout_gravity="center_vertical"
             android:textColor="@android:color/white"
             android:singleLine="true" />
 
@@ -57,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="?android:attr/selectableItemBackground"
-                android:padding="8dp"
+                android:padding="16dp"
                 android:src="@drawable/ic_action_done"
                 android:text="@string/menu_save"
                 android:textAllCaps="true"
@@ -70,9 +71,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:indeterminate="true"
-                android:padding="8dp"
+                android:padding="16dp"
                 android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

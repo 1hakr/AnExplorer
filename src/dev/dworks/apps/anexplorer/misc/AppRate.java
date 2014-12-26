@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -12,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import dev.dworks.apps.anexplorer.R;
 
 /**
@@ -23,6 +25,7 @@ public class AppRate {
     private final String KEY_COUNT = "count";
     private final String KEY_CLICKED = "clicked";
     private Activity activity;
+    private View view;
     private String text;
     private int initialLaunchCount = 5;
     private RetryPolicy policy = RetryPolicy.EXPONENTIAL;
@@ -30,9 +33,15 @@ public class AppRate {
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
     private int delay = 0;
+    private ViewGroup mainView;
 
     private AppRate(Activity activity) {
         this.activity = activity;
+    }
+
+    private AppRate(Activity activity, View view) {
+        this.activity = activity;
+        this.view = view;
     }
 
     public static AppRate with(Activity activity) {
@@ -43,6 +52,13 @@ public class AppRate {
         return instance;
     }
 
+    public static AppRate with(Activity activity, View view) {
+        AppRate instance = new AppRate(activity, view);
+        instance.text = "Like AnExplorer? Rate It!";//activity.getString(R.string.dra_rate_app);
+        instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
+        instance.editor = instance.settings.edit();
+        return instance;
+    }
 
     /**
      * Text to be displayed in the view
@@ -150,7 +166,13 @@ public class AppRate {
     }
 
     private void showAppRate() {
-        final ViewGroup mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if(null != view){
+            mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, ((ViewGroup) view), false);
+        }
+        else{
+            mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, null);
+        }
 
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);

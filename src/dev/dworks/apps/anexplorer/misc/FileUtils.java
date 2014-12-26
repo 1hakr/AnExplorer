@@ -1,10 +1,15 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+
+import com.google.common.collect.Lists;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,6 +28,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
 public class FileUtils {
@@ -417,6 +423,7 @@ public class FileUtils {
 
     private static final int KILO = 1024;
     private static final int MEGA = KILO * KILO;
+    private static final int GIGA = MEGA * KILO;
 
     /**
      * @return A string suitable for display in bytes, kilobytes or megabytes
@@ -432,10 +439,59 @@ public class FileUtils {
         } else if (size < MEGA) {
             count = String.valueOf(size / KILO);
             return context.getString(R.string.kilobytes, count);
-        } else {
-            DecimalFormat onePlace = new DecimalFormat("0.#");
-            count = onePlace.format((float) size / (float) MEGA);
+        } else if (size < GIGA) {
+            count = String.valueOf(size / MEGA);
             return context.getString(R.string.megabytes, count);
+        }
+        else {
+            DecimalFormat onePlace = new DecimalFormat("0.#");
+            count = onePlace.format((float) size / (float) GIGA);
+            return context.getString(R.string.gigabytes, count);
+        }
+    }
+
+    public static String makeFilePath(String parentPath, String name){
+        if(TextUtils.isEmpty(parentPath) || TextUtils.isEmpty(name)){
+            return "";
+        }
+        return parentPath + File.separator + name;
+    }
+
+    public static String makeFilePath(File parentFile, String name){
+        if(null == parentFile || TextUtils.isEmpty(name)){
+            return "";
+        }
+        return new File(parentFile, name).getPath();
+    }
+
+    public static void updateMedia(Context context, String... pathsArray){
+        MediaScannerConnection.scanFile(context, pathsArray, null, new MediaScannerConnection.OnScanCompletedListener() {
+            @Override
+            public void onScanCompleted(String s, Uri uri) {
+                //Log.i("Scanner", "Scanned " + s + ":");
+                //Log.i("Scanner", "-> uri=" + uri);
+            }
+        });
+    }
+
+    public static void updateMedia(Context context, ArrayList<DocumentInfo> docs, String parentPath) {
+        try {
+            if(Utils.hasKitKat()){
+                ArrayList<String> paths = Lists.newArrayList();
+                for(DocumentInfo doc : docs){
+                    paths.add(parentPath + File.separator + doc.displayName);
+                }
+                String[] pathsArray = paths.toArray(new String[0]);
+                FileUtils.updateMedia(context, pathsArray);
+            }
+            else{
+                Uri contentUri = Uri.fromFile(new File(parentPath).getParentFile());
+                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
+                context.sendBroadcast(mediaScanIntent);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

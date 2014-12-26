@@ -44,7 +44,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
@@ -250,11 +249,8 @@ public class RootsFragment extends Fragment {
                         new String[]{item.root.path, item.root.title}
                 );
                 if (rows > 0) {
-                    new SnackBar.Builder(getActivity())
-                            .withMessage("Bookmark removed")
-                            .withStyle(SnackBar.Style.DEFAULT)
-                            .withDuration(SnackBar.SHORT_SNACK)
-                            .show();
+                    ((DocumentsActivity) getActivity()).showInfo("Bookmark removed");
+
                     ExternalStorageProvider.updateVolumes(getActivity());
                 }
             }

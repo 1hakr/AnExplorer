@@ -107,8 +107,13 @@
     <string name="kilobytes"><xliff:g id="count">%s</xliff:g> KB</string>
     <!-- Size unit, displayed in a button next to an attachment  [CHAR LIMIT=5] -->
     <string name="megabytes"><xliff:g id="count">%s</xliff:g> MB</string>
+    <!-- Size unit, displayed in a button next to an attachment  [CHAR LIMIT=5] -->
+    <string name="gigabytes"><xliff:g id="count">%s</xliff:g> GB</string>
     <string name="title_activity_donate">Donate</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="save">Save</string>
+    <string name="saving">Saving...</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="unsaved_changes_desc">You have unsaved changes, Save them?</string>
 </resources>

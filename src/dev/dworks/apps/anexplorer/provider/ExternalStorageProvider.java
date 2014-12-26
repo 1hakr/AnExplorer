@@ -557,6 +557,9 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (!FileUtils.deleteFile(fileFrom)) {
                     throw new IllegalStateException("Failed to delete " + fileFrom);
                 }
+                else{
+                    FileUtils.updateMedia(getContext(), fileFrom.getPath());
+                }
 			}
         }
     }
@@ -795,7 +798,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
-    private static class DirectoryObserver extends FileObserver {
+    private class DirectoryObserver extends FileObserver {
         private static final int NOTIFY_EVENTS = ATTRIB | CLOSE_WRITE | MOVED_FROM | MOVED_TO
                 | CREATE | DELETE | DELETE_SELF | MOVE_SELF;
 
@@ -819,6 +822,14 @@ public class ExternalStorageProvider extends StorageProvider {
                 mResolver.notifyChange(mNotifyUri, null, false);
                 //notify roots changed
                 //mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+                switch (event){
+                    case MOVED_FROM:
+                    case MOVED_TO:
+                    case CREATE:
+                    case DELETE:
+                        FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(mFile, path));
+                        break;
+                }
             }
         }
 

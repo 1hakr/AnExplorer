@@ -139,6 +139,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
+        android:paddingRight="10dp"
         android:paddingBottom="10dp" />
 
 </FrameLayout>

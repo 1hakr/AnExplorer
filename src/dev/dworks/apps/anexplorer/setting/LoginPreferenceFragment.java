@@ -8,7 +8,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
 
 import com.github.mrengineer13.snackbar.SnackBar;
 
@@ -60,7 +59,7 @@ public class LoginPreferenceFragment extends PreferenceFragment {
                 }
                 new SnackBar.Builder(getActivity())
                         .withMessageId(R.string.pin_mismatch)
-                        .withStyle(SnackBar.Style.DEFAULT)
+                        .withStyle(SnackBar.Style.ALERT)
                         .withDuration(SnackBar.SHORT_SNACK)
                         .show();
                 setInstruction(R.string.pin_mismatch);
@@ -119,7 +118,7 @@ public class LoginPreferenceFragment extends PreferenceFragment {
                     }
                     new SnackBar.Builder(getActivity())
                             .withMessageId(R.string.incorrect_pin)
-                            .withStyle(SnackBar.Style.DEFAULT)
+                            .withStyle(SnackBar.Style.ALERT)
                             .withDuration(SnackBar.SHORT_SNACK)
                             .show();
                     setInstruction(R.string.incorrect_pin);

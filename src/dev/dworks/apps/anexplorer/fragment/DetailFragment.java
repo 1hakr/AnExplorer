@@ -45,15 +45,16 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.CircleImage;
 
 /**
  * Display document title editor and save button.
@@ -76,7 +77,7 @@ public class DetailFragment extends DialogFragment{
 	private ImageView iconThumb;
 	private FrameLayout icon;
 	private View contents_layout;
-    private View name_section;
+    private CircleImage iconMimeBackground;
 
     public static void show(FragmentManager fm, DocumentInfo doc) {
 		final Bundle args = new Bundle();
@@ -125,7 +126,6 @@ public class DetailFragment extends DialogFragment{
 		final View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
 		name = (TextView) view.findViewById(R.id.name);
-        name_section = view.findViewById(R.id.name_section);
 		type = (TextView) view.findViewById(R.id.type);
 		size = (TextView) view.findViewById(R.id.size);
 		contents = (TextView) view.findViewById(R.id.contents);
@@ -136,7 +136,8 @@ public class DetailFragment extends DialogFragment{
 		
 		iconMime = (ImageView) view.findViewById(R.id.icon_mime);
 		iconThumb = (ImageView) view.findViewById(R.id.icon_thumb);
-		
+        iconMimeBackground = (CircleImage)view.findViewById(R.id.icon_mime_background);
+
 		icon = (FrameLayout)view.findViewById(android.R.id.icon);
 		
 		return view;
@@ -151,7 +152,8 @@ public class DetailFragment extends DialogFragment{
 		}
 		
 		name.setText(doc.displayName);
-        name_section.setBackgroundColor(Utils.getLightColor(SettingsActivity.getActionBarColor(getActivity())));
+        name.setTextColor(Utils.getLightColor(SettingsActivity.getActionBarColor(getActivity())));
+        iconMimeBackground.setBackgroundColor(IconColorUtils.loadMimeColor(getActivity(), doc.mimeType, doc.authority, doc.documentId, SettingsActivity.getActionBarColor(getActivity())));
 		path.setText(doc.path);
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
 		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
@@ -227,16 +229,17 @@ public class DetailFragment extends DialogFragment{
 			}			
 
 			if(null != result || Document.MIME_TYPE_DIR.equals(doc.mimeType)){
-				ViewCompat.setBackground(icon, null);
-				icon.setForeground(null);
+				//ViewCompat.setBackground(icon, null);
+				//icon.setForeground(null);
 			}
-			
+
 			if(null != result){
-				iconThumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                ImageView.ScaleType scaleType = doc.mimeType.equals(Document.MIME_TYPE_APK) ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP;
+				iconThumb.setScaleType(scaleType);
 				iconThumb.setTag(null);
 				iconThumb.setImageBitmap(result);
-				
 				final float targetAlpha = iconMime.isEnabled() ? 1f : 0.5f;
+                iconMimeBackground.animate().alpha(0f).start();
 				iconMime.setAlpha(targetAlpha);
 				iconMime.animate().alpha(0f).start();
 				iconThumb.setAlpha(0f);

@@ -33,8 +33,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.github.mrengineer13.snackbar.SnackBar;
-
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -144,11 +142,7 @@ public class RenameFragment extends DialogFragment {
         @Override
         protected void onPostExecute(DocumentInfo result) {
             if (result == null) {
-                new SnackBar.Builder(getActivity())
-                        .withMessage("Failed to rename")
-                        .withStyle(SnackBar.Style.DEFAULT)
-                        .withDuration(SnackBar.SHORT_SNACK)
-                        .show();
+                ((DocumentsActivity) getActivity()).showError("Failed to rename");
             }
 
             mActivity.setPending(false);

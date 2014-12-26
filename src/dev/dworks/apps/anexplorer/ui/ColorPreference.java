@@ -16,9 +16,6 @@
 
 package dev.dworks.apps.anexplorer.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -44,6 +41,10 @@ import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
@@ -371,9 +372,7 @@ public class ColorPreference extends Preference {
             if (selected) {
                 drawable = new LayerDrawable(new Drawable[]{
                         colorChoiceDrawable,
-                        res.getDrawable(Utils.isColorDark(color)
-                                ? R.drawable.checkmark_white
-                                : R.drawable.checkmark_black)
+                        res.getDrawable(R.drawable.checkmark_white)
                 });
             }
 

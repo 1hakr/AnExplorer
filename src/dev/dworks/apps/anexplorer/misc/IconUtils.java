@@ -265,7 +265,7 @@ public class IconUtils {
             }
 
             if (mode == DocumentsActivity.State.MODE_GRID) {
-                return res.getDrawable(R.drawable.ic_doc_folder);
+                return res.getDrawable(R.drawable.ic_grid_folder);
             } else {
                 return res.getDrawable(R.drawable.ic_doc_folder);
             }
