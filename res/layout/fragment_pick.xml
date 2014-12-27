@@ -27,6 +27,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textAllCaps="false"
-        style="?android:attr/buttonBarPositiveButtonStyle" />
+        style="?attr/buttonBarButtonStyle" />
 
 </LinearLayout>

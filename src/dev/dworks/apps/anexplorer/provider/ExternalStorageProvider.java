@@ -819,7 +819,6 @@ public class ExternalStorageProvider extends StorageProvider {
         public void onEvent(int event, String path) {
             if ((event & NOTIFY_EVENTS) != 0) {
                 if (LOG_INOTIFY) Log.d(TAG, "onEvent() " + event + " at " + path);
-                mResolver.notifyChange(mNotifyUri, null, false);
                 //notify roots changed
                 //mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
                 switch (event){
@@ -827,6 +826,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     case MOVED_TO:
                     case CREATE:
                     case DELETE:
+                        mResolver.notifyChange(mNotifyUri, null, false);
                         FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(mFile, path));
                         break;
                 }

@@ -18,12 +18,14 @@
 package dev.dworks.apps.anexplorer.provider;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
@@ -112,6 +114,7 @@ public class HeatMapProvider extends StorageProvider {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void updateVolumesLocked() {
         mRoots.clear();
         mIdToPath.clear();

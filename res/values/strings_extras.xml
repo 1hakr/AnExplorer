@@ -16,9 +16,6 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- Title of the documents application [CHAR LIMIT=32] -->
-    <string name="app_label">AnExplorer</string>
-
     <!-- Menu item title that compress the selected documents [CHAR LIMIT=24] -->
     <string name="menu_compress">Compress</string>
     <!-- Menu item title that uncompress the selected documents [CHAR LIMIT=24] -->
@@ -116,4 +113,5 @@
     <string name="saving">Saving...</string>
     <string name="unsaved_changes">Unsaved Changes</string>
     <string name="unsaved_changes_desc">You have unsaved changes, Save them?</string>
+    <string name="unable_to_open_app">Unable to open app</string>
 </resources>

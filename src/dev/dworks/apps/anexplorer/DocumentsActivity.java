@@ -40,7 +40,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,7 +54,6 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -76,7 +74,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mrengineer13.snackbar.SnackBar;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -99,7 +96,6 @@ import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
-import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
@@ -524,35 +520,22 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
-            switch (drawerView.getId()) {
-                case R.id.container_roots:
-                    if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
-                        mDrawerLayout.closeDrawer(Gravity.RIGHT);
-                    }
-                    mDrawerToggle.onDrawerOpened(drawerView);
-                    updateActionBar();
-                    invalidateMenu();
-                    break;
-
-                case R.id.container_info:
-                    break;
+            if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
+                mDrawerLayout.closeDrawer(Gravity.RIGHT);
             }
+            mDrawerToggle.onDrawerOpened(drawerView);
+            updateActionBar();
+            invalidateMenu();
         }
 
         @Override
         public void onDrawerClosed(View drawerView) {
-        	switch (drawerView.getId()) {
-			case R.id.container_roots:
-	            mDrawerToggle.onDrawerClosed(drawerView);
-	            updateActionBar();
-                invalidateMenu();
-				break;
-				
-			case R.id.container_info:
-                mDrawerToggle.onDrawerClosed(drawerView);
-				mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-				break;
-			}
+            if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
+            }
+            mDrawerToggle.onDrawerClosed(drawerView);
+            updateActionBar();
+            invalidateMenu();
         }
 
         @Override
@@ -610,55 +593,61 @@ public class DocumentsActivity extends ActionBarActivity {
     }
 
     public void updateActionBar() {
-        if (mToolbar != null) {
-            if (mState.action == DocumentsActivity.State.ACTION_OPEN || mState.action == DocumentsActivity.State.ACTION_GET_CONTENT
-                    || mState.action == ACTION_OPEN_TREE) {
-                mToolbar.setTitle(R.string.title_open);
+        final RootInfo root = getCurrentRoot();
+        //final boolean showRootIcon = mShowAsDialog || (mState.action == DocumentsActivity.State.ACTION_MANAGE);
+        final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
+        if(mShowAsDialog){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
+            if (mDrawerToggle != null) {
+                mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
+            }
+        }
+        mToolbar.setNavigationContentDescription(R.string.drawer_open);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setRootsDrawerOpen(!isRootsDrawerOpen());
+            }
+        });
+
+        if (isRootsDrawerOpen()) {
+            //mToolbar.setNavigationIcon(root != null ? root.loadToolbarIcon(mToolbar.getContext()) : null);
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT
+                    || mState.action == ACTION_BROWSE || mState.action == ACTION_OPEN_TREE) {
+                //mToolbar.setTitle(R.string.title_open);
+                mToolbar.setTitle(R.string.app_name);
             } else if (mState.action == DocumentsActivity.State.ACTION_CREATE) {
                 mToolbar.setTitle(R.string.title_save);
             }
-        }
-
-        final RootInfo root = getCurrentRoot();
-        final boolean showRootIcon = mShowAsDialog || (mState.action == DocumentsActivity.State.ACTION_MANAGE);
-        if (showRootIcon) {
-            mToolbar.setNavigationIcon(
-                    root != null ? root.loadToolbarIcon(mToolbar.getContext()) : null);
-            mToolbar.setNavigationContentDescription(R.string.drawer_open);
-            mToolbar.setNavigationOnClickListener(null);
-        } else {
-            //mToolbar.setNavigationIcon(R.drawable.ic_drawer_glyph);
-            mToolbar.setNavigationContentDescription(R.string.drawer_open);
-            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setRootsDrawerOpen(!isRootsDrawerOpen());
-                }
-            });
-        }
-
-        if (mSearchExpanded) {
-            mToolbar.setTitle(null);
             mToolbarStack.setVisibility(View.GONE);
             mToolbarStack.setAdapter(null);
+
         } else {
-            if (mState.stack.size() <= 1) {
-                mToolbar.setTitle(root.title);
+            //mToolbar.setNavigationIcon(R.drawable.ic_drawer_glyph);
+
+            if (mSearchExpanded) {
+                mToolbar.setTitle(null);
                 mToolbarStack.setVisibility(View.GONE);
                 mToolbarStack.setAdapter(null);
             } else {
-                mToolbar.setTitle(null);
-                mToolbarStack.setVisibility(View.VISIBLE);
-                mToolbarStack.setAdapter(mStackAdapter);
-
-                mIgnoreNextNavigation = true;
-                mToolbarStack.setSelection(mStackAdapter.getCount() - 1);
+                if (mState.stack.size() <= 1) {
+                    mToolbar.setTitle(root.title);
+                    mToolbarStack.setVisibility(View.GONE);
+                    mToolbarStack.setAdapter(null);
+                } else {
+                    mToolbar.setTitle(null);
+                    mToolbarStack.setVisibility(View.VISIBLE);
+                    mToolbarStack.setAdapter(mStackAdapter);
+                    mIgnoreNextNavigation = true;
+                    mToolbarStack.setSelection(mStackAdapter.getCount() - 1);
+                }
             }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.activity, menu);
 
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
@@ -692,6 +681,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 mSearchExpanded = false;
                 if (mIgnoreNextCollapse) {
                     mIgnoreNextCollapse = false;
+                    updateActionBar();
                     return true;
                 }
 
@@ -707,6 +697,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 mSearchExpanded = false;
                 if (mIgnoreNextClose) {
                     mIgnoreNextClose = false;
+                    updateActionBar();
                     return false;
                 }
 
@@ -716,13 +707,14 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         });
 
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
         updateMenuItems(menu);
-        return super.onPrepareOptionsMenu(menu);
+        return true;
     }
 
     public void updateMenuItems(Menu menu){
@@ -737,13 +729,12 @@ public class DocumentsActivity extends ActionBarActivity {
         final MenuItem list = menu.findItem(R.id.menu_list);
         final MenuItem settings = menu.findItem(R.id.menu_settings);
 
-        boolean canShow = true; //!isRootsDrawerOpen();
         // Open drawer means we hide most actions
-        search.setVisible(canShow);
-        sort.setVisible(canShow);
-        grid.setVisible(canShow);
-        list.setVisible(canShow);
         if (isRootsDrawerOpen()) {
+            search.setVisible(false);
+            sort.setVisible(false);
+            grid.setVisible(false);
+            list.setVisible(false);
             mIgnoreNextCollapse = true;
             search.collapseActionView();
             return;
@@ -886,6 +877,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+        if(mSearchExpanded){
+
+        }
         if (!mState.stackTouched) {
             super.onBackPressed();
             return;
@@ -1732,7 +1726,6 @@ public class DocumentsActivity extends ActionBarActivity {
 
     public void invalidateMenu(){
         supportInvalidateOptionsMenu();
-        mToolbar.forceLayout();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

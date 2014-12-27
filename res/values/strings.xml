@@ -16,6 +16,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Title of the documents application [CHAR LIMIT=32] -->
+    <string name="app_label">Documents</string>
 
     <!-- Action bar title prompting user to choose a location to open a document from [CHAR LIMIT=32] -->
     <string name="title_open">Open from</string>
@@ -103,5 +104,4 @@
     <!-- Title of dialog when prompting user to select an app to share documents with [CHAR LIMIT=32] -->
     <string name="share_via">Share via</string>
 
-    ---
 </resources>

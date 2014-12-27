@@ -68,6 +68,9 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.common.collect.Lists;
 
 import java.io.File;
@@ -177,6 +180,7 @@ public class DirectoryFragment extends ListFragment {
     private FloatingActionButton mCreateFile;
     private FloatingActionButton mCreateFolder;
     private FloatingActionButton mPaste;
+    private AdView mAdView;
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -218,11 +222,7 @@ public class DirectoryFragment extends ListFragment {
 	}
 
 	private static String buildStateKey(RootInfo root, DocumentInfo doc) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append(root != null ? root.authority : "null").append(';');
-		builder.append(root != null ? root.rootId : "null").append(';');
-		builder.append(doc != null ? doc.documentId : "null");
-		return builder.toString();
+        return (root != null ? root.authority : "null") + ';' + (root != null ? root.rootId : "null") + ';' + (doc != null ? doc.documentId : "null");
 	}
 
 	public static DirectoryFragment get(FragmentManager fm) {
@@ -236,6 +236,9 @@ public class DirectoryFragment extends ListFragment {
         final Resources res = context.getResources();
 		final View view = inflater.inflate(R.layout.fragment_directory, container, false);
 
+        mAdView = (AdView)view.findViewById(R.id.adView);
+        mAdView.setAdListener(adListener);
+        mAdView.loadAd(new AdRequest.Builder().build());
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
         mActionMenu = (FloatingActionsMenu) view.findViewById(R.id.fab);
         mCreateFile = (FloatingActionButton) view.findViewById(R.id.fab_create_file);
@@ -1719,9 +1722,10 @@ public class DirectoryFragment extends ListFragment {
 		});
 		
 		if (isApp) {
-            final MenuItem details = popup.getMenu().findItem(R.id.menu_delete);
+            final MenuItem open = popup.getMenu().findItem(R.id.menu_open);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
 			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
+            open.setVisible(root.isAppPackage());
 			save.setVisible(root.isAppPackage());
 			delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
 			delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
@@ -1787,8 +1791,17 @@ public class DirectoryFragment extends ListFragment {
         case R.id.menu_compress:
 			new OperationTask(docs, id).execute();
 			return true;
+        case R.id.menu_open:
+            Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(docs.get(0).documentId));
+            if (intent!= null) {
+                getActivity().startActivity(intent);
+            }
+            else{
+                ((DocumentsActivity) getActivity()).showError(R.string.unable_to_open_app);
+            }
+            return true;
         case R.id.menu_details:
-            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+            getActivity().startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
                     + AppsProvider.getPackageForDocId(docs.get(0).documentId))));
             return true;
 		case R.id.menu_info:
@@ -1821,4 +1834,18 @@ public class DirectoryFragment extends ListFragment {
 			return false;
 		}
 	}
+
+    AdListener adListener = new AdListener() {
+        @Override
+        public void onAdLoaded() {
+            super.onAdLoaded();
+            mAdView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAdFailedToLoad(int errorCode) {
+            super.onAdFailedToLoad(errorCode);
+            mAdView.setVisibility(View.GONE);
+        }
+    };
 }

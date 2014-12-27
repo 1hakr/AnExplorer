@@ -14,7 +14,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.github.mrengineer13:snackbar:+'
     //compile 'com.google.android.gms:play-services-base:6.5.+'
-    //compile 'com.google.android.gms:play-services-ads:6.5.+'
+    compile 'com.google.android.gms:play-services-ads:6.5.+'
 }
 
 android {

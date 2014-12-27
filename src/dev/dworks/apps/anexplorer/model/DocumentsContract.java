@@ -298,8 +298,6 @@ public final class DocumentsContract {
          * Flag indicating that a document can be renamed.
          *
          * @see #COLUMN_FLAGS
-         * @see dev.dworks.apps.anexplorer.model.DocumentsContract#renameDocument(android.content.ContentProviderClient, android.net.Uri,
-         *      String)
          * @see android.provider.DocumentsProvider#renameDocument(String, String)
          */
         public static final int FLAG_SUPPORTS_RENAME = 1 << 6;

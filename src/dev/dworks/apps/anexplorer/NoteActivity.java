@@ -29,6 +29,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.github.mrengineer13.snackbar.SnackBar;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +43,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
@@ -208,7 +209,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             super.onPostExecute(result);
             setProgress(false);
             if(null == result){
-                //TODO show msg
+                showError(errorMsg);
                 return;
             }
             try {
@@ -216,7 +217,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 result.setLength(0); // clear string builder to reduce memory usage
                 mInput.setText(mOriginal);
             } catch (OutOfMemoryError e) {
-                Utils.showErrorDialog(NoteActivity.this, e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
             }
         }
     }
@@ -260,6 +261,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             super.onPostExecute(aVoid);
             setProgress(false);
             if(!TextUtils.isEmpty(errorMsg)){
+                showError(errorMsg);
                 return;
             }
             if (exitAfter) {
@@ -338,4 +340,18 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         }
         return name;
     }
+
+    public void showError(String msg){
+        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showToast(String msg, SnackBar.Style style, short duration){
+        new SnackBar.Builder(this)
+                .withMessage(msg)
+                .withStyle(style)
+                .withActionMessageId(android.R.string.ok)
+                .withDuration(duration)
+                .show();
+    }
+
 }

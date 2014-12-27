@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.FileNotFoundException;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -42,6 +40,9 @@ import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+
+import java.io.FileNotFoundException;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -52,7 +53,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
 /**
- * Presents a {@link DocumentsContract} view of {@link MediaProvider} external
+ * Presents a {@link DocumentsContract} view of {MediaProvider} external
  * contents.
  */
 public class MediaDocumentsProvider extends StorageProvider {

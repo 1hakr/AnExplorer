@@ -17,7 +17,6 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Color;
@@ -35,8 +34,6 @@ import java.util.Locale;
 public class Utils {
 
     public static final long KB_IN_BYTES = 1024;
-    public static final long MB_IN_BYTES = KB_IN_BYTES * 1024;
-    public static final long GB_IN_BYTES = MB_IN_BYTES * 1024;
 
     static final String[] BinaryPlaces = { "/data/bin/", "/system/bin/", "/system/xbin/", "/sbin/",
         "/data/local/xbin/", "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/",
@@ -232,27 +229,26 @@ public class Utils {
 		}
 		return result;
 	}
-    
+
+    public static boolean hasSoftNavBar(Context context){
+        boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+
+        if(!hasMenuKey && !hasBackKey) {
+            return true;
+        }
+        return false;
+
+    }
+
     private static final int BRIGHTNESS_THRESHOLD = 150;
     public static boolean isColorDark(int color) {
         return ((30 * Color.red(color) +
                 59 * Color.green(color) +
                 11 * Color.blue(color)) / 100) <= BRIGHTNESS_THRESHOLD;
     }
-    
-    public static boolean hasSoftNavBar(Context context){
-    	boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
-    	boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-
-    	if(!hasMenuKey && !hasBackKey) {
-    		return true;
-    	}
-		return false;
-
-    }
 
     public static final int PRESSED_COLOR_LIGHTUP = 255 / 25;
-
     public static int getLightColor(int color, int amount) {
         return Color.argb(Math.min(255, Color.alpha(color)), Math.min(255, Color.red(color) + amount),
                 Math.min(255, Color.green(color) + amount), Math.min(255, Color.blue(color) + amount));
@@ -288,26 +284,5 @@ public class Utils {
                 Color.blue(colorToInvert), hsv);
         hsv[0] = (hsv[0] + 180) % 360;
         return Color.HSVToColor(hsv);
-    }
-
-
-    public static void showErrorDialog(Activity context, String localizedMessage) {
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-/*                new MaterialDialog.Builder(context)
-                        .positiveColorRes(R.color.cabinet_accent_color)
-                        .theme(ThemeUtils.getDialogTheme(context))
-                        .title(R.string.error)
-                        .content(message)
-                        .positiveText(android.R.string.ok)
-                        .callback(new MaterialDialog.SimpleCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                            }
-                        })
-                        .build().show();*/
-            }
-        });
     }
 }

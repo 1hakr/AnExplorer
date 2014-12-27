@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
+import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -29,6 +30,7 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -550,6 +552,7 @@ public abstract class DocumentsProvider extends ContentProvider {
      *
      * @see android.provider.DocumentsContract#buildDocumentUriUsingTree(android.net.Uri, String)
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public Uri canonicalize(Uri uri) {
         final Context context = getContext();
@@ -562,7 +565,9 @@ public abstract class DocumentsProvider extends ContentProvider {
                 // Caller may only have prefix grant, so extend them a grant to
                 // the narrow URI.
                 final int modeFlags = getCallingOrSelfUriPermissionModeFlags(context, uri);
-                context.grantUriPermission(getCallingPackage(), narrowUri, modeFlags);
+                if(Utils.hasKitKat()) {
+                    context.grantUriPermission(getCallingPackage(), narrowUri, modeFlags);
+                }
                 return narrowUri;
         }
         return null;

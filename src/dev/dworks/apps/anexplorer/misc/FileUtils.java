@@ -270,7 +270,7 @@ public class FileUtils {
         try {
             File dest = new File(parent, FileUtils.getNameFromFilename(files.get(0).getName()) + ".zip");
             ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(dest));
-            compressFile("", zout, files.toArray(new File[0]));
+            compressFile("", zout, files.toArray(new File[files.size()]));
             zout.close();
             success = true;
         } catch (Exception e) {
@@ -481,7 +481,7 @@ public class FileUtils {
                 for(DocumentInfo doc : docs){
                     paths.add(parentPath + File.separator + doc.displayName);
                 }
-                String[] pathsArray = paths.toArray(new String[0]);
+                String[] pathsArray = paths.toArray(new String[paths.size()]);
                 FileUtils.updateMedia(context, pathsArray);
             }
             else{
