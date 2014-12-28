@@ -63,7 +63,7 @@ public class AppsProvider extends DocumentsProvider {
     
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
-            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES,
+            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -120,6 +120,7 @@ public class AppsProvider extends DocumentsProvider {
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_apps));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_APP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, false));
+        row.add(Root.COLUMN_TOTAL_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, true));
         
         final RowBuilder row1 = result.newRow();
         row1.add(Root.COLUMN_ROOT_ID, ROOT_ID_PROCESS);
@@ -128,6 +129,7 @@ public class AppsProvider extends DocumentsProvider {
         row1.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_processes));
         row1.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_PROCESS);
         row1.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, false));
+        row1.add(Root.COLUMN_TOTAL_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, true));
         return result;
     }
     

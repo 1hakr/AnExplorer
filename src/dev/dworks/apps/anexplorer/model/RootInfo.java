@@ -60,6 +60,7 @@ public class RootInfo implements Durable, Parcelable {
     public String summary;
     public String documentId;
     public long availableBytes;
+    public long totalBytes;
     public String mimeTypes;
     public String path;
 
@@ -82,6 +83,7 @@ public class RootInfo implements Durable, Parcelable {
         summary = null;
         documentId = null;
         availableBytes = -1;
+        totalBytes = -1;
         mimeTypes = null;
         path = null;
 
@@ -103,6 +105,7 @@ public class RootInfo implements Durable, Parcelable {
                 summary = DurableUtils.readNullableString(in);
                 documentId = DurableUtils.readNullableString(in);
                 availableBytes = in.readLong();
+                totalBytes = in.readLong();
                 mimeTypes = DurableUtils.readNullableString(in);
                 deriveFields();
                 break;
@@ -122,6 +125,7 @@ public class RootInfo implements Durable, Parcelable {
         DurableUtils.writeNullableString(out, summary);
         DurableUtils.writeNullableString(out, documentId);
         out.writeLong(availableBytes);
+        out.writeLong(totalBytes);
         DurableUtils.writeNullableString(out, mimeTypes);
     }
 
@@ -159,6 +163,7 @@ public class RootInfo implements Durable, Parcelable {
         root.summary = getCursorString(cursor, Root.COLUMN_SUMMARY);
         root.documentId = getCursorString(cursor, Root.COLUMN_DOCUMENT_ID);
         root.availableBytes = getCursorLong(cursor, Root.COLUMN_AVAILABLE_BYTES);
+        root.totalBytes = getCursorLong(cursor, Root.COLUMN_TOTAL_BYTES);
         root.mimeTypes = getCursorString(cursor, Root.COLUMN_MIME_TYPES);
         root.path = getCursorString(cursor, Root.COLUMN_PATH);
         root.deriveFields();

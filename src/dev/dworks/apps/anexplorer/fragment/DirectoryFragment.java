@@ -607,7 +607,9 @@ public class DirectoryFragment extends ListFragment {
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
-
+            if (mType == TYPE_RECENT_OPEN) {
+                delete.setVisible(true);
+            }
 			if (isApp) {
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
@@ -747,7 +749,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			int count = mCurrentView.getCheckedItemCount();
-			mode.setTitle(count+"");//getResources().getString(R.string.mode_selected_count, count));
+			mode.setTitle(getResources().getString(R.string.mode_selected_count, count));
 			if (count == 1 || count == 2) {
 				mode.invalidate();
 			}
@@ -846,7 +848,6 @@ public class DirectoryFragment extends ListFragment {
         else{
             if (null != root && root.isAppPackage()) {
                 AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
-                //((DocumentsActivity) getActivity()).onCurrentDirectoryChanged(ANIM_NONE);
             }
         }
 	}
@@ -959,7 +960,10 @@ public class DirectoryFragment extends ListFragment {
 				}
 			}
 
-            if (null != root && root.isAppProcess()) {
+            if(mType == TYPE_RECENT_OPEN){
+                onUserSortOrderChanged();
+            }
+            else if (null != root && root.isAppProcess()) {
                 AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
                 AppsProvider.notifyRootsChanged(getActivity());
             }
@@ -1356,7 +1360,6 @@ public class DirectoryFragment extends ListFragment {
 				// Directories showing thumbnails in grid mode get a little icon
 				// hint to remind user they're a directory.
 				if (Document.MIME_TYPE_DIR.equals(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
-					//iconDrawable = context.getResources().getDrawable(R.drawable.ic_root_folder);
                     iconDrawable = IconUtils.applyTintAttr(context, R.drawable.ic_root_folder,
                             android.R.attr.textColorPrimaryInverse);
 				}
@@ -1607,7 +1610,6 @@ public class DirectoryFragment extends ListFragment {
 			if (isCancelled())
 				return null;
 
-			// final Context context = mSizeView.getContext();
 			Long result = null;
 			try {
 				if (!TextUtils.isEmpty(mPath)) {

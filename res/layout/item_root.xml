@@ -17,60 +17,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="48dp"
-    android:paddingStart="@dimen/list_item_padding"
-    android:paddingEnd="@dimen/list_item_padding"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
+    android:background="@drawable/item_root"
     android:baselineAligned="false"
-    android:background="@drawable/item_root">
+    android:gravity="center_vertical"
+    android:minHeight="48dp"
+    android:orientation="horizontal"
+    android:paddingEnd="@dimen/list_item_padding"
+    android:paddingStart="@dimen/list_item_padding">
 
     <FrameLayout
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
-        android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:duplicateParentState="true">
 
         <ImageView
             android:id="@android:id/icon"
             android:layout_width="@dimen/root_icon_size"
             android:layout_height="match_parent"
-            android:scaleType="centerInside"
             android:contentDescription="@null"
-            android:duplicateParentState="true" />
+            android:duplicateParentState="true"
+            android:scaleType="centerInside" />
 
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
+        android:orientation="vertical"
         android:paddingBottom="8dp"
-        android:orientation="vertical">
+        android:paddingTop="8dp">
 
         <TextView
             android:id="@android:id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
             android:ellipsize="end"
             android:gravity="start"
+            android:singleLine="true"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/primary_text_default_material_light" />
+
+        <dev.dworks.apps.anexplorer.ui.NumberProgressBar
+            android:id="@android:id/progress"
+            android:layout_width="wrap_content"
+            android:gravity="start"
+            android:textAlignment="viewStart"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@android:id/summary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
             android:ellipsize="end"
             android:gravity="start"
+            android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textSize="12sp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/primary_dark_material_light" />
+            android:textColor="@color/primary_dark_material_light"
+            android:textSize="12sp" />
 
     </LinearLayout>
 

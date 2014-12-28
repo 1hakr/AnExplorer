@@ -109,7 +109,7 @@ public class MediaDocumentsProvider extends StorageProvider {
         return true;
     }
 
-    private static void notifyRootsChanged(Context context) {
+    public static void notifyRootsChanged(Context context) {
         context.getContentResolver()
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
@@ -402,7 +402,7 @@ public class MediaDocumentsProvider extends StorageProvider {
                 // include all unique buckets
                 cursor = resolver.query(Video.Media.EXTERNAL_CONTENT_URI,
                         VideoQuery.PROJECTION, null, null, VideoColumns.DATE_MODIFIED + " DESC");
-                copyNotificationUri(result, Images.Media.EXTERNAL_CONTENT_URI);
+                copyNotificationUri(result, Video.Media.EXTERNAL_CONTENT_URI);
                 while (cursor.moveToNext() && result.getCount() < 64) {
                     includeVideo(result, cursor);
                 }

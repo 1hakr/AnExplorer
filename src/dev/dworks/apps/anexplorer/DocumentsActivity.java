@@ -243,7 +243,6 @@ public class DocumentsActivity extends ActionBarActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
         if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat() && !Utils.hasLollipop()) {
-            //mToolbar.getLayoutParams().height = getActionBarHeight(this)+ getStatusBarHeight(this);
             ((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
             mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
         }
@@ -894,6 +893,17 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * refresh Data currently shown
+     */
+    private void refreshData() {
+        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
+        if (directory != null) {
+            directory.onUserSortOrderChanged();
+        }
+    }
+
+
     public void setPending(boolean pending) {
         final SaveFragment save = SaveFragment.get(getFragmentManager());
         if (save != null) {
@@ -957,7 +967,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_title, parent, false);
+                        .inflate(R.layout.item_subdir_title, parent, false);
             }
 
             final TextView title = (TextView) convertView.findViewById(android.R.id.title);
@@ -979,7 +989,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_title, parent, false);
+                        .inflate(R.layout.item_subdir, parent, false);
             }
 
             final ImageView subdir = (ImageView) convertView.findViewById(R.id.subdir);
@@ -1560,6 +1570,7 @@ public class DocumentsActivity extends ActionBarActivity {
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
+            refreshData();
         }
     }
 
@@ -1765,20 +1776,20 @@ public class DocumentsActivity extends ActionBarActivity {
         }
         else if(Utils.hasKitKat()){
             SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
-            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
             systemBarTintManager.setStatusBarTintEnabled(true);
         }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpDefaultStatusBar() {
-        int color = getResources().getColor(R.color.contextual_actionbar_color);
+        int color = getResources().getColor(R.color.alertColor);
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }
         else if(Utils.hasKitKat()){
             SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
-            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
             systemBarTintManager.setStatusBarTintEnabled(true);
         }
     }

@@ -9,6 +9,7 @@
     <color name="accentColor">#03a9f4</color>
     <color name="statusBarColor">#28000000</color>
     <color name="defaultColor">#0288D1</color>
+    <color name="alertColor">#323232</color>
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
         <item>#4285F4</item>
@@ -23,6 +24,7 @@
         <item>#222222</item>
     </string-array>
 
+    <color name="material_blue_grey_800">#ff37474f</color>
     <color name="material_grey_50">#fffafafa</color>
     <color name="material_grey_300">#ffeeeeee</color>
 

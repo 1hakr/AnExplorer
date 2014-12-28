@@ -88,10 +88,7 @@
                     android:clipToPadding="false"
                     android:drawSelectorOnTop="true"
                     android:horizontalSpacing="@dimen/grid_item_padding"
-                    android:paddingBottom="@dimen/grid_padding_vert"
-                    android:paddingEnd="@dimen/grid_padding_horiz"
-                    android:paddingStart="@dimen/grid_padding_horiz"
-                    android:paddingTop="@dimen/grid_padding_vert"
+                    android:padding="@dimen/grid_padding_horiz"
                     android:scrollbarStyle="outsideOverlay"
                     android:verticalSpacing="@dimen/grid_item_padding"
                     android:visibility="gone" />

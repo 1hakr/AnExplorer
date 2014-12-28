@@ -35,7 +35,7 @@
     </style>
 
     <style name="Theme.About" parent="@style/DialogWhenReallyLarge">
-        <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorPrimary">@color/material_blue_grey_800</item>
         <item name="colorAccent">@color/accentColor</item>
         <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
@@ -135,4 +135,8 @@
     </style>
 
     <style name="ListProgress" parent="@style/Widget.AppCompat.ProgressBar"/>
+
+    <style name="PopupTheme" parent="@android:style/Widget.Holo.Spinner">
+        <item name="android:background">@drawable/abc_spinner_mtrl_am_alpha</item>
+    </style>
 </resources>

@@ -79,7 +79,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_PATH,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -188,6 +188,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     count++;
                 }
                 root.docId = getDocIdForFile(path);
+                root.path = path.getPath();
                 mRoots.add(root);
                 mIdToRoot.put(rootId, root);
             } catch (FileNotFoundException e) {
@@ -213,6 +214,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_phone_storage);
             root.docId = getDocIdForFile(path);
+            root.path = path.getPath();
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
@@ -230,6 +232,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_downloads);
             root.docId = getDocIdForFile(path);
+            root.path = path.getPath();
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
@@ -247,6 +250,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_app_backup);
             root.docId = getDocIdForFile(path);
+            root.path = path.getPath();
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
         } catch (FileNotFoundException e) {
@@ -268,6 +272,7 @@ public class ExternalStorageProvider extends StorageProvider {
                         | Root.FLAG_SUPPORTS_SEARCH;
                 root.title = getContext().getString(R.string.root_bluetooth);
                 root.docId = getDocIdForFile(path);
+                root.path = path.getPath();
                 mRoots.add(root);
                 mIdToRoot.put(rootId, root);	
             }
@@ -482,8 +487,10 @@ public class ExternalStorageProvider extends StorageProvider {
                 row.add(Root.COLUMN_TITLE, root.title);
                 row.add(Root.COLUMN_DOCUMENT_ID, root.docId);
                 row.add(Root.COLUMN_PATH, root.path);
-                if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId) || root.rootId.startsWith(ROOT_ID_SECONDARY)){
+                if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId)
+                        || root.rootId.startsWith(ROOT_ID_SECONDARY) || root.rootId.startsWith(ROOT_ID_PHONE)){
                 	row.add(Root.COLUMN_AVAILABLE_BYTES, path.getFreeSpace());
+                    row.add(Root.COLUMN_TOTAL_BYTES, path.getTotalSpace());
                 }
             }
         }

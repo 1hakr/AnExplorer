@@ -63,6 +63,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 
@@ -283,10 +284,12 @@ public class RootsFragment extends Fragment {
 
     private static class RootItem extends Item {
         public final RootInfo root;
+        private final int color;
 
-        public RootItem(RootInfo root) {
+        public RootItem(RootInfo root, int color) {
             super(R.layout.item_root);
             this.root = root;
+            this.color = color;
         }
 
         @Override
@@ -294,6 +297,7 @@ public class RootsFragment extends Fragment {
             final ImageView icon = (ImageView) convertView.findViewById(android.R.id.icon);
             final TextView title = (TextView) convertView.findViewById(android.R.id.title);
             final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
+            final NumberProgressBar progress = (NumberProgressBar) convertView.findViewById(android.R.id.progress);
 
             final Context context = convertView.getContext();
             icon.setImageDrawable(root.loadIcon(context));
@@ -304,6 +308,14 @@ public class RootsFragment extends Fragment {
             if (TextUtils.isEmpty(summaryText) && root.availableBytes >= 0) {
                 summaryText = context.getString(R.string.root_available_bytes,
                         Formatter.formatFileSize(context, root.availableBytes));
+                Long current = 100 * root.availableBytes / root.totalBytes ;
+                progress.setVisibility(View.VISIBLE);
+                progress.setMax(100);
+                progress.setProgress(100 - current.intValue());
+                progress.setColor(color);
+            }
+            else{
+                progress.setVisibility(View.GONE);
             }
 
             summary.setText(summaryText);
@@ -347,7 +359,7 @@ public class RootsFragment extends Fragment {
 
     private static class BookmarkItem extends RootItem {
         public BookmarkItem(RootInfo root) {
-            super(root);
+            super(root, 0);
         }
     }
 
@@ -355,6 +367,7 @@ public class RootsFragment extends Fragment {
         public RootsAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
             super(context, 0);
 
+            int defaultColor = SettingsActivity.getActionBarColor(context);
             RootItem recents = null;
             RootItem images = null;
             RootItem videos = null;
@@ -370,25 +383,25 @@ public class RootsFragment extends Fragment {
             
             for (RootInfo root : roots) {
                 if (root.isRecents()) {
-                    recents = new RootItem(root);
+                    recents = new RootItem(root, defaultColor);
                 } else if (root.isBluetoothFolder() || root.isDownloadsFolder() || root.isAppBackupFolder()) {
                     extras.add(root);
                 } else if (root.isBookmarkFolder()) {
                     bookmarks.add(root);
                 } else if (root.isPhoneStorage()) {
-                	phone = new RootItem(root);
+                	phone = new RootItem(root, defaultColor);
                 } else if (root.isStorage()) {
                     locals.add(root);
                 } else if (root.isRootedStorage()) {
-                	root_root = new RootItem(root);
+                	root_root = new RootItem(root, defaultColor);
                 } else if (root.isDownloads()) {
-                    downloads = new RootItem(root);
+                    downloads = new RootItem(root, defaultColor);
                 } else if (root.isImages()) {
-                    images = new RootItem(root);
+                    images = new RootItem(root, defaultColor);
                 } else if (root.isVideos()) {
-                    videos = new RootItem(root);
+                    videos = new RootItem(root, defaultColor);
                 } else if (root.isAudio()) {
-                    audio = new RootItem(root);
+                    audio = new RootItem(root, defaultColor);
                 } else {
                     clouds.add(root);
                 }
@@ -400,12 +413,12 @@ public class RootsFragment extends Fragment {
             Collections.reverse(locals);
             
             for (RootInfo local : locals) {
-                add(new RootItem(local));
+                add(new RootItem(local, defaultColor));
             }
             if (phone != null) add(phone);
             
             for (RootInfo extra : extras) {
-                add(new RootItem(extra));
+                add(new RootItem(extra, defaultColor));
             }
             
             if(root_root != null){
@@ -430,7 +443,7 @@ public class RootsFragment extends Fragment {
             //if (includeApps == null) {
             	add(new SpacerItem());
                 for (RootInfo cloud : clouds) {
-                    add(new RootItem(cloud));
+                    add(new RootItem(cloud, defaultColor));
                 }
 /*                final PackageManager pm = context.getPackageManager();
                 final List<ResolveInfo> infos = pm.queryIntentActivities(

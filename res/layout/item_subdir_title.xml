@@ -28,8 +28,9 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="middle"
-        android:layout_gravity="start"
+        android:layout_gravity="center_vertical|start"
         android:textAlignment="viewStart"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>

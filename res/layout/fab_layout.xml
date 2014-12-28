@@ -14,6 +14,7 @@
         android:id="@+id/fab_create_file"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        fab:fab_size="mini"
         fab:fab_colorNormal="@android:color/white"
         fab:fab_title="@string/menu_create_file"
         fab:fab_icon="@drawable/ic_menu_new_file"/>
@@ -22,6 +23,7 @@
         android:id="@+id/fab_create_folder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        fab:fab_size="mini"
         fab:fab_colorNormal="@android:color/white"
         fab:fab_title="@string/menu_create_dir"
         fab:fab_icon="@drawable/ic_menu_new_folder"/>

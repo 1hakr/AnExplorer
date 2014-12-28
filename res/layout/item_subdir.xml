@@ -35,7 +35,8 @@
         android:scaleType="centerInside"
         android:visibility="gone"
         android:src="@drawable/ic_subdirectory_arrow"
-        android:contentDescription="@null" />
+        android:contentDescription="@null"
+        android:layout_gravity="center_vertical" />
 
     <TextView
         android:id="@android:id/title"
@@ -44,9 +45,9 @@
         android:layout_weight="1"
         android:singleLine="true"
         android:ellipsize="middle"
-        android:layout_gravity="start"
+        android:layout_gravity="center_vertical|start"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="?android:attr/textColorPrimary" />
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>

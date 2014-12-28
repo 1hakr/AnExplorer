@@ -66,7 +66,7 @@ public class HeatMapProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -295,6 +295,7 @@ public class HeatMapProvider extends StorageProvider {
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_heat_map));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_HEAT_MAP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, -1);
+        row.add(Root.COLUMN_TOTAL_BYTES, -1);
 
         return result;
     }
