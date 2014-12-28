@@ -34,6 +34,7 @@
             android:id="@+id/stack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:overlapAnchor="true" />
 
@@ -47,6 +48,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/container_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="8dp" />
 
             <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
                 android:id="@+id/container_directory"
@@ -73,7 +80,7 @@
             android:id="@+id/drawer_roots"
             android:layout_width="256dp"
             android:layout_height="match_parent"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:orientation="vertical"
             android:elevation="16dp">
 
@@ -100,7 +107,7 @@
             android:id="@+id/container_info"
             android:layout_width="@dimen/detail_width"
             android:layout_height="match_parent"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:background="#fff" />
 
     </android.support.v4.widget.DrawerLayout>

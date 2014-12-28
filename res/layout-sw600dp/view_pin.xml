@@ -117,11 +117,11 @@
         </RelativeLayout>
 
         <FrameLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="center" >
+            android:minWidth="300dp"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -137,7 +137,7 @@
                     android:background="@android:color/darker_gray" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
                     <Button
@@ -154,7 +154,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
                     <Button
@@ -171,7 +171,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
                     <Button
@@ -188,7 +188,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
 
                     <Button

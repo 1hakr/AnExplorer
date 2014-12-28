@@ -19,11 +19,12 @@
     android:layout_height="@dimen/grid_height"
     android:orientation="horizontal">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
+        android:id="@+id/progressBar"
+        style="@style/ListProgress"
+        android:layout_width="@dimen/progress_bar_small_size"
+        android:layout_height="@dimen/progress_bar_small_size"
         android:layout_gravity="center"
-        android:indeterminate="true"
-        style="?android:attr/progressBarStyle" />
+        android:indeterminate="true" />
 
 </FrameLayout>

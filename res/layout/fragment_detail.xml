@@ -2,32 +2,32 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
-    android:minWidth="400dp"
+    android:layout_height="match_parent"
     android:clipToPadding="false"
+    android:minWidth="400dp"
     android:paddingBottom="20dp"
-    android:scrollbarStyle="outsideOverlay"
-    android:layout_height="match_parent" >
+    android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@android:id/icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="30dp"
-            android:background="#323232"
             android:layout_gravity="center_horizontal"
-            android:foregroundGravity="fill" >
+            android:background="#323232"
+            android:foregroundGravity="fill"
+            android:padding="30dp">
 
             <dev.dworks.apps.anexplorer.ui.CircleImage
                 android:id="@+id/icon_mime_background"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
-                android:visibility="visible"/>
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/icon_mime"
@@ -47,10 +47,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
+            android:orientation="vertical"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
             android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
             android:paddingRight="?android:attr/listPreferredItemPaddingRight"
-            android:orientation="vertical" >
+            android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
+            android:paddingTop="20dp">
 
 
             <TextView
@@ -58,21 +60,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-regular"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
                 android:padding="20dp"
+                android:layout_gravity="start"
+                android:textAlignment="viewStart"
                 android:textColor="@android:color/white"
-                android:layout_gravity="center_vertical" />
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:text="Type:"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -82,22 +85,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-regular"
-                    android:gravity="center_vertical"
                     android:minHeight="38dp"
-                    android:paddingLeft="8dp"
-                    android:text=""
+                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
                     android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:text="Size:"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -107,10 +110,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-regular"
-                    android:gravity="center_vertical"
+                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
                     android:minHeight="38dp"
-                    android:paddingLeft="8dp"
-                    android:text=""
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -119,12 +121,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:visibility="gone" >
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:text="Contents:"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -134,22 +137,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-regular"
-                    android:gravity="center_vertical"
                     android:minHeight="38dp"
-                    android:paddingLeft="8dp"
-                    android:text=""
+                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
                     android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:text="Last modified:"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -159,22 +162,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-regular"
-                    android:gravity="center_vertical"
                     android:minHeight="38dp"
-                    android:paddingLeft="8dp"
-                    android:text=""
+                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
                     android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:text="Path:"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -184,10 +187,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-regular"
-                    android:gravity="center_vertical"
                     android:minHeight="38dp"
-                    android:paddingLeft="8dp"
-                    android:text=""
+                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
                     android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>

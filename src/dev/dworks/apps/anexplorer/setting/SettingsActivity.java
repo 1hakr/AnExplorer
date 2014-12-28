@@ -91,7 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
     
     public static boolean getTranslucentMode(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_TRANSLUCENT_MODE, false);
+                .getBoolean(KEY_TRANSLUCENT_MODE, context.getResources().getBoolean(R.bool.transparent_nav));
     }
     
     public static boolean getAsDialog(Context context) {

@@ -821,7 +821,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (LOG_INOTIFY) Log.d(TAG, "onEvent() " + event + " at " + path);
                 //notify roots changed
                 //mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
-                switch (event){
+                switch ((event & NOTIFY_EVENTS)){
                     case MOVED_FROM:
                     case MOVED_TO:
                     case CREATE:

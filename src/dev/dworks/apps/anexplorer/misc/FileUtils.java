@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -121,7 +122,8 @@ public class FileUtils {
     }
 
     public static String formatFileCount(int count) {
-        return count == 0 ? "emtpy" : count + " file" + (count == 1 ? "" : "s");
+        String value = NumberFormat.getInstance().format(count);
+        return count == 0 ? "emtpy" : value + " file" + (count == 1 ? "" : "s");
     }
 
     private static List<File> searchFiles(File dir, FilenameFilter filter) {
@@ -157,16 +159,15 @@ public class FileUtils {
         if (fileTo.isDirectory() && fileTo.canWrite()) {
             if (fileFrom.isFile()) {
                 return copyFile(fileFrom, fileTo, name);
-            } else if (fileTo.isDirectory()) {
+            } else if (fileFrom.isDirectory()) {
                 File[] filesInDir = fileFrom.listFiles();
                 File filesToDir = new File(fileTo, fileFrom.getName());
-
-                if (!filesToDir.mkdir()) {
+                if (!filesToDir.mkdirs()) {
                     return false;
                 }
 
                 for (int i = 0; i < filesInDir.length; i++) {
-                    copyFile(filesInDir[i], filesToDir, null);
+                    moveFile(filesInDir[i], filesToDir, null);
                 }
                 return true;
             }

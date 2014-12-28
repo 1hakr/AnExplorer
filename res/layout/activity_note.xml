@@ -18,9 +18,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
+                android:fillViewport="true"
                 android:paddingBottom="16dp"
                 android:paddingTop="16dp"
-                android:fillViewport="true"
                 android:scrollbarStyle="outsideOverlay"
                 android:scrollbars="vertical">
 
@@ -29,26 +29,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
+                    android:cursorVisible="true"
+                    android:fadingEdge="vertical"
                     android:fontFamily="sans-serif-light"
-                    android:gravity="top|left"
-                    android:inputType="textCapSentences|textMultiLine"
+                    android:gravity="top|start"
                     android:imeOptions="actionDone|flagNoFullscreen"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLength="@integer/editor_max_file_size"
                     android:minHeight="120dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
-                    android:cursorVisible="true"
-                    android:fadingEdge="vertical"
-                    android:maxLength="@integer/editor_max_file_size"
+                    android:textAlignment="viewStart"
                     android:textColorLink="@color/accentColor"
                     android:textSize="18sp" />
 
             </ScrollView>
 
-            <ProgressBar
+            <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
                 android:id="@+id/progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                style="@style/ListProgress"
+                android:layout_width="@dimen/progress_bar_size"
+                android:layout_height="@dimen/progress_bar_size"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
         </RelativeLayout>
     </FrameLayout>
 

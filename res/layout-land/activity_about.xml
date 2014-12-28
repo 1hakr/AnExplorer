@@ -4,8 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin"
     android:orientation="horizontal"
-    tools:context=".AboutActivity">
+    tools:context=".AboutActivity"
+    android:baselineAligned="false">
 
 
     <LinearLayout
@@ -24,16 +26,15 @@
             android:layout_marginTop="10dp"
             android:drawableTop="@drawable/logo_big"
             android:gravity="center_horizontal"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:padding="@dimen/activity_horizontal_margin"
             android:text="@string/app_ver" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:src="@drawable/made_with_love"  />
 
     </LinearLayout>
@@ -48,7 +49,6 @@
         <LinearLayout
             android:layout_width="400dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
@@ -64,7 +64,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
+                    android:layout_gravity="start"
                     android:layout_margin="10dp"
                     android:text="@string/app_about"
                     android:fontFamily="sans-serif"

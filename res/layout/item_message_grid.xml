@@ -19,6 +19,8 @@
     android:layout_height="@dimen/grid_height"
     android:paddingLeft="?attr/listPreferredItemPaddingLeft"
     android:paddingRight="?attr/listPreferredItemPaddingRight"
+    android:paddingStart="?attr/listPreferredItemPaddingLeft"
+    android:paddingEnd="?attr/listPreferredItemPaddingRight"
     android:paddingTop="8dp"
     android:paddingBottom="8dp">
 

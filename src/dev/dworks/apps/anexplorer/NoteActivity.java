@@ -127,9 +127,9 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 save(false);
                 break;
             case R.id.menu_revert:
-                setProgress(true);
+                setSaveProgress(true);
                 mInput.setText(mOriginal);
-                setProgress(false);
+                setSaveProgress(false);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -236,7 +236,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            setProgress(true);
+            setSaveProgress(true);
         }
 
         @Override
@@ -259,7 +259,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            setProgress(false);
+            setSaveProgress(false);
             if(!TextUtils.isEmpty(errorMsg)){
                 showError(errorMsg);
                 return;
@@ -277,6 +277,11 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
     private void setProgress(boolean show) {
         mInput.setVisibility(show ? View.GONE : View.VISIBLE);
+        findViewById(R.id.progress).setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void setSaveProgress(boolean show) {
+        mInput.setEnabled(!show);
         findViewById(R.id.progress).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 

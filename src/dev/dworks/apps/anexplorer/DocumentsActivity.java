@@ -47,7 +47,6 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.util.LruCache;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
@@ -84,6 +83,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
@@ -150,6 +150,7 @@ public class DocumentsActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private View mRootsContainer;
+    private View mInfoContainer;
 
     private DirectoryContainerView mDirectoryContainer;
 
@@ -164,7 +165,8 @@ public class DocumentsActivity extends ActionBarActivity {
 	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
     private FrameLayout mAlertContainer;
-	private boolean mActionMode;
+    private FrameLayout mRateContainer;
+    private boolean mActionMode;
     private LruCache<String, Long> mFileSizeCache;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -212,20 +214,23 @@ public class DocumentsActivity extends ActionBarActivity {
                 getWindow().setAttributes(a);
         	}
         } else {
+
+            mRootsContainer = findViewById(R.id.drawer_roots);
+            mInfoContainer = findViewById(R.id.container_info);
+
             // Non-dialog means we have a drawer
             mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
             mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-
-            mRootsContainer = findViewById(R.id.drawer_roots);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
+            lockInfoContainter();
         }
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
+        mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
 
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
@@ -295,6 +300,30 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
+    private void lockInfoContainter() {
+        if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            mDrawerLayout.closeDrawer(mInfoContainer);
+        }
+
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, getGravity());
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public int getGravity() {
+        if(Utils.hasJellyBeanMR1()){
+            Configuration config = getResources().getConfiguration();
+            if(config.getLayoutDirection() != View.LAYOUT_DIRECTION_LTR){
+                return Gravity.LEFT;
+            }
+        }
+        return Gravity.RIGHT;
+    }
+
+    public static boolean isRTL(Locale locale) {
+        final int directionality = Character.getDirectionality(locale.getDisplayName().charAt(0));
+        return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
+                directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
+    }
     private void initProtection() {
 
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
@@ -492,7 +521,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
             invalidateMenu();
         }
-        AppRate.with(this).listener(new AppRate.OnShowListener() {
+        AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
             @Override
             public void onRateAppShowing() {
                 // View is shown
@@ -520,8 +549,8 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
-            if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
-                mDrawerLayout.closeDrawer(Gravity.RIGHT);
+            if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+                mDrawerLayout.closeDrawer(mInfoContainer);
             }
             mDrawerToggle.onDrawerOpened(drawerView);
             updateActionBar();
@@ -530,9 +559,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerClosed(View drawerView) {
-            if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
-                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-            }
+            lockInfoContainter();
             mDrawerToggle.onDrawerClosed(drawerView);
             updateActionBar();
             invalidateMenu();
@@ -574,11 +601,10 @@ public class DocumentsActivity extends ActionBarActivity {
     	if(!mShowAsDialog){
     		setRootsDrawerOpen(false);
             if (open) {
-            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
-                mDrawerLayout.openDrawer(Gravity.RIGHT);
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, mInfoContainer);
+                mDrawerLayout.openDrawer(mInfoContainer);
             } else {
-            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-                mDrawerLayout.closeDrawer(Gravity.RIGHT);
+                lockInfoContainter();
             }
     	}
     }
@@ -799,8 +825,8 @@ public class DocumentsActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle != null) {
-        	if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
-            	mDrawerLayout.closeDrawer(Gravity.RIGHT);
+        	if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            	mDrawerLayout.closeDrawer(mInfoContainer);
             }
             if(mDrawerToggle.onOptionsItemSelected(item)){
             	return true;

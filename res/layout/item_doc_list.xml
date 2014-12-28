@@ -33,7 +33,8 @@
             android:id="@android:id/icon"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
-            android:layout_marginRight="16dp">
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp">
 
             <dev.dworks.apps.anexplorer.ui.CircleImage
                 android:id="@+id/icon_mime_background"
@@ -88,6 +89,7 @@
                     android:layout_width="@dimen/root_icon_size"
                     android:layout_height="@dimen/root_icon_size"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:scaleType="centerInside"
                     android:contentDescription="@null" />
 
@@ -100,6 +102,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp"
                 android:baselineAligned="false">
 
                 <TextView
@@ -118,6 +121,7 @@
                     android:layout_width="90dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_gravity="start"
@@ -131,6 +135,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:singleLine="true"
                     android:ellipsize="end"
                     android:layout_gravity="start"
@@ -148,9 +153,10 @@
         android:id="@+id/button_popup"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
         android:paddingRight="10dp"
+        android:paddingEnd="10dp"
         android:paddingBottom="10dp" />
 
 </FrameLayout>

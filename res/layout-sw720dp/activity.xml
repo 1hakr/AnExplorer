@@ -34,6 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:overlapAnchor="true" />
 
     </android.support.v7.widget.Toolbar>
@@ -58,6 +59,12 @@
             android:elevation="8dp"
             android:background="@color/material_grey_50">
 
+            <FrameLayout
+                android:id="@+id/container_rate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="8dp" />
+
             <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
                 android:id="@+id/container_directory"
                 android:layout_width="match_parent"
@@ -69,6 +76,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/material_grey_50"
+                android:elevation="8dp" />
+
+            <FrameLayout
+                android:id="@+id/container_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:elevation="8dp" />
 
         </LinearLayout>

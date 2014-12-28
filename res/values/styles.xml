@@ -24,9 +24,6 @@
 
     -->
     <style name="Theme.Document" parent="@style/DocumentsTheme">
-<!--        <item name="actionOverflowButtonStyle">@style/DarkerOverflow</item>
-        <item name="actionModeBackground">@android:color/transparent</item>
-        <item name="actionBarStyle">@style/ActionBar</item>-->
     </style>
 
     <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
@@ -38,9 +35,6 @@
     </style>
 
     <style name="Theme.About" parent="@style/DialogWhenReallyLarge">
-        <!--        <item name="actionOverflowButtonStyle">@style/DarkerOverflow</item>
-                <item name="actionModeBackground">@android:color/transparent</item>
-                <item name="actionBarStyle">@style/ActionBar</item>-->
         <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
         <item name="colorPrimary">@color/material_blue_grey_800</item>
         <item name="colorAccent">@color/accentColor</item>
@@ -56,7 +50,7 @@
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
 
-        <item name="colorPrimaryDark">@color/material_blue_grey_900</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorPrimary">@color/material_blue_grey_800</item>
         <item name="colorAccent">@color/accentColor</item>
         <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
@@ -86,6 +80,10 @@
     </style>
 
     <style name="Theme.Setting" parent="@android:style/Theme.Holo.Light.DarkActionBar"/>
+
+    <style name="Theme.Note" parent="@style/DocumentsTheme">
+        <item name="windowActionBar">true</item>
+    </style>
 
     <style name="DialogEnterNoAnimation">
         <item name="android:windowEnterAnimation">@anim/no_animation</item>
@@ -137,8 +135,4 @@
     </style>
 
     <style name="ListProgress" parent="@style/Widget.AppCompat.ProgressBar"/>
-
-    <style name="Theme.Note" parent="@style/DocumentsTheme">
-        <item name="windowActionBar">true</item>
-    </style>
 </resources>

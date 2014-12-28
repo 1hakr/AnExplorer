@@ -14,10 +14,10 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <!-- Menu item title that compress the selected documents [CHAR LIMIT=24] -->
-    <string name="menu_compress">Compress</string>
+    <string name="menu_compress" translatable="false">Compress</string>
     <!-- Menu item title that uncompress the selected documents [CHAR LIMIT=24] -->
     <string name="menu_uncompress">Uncompress</string>
     <string name="menu_rename">Rename</string>
@@ -114,4 +114,6 @@
     <string name="unsaved_changes">Unsaved Changes</string>
     <string name="unsaved_changes_desc">You have unsaved changes, Save them?</string>
     <string name="unable_to_open_app">Unable to open app</string>
+    <string name="more">More</string>
+
 </resources>
