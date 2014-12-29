@@ -16,14 +16,19 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -109,7 +114,8 @@ public class RootsCache {
         mRecentsRoot.authority = null;
         mRecentsRoot.rootId = null;
         mRecentsRoot.icon = R.drawable.ic_root_recent;
-        mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY;
+        mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_CREATE
+                | Root.FLAG_SUPPORTS_IS_CHILD;
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
         mRecentsRoot.availableBytes = -1;
 
@@ -180,6 +186,7 @@ public class RootsCache {
             mFilterPackage = filterPackage;
         }
 
+        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         protected Void doInBackground(Void... params) {
             final long start = SystemClock.elapsedRealtime();
@@ -193,13 +200,23 @@ public class RootsCache {
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
             final ContentResolver resolver = mContext.getContentResolver();
-            
-            List<ProviderInfo> providers = mContext.getPackageManager()
-            	    .queryContentProviders(mContext.getPackageName(), mContext.getApplicationInfo().uid, 0);
-            for (ProviderInfo providerInfo : providers) {
-            	handleDocumentsProvider(providerInfo);
-			}
+            final PackageManager pm = mContext.getPackageManager();
 
+            // Pick up provider with action string
+            if(Utils.hasKitKat()){
+                final Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
+                final List<ResolveInfo> providers = pm.queryIntentContentProviders(intent, 0);
+                for (ResolveInfo info : providers) {
+                    handleDocumentsProvider(info.providerInfo);
+                }
+            }
+            else{
+                List<ProviderInfo> providers = pm.queryContentProviders(mContext.getPackageName(),
+                        mContext.getApplicationInfo().uid, 0);
+                for (ProviderInfo providerInfo : providers) {
+                    handleDocumentsProvider(providerInfo);
+                }
+            }
             final long delta = SystemClock.elapsedRealtime() - start;
             Log.d(TAG, "Update found " + mTaskRoots.size() + " roots in " + delta + "ms");
             synchronized (mLock) {
@@ -373,6 +390,7 @@ public class RootsCache {
         final List<RootInfo> matching = Lists.newArrayList();
         for (RootInfo root : roots) {
             final boolean supportsCreate = (root.flags & Root.FLAG_SUPPORTS_CREATE) != 0;
+            final boolean supportsIsChild = (root.flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;
             final boolean advanced = (root.flags & DocumentsContract.Root.FLAG_ADVANCED) != 0;
             final boolean localOnly = (root.flags & Root.FLAG_LOCAL_ONLY) != 0;
             final boolean empty = (root.flags & DocumentsContract.Root.FLAG_EMPTY) != 0;
@@ -385,6 +403,8 @@ public class RootsCache {
             }
             // Exclude read-only devices when creating
             if (state.action == State.ACTION_CREATE && !supportsCreate) continue;
+            // Exclude roots that don't support directory picking
+            if (state.action == State.ACTION_OPEN_TREE && !supportsIsChild) continue;
             // Exclude advanced devices when not requested
             if (!state.showAdvanced && advanced) continue;
             // Exclude non-local devices when local only

@@ -505,7 +505,7 @@ public class DirectoryFragment extends ListFragment {
     private void upadateActionItems() {
         int complimentaryColor = Utils.getComplementaryColor(mDefaultColor);
 
-        mActionMenu.setVisibility(isCreateSupported(this) ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(showActionMenu(this) ? View.VISIBLE : View.GONE);
         mActionMenu.setColorNormal(complimentaryColor);
         mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
 
@@ -991,6 +991,10 @@ public class DirectoryFragment extends ListFragment {
 
     private static boolean isCreateSupported(Fragment fragment) {
         return ((DocumentsActivity) fragment.getActivity()).isCreateSupported();
+    }
+
+    private boolean showActionMenu(Fragment fragment) {
+        return isCreateSupported(fragment) && mType != TYPE_SEARCH;
     }
 
 	public boolean onSaveDocuments(ArrayList<DocumentInfo> docs) {
@@ -1696,17 +1700,7 @@ public class DirectoryFragment extends ListFragment {
 
 	private void showPopupMenu(View view, final int position) {
 		PopupMenu popup = new PopupMenu(getActivity(), view);
-		
-/*        try {
-			Field mPopup = popup.getClass().getDeclaredField("mPopup");
-			mPopup.setAccessible(true);
-			Object menuPopupHelper = mPopup.get(popup);
-			Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-			Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-			setForceIcons.invoke(menuPopupHelper, true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+
 		boolean editMode = root != null && root.isEditSupported();
 		int menuId = R.menu.popup_simple_directory;
 		if (isApp) {

@@ -16,11 +16,14 @@
 
 package dev.dworks.apps.anexplorer.model;
 
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -29,6 +32,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -49,6 +53,7 @@ import java.util.List;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.ExifInterfaceCompat;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
@@ -730,12 +735,23 @@ public final class DocumentsContract {
     }
 
     private static boolean isDocumentsProvider(Context context, String authority) {
-        final Intent intent = new Intent(PROVIDER_INTERFACE);
-        List<ProviderInfo> providers = context.getPackageManager()
-                .queryContentProviders(context.getPackageName(), context.getApplicationInfo().uid, 0);
-        for (ProviderInfo providerInfo : providers) {
-            if (authority.equals(providerInfo.authority)) {
-                return true;
+        PackageManager pm = context.getPackageManager();
+        if(Utils.hasKitKat()){
+            final Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
+            final List<ResolveInfo> providers = pm.queryIntentContentProviders(intent, 0);
+            for (ResolveInfo info : providers) {
+                if (authority.equals(info.providerInfo.authority)) {
+                    return true;
+                }
+            }
+        }
+        else{
+            List<ProviderInfo> providers = context.getPackageManager()
+                    .queryContentProviders(context.getPackageName(), context.getApplicationInfo().uid, 0);
+            for (ProviderInfo providerInfo : providers) {
+                if (authority.equals(providerInfo.authority)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -792,7 +808,7 @@ public final class DocumentsContract {
     }
 
     public static boolean isManageMode(Uri uri) {
-        return Boolean.valueOf(uri.getQueryParameter(PARAM_MANAGE));
+        return uri.getBooleanQueryParameter(PARAM_MANAGE, false);
     }
 
     /**
@@ -827,11 +843,17 @@ public final class DocumentsContract {
     }
 
     /** {@hide} */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static Bitmap getDocumentThumbnails(
             ContentProviderClient client, Uri documentUri, Point size, CancellationSignal signal)
             throws RemoteException, IOException {
         final Bundle openOpts = new Bundle();
-        openOpts.putParcelable(DocumentsContract.EXTRA_THUMBNAIL_SIZE, size);
+        if(Utils.hasKitKat()) {
+            openOpts.putParcelable(ContentResolver.EXTRA_SIZE, size);
+        }
+        else {
+            openOpts.putParcelable(DocumentsContract.EXTRA_THUMBNAIL_SIZE, size);
+        }
 
         AssetFileDescriptor afd = null;
         Bitmap bitmap = null;
@@ -881,16 +903,19 @@ public final class DocumentsContract {
             // Transform the bitmap if requested. We use a side-channel to
             // communicate the orientation, since EXIF thumbnails don't contain
             // the rotation flags of the original image.
-            final Bundle extras = null;//afd.getExtras();
-            final int orientation = (extras != null) ? extras.getInt(EXTRA_ORIENTATION, 0) : 0;
-            if (orientation != 0) {
-                final int width = bitmap.getWidth();
-                final int height = bitmap.getHeight();
+            if(Utils.hasKitKat()) {
+                final Bundle extras = afd.getExtras();
+                final int orientation = extras != null ? extras.getInt(EXTRA_ORIENTATION, 0) : 0;
+                if (orientation != 0) {
+                    final int width = bitmap.getWidth();
+                    final int height = bitmap.getHeight();
 
-                final Matrix m = new Matrix();
-                m.setRotate(orientation, width / 2, height / 2);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+                    final Matrix m = new Matrix();
+                    m.setRotate(orientation, width / 2, height / 2);
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+                }
             }
+
         } finally {
             IoUtils.closeQuietly(afd);
         }
@@ -1085,6 +1110,7 @@ public final class DocumentsContract {
      *
      * @hide
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static AssetFileDescriptor openImageThumbnail(File file) throws FileNotFoundException {
         final ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
                 file, ParcelFileDescriptor.MODE_READ_ONLY);
@@ -1108,10 +1134,12 @@ public final class DocumentsContract {
                     break;
             }
 
-/*            final long[] thumb = exif.getThumbnailRange();
-            if (thumb != null) {
-                return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
-            }*/
+            if(Utils.hasKitKat()){
+                final long[] thumb = ExifInterfaceCompat.getThumbnailRange(exif);
+                if (thumb != null) {
+                    return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
+                }
+            }
         } catch (IOException e) {
         }
 

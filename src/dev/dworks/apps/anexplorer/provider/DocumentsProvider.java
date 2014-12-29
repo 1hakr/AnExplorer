@@ -810,8 +810,9 @@ public abstract class DocumentsProvider extends ContentProvider {
     public final AssetFileDescriptor openTypedAssetFile(Uri uri, String mimeTypeFilter, Bundle opts)
             throws FileNotFoundException {
         enforceTree(uri);
-        if (opts != null && opts.containsKey(EXTRA_THUMBNAIL_SIZE)) {
-            final Point sizeHint = opts.getParcelable(EXTRA_THUMBNAIL_SIZE);
+        final String key  = Utils.hasKitKat() ? ContentResolver.EXTRA_SIZE : EXTRA_THUMBNAIL_SIZE;
+        if (opts != null && opts.containsKey(key)) {
+            final Point sizeHint = opts.getParcelable(key);
             return openDocumentThumbnail(getDocumentId(uri), sizeHint, null);
         } else {
             return super.openTypedAssetFile(uri, mimeTypeFilter, opts);
@@ -828,8 +829,9 @@ public abstract class DocumentsProvider extends ContentProvider {
             Uri uri, String mimeTypeFilter, Bundle opts, CancellationSignal signal)
             throws FileNotFoundException {
         enforceTree(uri);
-        if (opts != null && opts.containsKey(EXTRA_THUMBNAIL_SIZE)) {
-            final Point sizeHint = opts.getParcelable(EXTRA_THUMBNAIL_SIZE);
+        final String key  = Utils.hasKitKat() ? ContentResolver.EXTRA_SIZE : EXTRA_THUMBNAIL_SIZE;
+        if (opts != null && opts.containsKey(key)) {
+            final Point sizeHint = opts.getParcelable(key);
             return openDocumentThumbnail(getDocumentId(uri), sizeHint, signal);
         } else {
             return super.openTypedAssetFile(uri, mimeTypeFilter, opts, signal);

@@ -267,7 +267,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         if (mState.action == ACTION_CREATE) {
             final String mimeType = getIntent().getType();
-            final String title = getIntent().getStringExtra(Intent.EXTRA_TITLE);
+            final String title = getIntent().getStringExtra(IntentUtils.EXTRA_TITLE);
             SaveFragment.show(getFragmentManager(), mimeType, title);
         } else if (mState.action == ACTION_OPEN_TREE) {
             PickFragment.show(getFragmentManager());
@@ -364,13 +364,13 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.action = ACTION_OPEN;
         } else if (IntentUtils.ACTION_CREATE_DOCUMENT.equals(action)) {
             mState.action = ACTION_CREATE;
-        } else if (Intent.ACTION_GET_CONTENT.equals(action)) {
+        } else if (IntentUtils.ACTION_GET_CONTENT.equals(action)) {
             mState.action = ACTION_GET_CONTENT;
         } else if (IntentUtils.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
             mState.action = ACTION_OPEN_TREE;
         } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
-            //mState.action = ACTION_MANAGE;
-            mState.action = ACTION_BROWSE;
+            mState.action = ACTION_MANAGE;
+            //mState.action = ACTION_BROWSE;
         } else{
             mState.action = ACTION_BROWSE;
         }
@@ -389,7 +389,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.acceptMimes = new String[] { intent.getType() };
         }
 
-        mState.localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        mState.localOnly = intent.getBooleanExtra(IntentUtils.EXTRA_LOCAL_ONLY, true);
         mState.forceAdvanced = intent.getBooleanExtra(DocumentsContract.EXTRA_SHOW_ADVANCED	, false);
         mState.showAdvanced = mState.forceAdvanced
                 | SettingsActivity.getDisplayAdvancedDevices(this);
@@ -771,7 +771,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         if (mState.currentSearch != null) {
             // Search uses backend ranking; no sorting
-            sort.setVisible(false);
+            //sort.setVisible(false);
 
             search.expandActionView();
 
@@ -799,15 +799,14 @@ public class DocumentsActivity extends ActionBarActivity {
                 grid.setVisible(false);
                 list.setVisible(false);
             }
-            if(null != SaveFragment.get(fm))
-                SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
-        } else if (mState.action == ACTION_GET_CONTENT) {
-            searchVisible = root != null
-                    && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
+            if (mState.action == State.ACTION_CREATE) {
+                if (null != SaveFragment.get(fm))
+                    SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+            }
         } else {
             searchVisible = root != null
                     && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
-
+            // TODO: Is this useful?
             if(null != SaveFragment.get(fm))
                 SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
 
@@ -1088,10 +1087,7 @@ public class DocumentsActivity extends ActionBarActivity {
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
-        
-        if(!SettingsActivity.getFolderAnimation(this)){
-        	anim = 0;
-        }
+
         //TODO : this has to be done nicely
         if(cwd == null){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
@@ -1108,14 +1104,14 @@ public class DocumentsActivity extends ActionBarActivity {
 				e.printStackTrace();
 			}
         }
+        if(!SettingsActivity.getFolderAnimation(this)){
+            anim = 0;
+        }
         mDirectoryContainer.setDrawDisappearingFirst(anim == ANIM_DOWN);
 
         if (cwd == null) {
             // No directory means recents
-        	if(null != SaveFragment.get(getFragmentManager())){
-                RecentsCreateFragment.show(fm);
-        	}
-        	else if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+        	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
                 RecentsCreateFragment.show(fm);
             } else {
                 DirectoryFragment.showRecentsOpen(fm, anim);
@@ -1311,6 +1307,7 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
+            // TODO: null pointer crash
             SaveFragment.get(fm).setReplaceTarget(doc);
         } else if (mState.action == ACTION_MANAGE) {
             // First try managing the document; we expect manager to filter
@@ -1334,13 +1331,6 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         }
     }
-
-	public static boolean isIntentAvailable(Context context, Intent intent) {
-	    final PackageManager packageManager = context.getPackageManager();
-	    List<ResolveInfo> list =
-	            packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-	    return list.size() > 0;
-	}	
 	
     public void onDocumentsPicked(List<DocumentInfo> docs) {
         if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
@@ -1472,11 +1462,15 @@ public class DocumentsActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Uri result) {
             if (result != null) {
-                //onFinished(result);
+                if(mState.action != ACTION_CREATE){
+                    SaveFragment.hide(getFragmentManager());
+                }
+                else{
+                    onFinished(result);
+                }
             } else {
                 showError(R.string.save_error);
             }
-            SaveFragment.hide(getFragmentManager());
             setPending(false);
         }
     }
@@ -1496,10 +1490,12 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-        	if(mState.action != ACTION_GET_CONTENT){
-            	SaveFragment.hide(getFragmentManager());	
-        	}
-            onFinished(mUris);
+            if(mState.action != ACTION_CREATE){
+                SaveFragment.hide(getFragmentManager());
+            }
+            else{
+                onFinished(mUris);
+            }
         }
     }
 
@@ -1854,5 +1850,4 @@ public class DocumentsActivity extends ActionBarActivity {
                 .withDuration(duration)
                 .show();
     }
-
 }

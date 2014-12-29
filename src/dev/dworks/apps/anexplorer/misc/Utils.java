@@ -19,6 +19,9 @@ package dev.dworks.apps.anexplorer.misc;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
@@ -29,6 +32,7 @@ import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 
 public class Utils {
@@ -284,5 +288,13 @@ public class Utils {
                 Color.blue(colorToInvert), hsv);
         hsv[0] = (hsv[0] + 180) % 360;
         return Color.HSVToColor(hsv);
+    }
+
+
+    public static boolean isIntentAvailable(Context context, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> list =
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
     }
 }
