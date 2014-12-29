@@ -734,6 +734,7 @@ public final class DocumentsContract {
         return (paths.size() >= 2 && PATH_TREE.equals(paths.get(0)));
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private static boolean isDocumentsProvider(Context context, String authority) {
         PackageManager pm = context.getPackageManager();
         if(Utils.hasKitKat()){

@@ -525,7 +525,7 @@ public class DirectoryFragment extends ListFragment {
             switch (view.getId()){
                 case R.id.fab_create_file:
                     ((DocumentsActivity) getActivity()).onStateChanged();
-                    SaveFragment.show(getFragmentManager(), "text/plain", "File");
+                    CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
                     mActionMenu.collapse();
                     break;
 

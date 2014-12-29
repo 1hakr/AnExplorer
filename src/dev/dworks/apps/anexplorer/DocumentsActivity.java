@@ -622,7 +622,9 @@ public class DocumentsActivity extends ActionBarActivity {
         //final boolean showRootIcon = mShowAsDialog || (mState.action == DocumentsActivity.State.ACTION_MANAGE);
         final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
         if(mShowAsDialog){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
+            mToolbar.setLogo(R.drawable.logo);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
             if (mDrawerToggle != null) {
                 mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
             }
@@ -1462,12 +1464,7 @@ public class DocumentsActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Uri result) {
             if (result != null) {
-                if(mState.action != ACTION_CREATE){
-                    SaveFragment.hide(getFragmentManager());
-                }
-                else{
-                    onFinished(result);
-                }
+                onFinished(result);
             } else {
                 showError(R.string.save_error);
             }
@@ -1490,12 +1487,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            if(mState.action != ACTION_CREATE){
-                SaveFragment.hide(getFragmentManager());
-            }
-            else{
-                onFinished(mUris);
-            }
+            onFinished(mUris);
         }
     }
 
