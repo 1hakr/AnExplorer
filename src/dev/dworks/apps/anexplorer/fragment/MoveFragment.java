@@ -110,7 +110,15 @@ public class MoveFragment extends Fragment implements OnClickListener{
 		return view;
 	}
 
-	/**
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (mReplaceTarget != null) {
+            mRootInfo.setText(mReplaceTarget.displayName);
+        }
+    }
+
+    /**
 	 * Set given document as target for in-place writing if user hits save
 	 * without changing the filename. Can be set to {@code null} if user
 	 * navigates outside the target directory.
@@ -118,7 +126,7 @@ public class MoveFragment extends Fragment implements OnClickListener{
 	public void setReplaceTarget(DocumentInfo replaceTarget) {
 		mReplaceTarget = replaceTarget;
 
-		if (mReplaceTarget != null) {
+		if (mRootInfo != null && mReplaceTarget != null) {
 			mRootInfo.setText(replaceTarget.displayName);
 		}
 	}

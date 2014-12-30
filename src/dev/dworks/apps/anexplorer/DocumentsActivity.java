@@ -1641,6 +1641,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public void writeToParcel(Parcel out, int flags) {
             out.writeInt(action);
             out.writeInt(userMode);
+            out.writeInt(acceptMimes.length);
             out.writeStringArray(acceptMimes);
             out.writeInt(userSortOrder);
             out.writeInt(allowMultiple ? 1 : 0);
@@ -1664,8 +1665,8 @@ public class DocumentsActivity extends ActionBarActivity {
                 final State state = new State();
                 state.action = in.readInt();
                 state.userMode = in.readInt();
-                state.acceptMimes = in.createStringArray();
-                //in.readStringArray(state.acceptMimes);
+                state.acceptMimes = new String[in.readInt()];
+                in.readStringArray(state.acceptMimes);
                 state.userSortOrder = in.readInt();
                 state.allowMultiple = in.readInt() != 0;
                 state.showSize = in.readInt() != 0;

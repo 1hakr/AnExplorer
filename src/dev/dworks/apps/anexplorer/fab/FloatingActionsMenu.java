@@ -7,10 +7,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Parcel;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -23,6 +22,9 @@ import android.widget.TextView;
 import dev.dworks.apps.anexplorer.R;
 
 public class FloatingActionsMenu extends ViewGroup {
+    private static final String INSTANCE_STATE = "saved_instance";
+    private static final String INSTANCE_TEXT_COLOR = "text_color";
+
     public static final int EXPAND_UP = 0;
     public static final int EXPAND_DOWN = 1;
     public static final int EXPAND_LEFT = 2;
@@ -452,60 +454,27 @@ public class FloatingActionsMenu extends ViewGroup {
         return mExpanded;
     }
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState savedState = new SavedState(superState);
-        savedState.mExpanded = mExpanded;
 
-        return savedState;
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(INSTANCE_STATE, super.onSaveInstanceState());
+        bundle.putBoolean(INSTANCE_TEXT_COLOR, mExpanded);
+        return bundle;
     }
 
     @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        if (state instanceof SavedState) {
-            SavedState savedState = (SavedState) state;
-            mExpanded = savedState.mExpanded;
+    protected void onRestoreInstanceState(Parcelable state) {
+        if(state instanceof Bundle){
+            final Bundle bundle = (Bundle)state;
+            mExpanded = bundle.getBoolean(INSTANCE_TEXT_COLOR);
 
             if (mRotatingDrawable != null) {
                 mRotatingDrawable.setRotation(mExpanded ? EXPANDED_PLUS_ROTATION : COLLAPSED_PLUS_ROTATION);
             }
-
-            super.onRestoreInstanceState(savedState.getSuperState());
-        } else {
-            super.onRestoreInstanceState(state);
+            super.onRestoreInstanceState(bundle.getParcelable(INSTANCE_STATE));
+            return;
         }
-    }
-
-    public static class SavedState extends BaseSavedState {
-        public boolean mExpanded;
-
-        public SavedState(Parcelable parcel) {
-            super(parcel);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            mExpanded = in.readInt() == 1;
-        }
-
-        @Override
-        public void writeToParcel(@NonNull Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt(mExpanded ? 1 : 0);
-        }
-
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
-
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
+        super.onRestoreInstanceState(state);
     }
 }

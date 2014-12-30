@@ -466,7 +466,7 @@ public class NumberProgressBar extends View {
     @Override
     protected Parcelable onSaveInstanceState() {
         final Bundle bundle = new Bundle();
-        bundle.putParcelable(INSTANCE_STATE,super.onSaveInstanceState());
+        bundle.putParcelable(INSTANCE_STATE, super.onSaveInstanceState());
         bundle.putInt(INSTANCE_TEXT_COLOR,getTextColor());
         bundle.putFloat(INSTANCE_TEXT_SIZE, getProgressTextSize());
         bundle.putFloat(INSTANCE_REACHED_BAR_HEIGHT,getReachedBarHeight());
