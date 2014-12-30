@@ -211,7 +211,7 @@ public class ExternalStorageProvider extends StorageProvider {
             final RootInfo root = new RootInfo();
             root.rootId = rootId;
             root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                    | Root.FLAG_SUPPORTS_SEARCH;
+                    | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH ;
             root.title = getContext().getString(R.string.root_phone_storage);
             root.docId = getDocIdForFile(path);
             root.path = path.getPath();

@@ -68,9 +68,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.common.collect.Lists;
 
 import java.io.File;
@@ -107,8 +104,6 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
-import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
@@ -176,11 +171,12 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
+/*
     private FloatingActionsMenu mActionMenu;
     private FloatingActionButton mCreateFile;
     private FloatingActionButton mCreateFolder;
     private FloatingActionButton mPaste;
-    private AdView mAdView;
+*/
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -236,19 +232,7 @@ public class DirectoryFragment extends ListFragment {
         final Resources res = context.getResources();
 		final View view = inflater.inflate(R.layout.fragment_directory, container, false);
 
-        mAdView = (AdView)view.findViewById(R.id.adView);
-        mAdView.setAdListener(adListener);
-        mAdView.loadAd(new AdRequest.Builder().build());
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
-        mActionMenu = (FloatingActionsMenu) view.findViewById(R.id.fab);
-        mCreateFile = (FloatingActionButton) view.findViewById(R.id.fab_create_file);
-        mCreateFile.setOnClickListener(mOnClickListener);
-
-        mCreateFolder = (FloatingActionButton) view.findViewById(R.id.fab_create_folder);
-        mCreateFolder.setOnClickListener(mOnClickListener);
-
-        mPaste = (FloatingActionButton) view.findViewById(R.id.fab_paste);
-        mPaste.setOnClickListener(mOnClickListener);
 
 		mEmptyView = view.findViewById(android.R.id.empty);
 
@@ -496,51 +480,9 @@ public class DirectoryFragment extends ListFragment {
 			throw new IllegalStateException("Unknown state " + state.derivedMode);
 		}
 
-        mActionMenu.attachToListView(mCurrentView);
-
-        upadateActionItems();
+        ((DocumentsActivity) getActivity()).upadateActionItems(mCurrentView);
 		mThumbSize = new Point(thumbSize, thumbSize);
 	}
-
-    private void upadateActionItems() {
-        int complimentaryColor = Utils.getComplementaryColor(mDefaultColor);
-
-        mActionMenu.setVisibility(showActionMenu(this) ? View.VISIBLE : View.GONE);
-        mActionMenu.setColorNormal(complimentaryColor);
-        mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
-
-        mCreateFile.setColorNormal(mDefaultColor);
-        mCreateFile.setColorPressed(Utils.getLightColor(complimentaryColor));
-
-        mCreateFolder.setColorNormal(mDefaultColor);
-        mCreateFolder.setColorPressed(Utils.getLightColor(complimentaryColor));
-
-        mPaste.setColorNormal(mDefaultColor);
-        mPaste.setColorPressed(Utils.getLightColor(complimentaryColor));
-    }
-
-    private OnClickListener mOnClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()){
-                case R.id.fab_create_file:
-                    ((DocumentsActivity) getActivity()).onStateChanged();
-                    CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
-                    mActionMenu.collapse();
-                    break;
-
-                case R.id.fab_create_folder:
-                    CreateDirectoryFragment.show(getFragmentManager());
-                    mActionMenu.collapse();
-                    break;
-
-                case R.id.fab_paste:
-                    mActionMenu.collapse();
-                    break;
-
-            }
-        }
-    };
 
     private OnItemClickListener mItemListener = new OnItemClickListener() {
 		@Override
@@ -993,10 +935,6 @@ public class DirectoryFragment extends ListFragment {
         return ((DocumentsActivity) fragment.getActivity()).isCreateSupported();
     }
 
-    private boolean showActionMenu(Fragment fragment) {
-        return isCreateSupported(fragment) && mType != TYPE_SEARCH;
-    }
-
 	public boolean onSaveDocuments(ArrayList<DocumentInfo> docs) {
 		final Context context = getActivity();
 		final ContentResolver resolver = context.getContentResolver();
@@ -1264,10 +1202,13 @@ public class DirectoryFragment extends ListFragment {
 
 			popupButton.setOnClickListener(this);
 
-			final View iconView = convertView.findViewById(android.R.id.icon);
-			if (null != iconView) {
-				iconView.setOnClickListener(this);
-			}
+            if(state.action == ACTION_BROWSE){
+                final View iconView = convertView.findViewById(android.R.id.icon);
+                if (null != iconView) {
+                    iconView.setOnClickListener(this);
+                }
+            }
+
 			final ThumbnailAsyncTask oldTask = (ThumbnailAsyncTask) iconThumb.getTag();
 			if (oldTask != null) {
 				oldTask.preempt();
@@ -1830,18 +1771,4 @@ public class DirectoryFragment extends ListFragment {
 			return false;
 		}
 	}
-
-    AdListener adListener = new AdListener() {
-        @Override
-        public void onAdLoaded() {
-            super.onAdLoaded();
-            mAdView.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onAdFailedToLoad(int errorCode) {
-            super.onAdFailedToLoad(errorCode);
-            mAdView.setVisibility(View.GONE);
-        }
-    };
 }

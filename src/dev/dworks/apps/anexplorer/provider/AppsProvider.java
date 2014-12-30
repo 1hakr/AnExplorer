@@ -115,7 +115,7 @@ public class AppsProvider extends DocumentsProvider {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
         final RowBuilder row = result.newRow();
         row.add(Root.COLUMN_ROOT_ID, ROOT_ID_APP);
-        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
+        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row.add(Root.COLUMN_ICON, R.drawable.ic_root_apps);
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_apps));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_APP);
@@ -124,7 +124,7 @@ public class AppsProvider extends DocumentsProvider {
         
         final RowBuilder row1 = result.newRow();
         row1.add(Root.COLUMN_ROOT_ID, ROOT_ID_PROCESS);
-        row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
+        row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row1.add(Root.COLUMN_ICON, R.drawable.ic_root_process);
         row1.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_processes));
         row1.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_PROCESS);

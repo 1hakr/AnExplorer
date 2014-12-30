@@ -15,7 +15,6 @@
 -->
 
 <dev.dworks.apps.anexplorer.ui.DirectoryView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/material_grey_50">
@@ -64,50 +63,33 @@
             android:text="@string/empty"
             android:visibility="gone" />
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <FrameLayout
+            <ListView
+                android:id="@+id/list"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:scrollbarStyle="outsideOverlay" />
 
-                <ListView
-                    android:id="@+id/list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:scrollbarStyle="outsideOverlay" />
+            <GridView
+                android:id="@+id/grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:drawSelectorOnTop="true"
+                android:horizontalSpacing="@dimen/grid_item_padding"
+                android:paddingBottom="@dimen/grid_padding_vert"
+                android:paddingEnd="@dimen/grid_padding_horiz"
+                android:paddingStart="@dimen/grid_padding_horiz"
+                android:paddingTop="@dimen/grid_padding_vert"
+                android:scrollbarStyle="outsideOverlay"
+                android:verticalSpacing="@dimen/grid_item_padding"
+                android:visibility="gone" />
 
-                <GridView
-                    android:id="@+id/grid"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:drawSelectorOnTop="true"
-                    android:horizontalSpacing="@dimen/grid_item_padding"
-                    android:paddingBottom="@dimen/grid_padding_vert"
-                    android:paddingEnd="@dimen/grid_padding_horiz"
-                    android:paddingStart="@dimen/grid_padding_horiz"
-                    android:paddingTop="@dimen/grid_padding_vert"
-                    android:scrollbarStyle="outsideOverlay"
-                    android:verticalSpacing="@dimen/grid_item_padding"
-                    android:visibility="gone" />
-
-                <include layout="@layout/fab_layout" />
-            </FrameLayout>
-
-            <com.google.android.gms.ads.AdView
-                android:id="@+id/adView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                ads:adSize="SMART_BANNER"
-                ads:adUnitId="a14e25123e38970" />
-
-        </LinearLayout>
+        </FrameLayout>
     </FrameLayout>
 
 </dev.dworks.apps.anexplorer.ui.DirectoryView>

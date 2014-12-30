@@ -77,8 +77,11 @@ public class CreateFileFragment extends DialogFragment {
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
-        text1.setText(getArguments().getString(EXTRA_DISPLAY_NAME));
-
+        String title = getArguments().getString(EXTRA_DISPLAY_NAME);
+        if(TextUtils.isEmpty(title)) {
+            text1.setText(title);
+            text1.setSelection(title.length());
+        }
         builder.setTitle(R.string.menu_create_file);
         builder.setView(view);
 

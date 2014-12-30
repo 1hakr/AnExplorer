@@ -392,6 +392,7 @@ public class RootsCache {
             final boolean supportsCreate = (root.flags & Root.FLAG_SUPPORTS_CREATE) != 0;
             final boolean supportsIsChild = (root.flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;
             final boolean advanced = (root.flags & DocumentsContract.Root.FLAG_ADVANCED) != 0;
+            final boolean superAdvanced = (root.flags & Root.FLAG_SUPER_ADVANCED) != 0;
             final boolean localOnly = (root.flags & Root.FLAG_LOCAL_ONLY) != 0;
             final boolean empty = (root.flags & DocumentsContract.Root.FLAG_EMPTY) != 0;
 
@@ -412,6 +413,11 @@ public class RootsCache {
             // Only show empty roots when creating
             if (state.action != State.ACTION_CREATE && empty) continue;
 
+            if ((state.action == State.ACTION_GET_CONTENT
+                    || state.action == State.ACTION_GET_CONTENT || state.action == State.ACTION_OPEN
+                    || state.action == State.ACTION_OPEN_TREE) && superAdvanced){
+                continue;
+            }
             // Only include roots that serve requested content
             final boolean overlap =
                     MimePredicate.mimeMatches(root.derivedMimeTypes, state.acceptMimes) ||

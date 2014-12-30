@@ -490,7 +490,7 @@ public final class DocumentsContract {
         
         public static final int FLAG_SUPPORTS_EDIT = 1 << 18;
         
-        public static final int FLAG_SHOW = 1 << 19;
+        public static final int FLAG_SUPER_ADVANCED = 1 << 19;
     }
 
     /**

@@ -30,7 +30,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -64,6 +63,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
@@ -73,6 +73,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -86,6 +89,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
+import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
+import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.MoveFragment;
 import dev.dworks.apps.anexplorer.fragment.PickFragment;
@@ -116,6 +121,8 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
+import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
+import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
@@ -166,8 +173,13 @@ public class DocumentsActivity extends ActionBarActivity {
 	private FrameLayout mSaveContainer;
     private FrameLayout mAlertContainer;
     private FrameLayout mRateContainer;
+    private AdView mAdView;
     private boolean mActionMode;
     private LruCache<String, Long> mFileSizeCache;
+    private FloatingActionsMenu mActionMenu;
+    private FloatingActionButton mCreateFile;
+    private FloatingActionButton mCreateFolder;
+    private FloatingActionButton mPaste;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -231,6 +243,8 @@ public class DocumentsActivity extends ActionBarActivity {
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
         mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
+
+        initControls();
 
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
@@ -1071,9 +1085,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
     public boolean isCreateSupported() {
         final DocumentInfo cwd = getCurrentDirectory();
-        if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+        if (mState.action == ACTION_OPEN_TREE) {
             return cwd != null && cwd.isCreateSupported();
-        } else if (mState.action == ACTION_GET_CONTENT) {
+        } else if (mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
             return false;
         } else {
             return cwd != null && cwd.isCreateSupported();
@@ -1755,23 +1769,26 @@ public class DocumentsActivity extends ActionBarActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpStatusBar() {
-        int color = getResources().getColor(R.color.contextual_actionbar_color);
+        int color = getResources().getColor(android.R.color.black);
         if(SettingsActivity.getTranslucentMode(this)){
-            color = SettingsActivity.getActionBarColor(this);
+            color = Utils.getStatusBarColor(SettingsActivity.getActionBarColor(this));
         }
         if(Utils.hasLollipop()){
-            getWindow().setStatusBarColor(Utils.getStatusBarColor(color));
+            getWindow().setStatusBarColor(color);
         }
         else if(Utils.hasKitKat()){
             SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
-            systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
+            systemBarTintManager.setTintColor(color);
             systemBarTintManager.setStatusBarTintEnabled(true);
         }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpDefaultStatusBar() {
-        int color = getResources().getColor(R.color.alertColor);
+        int color = getResources().getColor(android.R.color.black);
+        if(SettingsActivity.getTranslucentMode(this)){
+            color = getResources().getColor(R.color.alertColor);
+        }
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }
@@ -1842,4 +1859,83 @@ public class DocumentsActivity extends ActionBarActivity {
                 .withDuration(duration)
                 .show();
     }
+
+    private void initControls() {
+        mActionMenu = (FloatingActionsMenu) findViewById(R.id.fab);
+        mCreateFile = (FloatingActionButton) findViewById(R.id.fab_create_file);
+        mCreateFile.setOnClickListener(mOnClickListener);
+
+        mCreateFolder = (FloatingActionButton) findViewById(R.id.fab_create_folder);
+        mCreateFolder.setOnClickListener(mOnClickListener);
+
+        mPaste = (FloatingActionButton) findViewById(R.id.fab_paste);
+        mPaste.setOnClickListener(mOnClickListener);
+
+        //Ads
+        mAdView = (AdView) findViewById(R.id.adView);
+        mAdView.setAdListener(adListener);
+        mAdView.loadAd(new AdRequest.Builder().build());
+    }
+
+    public void upadateActionItems(AbsListView currentView) {
+
+        mActionMenu.attachToListView(currentView);
+
+        int defaultColor = SettingsActivity.getActionBarColor(this);
+        int complimentaryColor = Utils.getComplementaryColor(defaultColor);
+
+        mActionMenu.setVisibility(showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setColorNormal(complimentaryColor);
+        mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
+
+        mCreateFile.setColorNormal(defaultColor);
+        mCreateFile.setColorPressed(Utils.getLightColor(complimentaryColor));
+
+        mCreateFolder.setColorNormal(defaultColor);
+        mCreateFolder.setColorPressed(Utils.getLightColor(complimentaryColor));
+
+        mPaste.setColorNormal(defaultColor);
+        mPaste.setColorPressed(Utils.getLightColor(complimentaryColor));
+    }
+
+    private boolean showActionMenu() {
+        return isCreateSupported() && mState.currentSearch == null;
+    }
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.fab_create_file:
+                    onStateChanged();
+                    CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
+                    mActionMenu.collapse();
+                    break;
+
+                case R.id.fab_create_folder:
+                    CreateDirectoryFragment.show(getFragmentManager());
+                    mActionMenu.collapse();
+                    break;
+
+                case R.id.fab_paste:
+                    mActionMenu.collapse();
+                    break;
+
+            }
+        }
+    };
+
+    AdListener adListener = new AdListener() {
+        @Override
+        public void onAdLoaded() {
+            super.onAdLoaded();
+            mAdView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAdFailedToLoad(int errorCode) {
+            super.onAdFailedToLoad(errorCode);
+            mAdView.setVisibility(View.GONE);
+        }
+    };
 }

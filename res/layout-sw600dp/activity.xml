@@ -15,6 +15,7 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,12 +27,12 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="8dp"
-        app:theme="?attr/actionBarTheme"
-        app:popupTheme="?attr/actionBarPopupTheme">
+        app:popupTheme="?attr/actionBarPopupTheme"
+        app:theme="?attr/actionBarTheme">
 
         <Spinner
-            style="@style/PopupTheme"
             android:id="@+id/stack"
+            style="@style/PopupTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
@@ -44,8 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
         <FrameLayout
             android:id="@+id/container_roots"
@@ -56,9 +57,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
+            android:background="@color/material_grey_50"
             android:elevation="8dp"
-            android:background="@color/material_grey_50">
+            android:orientation="vertical">
 
             <FrameLayout
                 android:id="@+id/container_rate"
@@ -66,11 +67,18 @@
                 android:layout_height="wrap_content"
                 android:elevation="8dp" />
 
-            <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
-                android:id="@+id/container_directory"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1">
+
+                <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
+                    android:id="@+id/container_directory"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <include layout="@layout/fab_layout" />
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/container_save"
@@ -85,7 +93,13 @@
                 android:layout_height="wrap_content"
                 android:elevation="8dp" />
         </LinearLayout>
-
     </LinearLayout>
 
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="a14e25123e38970" />
 </LinearLayout>
