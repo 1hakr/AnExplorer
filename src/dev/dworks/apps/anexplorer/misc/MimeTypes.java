@@ -6,9 +6,12 @@ import android.webkit.MimeTypeMap;
 import java.util.HashMap;
 import java.util.Locale;
 
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
+
 public final class MimeTypes {
 
     public static final String ALL_MIME_TYPES = "*/*";
+    public static final String[] SHARE_SKIP_MIMES = new String[] { DocumentsContract.Document.MIME_TYPE_APK };
     private static final HashMap<String, String> MIME_TYPES = new HashMap<String, String>();
 
     private MimeTypes() {}

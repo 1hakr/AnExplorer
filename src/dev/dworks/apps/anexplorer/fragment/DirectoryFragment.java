@@ -86,6 +86,7 @@ import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
@@ -728,7 +729,9 @@ public class DirectoryFragment extends ListFragment {
 			intent = new Intent(Intent.ACTION_SEND);
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			// intent.addCategory(Intent.CATEGORY_DEFAULT);
-			intent.setType(doc.mimeType);
+            if(!MimePredicate.mimeMatches(MimeTypes.SHARE_SKIP_MIMES, doc.mimeType)) {
+                intent.setType(doc.mimeType);
+            }
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
 		} else if (docs.size() > 1) {
@@ -743,7 +746,10 @@ public class DirectoryFragment extends ListFragment {
 				uris.add(doc.derivedUri);
 			}
 
-			intent.setType(findCommonMimeType(mimeTypes));
+            String mimeType = findCommonMimeType(mimeTypes);
+            if(!MimePredicate.mimeMatches(MimeTypes.SHARE_SKIP_MIMES, mimeType)) {
+                intent.setType(mimeType);
+            }
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
 		} else {
@@ -1516,7 +1522,10 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
-			if (mIconThumb.getTag() == this && result != null) {
+            if (isCancelled()) {
+                result = null;
+            }
+            if (mIconThumb.getTag() == this && result != null) {
 				mIconThumb.setScaleType(!TextUtils.isEmpty(mPath) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
 				mIconThumb.setTag(null);
 				mIconThumb.setImageBitmap(result);
@@ -1571,6 +1580,9 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(Long result) {
+            if (isCancelled()) {
+                result = null;
+            }
 			if (mSizeView.getTag() == this && result != null) {
 				mSizeView.setTag(null);
 				String size = Formatter.formatFileSize(mSizeView.getContext(), result);
