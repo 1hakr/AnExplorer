@@ -1,5 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:support="http://schemas.android.com/apk/res-auto">
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/action_feedback"
@@ -34,8 +34,8 @@
     <item
         android:id="@+id/action_github"
         android:icon="@drawable/ic_menu_github"
-        support:showAsAction="ifRoom"
         android:orderInCategory="106"
+        android:showAsAction="ifRoom"
         android:title="Github"/>
 
 </menu>
