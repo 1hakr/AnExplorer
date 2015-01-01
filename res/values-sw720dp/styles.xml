@@ -15,14 +15,7 @@
 -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="Theme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
-        <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
-        <item name="android:actionModeBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-        <item name="android:windowAnimationStyle">@*android:style/Animation.Holo.Dialog</item>
-    </style>
-    
+
+    <style name="DialogWhenReallyLarge" parent="@style/Theme.AppCompat.Light.DarkActionBar"/>
     <style name="ListProgress" parent="@android:style/Widget.Holo.Light.ProgressBar.Large"/>
 </resources>

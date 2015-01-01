@@ -5,7 +5,7 @@
         android:key="theme"
         android:title="Theme" >
         <dev.dworks.apps.anexplorer.ui.ColorPreference
-            android:defaultValue="@color/actionbar_color"
+            android:defaultValue="@color/defaultColor"
             android:dialogTitle="@string/pref_foreground_color_title"
             android:key="actionBarColor"
             android:negativeButtonText="@null"
@@ -16,7 +16,7 @@
             app:numColumns="5" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="@bool/transparent_nav"
             android:key="translucentMode"
             android:title="@string/pref_translucent_mode" />
         <CheckBoxPreference

@@ -17,20 +17,15 @@
 
 package dev.dworks.apps.anexplorer.loader;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_DISPLAY_NAME;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_LAST_MODIFIED;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_SIZE;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-
-import java.io.FileNotFoundException;
-
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+
+import java.io.FileNotFoundException;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.cursor.FilteringCursorWrapper;
@@ -50,6 +45,12 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_DISPLAY_NAME;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_LAST_MODIFIED;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_SIZE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 
 public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
 
@@ -140,7 +141,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
 
         // Search always uses ranking from provider
         if (mType == DirectoryFragment.TYPE_SEARCH) {
-            result.sortOrder = State.SORT_ORDER_UNKNOWN;
+            //result.sortOrder = State.SORT_ORDER_UNKNOWN;
         }
 
         Log.d(TAG, "userMode=" + userMode + ", userSortOrder=" + mUserSortOrder + " --> mode="
@@ -157,6 +158,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             cursor = new RootCursorWrapper(mUri.getAuthority(), mRoot.rootId, cursor, -1);
 
             if (mType == DirectoryFragment.TYPE_SEARCH) {
+                cursor = new SortingCursorWrapper(cursor, result.sortOrder);
                 // Filter directories out of search results, for now
                 cursor = new FilteringCursorWrapper(cursor, null, SEARCH_REJECT_MIMES);
             } else {

@@ -17,6 +17,27 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.ContentProviderClient;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
+import android.graphics.Point;
+import android.net.Uri;
+import android.os.Binder;
+import android.os.Build;
+import android.os.Environment;
+import android.os.FileObserver;
+import android.os.Handler;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,25 +48,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import android.annotation.SuppressLint;
-import android.content.ContentProviderClient;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
-import android.graphics.Point;
-import android.net.Uri;
-import android.os.Binder;
-import android.os.Environment;
-import android.os.FileObserver;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
-import android.webkit.MimeTypeMap;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -54,6 +56,7 @@ import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -76,7 +79,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_PATH,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -101,6 +104,8 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_HIDDEN = "hidden";
     public static final String ROOT_ID_BOOKMARK = "bookmark";
 
+    private Handler mHandler;
+
     private final Object mRootsLock = new Object();
 
     @GuardedBy("mRootsLock")
@@ -115,6 +120,8 @@ public class ExternalStorageProvider extends StorageProvider {
 
     @Override
     public boolean onCreate() {
+        mHandler = new Handler();
+
         mRoots = Lists.newArrayList();
         mIdToRoot = Maps.newHashMap();
         mIdToPath = Maps.newHashMap();
@@ -133,6 +140,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void updateVolumesLocked() {
         mRoots.clear();
         mIdToPath.clear();
@@ -171,14 +179,16 @@ public class ExternalStorageProvider extends StorageProvider {
                 final RootInfo root = new RootInfo();
                 
                 root.rootId = rootId;
-                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_SEARCH;
+                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                        | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
-                	count++;
-                    root.title = getContext().getString(R.string.root_external_storage) + " " + count;// + volume.getLabel();
+                    root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " "+count : "");// + volume.getLabel();
+                    count++;
                 }
                 root.docId = getDocIdForFile(path);
+                root.path = path.getPath();
                 mRoots.add(root);
                 mIdToRoot.put(rootId, root);
             } catch (FileNotFoundException e) {
@@ -201,9 +211,10 @@ public class ExternalStorageProvider extends StorageProvider {
             final RootInfo root = new RootInfo();
             root.rootId = rootId;
             root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                    | Root.FLAG_SUPPORTS_SEARCH;
+                    | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH ;
             root.title = getContext().getString(R.string.root_phone_storage);
             root.docId = getDocIdForFile(path);
+            root.path = path.getPath();
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
@@ -221,6 +232,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_downloads);
             root.docId = getDocIdForFile(path);
+            root.path = path.getPath();
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
@@ -238,6 +250,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_app_backup);
             root.docId = getDocIdForFile(path);
+            root.path = path.getPath();
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
         } catch (FileNotFoundException e) {
@@ -259,6 +272,7 @@ public class ExternalStorageProvider extends StorageProvider {
                         | Root.FLAG_SUPPORTS_SEARCH;
                 root.title = getContext().getString(R.string.root_bluetooth);
                 root.docId = getDocIdForFile(path);
+                root.path = path.getPath();
                 mRoots.add(root);
                 mIdToRoot.put(rootId, root);	
             }
@@ -395,8 +409,12 @@ public class ExternalStorageProvider extends StorageProvider {
         if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
+                flags |= Document.FLAG_SUPPORTS_DELETE;
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             } else {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
+                flags |= Document.FLAG_SUPPORTS_DELETE;
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             }
             flags |= Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_EDIT ;
         }
@@ -419,9 +437,7 @@ public class ExternalStorageProvider extends StorageProvider {
         row.add(Document.COLUMN_PATH, file.getAbsolutePath());
         row.add(Document.COLUMN_FLAGS, flags);
         if(file.isDirectory() && null != file.list()){
-        	String summary = FileUtils.formatFileCount(file.list().length);
-        	
-        	row.add(Document.COLUMN_SUMMARY, summary);
+        	row.add(Document.COLUMN_SUMMARY, FileUtils.formatFileCount(file.list().length));
         }
 
         // Only publish dates reasonably after epoch
@@ -430,7 +446,7 @@ public class ExternalStorageProvider extends StorageProvider {
             row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
         }
     }
-    
+
     private void includeZIPFile(MatrixCursor result, String docId, ZipEntry zipEntry)
             throws FileNotFoundException {
 
@@ -471,8 +487,10 @@ public class ExternalStorageProvider extends StorageProvider {
                 row.add(Root.COLUMN_TITLE, root.title);
                 row.add(Root.COLUMN_DOCUMENT_ID, root.docId);
                 row.add(Root.COLUMN_PATH, root.path);
-                if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId) || root.rootId.startsWith(ROOT_ID_SECONDARY)){
+                if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId)
+                        || root.rootId.startsWith(ROOT_ID_SECONDARY) || root.rootId.startsWith(ROOT_ID_PHONE)){
                 	row.add(Root.COLUMN_AVAILABLE_BYTES, path.getFreeSpace());
+                    row.add(Root.COLUMN_TOTAL_BYTES, path.getTotalSpace());
                 }
             }
         }
@@ -480,11 +498,26 @@ public class ExternalStorageProvider extends StorageProvider {
     }
 
     @Override
+    public boolean isChildDocument(String parentDocId, String docId) {
+        try {
+            final File parent = getFileForDocId(parentDocId).getCanonicalFile();
+            final File doc = getFileForDocId(docId).getCanonicalFile();
+            return FileUtils.contains(parent, doc);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(
+                    "Failed to determine if " + docId + " is child of " + parentDocId + ": " + e);
+        }
+    }
+
+    @Override
     public String createDocument(String docId, String mimeType, String displayName)
             throws FileNotFoundException {
         final File parent = getFileForDocId(docId);
-        File file;
+        if (!parent.isDirectory()) {
+            throw new IllegalArgumentException("Parent document isn't a directory");
+        }
 
+        File file;
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
             file = new File(parent, displayName);
             if (!file.mkdir()) {
@@ -530,6 +563,9 @@ public class ExternalStorageProvider extends StorageProvider {
         	if (deleteAfter) {
                 if (!FileUtils.deleteFile(fileFrom)) {
                     throw new IllegalStateException("Failed to delete " + fileFrom);
+                }
+                else{
+                    FileUtils.updateMedia(getContext(), fileFrom.getPath());
                 }
 			}
         }
@@ -652,12 +688,36 @@ public class ExternalStorageProvider extends StorageProvider {
         return getTypeForFile(file);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public ParcelFileDescriptor openDocument(
             String documentId, String mode, CancellationSignal signal)
             throws FileNotFoundException {
         final File file = getFileForDocId(documentId);
-        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);//ParcelFileDescriptor.parseMode(mode));
+        if(Utils.hasKitKat()){
+            final int pfdMode = ParcelFileDescriptor.parseMode(mode);
+            if (pfdMode == ParcelFileDescriptor.MODE_READ_ONLY) {
+                return ParcelFileDescriptor.open(file, pfdMode);
+            } else {
+                try {
+                    // When finished writing, kick off media scanner
+                    return ParcelFileDescriptor.open(file, pfdMode, mHandler, new ParcelFileDescriptor.OnCloseListener() {
+                        @Override
+                        public void onClose(IOException e) {
+                            final Intent intent = new Intent(
+                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                            intent.setData(Uri.fromFile(file));
+                            getContext().sendBroadcast(intent);
+                        }
+                    });
+                } catch (IOException e) {
+                    throw new FileNotFoundException("Failed to open for writing: " + e);
+                }
+            }
+        }
+        else{
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);//ParcelFileDescriptor.parseMode(mode));
+        }
     }
 
     @Override
@@ -677,13 +737,13 @@ public class ExternalStorageProvider extends StorageProvider {
     
         final long token = Binder.clearCallingIdentity();
         try {
-            if ("audio".equals(typeOnly)) {
+            if (MediaDocumentsProvider.TYPE_AUDIO.equals(typeOnly)) {
                 final long id = getAlbumForPathCleared(file.getPath());
                 return openOrCreateAudioThumbnailCleared(id, signal);
-            } else if ("image".equals(typeOnly)) {
+            } else if (MediaDocumentsProvider.TYPE_IMAGE.equals(typeOnly)) {
                 final long id = getImageForPathCleared(file.getPath());
                 return openOrCreateImageThumbnailCleared(id, signal);
-            } else if ("video".equals(typeOnly)) {
+            } else if (MediaDocumentsProvider.TYPE_VIDEO.equals(typeOnly)) {
                 final long id = getVideoForPathCleared(file.getPath());
                 return openOrCreateVideoThumbnailCleared(id, signal);
             } else {
@@ -706,7 +766,7 @@ public class ExternalStorageProvider extends StorageProvider {
         final int lastDot = name.lastIndexOf('.');
         if (lastDot >= 0) {
             final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            final String mime = MimeTypes.getMimeTypeFromExtension(extension);
             if (mime != null) {
                 return mime;
             }
@@ -745,7 +805,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
-    private static class DirectoryObserver extends FileObserver {
+    private class DirectoryObserver extends FileObserver {
         private static final int NOTIFY_EVENTS = ATTRIB | CLOSE_WRITE | MOVED_FROM | MOVED_TO
                 | CREATE | DELETE | DELETE_SELF | MOVE_SELF;
 
@@ -766,9 +826,17 @@ public class ExternalStorageProvider extends StorageProvider {
         public void onEvent(int event, String path) {
             if ((event & NOTIFY_EVENTS) != 0) {
                 if (LOG_INOTIFY) Log.d(TAG, "onEvent() " + event + " at " + path);
-                mResolver.notifyChange(mNotifyUri, null, false);
                 //notify roots changed
                 //mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+                switch ((event & NOTIFY_EVENTS)){
+                    case MOVED_FROM:
+                    case MOVED_TO:
+                    case CREATE:
+                    case DELETE:
+                        mResolver.notifyChange(mNotifyUri, null, false);
+                        FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(mFile, path));
+                        break;
+                }
             }
         }
 

@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.FileNotFoundException;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -42,6 +40,9 @@ import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+
+import java.io.FileNotFoundException;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -52,7 +53,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
 /**
- * Presents a {@link DocumentsContract} view of {@link MediaProvider} external
+ * Presents a {@link DocumentsContract} view of {MediaProvider} external
  * contents.
  */
 public class MediaDocumentsProvider extends StorageProvider {
@@ -79,17 +80,17 @@ public class MediaDocumentsProvider extends StorageProvider {
             "audio/*", "application/ogg", "application/x-flac");
 
     public static final String TYPE_IMAGES_ROOT = "images_root";
-    private static final String TYPE_IMAGES_BUCKET = "images_bucket";
-    private static final String TYPE_IMAGE = "image";
+    public static final String TYPE_IMAGES_BUCKET = "images_bucket";
+    public static final String TYPE_IMAGE = "image";
 
     public static final String TYPE_VIDEOS_ROOT = "videos_root";
-    private static final String TYPE_VIDEOS_BUCKET = "videos_bucket";
-    private static final String TYPE_VIDEO = "video";
+    public static final String TYPE_VIDEOS_BUCKET = "videos_bucket";
+    public static final String TYPE_VIDEO = "video";
 
     public static final String TYPE_AUDIO_ROOT = "audio_root";
-    private static final String TYPE_AUDIO = "audio";
-    private static final String TYPE_ARTIST = "artist";
-    private static final String TYPE_ALBUM = "album";
+    public static final String TYPE_AUDIO = "audio";
+    public static final String TYPE_ARTIST = "artist";
+    public static final String TYPE_ALBUM = "album";
 
     private static boolean sReturnedImagesEmpty = false;
     private static boolean sReturnedVideosEmpty = false;
@@ -108,7 +109,7 @@ public class MediaDocumentsProvider extends StorageProvider {
         return true;
     }
 
-    private static void notifyRootsChanged(Context context) {
+    public static void notifyRootsChanged(Context context) {
         context.getContentResolver()
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
@@ -401,7 +402,7 @@ public class MediaDocumentsProvider extends StorageProvider {
                 // include all unique buckets
                 cursor = resolver.query(Video.Media.EXTERNAL_CONTENT_URI,
                         VideoQuery.PROJECTION, null, null, VideoColumns.DATE_MODIFIED + " DESC");
-                copyNotificationUri(result, Images.Media.EXTERNAL_CONTENT_URI);
+                copyNotificationUri(result, Video.Media.EXTERNAL_CONTENT_URI);
                 while (cursor.moveToNext() && result.getCount() < 64) {
                     includeVideo(result, cursor);
                 }

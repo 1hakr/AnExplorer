@@ -2,8 +2,6 @@
 <resources>
 
     <string name="ga_trackingId">UA-41161328-1</string>
-    <string name="ga_appName">AnExplorer Min</string>
-    <string name="ga_appVersion">2.0</string>
     <bool name="ga_autoActivityTracking">true</bool>
     <bool name="ga_reportUncaughtExceptions">true</bool>
 

@@ -18,6 +18,81 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--
+         Normally just a redirection, but this is used to make ourselves a
+         dialog on large tablets
+
+    -->
+    <style name="Theme.Document" parent="@style/DocumentsTheme">
+    </style>
+
+    <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_menu_overflow</item>
+    </style>
+
+    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:displayOptions">showHome|useLogo</item>
+    </style>
+
+    <style name="Theme.About" parent="@style/DialogWhenReallyLarge">
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimary">@color/material_blue_grey_800</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
+
+    </style>
+
+
+    <style name="DialogWhenReallyLarge" parent="@style/Theme.AppCompat.Light.DarkActionBar"/>
+
+    <style name="DocumentsTheme" parent="@style/DialogWhenReallyLarge">
+        <item name="actionBarWidgetTheme">@null</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
+
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimary">@color/material_blue_grey_800</item>
+        <item name="colorAccent">@color/accentColor</item>
+        <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
+
+        <!--<item name="android:listDivider">@drawable/list_divider_material</item>-->
+
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="*android:windowFixedWidthMajor">@null</item>
+        <item name="*android:windowFixedWidthMinor">@null</item>
+        <item name="*android:windowMinWidthMajor">@null</item>
+        <item name="*android:windowMinWidthMinor">@null</item>
+        <item name="*android:windowFixedHeightMajor">80%</item>
+        <item name="*android:windowFixedHeightMinor">90%</item>
+
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
+
+        <!-- android transitions -->
+        <item name="*android:windowContentTransitions">true</item>
+        <item name="*android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="*android:windowAllowReturnTransitionOverlap">true</item>
+    </style>
+
+    <style name="Theme.Document.DailogPIN">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Setting" parent="@android:style/Theme.Holo.Light.DarkActionBar"/>
+
+    <style name="Theme.Note" parent="@style/DocumentsTheme">
+        <item name="windowActionBar">true</item>
+    </style>
+
+    <style name="DialogEnterNoAnimation">
+        <item name="android:windowEnterAnimation">@anim/no_animation</item>
+    </style>
+
+    <style name="DialogExitNoAnimation">
+        <item name="android:windowExitAnimation">@anim/no_animation</item>
+    </style>
+
     <style name="TextAppearance" />
 
     <style name="TextAppearance.Medium">
@@ -30,28 +105,10 @@
         <item name="android:textColor">?android:attr/textColorTertiary</item>
     </style>
 
-    <!--
-         Normally just a redirection, but this is used to make ourselves a
-         dialog on large tablets
-
-    -->
-    <style name="Theme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
-        <item name="android:actionOverflowButtonStyle">@style/DarkerOverflow</item>
-        <item name="android:actionModeBackground">@android:color/transparent</item>
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-    </style>
-
-    <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_menu_overflow</item>
-    </style>
-
-    <style name="ActionBar" parent="@android:style/Widget.ActionBar">
-        <item name="android:displayOptions">showHome|useLogo</item>
-    </style>
 
     <style name="MyTitleText">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">#ff49c0ec</item>
+        <item name="android:textColor">@color/accentColor</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">5dip</item>
@@ -64,7 +121,7 @@
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">#666666</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="*android:fontFamily">sans-serif-condensed</item>
     </style>
 
     <style name="Title">
@@ -72,23 +129,14 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textSize">30sp</item>
-        <item name="android:textColor">@color/blue</item>
+        <item name="android:textColor">@color/accentColor</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="*android:fontFamily">sans-serif-light</item>
     </style>
 
-    <style name="Theme.DailogPIN">
-        <item name="android:windowNoTitle">true</item>
+    <style name="ListProgress" parent="@style/Widget.AppCompat.ProgressBar"/>
+
+    <style name="PopupTheme" parent="@android:style/Widget.Holo.Spinner">
+        <item name="android:background">@drawable/abc_spinner_mtrl_am_alpha</item>
     </style>
-
-    <style name="DialogEnterNoAnimation">
-        <item name="android:windowEnterAnimation">@anim/no_animation</item>
-    </style>
-
-    <style name="DialogExitNoAnimation">
-        <item name="android:windowExitAnimation">@anim/no_animation</item>
-    </style>
-
-    <style name="ListProgress" parent="@android:style/Widget.Holo.Light.ProgressBar"/>
-
 </resources>

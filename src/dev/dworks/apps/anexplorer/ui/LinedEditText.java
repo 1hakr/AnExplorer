@@ -7,6 +7,8 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
+import dev.dworks.apps.anexplorer.R;
+
 /**
  * Defines a custom EditText View that draws lines between each line of text
  * that is displayed.
@@ -21,7 +23,7 @@ public class LinedEditText extends EditText {
 		mRect = new Rect();
 		mPaint = new Paint();
 		mPaint.setStyle(Paint.Style.STROKE);
-		mPaint.setColor(0x800000FF);
+		mPaint.setColor(context.getResources().getColor(R.color.statusBarColor));
 	}
 
 	@Override

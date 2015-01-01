@@ -17,10 +17,6 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
@@ -38,6 +34,11 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.SparseArray;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -49,8 +50,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
 /**
- * Presents a {@link DocumentsContract} view of {@link Apps}
- * contents.
+ * Presents a {@link DocumentsContract} view of Apps contents.
  */
 @SuppressLint("DefaultLocale")
 public class AppsProvider extends DocumentsProvider {
@@ -63,7 +63,7 @@ public class AppsProvider extends DocumentsProvider {
     
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
-            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES,
+            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -115,19 +115,21 @@ public class AppsProvider extends DocumentsProvider {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
         final RowBuilder row = result.newRow();
         row.add(Root.COLUMN_ROOT_ID, ROOT_ID_APP);
-        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
+        row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row.add(Root.COLUMN_ICON, R.drawable.ic_root_apps);
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_apps));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_APP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, false));
+        row.add(Root.COLUMN_TOTAL_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, true));
         
         final RowBuilder row1 = result.newRow();
         row1.add(Root.COLUMN_ROOT_ID, ROOT_ID_PROCESS);
-        row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
+        row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row1.add(Root.COLUMN_ICON, R.drawable.ic_root_process);
         row1.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_processes));
         row1.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_PROCESS);
         row1.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, false));
+        row1.add(Root.COLUMN_TOTAL_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, true));
         return result;
     }
     
@@ -197,6 +199,9 @@ public class AppsProvider extends DocumentsProvider {
     	}
         if (!FileUtils.moveFile(fileFrom, fileTo, fileName)) {
             throw new IllegalStateException("Failed to copy " + fileFrom);
+        }
+        else{
+            FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(), fileName));
         }
     }
 

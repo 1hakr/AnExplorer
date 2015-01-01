@@ -16,6 +16,15 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.app.ActivityManager.MemoryInfo;
+import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
+import android.os.storage.StorageManager;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
@@ -23,13 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
-import android.content.Context;
-import android.os.Environment;
-import android.os.StatFs;
-import android.os.storage.StorageManager;
 
 public final class StorageUtils {
 
@@ -107,6 +109,7 @@ public final class StorageUtils {
 	public static long getExtStorageSize(String path, boolean isTotal){
 		return getPartionSize(path, isTotal);		
 	}
+
 	public long getPartionSize(int type, boolean isTotal){
 		Long size = 0L;
 		
@@ -133,7 +136,8 @@ public final class StorageUtils {
 		return size;
 	}
 	
-	private long getSizeTotalRAM(boolean isTotal) { 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private long getSizeTotalRAM(boolean isTotal) {
 		long sizeInBytes = 1000;
 		MemoryInfo mi = new MemoryInfo();
 		activityManager.getMemoryInfo(mi);
@@ -165,17 +169,25 @@ public final class StorageUtils {
 	/**
 	 * @param isTotal  The parameter for calculating total size
 	 * @return return Total Size when isTotal is {@value true} else return Free Size of Internal memory(data folder) 
-	 */	
-	@SuppressWarnings("deprecation")
+	 */
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @SuppressWarnings("deprecation")
 	private static long getPartionSize(String path, boolean isTotal){
 		StatFs stat = null;
 		try {
 			stat = new StatFs(path);	
 		} catch (Exception e) { }
 		if(null != stat){
-			final long blockSize = stat.getBlockSize();
-			final long availableBlocks = (isTotal ? (long)stat.getBlockCount() : (long)stat.getAvailableBlocks());
-			return availableBlocks * blockSize;
+            if(Utils.hasJellyBeanMR2()){
+                final long blockSize = stat.getBlockSizeLong();
+                final long availableBlocks = (isTotal ? (long)stat.getBlockCountLong() : (long)stat.getAvailableBlocksLong());
+                return availableBlocks * blockSize;
+            }
+            else{
+                final long blockSize = stat.getBlockSize();
+                final long availableBlocks = (isTotal ? (long)stat.getBlockCount() : (long)stat.getAvailableBlocks());
+                return availableBlocks * blockSize;
+            }
 		}
 		else return 0L;
 	}

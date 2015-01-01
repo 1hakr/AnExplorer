@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.dworks.apps.anexplorer"
-    android:versionCode="38"
-    android:versionName="2.2" >
+    android:versionCode="39"
+    android:versionName="2.5" >
 
     <permission
         android:name="android.permission.MANAGE_DOCUMENTS"
@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -36,47 +35,44 @@
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
             android:name=".DocumentsActivity"
-            android:theme="@style/Theme" >
-            <intent-filter android:priority="100" >
+            android:theme="@style/Theme.Document" >
+            <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
-
                 <data android:mimeType="*/*" />
             </intent-filter>
-            <intent-filter android:priority="100" >
+            <intent-filter>
                 <action android:name="android.intent.action.CREATE_DOCUMENT" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
-
                 <data android:mimeType="*/*" />
             </intent-filter>
-            <intent-filter android:priority="100" >
+            <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.OPENABLE" />
-
                 <data android:mimeType="*/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.provider.action.MANAGE_ROOT" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="vnd.android.document/root" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 
+            <!--For Phones and tablets-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!--For TV-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
@@ -84,11 +80,11 @@
             android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
-            android:theme="@style/Theme" />
+            android:theme="@style/Theme.Setting" />
         <activity
             android:name=".AboutActivity"
             android:label="About"
-            android:theme="@style/Theme"
+            android:theme="@style/Theme.About"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
 
@@ -190,15 +186,11 @@
                 <data android:scheme="file" />
             </intent-filter>
         </receiver>
-        <!-- AdMob -->
-        <activity
-            android:name="com.google.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
         <activity
             android:name=".NoteActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="sensor"
-            android:theme="@style/Theme" >
+            android:theme="@style/Theme.Note" >
             <intent-filter android:label="Text Viewer" >
                 <action android:name="android.intent.action.VIEW" />
 
@@ -208,10 +200,22 @@
             </intent-filter>
         </activity>
 
+        <!-- AdMob -->
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="8d9d245a1d53a9ea0d140f5ea40de7cf4b3ab098" />
 
+        <activity android:name=".TestActivity" android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

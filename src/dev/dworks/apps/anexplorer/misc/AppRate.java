@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -12,6 +13,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import dev.dworks.apps.anexplorer.R;
 
 /**
@@ -23,6 +25,7 @@ public class AppRate {
     private final String KEY_COUNT = "count";
     private final String KEY_CLICKED = "clicked";
     private Activity activity;
+    private ViewGroup viewGroup;
     private String text;
     private int initialLaunchCount = 5;
     private RetryPolicy policy = RetryPolicy.EXPONENTIAL;
@@ -30,9 +33,15 @@ public class AppRate {
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
     private int delay = 0;
+    private ViewGroup mainView;
 
     private AppRate(Activity activity) {
         this.activity = activity;
+    }
+
+    private AppRate(Activity activity, ViewGroup viewGroup) {
+        this.activity = activity;
+        this.viewGroup = viewGroup;
     }
 
     public static AppRate with(Activity activity) {
@@ -43,9 +52,16 @@ public class AppRate {
         return instance;
     }
 
+    public static AppRate with(Activity activity, ViewGroup viewGroup) {
+        AppRate instance = new AppRate(activity, viewGroup);
+        instance.text = "Like AnExplorer? Rate It!";//activity.getString(R.string.dra_rate_app);
+        instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
+        instance.editor = instance.settings.edit();
+        return instance;
+    }
 
     /**
-     * Text to be displayed in the view
+     * Text to be displayed in the viewGroup
      *
      * @param text text to be displayed
      * @return the {@link AppRate} instance
@@ -56,7 +72,7 @@ public class AppRate {
     }
 
     /**
-     * Text to be displayed in the view
+     * Text to be displayed in the viewGroup
      *
      * @param textRes text ressource to be displayed
      * @return the {@link AppRate} instance
@@ -67,7 +83,7 @@ public class AppRate {
     }
 
     /**
-     * Initial times {@link AppRate} has to be called before the view is shown
+     * Initial times {@link AppRate} has to be called before the viewGroup is shown
      *
      * @param initialLaunchCount times count
      * @return the {@link AppRate} instance
@@ -111,7 +127,7 @@ public class AppRate {
 
 
     /**
-     * Check and show if showing the view is needed
+     * Check and show if showing the viewGroup is needed
      */
     public void checkAndShow() {
         incrementViews();
@@ -150,7 +166,13 @@ public class AppRate {
     }
 
     private void showAppRate() {
-        final ViewGroup mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if(null != viewGroup){
+            mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, ((ViewGroup) viewGroup), false);
+        }
+        else{
+            mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, null);
+        }
 
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
@@ -201,7 +223,13 @@ public class AppRate {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mainView.removeAllViews();
+                if(null != viewGroup){
+                    viewGroup.setVisibility(View.GONE);
+                    viewGroup.removeAllViews();
+                }
+                else {
+                    mainView.removeAllViews();
+                }
 
             }
 
@@ -214,9 +242,14 @@ public class AppRate {
     }
 
     private void displayViews(ViewGroup mainView) {
-    	LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        activity.addContentView(mainView, params);
-
+        if(null != viewGroup){
+            viewGroup.setVisibility(View.VISIBLE);
+            viewGroup.addView(mainView);
+        }
+        else{
+            LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            activity.addContentView(mainView, params);
+        }
 
         Animation fadeInAnimation = AnimationUtils.loadAnimation(activity, android.R.anim.fade_in);
         mainView.startAnimation(fadeInAnimation);

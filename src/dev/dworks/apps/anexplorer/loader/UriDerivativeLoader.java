@@ -17,10 +17,13 @@
 
 package dev.dworks.apps.anexplorer.loader;
 
-import java.io.Closeable;
-
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.ContentObserver;
+import android.os.Build;
+
+import java.io.Closeable;
+
 import dev.dworks.apps.anexplorer.misc.AsyncTaskLoader;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
@@ -131,6 +134,7 @@ public abstract class UriDerivativeLoader<P, R> extends AsyncTaskLoader<R> {
         getContext().getContentResolver().unregisterContentObserver(mObserver);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void closeQuietly(R result) {
         if (result instanceof Closeable) {
             try {

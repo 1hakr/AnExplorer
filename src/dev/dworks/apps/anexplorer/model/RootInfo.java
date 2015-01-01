@@ -16,15 +16,6 @@
 
 package dev.dworks.apps.anexplorer.model;
 
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ProtocolException;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,6 +23,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ProtocolException;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
@@ -41,6 +38,10 @@ import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 /**
  * Representation of a {@link Root}.
@@ -59,6 +60,7 @@ public class RootInfo implements Durable, Parcelable {
     public String summary;
     public String documentId;
     public long availableBytes;
+    public long totalBytes;
     public String mimeTypes;
     public String path;
 
@@ -81,6 +83,7 @@ public class RootInfo implements Durable, Parcelable {
         summary = null;
         documentId = null;
         availableBytes = -1;
+        totalBytes = -1;
         mimeTypes = null;
         path = null;
 
@@ -102,6 +105,7 @@ public class RootInfo implements Durable, Parcelable {
                 summary = DurableUtils.readNullableString(in);
                 documentId = DurableUtils.readNullableString(in);
                 availableBytes = in.readLong();
+                totalBytes = in.readLong();
                 mimeTypes = DurableUtils.readNullableString(in);
                 deriveFields();
                 break;
@@ -121,6 +125,7 @@ public class RootInfo implements Durable, Parcelable {
         DurableUtils.writeNullableString(out, summary);
         DurableUtils.writeNullableString(out, documentId);
         out.writeLong(availableBytes);
+        out.writeLong(totalBytes);
         DurableUtils.writeNullableString(out, mimeTypes);
     }
 
@@ -158,6 +163,7 @@ public class RootInfo implements Durable, Parcelable {
         root.summary = getCursorString(cursor, Root.COLUMN_SUMMARY);
         root.documentId = getCursorString(cursor, Root.COLUMN_DOCUMENT_ID);
         root.availableBytes = getCursorLong(cursor, Root.COLUMN_AVAILABLE_BYTES);
+        root.totalBytes = getCursorLong(cursor, Root.COLUMN_TOTAL_BYTES);
         root.mimeTypes = getCursorString(cursor, Root.COLUMN_MIME_TYPES);
         root.path = getCursorString(cursor, Root.COLUMN_PATH);
         root.deriveFields();
@@ -168,7 +174,9 @@ public class RootInfo implements Durable, Parcelable {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
 
         // TODO: remove these special case icons
-        if (isExternalStorage()) {
+        if (isInternalStorage()) {
+            derivedIcon = R.drawable.ic_root_internal;
+        } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
@@ -190,7 +198,7 @@ public class RootInfo implements Durable, Parcelable {
         } else if (isAppBackupFolder()) {
             derivedIcon = R.drawable.ic_root_folder_am;
         } else if (isBookmarkFolder()) {
-            derivedIcon = R.drawable.ic_root_folder_am;
+            derivedIcon = R.drawable.ic_root_bookmark;
         } else if (isHiddenFolder()) {
             derivedIcon = R.drawable.ic_root_hidden;
         } else if (isDownloads()) {
@@ -219,6 +227,11 @@ public class RootInfo implements Durable, Parcelable {
     public boolean isExternalStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
                 && ExternalStorageProvider.ROOT_ID_PRIMARY_EMULATED.equals(rootId);
+    }
+
+    public boolean isInternalStorage() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && title.toLowerCase().contains("internal");
     }
 
     public boolean isPhoneStorage() {
@@ -315,6 +328,32 @@ public class RootInfo implements Durable, Parcelable {
     public Drawable loadIcon(Context context) {
         if (derivedIcon != 0) {
             return context.getResources().getDrawable(derivedIcon);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadDrawerIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintColor(context, derivedIcon, R.color.item_root_icon);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadGridIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.textColorPrimaryInverse);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadToolbarIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.colorControlNormal);
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }

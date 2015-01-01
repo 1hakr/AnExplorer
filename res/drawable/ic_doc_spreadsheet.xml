@@ -18,5 +18,5 @@
 -->
 
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-        android:src="@drawable/ic_doc_spreadsheet_am" >
+        android:src="@drawable/ic_doc_spreadsheet" >
 </bitmap>

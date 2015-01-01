@@ -17,30 +17,7 @@
 
 package dev.dworks.apps.anexplorer;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
-import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Executor;
-
-import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -53,14 +30,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
@@ -69,36 +45,55 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.util.LruCache;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuItem.OnActionExpandListener;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.mrengineer13.snackbar.SnackBar;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.common.collect.Maps;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Executor;
+
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
+import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.MoveFragment;
+import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
@@ -114,7 +109,6 @@ import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -127,8 +121,23 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
+import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
+import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 
-public class DocumentsActivity extends Activity {
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN_TREE;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
+import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
+
+public class DocumentsActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
 
     private static final String EXTRA_STATE = "state";
@@ -142,9 +151,13 @@ public class DocumentsActivity extends Activity {
 
     private SearchView mSearchView;
 
+    private Toolbar mToolbar;
+    private Spinner mToolbarStack;
+
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private View mRootsContainer;
+    private View mInfoContainer;
 
     private DirectoryContainerView mDirectoryContainer;
 
@@ -152,18 +165,35 @@ public class DocumentsActivity extends Activity {
     private boolean mIgnoreNextClose;
     private boolean mIgnoreNextCollapse;
 
+    private boolean mSearchExpanded;
+
     private RootsCache mRoots;
     private State mState;
 	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
+    private FrameLayout mAlertContainer;
+    private FrameLayout mRateContainer;
+    private AdView mAdView;
+    private boolean mActionMode;
+    private LruCache<String, Long> mFileSizeCache;
+    private FloatingActionsMenu mActionMenu;
+    private FloatingActionButton mCreateFile;
+    private FloatingActionButton mCreateFolder;
+    private FloatingActionButton mPaste;
 
-	private boolean mActionMode;
-
-	@Override
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
     public void onCreate(Bundle icicle) {
-    	if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat()){
-    		setTheme(R.style.Theme_Translucent);
-    	}
+
+        if(SettingsActivity.getTranslucentMode(this)){
+            if(Utils.hasLollipop()){
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            }
+            else if(Utils.hasKitKat()){
+                setTheme(R.style.Theme_Document_Translucent);
+            }
+        }
+        setUpStatusBar();
     	
 /*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog()
@@ -176,70 +206,46 @@ public class DocumentsActivity extends Activity {
 
 		mRoots = DocumentsApplication.getRootsCache(this);
 
+        mFileSizeCache = new LruCache<String, Long>(100);
+
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
 
+        final Context context = this;
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
-        
+
         if (mShowAsDialog) {
         	if(SettingsActivity.getAsDialog(this)){
-                // backgroundDimAmount from theme isn't applied; do it manually
                 final WindowManager.LayoutParams a = getWindow().getAttributes();
-                a.dimAmount = 0.6f;
-                getWindow().setAttributes(a);
 
-                getWindow().setFlags(0, WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-                getWindow().setFlags(~0, WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-                // Inset ourselves to look like a dialog
                 final Point size = new Point();
                 getWindowManager().getDefaultDisplay().getSize(size);
+                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
 
-                final int width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-                final int height = (int) res.getFraction(R.dimen.dialog_height, size.y, size.y);
-                final int insetX = (size.x - width) / 2;
-                final int insetY = (size.y - height) / 2;
-
-                final Drawable before = getWindow().getDecorView().getBackground();
-                final Drawable after = new InsetDrawable(before, insetX, insetY, insetX, insetY);
-                ViewCompat.setBackground(getWindow().getDecorView(), after);
-
-                // Dismiss when touch down in the dimmed inset area
-                getWindow().getDecorView().setOnTouchListener(new OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                            final float x = event.getX();
-                            final float y = event.getY();
-                            if (x < insetX || x > v.getWidth() - insetX || y < insetY
-                                    || y > v.getHeight() - insetY) {
-                                finish();
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                });        		
+                getWindow().setAttributes(a);
         	}
-
         } else {
+
+            mRootsContainer = findViewById(R.id.drawer_roots);
+            mInfoContainer = findViewById(R.id.container_info);
+
             // Non-dialog means we have a drawer
             mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                    R.drawable.ic_drawer_glyph, R.string.drawer_open, R.string.drawer_close);
-
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
             mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-            
-            mRootsContainer = findViewById(R.id.container_roots);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
+            lockInfoContainter();
         }
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
-        
+        mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
+        mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
+
+        initControls();
+
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
             mAuthenticated = icicle.getBoolean(EXTRA_AUTHENTICATED);
@@ -248,13 +254,26 @@ public class DocumentsActivity extends Activity {
             buildDefaultState();
         }
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
+        if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat() && !Utils.hasLollipop()) {
+            ((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
+            mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
+        }
+
+
+        mToolbarStack = (Spinner) findViewById(R.id.stack);
+        mToolbarStack.setOnItemSelectedListener(mStackListener);
+
+        setSupportActionBar(mToolbar);
+
         changeActionBarColor();
         initProtection();
-        
+
         // Hide roots when we're managing a specific root
         if (mState.action == ACTION_MANAGE) {
             if (mShowAsDialog) {
-                findViewById(R.id.dialog_roots).setVisibility(View.GONE);
+                findViewById(R.id.container_roots).setVisibility(View.GONE);
             } else {
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
@@ -262,8 +281,10 @@ public class DocumentsActivity extends Activity {
 
         if (mState.action == ACTION_CREATE) {
             final String mimeType = getIntent().getType();
-            final String title = getIntent().getStringExtra(Intent.EXTRA_TITLE);
+            final String title = getIntent().getStringExtra(IntentUtils.EXTRA_TITLE);
             SaveFragment.show(getFragmentManager(), mimeType, title);
+        } else if (mState.action == ACTION_OPEN_TREE) {
+            PickFragment.show(getFragmentManager());
         }
 
         if (mState.action == ACTION_BROWSE) {
@@ -284,7 +305,7 @@ public class DocumentsActivity extends Activity {
             		onRootPicked(getDownloadRoot(), true);
             	}
             	else{
-                    new RestoreStackTask().execute();	
+                    new RestoreStackTask().execute();
             	}
             }
         } else {
@@ -292,12 +313,36 @@ public class DocumentsActivity extends Activity {
         }
     }
 
-	private void initProtection() {
+    private void lockInfoContainter() {
+        if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            mDrawerLayout.closeDrawer(mInfoContainer);
+        }
+
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, getGravity());
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public int getGravity() {
+        if(Utils.hasJellyBeanMR1()){
+            Configuration config = getResources().getConfiguration();
+            if(config.getLayoutDirection() != View.LAYOUT_DIRECTION_LTR){
+                return Gravity.LEFT;
+            }
+        }
+        return Gravity.RIGHT;
+    }
+
+    public static boolean isRTL(Locale locale) {
+        final int directionality = Character.getDirectionality(locale.getDisplayName().charAt(0));
+        return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
+                directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
+    }
+    private void initProtection() {
 
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
 			return;
 		}
-        final Dialog d = new Dialog(this, R.style.Theme_DailogPIN);
+        final Dialog d = new Dialog(this, R.style.Theme_Document_DailogPIN);
         d.setContentView(new PinViewHelper((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
             public void onEnter(String password) {
                 super.onEnter(password);
@@ -306,7 +351,7 @@ public class DocumentsActivity extends Activity {
                 	d.dismiss();
                 }
                 else {
-                    Toast.makeText(DocumentsActivity.this, getString(R.string.incorrect_pin), Toast.LENGTH_SHORT).show();
+                    showError(R.string.incorrect_pin);
                 }
             };
             
@@ -333,11 +378,13 @@ public class DocumentsActivity extends Activity {
             mState.action = ACTION_OPEN;
         } else if (IntentUtils.ACTION_CREATE_DOCUMENT.equals(action)) {
             mState.action = ACTION_CREATE;
-        } else if (Intent.ACTION_GET_CONTENT.equals(action)) {
+        } else if (IntentUtils.ACTION_GET_CONTENT.equals(action)) {
             mState.action = ACTION_GET_CONTENT;
+        } else if (IntentUtils.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
+            mState.action = ACTION_OPEN_TREE;
         } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
-            //mState.action = ACTION_MANAGE;
-            mState.action = ACTION_BROWSE;
+            mState.action = ACTION_MANAGE;
+            //mState.action = ACTION_BROWSE;
         } else{
             mState.action = ACTION_BROWSE;
         }
@@ -356,7 +403,7 @@ public class DocumentsActivity extends Activity {
             mState.acceptMimes = new String[] { intent.getType() };
         }
 
-        mState.localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, true);
+        mState.localOnly = intent.getBooleanExtra(IntentUtils.EXTRA_LOCAL_ONLY, true);
         mState.forceAdvanced = intent.getBooleanExtra(DocumentsContract.EXTRA_SHOW_ADVANCED	, false);
         mState.showAdvanced = mState.forceAdvanced
                 | SettingsActivity.getDisplayAdvancedDevices(this);
@@ -485,9 +532,9 @@ public class DocumentsActivity extends Activity {
             mState.showSize = SettingsActivity.getDisplayFileSize(this);
             mState.showFolderSize = SettingsActivity.getDisplayFolderSize(this);
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
-            invalidateOptionsMenu();
+            invalidateMenu();
         }
-        AppRate.with(this).listener(new AppRate.OnShowListener() {
+        AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
             @Override
             public void onRateAppShowing() {
                 // View is shown
@@ -515,24 +562,20 @@ public class DocumentsActivity extends Activity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
+            if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+                mDrawerLayout.closeDrawer(mInfoContainer);
+            }
             mDrawerToggle.onDrawerOpened(drawerView);
             updateActionBar();
-            invalidateOptionsMenu();
+            invalidateMenu();
         }
 
         @Override
         public void onDrawerClosed(View drawerView) {
-        	switch (drawerView.getId()) {
-			case R.id.container_roots:
-	            mDrawerToggle.onDrawerClosed(drawerView);
-	            updateActionBar();
-	            invalidateOptionsMenu();
-				break;
-				
-			case R.id.container_info:
-				mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-				break;
-			}
+            lockInfoContainter();
+            mDrawerToggle.onDrawerClosed(drawerView);
+            updateActionBar();
+            invalidateMenu();
         }
 
         @Override
@@ -540,6 +583,14 @@ public class DocumentsActivity extends Activity {
             mDrawerToggle.onDrawerStateChanged(newState);
         }
     };
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (mDrawerToggle != null) {
+            mDrawerToggle.onConfigurationChanged(newConfig);
+        }
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -563,11 +614,10 @@ public class DocumentsActivity extends Activity {
     	if(!mShowAsDialog){
     		setRootsDrawerOpen(false);
             if (open) {
-            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.RIGHT);
-                mDrawerLayout.openDrawer(Gravity.RIGHT);
+            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, mInfoContainer);
+                mDrawerLayout.openDrawer(mInfoContainer);
             } else {
-            	mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.RIGHT);
-                mDrawerLayout.closeDrawer(Gravity.RIGHT);
+                lockInfoContainter();
             }
     	}
     }
@@ -582,39 +632,56 @@ public class DocumentsActivity extends Activity {
     }
 
     public void updateActionBar() {
-        final ActionBar actionBar = getActionBar();
-
-        actionBar.setDisplayShowHomeEnabled(true);
-
+        final RootInfo root = getCurrentRoot();
+        //final boolean showRootIcon = mShowAsDialog || (mState.action == DocumentsActivity.State.ACTION_MANAGE);
         final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
-        actionBar.setDisplayHomeAsUpEnabled(showIndicator);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
+        if(mShowAsDialog){
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
+            mToolbar.setLogo(R.drawable.logo);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            if (mDrawerToggle != null) {
+                mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
+            }
         }
+        mToolbar.setNavigationContentDescription(R.string.drawer_open);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setRootsDrawerOpen(!isRootsDrawerOpen());
+            }
+        });
 
         if (isRootsDrawerOpen()) {
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-            actionBar.setIcon(new ColorDrawable());
-
-            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
-                actionBar.setTitle(R.string.app_name);
-                actionBar.setIcon(R.drawable.logo);
-            } else if (mState.action == ACTION_CREATE) {
-                actionBar.setTitle(R.string.title_save);
+            //mToolbar.setNavigationIcon(root != null ? root.loadToolbarIcon(mToolbar.getContext()) : null);
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT
+                    || mState.action == ACTION_BROWSE || mState.action == ACTION_OPEN_TREE) {
+                //mToolbar.setTitle(R.string.title_open);
+                mToolbar.setTitle(R.string.app_name);
+            } else if (mState.action == DocumentsActivity.State.ACTION_CREATE) {
+                mToolbar.setTitle(R.string.title_save);
             }
-        } else {
-            final RootInfo root = getCurrentRoot();
-            //actionBar.setIcon(root != null ? root.loadIcon(this) : null);
+            mToolbarStack.setVisibility(View.GONE);
+            mToolbarStack.setAdapter(null);
 
-            if (mState.stack.size() <= 1) {
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                actionBar.setTitle(root.title);
+        } else {
+            //mToolbar.setNavigationIcon(R.drawable.ic_drawer_glyph);
+
+            if (mSearchExpanded) {
+                mToolbar.setTitle(null);
+                mToolbarStack.setVisibility(View.GONE);
+                mToolbarStack.setAdapter(null);
             } else {
-                mIgnoreNextNavigation = true;
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-                actionBar.setTitle(null);
-                actionBar.setListNavigationCallbacks(mStackAdapter, mStackListener);
-                actionBar.setSelectedNavigationItem(mStackAdapter.getCount() - 1);
+                if (mState.stack.size() <= 1) {
+                    mToolbar.setTitle(root.title);
+                    mToolbarStack.setVisibility(View.GONE);
+                    mToolbarStack.setAdapter(null);
+                } else {
+                    mToolbar.setTitle(null);
+                    mToolbarStack.setVisibility(View.VISIBLE);
+                    mToolbarStack.setAdapter(mStackAdapter);
+                    mIgnoreNextNavigation = true;
+                    mToolbarStack.setSelection(mStackAdapter.getCount() - 1);
+                }
             }
         }
     }
@@ -624,18 +691,12 @@ public class DocumentsActivity extends Activity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.activity, menu);
 
-        // Actions are always visible when showing as dialog
-/*        if (mShowAsDialog) {
-            for (int i = 0; i < menu.size(); i++) {
-                menu.getItem(i).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            }
-        }
-*/
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
         mSearchView = (SearchView) searchMenu.getActionView();
-        mSearchView.setOnQueryTextListener(new OnQueryTextListener() {
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                mSearchExpanded = true;
                 mState.currentSearch = query;
                 mSearchView.clearFocus();
                 onCurrentDirectoryChanged(ANIM_NONE);
@@ -648,16 +709,20 @@ public class DocumentsActivity extends Activity {
             }
         });
 
-        searchMenu.setOnActionExpandListener(new OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(searchMenu, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                mSearchExpanded = true;
+                updateActionBar();
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
+                mSearchExpanded = false;
                 if (mIgnoreNextCollapse) {
                     mIgnoreNextCollapse = false;
+                    updateActionBar();
                     return true;
                 }
 
@@ -670,8 +735,10 @@ public class DocumentsActivity extends Activity {
         mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
+                mSearchExpanded = false;
                 if (mIgnoreNextClose) {
                     mIgnoreNextClose = false;
+                    updateActionBar();
                     return false;
                 }
 
@@ -687,14 +754,15 @@ public class DocumentsActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        updateMenuItems(menu);
+        return true;
+    }
 
+    public void updateMenuItems(Menu menu){
         final FragmentManager fm = getFragmentManager();
-
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        final MenuItem createDir = menu.findItem(R.id.menu_create_dir);
-        //final MenuItem createFile = menu.findItem(R.id.menu_create_file);
         final MenuItem search = menu.findItem(R.id.menu_search);
         final MenuItem sort = menu.findItem(R.id.menu_sort);
         final MenuItem sortSize = menu.findItem(R.id.menu_sort_size);
@@ -704,15 +772,13 @@ public class DocumentsActivity extends Activity {
 
         // Open drawer means we hide most actions
         if (isRootsDrawerOpen()) {
-            createDir.setVisible(false);
-            //createFile.setVisible(false);
             search.setVisible(false);
             sort.setVisible(false);
             grid.setVisible(false);
             list.setVisible(false);
             mIgnoreNextCollapse = true;
             search.collapseActionView();
-            return true;
+            return;
         }
 
         sort.setVisible(cwd != null);
@@ -721,7 +787,7 @@ public class DocumentsActivity extends Activity {
 
         if (mState.currentSearch != null) {
             // Search uses backend ranking; no sorting
-            sort.setVisible(false);
+            //sort.setVisible(false);
 
             search.expandActionView();
 
@@ -741,9 +807,7 @@ public class DocumentsActivity extends Activity {
         sortSize.setVisible(mState.showSize);
 
         final boolean searchVisible;
-        if (mState.action == ACTION_CREATE) {
-            createDir.setVisible(cwd != null && cwd.isCreateSupported());
-            //createFile.setVisible(cwd != null && cwd.isCreateSupported());
+        if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
             searchVisible = false;
 
             // No display options in recent directories
@@ -751,40 +815,32 @@ public class DocumentsActivity extends Activity {
                 grid.setVisible(false);
                 list.setVisible(false);
             }
-            if(null != SaveFragment.get(fm))
-            SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
-        } else if (mState.action == ACTION_GET_CONTENT) {
-        	createDir.setVisible(false);
-            searchVisible = root != null
-                    && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
+            if (mState.action == State.ACTION_CREATE) {
+                if (null != SaveFragment.get(fm))
+                    SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+            }
         } else {
-        	createDir.setVisible(cwd != null && cwd.isCreateSupported());
-        	//createFile.setVisible(cwd != null && cwd.isCreateSupported());
-            //createDir.setVisible(false);
-
             searchVisible = root != null
                     && ((root.flags & Root.FLAG_SUPPORTS_SEARCH) != 0);
-            
+            // TODO: Is this useful?
             if(null != SaveFragment.get(fm))
-            SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
-            
+                SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+
             if(null != MoveFragment.get(fm))
-            	MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isEditSupported());
+                MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isEditSupported());
         }
 
         // TODO: close any search in-progress when hiding
         search.setVisible(searchVisible);
 
         settings.setVisible(mState.action != ACTION_MANAGE);
-
-        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle != null) {
-        	if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)){
-            	mDrawerLayout.closeDrawer(Gravity.RIGHT);
+        	if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            	mDrawerLayout.closeDrawer(mInfoContainer);
             }
             if(mDrawerToggle.onOptionsItemSelected(item)){
             	return true;
@@ -794,14 +850,6 @@ public class DocumentsActivity extends Activity {
         final int id = item.getItemId();
         if (id == android.R.id.home) {
             onBackPressed();
-            return true;
-        } else if (id == R.id.menu_create_dir) {
-            CreateDirectoryFragment.show(getFragmentManager());
-            return true;
-        } else if (id == R.id.menu_create_file) {
-        	onStateChanged();
-            SaveFragment.show(getFragmentManager(), "text/plain", "File.txt");
-            //SaveFragment.get(getFragmentManager()).setReplaceTarget(getCurrentDirectory());
             return true;
         } else if (id == R.id.menu_search) {
             return false;
@@ -835,7 +883,7 @@ public class DocumentsActivity extends Activity {
      * Update UI to reflect internal state changes not from user.
      */
     public void onStateChanged() {
-        invalidateOptionsMenu();
+        invalidateMenu();
     }
 
     /**
@@ -860,6 +908,17 @@ public class DocumentsActivity extends Activity {
         }
     }
 
+    /**
+     * refresh Data currently shown
+     */
+    private void refreshData() {
+        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
+        if (directory != null) {
+            directory.onUserSortOrderChanged();
+        }
+    }
+
+
     public void setPending(boolean pending) {
         final SaveFragment save = SaveFragment.get(getFragmentManager());
         if (save != null) {
@@ -869,6 +928,9 @@ public class DocumentsActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if(mSearchExpanded){
+
+        }
         if (!mState.stackTouched) {
             super.onBackPressed();
             return;
@@ -879,6 +941,7 @@ public class DocumentsActivity extends Activity {
             mState.stack.pop();
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
+            // TODO: open root drawer once we can capture back key
             super.onBackPressed();
         } else {
             super.onBackPressed();
@@ -919,7 +982,7 @@ public class DocumentsActivity extends Activity {
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_title, parent, false);
+                        .inflate(R.layout.item_subdir_title, parent, false);
             }
 
             final TextView title = (TextView) convertView.findViewById(android.R.id.title);
@@ -941,7 +1004,7 @@ public class DocumentsActivity extends Activity {
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_title, parent, false);
+                        .inflate(R.layout.item_subdir, parent, false);
             }
 
             final ImageView subdir = (ImageView) convertView.findViewById(R.id.subdir);
@@ -961,20 +1024,24 @@ public class DocumentsActivity extends Activity {
         }
     };
 
-    private OnNavigationListener mStackListener = new OnNavigationListener() {
+    private AdapterView.OnItemSelectedListener mStackListener = new AdapterView.OnItemSelectedListener() {
         @Override
-        public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             if (mIgnoreNextNavigation) {
                 mIgnoreNextNavigation = false;
-                return false;
+                return;
             }
 
-            while (mState.stack.size() > itemPosition + 1) {
+            while (mState.stack.size() > position + 1) {
                 mState.stackTouched = true;
                 mState.stack.pop();
             }
             onCurrentDirectoryChanged(ANIM_UP);
-            return true;
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            // Ignored
         }
     };
 
@@ -1016,6 +1083,18 @@ public class DocumentsActivity extends Activity {
     	return mShowAsDialog;
     }
 
+    public boolean isCreateSupported() {
+        final DocumentInfo cwd = getCurrentDirectory();
+        if (mState.action == ACTION_OPEN_TREE) {
+            return cwd != null && cwd.isCreateSupported();
+        } else if (mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
+            return false;
+        } else {
+            return cwd != null && cwd.isCreateSupported();
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onCurrentDirectoryChanged(int anim) {
     	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
     	if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
@@ -1024,10 +1103,7 @@ public class DocumentsActivity extends Activity {
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
-        
-        if(!SettingsActivity.getFolderAnimation(this)){
-        	anim = 0;
-        }
+
         //TODO : this has to be done nicely
         if(cwd == null){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
@@ -1044,14 +1120,14 @@ public class DocumentsActivity extends Activity {
 				e.printStackTrace();
 			}
         }
+        if(!SettingsActivity.getFolderAnimation(this)){
+            anim = 0;
+        }
         mDirectoryContainer.setDrawDisappearingFirst(anim == ANIM_DOWN);
 
         if (cwd == null) {
             // No directory means recents
-        	if(null != SaveFragment.get(getFragmentManager())){
-                RecentsCreateFragment.show(fm);
-        	}
-        	else if (mState.action == ACTION_CREATE) {
+        	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
                 RecentsCreateFragment.show(fm);
             } else {
                 DirectoryFragment.showRecentsOpen(fm, anim);
@@ -1078,7 +1154,16 @@ public class DocumentsActivity extends Activity {
                 save.setReplaceTarget(null);
             }
         }
-        
+
+        if (mState.action == ACTION_OPEN_TREE) {
+            final PickFragment pick = PickFragment.get(fm);
+            if (pick != null) {
+                final CharSequence displayName = (mState.stack.size() <= 1) ? root.title
+                        : cwd.displayName;
+                pick.setPickTarget(cwd, displayName);
+            }
+        }
+
         final MoveFragment move = MoveFragment.get(fm);
         if (move != null) {
             move.setReplaceTarget(cwd);
@@ -1090,7 +1175,7 @@ public class DocumentsActivity extends Activity {
         }
 
         updateActionBar();
-        invalidateOptionsMenu();
+        invalidateMenu();
         dumpStack();
     }
 
@@ -1234,10 +1319,11 @@ public class DocumentsActivity extends Activity {
             	startActivity(view);
             }
             else{
-            	Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                showError(R.string.toast_no_application);
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
+            // TODO: null pointer crash
             SaveFragment.get(fm).setReplaceTarget(doc);
         } else if (mState.action == ACTION_MANAGE) {
             // First try managing the document; we expect manager to filter
@@ -1256,18 +1342,11 @@ public class DocumentsActivity extends Activity {
                 try {
                     startActivity(view);
                 } catch (ActivityNotFoundException ex2) {
-                    Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                    showError(R.string.toast_no_application);
                 }
             }
         }
     }
-
-	public static boolean isIntentAvailable(Context context, Intent intent) {
-	    final PackageManager packageManager = context.getPackageManager();
-	    List<ResolveInfo> list =
-	            packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-	    return list.size() > 0;
-	}	
 	
     public void onDocumentsPicked(List<DocumentInfo> docs) {
         if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
@@ -1288,6 +1367,12 @@ public class DocumentsActivity extends Activity {
         new CreateFinishTask(mimeType, displayName).executeOnExecutor(getCurrentExecutor());
     }
 
+    public void onPickRequested(DocumentInfo pickTarget) {
+        final Uri viaUri = DocumentsContract.buildTreeDocumentUri(pickTarget.authority,
+                pickTarget.documentId);
+        new PickFinishTask(viaUri).executeOnExecutor(getCurrentExecutor());
+    }
+
     public void onMoveRequested(ArrayList<DocumentInfo> docs, DocumentInfo toDoc, boolean deleteAfter) {
     	new MoveTask(docs, toDoc, deleteAfter).executeOnExecutor(getCurrentExecutor());
     }
@@ -1297,7 +1382,7 @@ public class DocumentsActivity extends Activity {
         final ContentValues values = new ContentValues();
 
         final byte[] rawStack = DurableUtils.writeToArrayOrNull(mState.stack);
-        if (mState.action == ACTION_CREATE) {
+        if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
             // Remember stack for last create
             values.clear();
             values.put(RecentColumns.KEY, mState.stack.buildKey());
@@ -1313,7 +1398,8 @@ public class DocumentsActivity extends Activity {
         resolver.insert(RecentsProvider.buildResume(packageName), values);
     }
 
-	private void onFinished(Uri... uris) {
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void onFinished(Uri... uris) {
         Log.d(TAG, "onFinished() " + Arrays.toString(uris));
 
         final Intent intent = new Intent();
@@ -1333,11 +1419,17 @@ public class DocumentsActivity extends Activity {
             }
         }
 
-        if (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
+        if (mState.action == DocumentsActivity.State.ACTION_GET_CONTENT) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else if (mState.action == ACTION_OPEN_TREE) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
         } else {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         }
 
         setResult(Activity.RESULT_OK, intent);
@@ -1386,11 +1478,10 @@ public class DocumentsActivity extends Activity {
         @Override
         protected void onPostExecute(Uri result) {
             if (result != null) {
-                //onFinished(result);
+                onFinished(result);
             } else {
-                Toast.makeText(DocumentsActivity.this, R.string.save_error, Toast.LENGTH_SHORT).show();
+                showError(R.string.save_error);
             }
-            SaveFragment.hide(getFragmentManager());
             setPending(false);
         }
     }
@@ -1410,10 +1501,26 @@ public class DocumentsActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-        	if(mState.action != ACTION_GET_CONTENT){
-            	SaveFragment.hide(getFragmentManager());	
-        	}
             onFinished(mUris);
+        }
+    }
+
+    private class PickFinishTask extends android.os.AsyncTask<Void, Void, Void> {
+        private final Uri mUri;
+
+        public PickFinishTask(Uri uri) {
+            mUri = uri;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            saveStackBlocking();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            onFinished(mUri);
         }
     }
     
@@ -1461,13 +1568,14 @@ public class DocumentsActivity extends Activity {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result){
-                Toast.makeText(DocumentsActivity.this, R.string.save_error, Toast.LENGTH_SHORT).show();
+                showError(R.string.save_error);
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
+            refreshData();
         }
     }
-    
+
     public void setMovePending(boolean pending) {
         final MoveFragment move = MoveFragment.get(getFragmentManager());
         if (move != null) {
@@ -1511,8 +1619,9 @@ public class DocumentsActivity extends Activity {
         public static final int ACTION_OPEN = 1;
         public static final int ACTION_CREATE = 2;
         public static final int ACTION_GET_CONTENT = 3;
-        public static final int ACTION_MANAGE = 4;
-        public static final int ACTION_BROWSE = 5;
+        public static final int ACTION_OPEN_TREE = 4;
+        public static final int ACTION_MANAGE = 5;
+        public static final int ACTION_BROWSE = 6;
 
         public static final int MODE_UNKNOWN = 0;
         public static final int MODE_LIST = 1;
@@ -1532,6 +1641,7 @@ public class DocumentsActivity extends Activity {
         public void writeToParcel(Parcel out, int flags) {
             out.writeInt(action);
             out.writeInt(userMode);
+            out.writeInt(acceptMimes.length);
             out.writeStringArray(acceptMimes);
             out.writeInt(userSortOrder);
             out.writeInt(allowMultiple ? 1 : 0);
@@ -1555,8 +1665,8 @@ public class DocumentsActivity extends Activity {
                 final State state = new State();
                 state.action = in.readInt();
                 state.userMode = in.readInt();
-                state.acceptMimes = in.createStringArray();
-                //in.readStringArray(state.acceptMimes);
+                state.acceptMimes = new String[in.readInt()];
+                in.readStringArray(state.acceptMimes);
                 state.userSortOrder = in.readInt();
                 state.allowMultiple = in.readInt() != 0;
                 state.showSize = in.readInt() != 0;
@@ -1595,7 +1705,9 @@ public class DocumentsActivity extends Activity {
 
 	private final Handler handler = new Handler();
 	private Drawable oldBackground;
-	private void changeActionBarColor() {
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void changeActionBarColor() {
 
 		int color = SettingsActivity.getActionBarColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
@@ -1606,7 +1718,7 @@ public class DocumentsActivity extends Activity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				ld.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(ld);
+				getSupportActionBar().setBackgroundDrawable(ld);
 			}
 
 		} else {
@@ -1617,40 +1729,20 @@ public class DocumentsActivity extends Activity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				td.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(td);
+				getSupportActionBar().setBackgroundDrawable(td);
 			}
 			td.startTransition(200);
 		}
 
 		oldBackground = ld;
-		
-		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-		getActionBar().setDisplayShowTitleEnabled(false);
-		getActionBar().setDisplayShowTitleEnabled(true);
-        
-        if(Utils.hasKitKat()){
-            if(SettingsActivity.getTranslucentMode(this)){
-                if(mActionMode){
-        			SystemBarTintManager.setupTint(this, R.color.contextual_actionbar_color);
-        		}
-        		else{
-        			SystemBarTintManager.setupTint(this);
-        		}
-    	        if(Utils.hasSoftNavBar(this)){
-        	        SystemBarTintManager.setNavigationInsets(this, mSaveContainer);
-    	        	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(false, R.id.container_save));
-    	        }
-            }
-            else{
-            	mDirectoryContainer.setLayoutParams(SystemBarTintManager.getToggleParams(true, R.id.container_save));
-            }	
-        }
+
+        setUpStatusBar();
 	}
 	
 	private Drawable.Callback drawableCallback = new Drawable.Callback() {
 		@Override
 		public void invalidateDrawable(Drawable who) {
-			getActionBar().setBackgroundDrawable(who);
+			getSupportActionBar().setBackgroundDrawable(who);
 		}
 
 		@Override
@@ -1671,4 +1763,180 @@ public class DocumentsActivity extends Activity {
 	public void setActionMode(boolean actionMode) {
 		mActionMode = actionMode;
 	}
+
+    public void invalidateMenu(){
+        supportInvalidateOptionsMenu();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpStatusBar() {
+        int color = getResources().getColor(android.R.color.black);
+        if(SettingsActivity.getTranslucentMode(this)){
+            color = Utils.getStatusBarColor(SettingsActivity.getActionBarColor(this));
+        }
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpDefaultStatusBar() {
+        int color = getResources().getColor(android.R.color.black);
+        if(SettingsActivity.getTranslucentMode(this)){
+            color = getResources().getColor(R.color.alertColor);
+        }
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
+
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public static int getActionBarHeight(Context context) {
+        int result = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            TypedValue tv = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
+            result = context.getResources().getDimensionPixelSize(tv.resourceId);
+        }
+        return result;
+    }
+
+    public void showMsg(int msg){
+        showToast(msg, SnackBar.Style.DEFAULT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showError(int msg){
+        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showInfo(int msg){
+        showToast(msg, SnackBar.Style.INFO, SnackBar.SHORT_SNACK);
+    }
+
+    public void showMsg(String msg){
+        showToast(msg, SnackBar.Style.DEFAULT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showError(String msg){
+        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    }
+
+    public void showInfo(String msg){
+        showToast(msg, SnackBar.Style.INFO,SnackBar.SHORT_SNACK);
+    }
+
+    public void showToast(String msg, SnackBar.Style style, short duration){
+        new SnackBar.Builder(this, mAlertContainer)
+                .withMessage(msg)
+                .withStyle(style)
+                .withActionMessageId(android.R.string.ok)
+                .withDuration(duration)
+                .show();
+    }
+
+    public void showToast(int msgId, SnackBar.Style style, short duration){
+        new SnackBar.Builder(this, mAlertContainer)
+                .withMessageId(msgId)
+                .withStyle(style)
+                .withActionMessageId(android.R.string.ok)
+                .withDuration(duration)
+                .show();
+    }
+
+    private void initControls() {
+        mActionMenu = (FloatingActionsMenu) findViewById(R.id.fab);
+        mCreateFile = (FloatingActionButton) findViewById(R.id.fab_create_file);
+        mCreateFile.setOnClickListener(mOnClickListener);
+
+        mCreateFolder = (FloatingActionButton) findViewById(R.id.fab_create_folder);
+        mCreateFolder.setOnClickListener(mOnClickListener);
+
+        mPaste = (FloatingActionButton) findViewById(R.id.fab_paste);
+        mPaste.setOnClickListener(mOnClickListener);
+
+        //Ads
+        mAdView = (AdView) findViewById(R.id.adView);
+        mAdView.setAdListener(adListener);
+        mAdView.loadAd(new AdRequest.Builder().build());
+    }
+
+    public void upadateActionItems(AbsListView currentView) {
+
+        mActionMenu.attachToListView(currentView);
+
+        int defaultColor = SettingsActivity.getActionBarColor(this);
+        int complimentaryColor = Utils.getComplementaryColor(defaultColor);
+
+        mActionMenu.setVisibility(showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setColorNormal(complimentaryColor);
+        mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
+
+        mCreateFile.setColorNormal(defaultColor);
+        mCreateFile.setColorPressed(Utils.getLightColor(complimentaryColor));
+
+        mCreateFolder.setColorNormal(defaultColor);
+        mCreateFolder.setColorPressed(Utils.getLightColor(complimentaryColor));
+
+        mPaste.setColorNormal(defaultColor);
+        mPaste.setColorPressed(Utils.getLightColor(complimentaryColor));
+    }
+
+    private boolean showActionMenu() {
+        return isCreateSupported() && mState.currentSearch == null;
+    }
+
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.fab_create_file:
+                    onStateChanged();
+                    CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
+                    mActionMenu.collapse();
+                    break;
+
+                case R.id.fab_create_folder:
+                    CreateDirectoryFragment.show(getFragmentManager());
+                    mActionMenu.collapse();
+                    break;
+
+                case R.id.fab_paste:
+                    mActionMenu.collapse();
+                    break;
+
+            }
+        }
+    };
+
+    AdListener adListener = new AdListener() {
+        @Override
+        public void onAdLoaded() {
+            super.onAdLoaded();
+            mAdView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onAdFailedToLoad(int errorCode) {
+            super.onAdFailedToLoad(errorCode);
+            mAdView.setVisibility(View.GONE);
+        }
+    };
 }

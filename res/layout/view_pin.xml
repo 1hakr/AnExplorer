@@ -7,8 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:orientation="vertical" >
 
         <ImageView
@@ -75,6 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
                     android:minWidth="60dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_delete" />
@@ -94,7 +95,7 @@
                 android:minHeight="48dp"
                 android:minWidth="200dp"
                 android:padding="4dp"
-                android:textColor="@color/blue"
+                android:textColor="@color/accentColor"
                 android:textSize="24sp"
                 android:visibility="gone" />
 
@@ -111,15 +112,15 @@
                 android:minHeight="48dp"
                 android:minWidth="200dp"
                 android:padding="4dp"
-                android:textColor="@color/blue"
+                android:textColor="@color/accentColor"
                 android:textSize="24sp" />
         </RelativeLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:gravity="center" >
 
             <LinearLayout

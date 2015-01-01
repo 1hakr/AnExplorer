@@ -1,71 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/editor_layout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <!-- Dummy item to prevent Editor from receiving focus -->
-
-    <View
-        android:layout_width="0px"
-        android:layout_height="0px"
-        android:focusable="true"
-        android:focusableInTouchMode="true" />
-
-    <!-- word wrap layout -->
-
-    <ScrollView
-        android:id="@+id/editor_word_wrap_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:fillViewport="true"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="vertical" >
+        android:foreground="?android:windowContentOverlay">
 
-        <dev.dworks.apps.anexplorer.ui.LinedEditText
-            android:id="@+id/note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:cursorVisible="true"
-            android:fadingEdge="vertical"
-            android:gravity="top|left"
-            android:imeOptions="actionDone|flagNoFullscreen"
-            android:inputType="textMultiLine|textImeMultiLine"
-            android:maxLength="@integer/editor_max_file_size"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:singleLine="false"
-            android:textAppearance="?android:attr/textAppearanceMediumInverse" />
-    </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/editor_progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <ProgressBar
-            android:id="@+id/editor_progress_bar"
-            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:indeterminate="true" />
+            android:fitsSystemWindows="true">
 
-        <TextView
-            android:id="@+id/editor_progress_msg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:contentDescription="@null"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="@string/loading"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </LinearLayout>
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fillViewport="true"
+                android:paddingBottom="16dp"
+                android:paddingTop="16dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical">
 
-</FrameLayout>
+                <EditText
+                    android:id="@+id/input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:cursorVisible="true"
+                    android:fadingEdge="vertical"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="top|start"
+                    android:imeOptions="actionDone|flagNoFullscreen"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLength="@integer/editor_max_file_size"
+                    android:minHeight="120dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:textAlignment="viewStart"
+                    android:textColorLink="@color/accentColor"
+                    android:textSize="18sp" />
+
+            </ScrollView>
+
+            <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
+                android:id="@+id/progress"
+                style="@style/ListProgress"
+                android:layout_width="@dimen/progress_bar_size"
+                android:layout_height="@dimen/progress_bar_size"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

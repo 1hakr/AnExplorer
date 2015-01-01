@@ -17,6 +17,9 @@
 package dev.dworks.apps.anexplorer.misc;
 
 
+import android.annotation.TargetApi;
+import android.os.Build;
+
 /**
  * Parent exception for all Binder remote-invocation errors
  */
@@ -26,6 +29,7 @@ public class RemoteException extends android.os.RemoteException {
         super();
     }
 
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
     public RemoteException(String message) {
         super(message);
     }

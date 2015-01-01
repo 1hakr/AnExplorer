@@ -6,8 +6,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:orientation="horizontal" >
 
         <LinearLayout
@@ -100,7 +100,7 @@
                     android:minHeight="48dp"
                     android:minWidth="200dp"
                     android:padding="4dp"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/accentColor"
                     android:textSize="24sp"
                     android:visibility="gone" />
 
@@ -117,7 +117,7 @@
                     android:minWidth="200dp"
                     android:padding="4dp"
                     android:text="Enter PIN"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/accentColor"
                     android:textSize="24sp" />
             </RelativeLayout>
         </LinearLayout>
@@ -125,8 +125,8 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:background="@android:color/darker_gray" />
 
         <FrameLayout
@@ -200,7 +200,7 @@
                         android:id="@+id/cancel"
                         style="@style/PinButton"
                         android:text="@android:string/cancel"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
 
                     <Button
                         android:id="@+id/p0"
@@ -210,7 +210,7 @@
                         android:id="@+id/ok"
                         style="@style/PinButton"
                         android:text="@android:string/ok"
-                        android:textSize="18dp" />
+                        android:textSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
         </FrameLayout>

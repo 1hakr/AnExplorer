@@ -17,12 +17,9 @@
 <resources>
 
     <dimen name="icon_size">48dp</dimen>
-    <dimen name="grid_icon_size">24dp</dimen>
+    <dimen name="grid_icon_size">72dp</dimen>
     <dimen name="root_icon_size">32dp</dimen>
-    <dimen name="grid_width">160dp</dimen>
-    <dimen name="grid_height">180dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
-    <dimen name="grid_padding_horiz">4dp</dimen>
 
     <bool name="show_as_dialog">false</bool>
     <bool name="always_show_summary">false</bool>
@@ -41,4 +38,34 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 	<!-- The max limit of file size that the internal editor can open. Default: 4Mb -->
     <integer name="editor_max_file_size">4194304</integer>
+
+    <dimen name="activity_actionbar_size">48dp</dimen>
+
+    <dimen name="grid_width">160dp</dimen>
+    <dimen name="grid_height">176dp</dimen>
+
+    <dimen name="grid_item_width">160dp</dimen>
+    <dimen name="grid_item_height">176dp</dimen>
+    <dimen name="grid_item_padding">4dp</dimen>
+
+    <dimen name="grid_padding_horiz">4dp</dimen>
+    <dimen name="grid_padding_vert">4dp</dimen>
+
+    <dimen name="list_item_height">72dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
+
+    <dimen name="list_divider_inset">72dp</dimen>
+    <bool name="list_divider_inset_left">true</bool>
+
+    <dimen name="dir_elevation">8dp</dimen>
+
+    <dimen name="progress_bar_size">70dp</dimen>
+    <dimen name="progress_bar_small_size">60dp</dimen>
+    <dimen name="default_stroke_width">4dp</dimen>
+    <integer name="default_min_sweep_angle">20</integer>
+    <integer name="default_max_sweep_angle">300</integer>
+    <item name="default_sweep_speed" format="float" type="string">1</item>
+    <item name="default_rotation_speed" format="float" type="string">1</item>
+
+    <dimen name="scroll_threshold">4dp</dimen>
 </resources>

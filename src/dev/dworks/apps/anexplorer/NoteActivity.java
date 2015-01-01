@@ -16,481 +16,347 @@ package dev.dworks.apps.anexplorer;
  * limitations under the License.
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-
-import org.mozilla.universalchardet.UniversalDetector;
-
-import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
+import com.github.mrengineer13.snackbar.SnackBar;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class NoteActivity extends Activity {
-	private static final String ORIGINAL_CONTENT = "origContent";
-	private static final int STATE_EDIT = 0;
-	private static final int STATE_VIEW = 1;
+public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
-	// Global mutable variables
-	private int mState;
-	private Uri mUri;
-	private EditText mText;
-	private String mOriginalContent;
-	private View editor_progress;
+    private EditText mInput;
+    private String mOriginal;
+    private Timer mTimer;
+    private boolean mModified;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_note);
 
-		final Intent intent = getIntent();
-		final String action = intent.getAction();
+        mInput = (EditText) findViewById(R.id.input);
+        mInput.addTextChangedListener(this);
 
-		if (Intent.ACTION_VIEW.equals(action)) {
-			mState = STATE_VIEW;
-			mUri = intent.getData();
-		}
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(getName(getIntent().getData()));
+    }
 
-		if (Intent.ACTION_PASTE.equals(action)) {
-			performPaste();
-			mState = STATE_EDIT;
-		}
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getIntent().getData() != null) {
+            load();
+        }
+        else {
+            mInput.setVisibility(View.VISIBLE);
+        }
+    }
 
-		setContentView(R.layout.activity_note);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setTitle("Text Viewer");
-		mText = (EditText) findViewById(R.id.note);
-		editor_progress = findViewById(R.id.editor_progress);
-		if (savedInstanceState != null) {
-			mOriginalContent = savedInstanceState.getString(ORIGINAL_CONTENT);
-		}
-	}
+    private void load() {
+        new LoadContent(getIntent().getData()).execute();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    private void save(boolean exitAfter) {
+        new SaveContent(getIntent().getData(), exitAfter).execute();
+    }
 
-		if (mState == STATE_EDIT) {
-			// int colTitleIndex =
-			// mCursor.getColumnIndex(NotePad.Notes.COLUMN_NAME_TITLE);
-			// String title = mCursor.getString(colTitleIndex);
-			// Resources res = getResources();
-			// String text =
-			// String.format(res.getString(R.string.title_edit), title);
-			// setTitle(text);
-			// Sets the title to "create" for inserts
-		} else if (mState == STATE_VIEW) {
-			// setTitle(getText(R.string.title_create));
-		}
-		new ReadFile().execute();
-	}
+    @Override
+    public void onBackPressed() {
+        checkUnsavedChanges();
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		outState.putString(ORIGINAL_CONTENT, mOriginalContent);
-	}
+    private void checkUnsavedChanges() {
+        if (mOriginal != null && !mOriginal.equals(mInput.getText().toString())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.unsaved_changes)
+                    .setMessage(R.string.unsaved_changes_desc)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int did) {
+                            dialog.dismiss();
+                            save(true);
+                        }
+                    }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int did) {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    });
+            builder.create().show();
+        } else {
+            finish();
+        }
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.note_options, menu);
+        menu.findItem(R.id.menu_save).setVisible(mModified);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-		// Get the current note text.
-		String text = mText.getText().toString();
-		int length = text.length();
-		if (isFinishing() && (length == 0)) {
-			setResult(RESULT_CANCELED);
-			deleteNote();
-		} else if (mState == STATE_EDIT) {
-			updateNote(text, null);
-		} else if (mState == STATE_VIEW) {
-			//updateNote(text, text);
-			//mState = STATE_EDIT;
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                checkUnsavedChanges();
+                break;
+            case R.id.menu_save:
+                save(false);
+                break;
+            case R.id.menu_revert:
+                setSaveProgress(true);
+                mInput.setText(mOriginal);
+                setSaveProgress(false);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-/*		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.note_options, menu);
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+    }
 
-		if (mState == STATE_EDIT) {
-			// Append to the
-			// menu items for any other activities that can do stuff with it
-			// as well. This does a query on the system for any activities that
-			// implement the ALTERNATIVE_ACTION for our data, adding a menu item
-			// for each one that is found.
-			Intent intent = new Intent(null, mUri);
-			intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
-			menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, new ComponentName(this, NoteActivity.class), null, intent, 0, null);
-		}*/
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+            mTimer = null;
+        }
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                mModified = !mInput.getText().toString().equals(mOriginal);
+                invalidateOptionsMenu();
+            }
+        }, 250);
+    }
 
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public void afterTextChanged(Editable editable) {
+    }
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Check if note has changed and enable/disable the revert option
-		/*
-		 * int colNoteIndex =
-		 * mCursor.getColumnIndex(NotePad.Notes.COLUMN_NAME_NOTE); String
-		 * savedNote = mCursor.getString(colNoteIndex); String currentNote =
-		 * mText.getText().toString(); if (savedNote.equals(currentNote)) {
-		 * menu.findItem(R.id.menu_revert).setVisible(false); } else {
-		 * menu.findItem(R.id.menu_revert).setVisible(true); }
-		 */
-		return super.onPrepareOptionsMenu(menu);
-	}
+    private class LoadContent extends AsyncTask<Void, Void, StringBuilder>{
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle all of the possible menu actions.
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			break;
-		case R.id.menu_save:
-			String text = mText.getText().toString();
-			updateNote(text, null);
-			finish();
-			break;
-		case R.id.menu_delete:
-			deleteNote();
-			finish();
-			break;
-		/*
-		 * case R.id.menu_revert: cancelNote(); break;
-		 */
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
+        private Uri uri;
+        private String errorMsg;
 
-	// BEGIN_INCLUDE(paste)
-	/**
-	 * A helper method that replaces the note's data with the contents of the
-	 * clipboard.
-	 */
-	private final void performPaste() {
+        LoadContent(Uri uri){
+            this.uri = uri;
+        }
 
-		// Gets a handle to the Clipboard Manager
-		ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            setProgress(true);
+        }
 
-		// Gets a content resolver instance
-		ContentResolver cr = getContentResolver();
+        @Override
+        protected StringBuilder doInBackground(Void... params) {
+            InputStream is = getInputStream(uri);
+            if(null == is){
+                errorMsg = "Unable to Load file";
+                return null;
+            }
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(getInputStream(uri), "UTF-8"));
+                String line;
+                final StringBuilder text = new StringBuilder();
+                try {
+                    while ((line = br.readLine()) != null) {
+                        text.append(line);
+                        text.append('\n');
+                    }
+                } catch (final OutOfMemoryError e) {
+                    e.printStackTrace();
+                    errorMsg = e.getLocalizedMessage();
+                }
+                br.close();
+                return text;
+            }catch (Exception e){
+                e.printStackTrace();
+                errorMsg = e.getLocalizedMessage();
+            }
+            return null;
+        }
 
-		// Gets the clipboard data from the clipboard
-		ClipData clip = clipboard.getPrimaryClip();
-		if (clip != null) {
+        @Override
+        protected void onPostExecute(StringBuilder result) {
+            super.onPostExecute(result);
+            setProgress(false);
+            if(null == result){
+                showError(errorMsg);
+                return;
+            }
+            try {
+                mOriginal = result.toString();
+                result.setLength(0); // clear string builder to reduce memory usage
+                mInput.setText(mOriginal);
+            } catch (OutOfMemoryError e) {
+                showError(e.getLocalizedMessage());
+            }
+        }
+    }
 
-			String text = null;
-			String title = null;
+    private class SaveContent extends AsyncTask<Void, Void, Void>{
 
-			// Gets the first item from the clipboard data
-			ClipData.Item item = clip.getItemAt(0);
+        private Uri uri;
+        private String errorMsg;
+        private boolean exitAfter;
 
-			// Tries to get the item's contents as a URI pointing to a note
-			Uri uri = item.getUri();
+        SaveContent(Uri uri, boolean exitAfter){
+            this.uri = uri;
+            this.exitAfter = exitAfter;
+        }
 
-			// Tests to see that the item actually is an URI, and that the URI
-			// is a content URI pointing to a provider whose MIME type is the
-			// same
-			// as the MIME type supported by the Note pad provider.
-			if (uri != null) {// &&
-								// NotePad.Notes.CONTENT_ITEM_TYPE.equals(cr.getType(uri)))
-								// {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            setSaveProgress(true);
+        }
 
-			}
+        @Override
+        protected Void doInBackground(Void... params) {
+            OutputStream os = getOutStream(uri);
+            if(null == os){
+                errorMsg = "Unable to save file";
+                return null;
+            }
+            try {
+                os.write(mInput.getText().toString().getBytes("UTF-8"));
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                errorMsg = e.getLocalizedMessage();
+            }
+            return null;
+        }
 
-			// If the contents of the clipboard wasn't a reference to a note,
-			// then
-			// this converts whatever it is to text.
-			if (text == null) {
-				text = item.coerceToText(this).toString();
-			}
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            setSaveProgress(false);
+            if(!TextUtils.isEmpty(errorMsg)){
+                showError(errorMsg);
+                return;
+            }
+            if (exitAfter) {
+                mOriginal = null;
+                finish();
+            } else {
+                mOriginal = mInput.getText().toString();
+                mModified = false;
+                invalidateOptionsMenu();
+            }
+        }
+    }
 
-			// Updates the current note with the retrieved title and text.
-			updateNote(text, title);
-		}
-	}
+    private void setProgress(boolean show) {
+        mInput.setVisibility(show ? View.GONE : View.VISIBLE);
+        findViewById(R.id.progress).setVisibility(show ? View.VISIBLE : View.GONE);
+    }
 
-	// END_INCLUDE(paste)
+    private void setSaveProgress(boolean show) {
+        mInput.setEnabled(!show);
+        findViewById(R.id.progress).setVisibility(show ? View.VISIBLE : View.GONE);
+    }
 
-	private final void updateNote(String text, String title) {
+    private InputStream getInputStream(Uri uri){
+        String scheme = uri.getScheme();
+        if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
+            try {
+                return getContentResolver().openInputStream(uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (scheme.startsWith(ContentResolver.SCHEME_FILE)) {
+            File f = new File(uri.getPath());
+            if (f.exists()) {
+                try {
+                    return new FileInputStream(f);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
-		ContentValues values = new ContentValues();
-		// values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE,
-		// System.currentTimeMillis());
+    private OutputStream getOutStream(Uri uri){
+        String scheme = uri.getScheme();
+        if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
+            try {
+                return getContentResolver().openOutputStream(uri);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (scheme.startsWith(ContentResolver.SCHEME_FILE)) {
+            File f = new File(uri.getPath());
+            if (f.exists()) {
+                try {
+                    return new FileOutputStream(f);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
-		if (mState == STATE_VIEW) {
+    private String getName(Uri uri){
+        String name = "";
+        String scheme = uri.getScheme();
+        if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
+            String part = uri.getSchemeSpecificPart();
+            final int splitIndex = part.indexOf(':', 1);
+            if(splitIndex != -1) {
+                name = part.substring(splitIndex + 1);
+            }
+            if(TextUtils.isEmpty(name)){
+                name = uri.getLastPathSegment();
+            }
+        }
+        else if (uri.getScheme().startsWith(ContentResolver.SCHEME_FILE)) {
+            name = uri.getLastPathSegment();
+        }
+        return name;
+    }
 
-			if (title == null) {
+    public void showError(String msg){
+        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    }
 
-				int length = text.length();
+    public void showToast(String msg, SnackBar.Style style, short duration){
+        new SnackBar.Builder(this)
+                .withMessage(msg)
+                .withStyle(style)
+                .withActionMessageId(android.R.string.ok)
+                .withDuration(duration)
+                .show();
+    }
 
-				title = text.substring(0, Math.min(30, length));
-
-				if (length > 30) {
-					int lastSpace = title.lastIndexOf(' ');
-					if (lastSpace > 0) {
-						title = title.substring(0, lastSpace);
-					}
-				}
-			}
-			// values.put(NotePad.Notes.COLUMN_NAME_TITLE, title);
-		} else if (title != null) {
-			// values.put(NotePad.Notes.COLUMN_NAME_TITLE, title);
-		}
-
-		// values.put(NotePad.Notes.COLUMN_NAME_NOTE, text);
-
-		getContentResolver().update(mUri, // The URI for the record to update.
-				values, // The map of column names and new values to apply to
-						// them.
-				null, // No selection criteria are used, so no where columns are
-						// necessary.
-				null // No where columns are used, so no where arguments are
-						// necessary.
-				);
-
-	}
-
-	private final void cancelNote() {
-		deleteNote();
-		setResult(RESULT_CANCELED);
-		finish();
-	}
-
-	private final void deleteNote() {
-		mText.setText("");
-	}
-
-	private SpannableStringBuilder openFile(String uri, String charset) {
-		if (uri.startsWith("content://")) {
-			// content provider
-			try {
-				return openFile(getContentResolver().openInputStream(Uri.parse(uri)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			// file
-			File f = new File(uri);
-			if (f.exists()) {
-				String mFilename = uri;
-				try {
-					return openFile(new FileInputStream(f), charset);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return null;
-	}
-	
-	public SpannableStringBuilder openFile(InputStream is){
-	    SpannableStringBuilder result = new SpannableStringBuilder();
-
-	    try {
-	        InputStreamReader isr = new InputStreamReader(is);
-	        BufferedReader br = new BufferedReader(isr);
-
-	        // How do I make this load as multiline text?!?!
-	        String line = null;
-
-	        while((line = br.readLine()) != null) {
-	            result.append(line+"\n");
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    return result;
-	}
-
-	protected SpannableStringBuilder openFile(InputStream input, String encode) {
-		SpannableStringBuilder result = new SpannableStringBuilder();
-		InputStream is;
-		int mLinebreak;
-		int mLine = 0;
-		int mLineToChar = -1;
-		try {
-			String mCharset = "utf-8";
-			mLinebreak = LineBreak.LF;
-
-			is = new BufferedInputStream(input, 65536);
-			is.mark(65536);
-
-			// preread leading 64KB
-			int nread;
-			byte[] buff = new byte[64 * 1024];
-			nread = is.read(buff);
-
-			if (nread <= 0) {
-				if (encode.length() != 0) {
-					mCharset = encode;
-				}
-				return new SpannableStringBuilder("");
-			}
-
-			// Detect charset
-			UniversalDetector detector;
-			if (encode == null || encode.length() == 0) {
-
-				try {
-					detector = new UniversalDetector(null);
-					detector.handleData(buff, 0, nread);
-					detector.dataEnd();
-					encode = detector.getDetectedCharset();
-					detector.reset();
-				} catch (Exception e1) {
-				}
-			}
-			is.reset();
-			// detect linbreak code
-			if (encode == null || encode.length() == 0) {
-				encode = "utf-8";
-			}
-			Charset charset = Charset.forName(encode);
-
-			byte[] cr = new byte[] { '\r', };
-			byte[] lf = new byte[] { '\n', };
-			if (charset != null) {
-				ByteBuffer bb;
-				bb = charset.encode("\r");
-				cr = new byte[bb.limit()];
-				bb.get(cr);
-				bb = charset.encode("\n");
-				lf = new byte[bb.limit()];
-				bb.get(lf);
-			}
-
-			int linebreak = LineBreak.LF;
-			if (cr.length == 1) {
-				for (int i = 0; i < nread - 1; i++) {
-					if (buff[i] == lf[0]) {
-						linebreak = LineBreak.LF;
-						break;
-					} else if (buff[i] == cr[0]) {
-						if (buff[i + 1] == lf[0]) {
-							linebreak = LineBreak.CRLF;
-						} else {
-							linebreak = LineBreak.CR;
-						}
-						break;
-					}
-				}
-			} else { // cr.length == 2 // we dont think in the case cr.length>2
-				for (int i = 0; i < nread - 2; i += 2) {
-					if (buff[i] == lf[0] && buff[i + 1] == lf[1]) {
-						linebreak = LineBreak.LF;
-						break;
-					} else if (buff[i] == cr[0] && buff[i + 1] == cr[1]) {
-						if (buff[i + 2] == lf[0] && buff[i + 3] == lf[1]) {
-							linebreak = LineBreak.CRLF;
-						} else {
-							linebreak = LineBreak.CR;
-						}
-						break;
-					}
-				}
-			}
-			// if ( encode != null ){
-			// Log.e( TAG , "CharSet="+encode+"Linebreak=" + new
-			// String[]{"CR","LF","CRLF"}[linebreak]);
-			// }else{
-			// Log.e( TAG , "CharSet="+"--"+"Linebreak=" + new
-			// String[]{"CR","LF","CRLF"}[linebreak]);
-			// }
-			mCharset = encode;
-			mLinebreak = linebreak;
-
-			BufferedReader br = null;
-			try {
-				br = new BufferedReader(new InputStreamReader(is, encode), 8192 * 2);
-
-				int line = 0;
-				String text;
-				while ((text = br.readLine()) != null) {
-					// remove BOM
-					if (line == 0) {
-						if (text.length() > 0 && text.charAt(0) == 0xfeff) {
-							text = text.substring(1);
-						}
-					}
-
-					line++;
-					if (line == mLine) {
-						mLineToChar = result.length();
-					}
-					result.append(text);
-					result.append('\n');
-				}
-				br.close();
-				is.close();
-				return result;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		return null;
-	}
-
-	public class LineBreak {
-		static public final int CR = 0;
-		static public final int LF = 1;
-		static public final int CRLF = 2;
-	}
-	
-	private class ReadFile extends AsyncTask<Void, Void, SpannableStringBuilder>{
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			editor_progress.setVisibility(View.VISIBLE);
-		}
-		
-		@Override
-		protected SpannableStringBuilder doInBackground(Void... params) {
-			SpannableStringBuilder note = openFile(mUri.toString(), "UTF-8");
-			return note;
-		}
-		
-		@Override
-		protected void onPostExecute(SpannableStringBuilder result) {
-			super.onPostExecute(result);
-			if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
-	    		return;
-	    	}
-			if(!TextUtils.isEmpty(result)){
-				mText.setTextKeepState(result);
-			}
-
-			if (mOriginalContent == null) {
-				 mOriginalContent = result.toString();
-			}
-			editor_progress.setVisibility(View.GONE);
-		}
-	}
 }
