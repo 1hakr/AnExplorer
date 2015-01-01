@@ -17,9 +17,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
-    android:paddingRight="?android:attr/listPreferredItemPaddingRight"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+    android:paddingRight="?attr/listPreferredItemPaddingRight"
+    android:paddingStart="?attr/listPreferredItemPaddingLeft"
+    android:paddingEnd="?attr/listPreferredItemPaddingRight"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:baselineAligned="false">
@@ -39,7 +41,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:ellipsize="middle"
-        android:textColor="?android:attr/textColorPrimaryInverse"
+        android:textColor="?android:attr/textColorPrimary"
         style="@style/TextAppearance.Medium" />
 
 </LinearLayout>

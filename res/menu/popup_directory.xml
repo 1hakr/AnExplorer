@@ -14,37 +14,53 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_info"
         android:icon="@drawable/ic_menu_info"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Info" />
+    <item
+        android:id="@+id/menu_bookmark"
+        android:icon="@drawable/ic_menu_info"
+        support:showAsAction="always"
+        android:title="Bookmark" />
     <item
         android:id="@+id/menu_rename"
         android:icon="@drawable/ic_menu_rename_file"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Rename" />
     <item
         android:id="@+id/menu_copy"
         android:icon="@drawable/ic_menu_copy"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Copy"/>
     <item
         android:id="@+id/menu_cut"
         android:icon="@drawable/ic_menu_cut"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Cut"/>
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_menu_delete"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="@string/menu_delete"/>
+    <item
+        android:id="@+id/menu_compress"
+        android:icon="@drawable/ic_menu_compressed"
+        support:showAsAction="always"
+        android:title="@string/menu_compress" />
+    <item
+        android:id="@+id/menu_uncompress"
+        android:icon="@drawable/ic_menu_compressed"
+        support:showAsAction="always"
+        android:title="@string/menu_uncompress"/>
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_menu_share"
-        android:showAsAction="ifRoom"
+        support:showAsAction="ifRoom"
         android:title="@string/menu_share"/>
 
 </menu>

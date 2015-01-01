@@ -16,6 +16,8 @@
 
 package dev.dworks.apps.anexplorer.model;
 
+import android.content.ContentResolver;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
@@ -23,8 +25,6 @@ import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import android.content.ContentResolver;
 
 /**
  * Representation of a stack of {@link DocumentInfo}, usually the result of a
@@ -63,7 +63,7 @@ public class DocumentStack extends LinkedList<DocumentInfo> implements Durable {
 
     /**
      * Update a possibly stale restored stack against a live
-     * {@link DocumentsProvider}.
+     * {@link dev.dworks.apps.anexplorer.provider.DocumentsProvider}.
      */
     public void updateDocuments(ContentResolver resolver) throws FileNotFoundException {
         for (DocumentInfo info : this) {

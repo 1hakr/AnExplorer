@@ -16,18 +16,21 @@
 
 package dev.dworks.apps.anexplorer.model;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.ProtocolException;
-
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.ProtocolException;
+import java.text.Collator;
+
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
@@ -42,6 +45,13 @@ import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 public class DocumentInfo implements Durable, Parcelable {
     private static final int VERSION_INIT = 1;
     private static final int VERSION_SPLIT_URI = 2;
+
+    private static final Collator sCollator;
+
+    static {
+        sCollator = Collator.getInstance();
+        sCollator.setStrength(Collator.SECONDARY);
+    }
 
     public String authority;
     public String documentId;
@@ -281,9 +291,30 @@ public class DocumentInfo implements Durable, Parcelable {
         throw fnfe;
     }
 
+    /**
+     * String prefix used to indicate the document is a directory.
+     */
+    public static final char DIR_PREFIX = '\001';
+
+    /**
+     * Compare two strings against each other using system default collator in a
+     * case-insensitive mode. Clusters strings prefixed with {@link #DIR_PREFIX}
+     * before other items.
+     */
     public static int compareToIgnoreCaseNullable(String lhs, String rhs) {
-        if (lhs == null) return -1;
-        if (rhs == null) return 1;
-        return lhs.compareToIgnoreCase(rhs);
+        final boolean leftEmpty = TextUtils.isEmpty(lhs);
+        final boolean rightEmpty = TextUtils.isEmpty(rhs);
+
+        if (leftEmpty && rightEmpty) return 0;
+        if (leftEmpty) return -1;
+        if (rightEmpty) return 1;
+
+        final boolean leftDir = (lhs.charAt(0) == DIR_PREFIX);
+        final boolean rightDir = (rhs.charAt(0) == DIR_PREFIX);
+
+        if (leftDir && !rightDir) return -1;
+        if (rightDir && !leftDir) return 1;
+
+        return sCollator.compare(lhs, rhs);
     }
 }

@@ -17,18 +17,13 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -52,17 +47,25 @@ import android.widget.TextView;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
-import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
 
 /**
  * Display list of known storage backend roots.
@@ -102,14 +105,6 @@ public class RootsFragment extends Fragment {
         mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         return view;
-    }
-    
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-    	super.onViewCreated(view, savedInstanceState);
-    	if(SettingsActivity.getTranslucentMode(getActivity())){
-    		SystemBarTintManager.setInsets(getActivity(), mList);
-    	}
     }
 
     @Override
@@ -233,11 +228,40 @@ public class RootsFragment extends Fragment {
             if (item instanceof AppItem) {
                 showAppDetails(((AppItem) item).info);
                 return true;
-            } else {
+            } else if (item instanceof BookmarkItem) {
+                removeBookark((BookmarkItem)item);
+                return true;
+            }  else {
                 return false;
             }
         }
     };
+
+    private void removeBookark(final BookmarkItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Remove bookmark?")
+        .setCancelable(false)
+        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int did) {
+                dialog.dismiss();
+                int rows = getActivity().getContentResolver().delete(ExplorerProvider.buildBookmark(),
+                        ExplorerProvider.BookmarkColumns.PATH + " = ? AND " +
+                                ExplorerProvider.BookmarkColumns.TITLE + " = ? ",
+                        new String[]{item.root.path, item.root.title}
+                );
+                if (rows > 0) {
+                    ((DocumentsActivity) getActivity()).showInfo("Bookmark removed");
+
+                    ExternalStorageProvider.updateVolumes(getActivity());
+                }
+            }
+        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int did) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
 
     private static abstract class Item {
         private final int mLayoutId;
@@ -260,10 +284,12 @@ public class RootsFragment extends Fragment {
 
     private static class RootItem extends Item {
         public final RootInfo root;
+        private final int color;
 
-        public RootItem(RootInfo root) {
+        public RootItem(RootInfo root, int color) {
             super(R.layout.item_root);
             this.root = root;
+            this.color = color;
         }
 
         @Override
@@ -271,6 +297,7 @@ public class RootsFragment extends Fragment {
             final ImageView icon = (ImageView) convertView.findViewById(android.R.id.icon);
             final TextView title = (TextView) convertView.findViewById(android.R.id.title);
             final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
+            final NumberProgressBar progress = (NumberProgressBar) convertView.findViewById(android.R.id.progress);
 
             final Context context = convertView.getContext();
             icon.setImageDrawable(root.loadIcon(context));
@@ -281,6 +308,14 @@ public class RootsFragment extends Fragment {
             if (TextUtils.isEmpty(summaryText) && root.availableBytes >= 0) {
                 summaryText = context.getString(R.string.root_available_bytes,
                         Formatter.formatFileSize(context, root.availableBytes));
+                Long current = 100 * root.availableBytes / root.totalBytes ;
+                progress.setVisibility(View.VISIBLE);
+                progress.setMax(100);
+                progress.setProgress(100 - current.intValue());
+                progress.setColor(color);
+            }
+            else{
+                progress.setVisibility(View.GONE);
             }
 
             summary.setText(summaryText);
@@ -322,10 +357,17 @@ public class RootsFragment extends Fragment {
         }
     }
 
+    private static class BookmarkItem extends RootItem {
+        public BookmarkItem(RootInfo root) {
+            super(root, 0);
+        }
+    }
+
     private static class RootsAdapter extends ArrayAdapter<Item> {
         public RootsAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
             super(context, 0);
 
+            int defaultColor = SettingsActivity.getActionBarColor(context);
             RootItem recents = null;
             RootItem images = null;
             RootItem videos = null;
@@ -337,26 +379,29 @@ public class RootsFragment extends Fragment {
             final List<RootInfo> clouds = Lists.newArrayList();
             final List<RootInfo> locals = Lists.newArrayList();
             final List<RootInfo> extras = Lists.newArrayList();
+            final List<RootInfo> bookmarks = Lists.newArrayList();
             
             for (RootInfo root : roots) {
                 if (root.isRecents()) {
-                    recents = new RootItem(root);
-                } else if (root.isBluetoothFolder() || root.isDownloadsFolder()) {
+                    recents = new RootItem(root, defaultColor);
+                } else if (root.isBluetoothFolder() || root.isDownloadsFolder() || root.isAppBackupFolder()) {
                     extras.add(root);
+                } else if (root.isBookmarkFolder()) {
+                    bookmarks.add(root);
                 } else if (root.isPhoneStorage()) {
-                	phone = new RootItem(root);
+                	phone = new RootItem(root, defaultColor);
                 } else if (root.isStorage()) {
                     locals.add(root);
                 } else if (root.isRootedStorage()) {
-                	root_root = new RootItem(root);
+                	root_root = new RootItem(root, defaultColor);
                 } else if (root.isDownloads()) {
-                    downloads = new RootItem(root);
+                    downloads = new RootItem(root, defaultColor);
                 } else if (root.isImages()) {
-                    images = new RootItem(root);
+                    images = new RootItem(root, defaultColor);
                 } else if (root.isVideos()) {
-                    videos = new RootItem(root);
+                    videos = new RootItem(root, defaultColor);
                 } else if (root.isAudio()) {
-                    audio = new RootItem(root);
+                    audio = new RootItem(root, defaultColor);
                 } else {
                     clouds.add(root);
                 }
@@ -368,19 +413,26 @@ public class RootsFragment extends Fragment {
             Collections.reverse(locals);
             
             for (RootInfo local : locals) {
-                add(new RootItem(local));
+                add(new RootItem(local, defaultColor));
             }
             if (phone != null) add(phone);
             
             for (RootInfo extra : extras) {
-                add(new RootItem(extra));
+                add(new RootItem(extra, defaultColor));
             }
             
             if(root_root != null){
             	add(new SpacerItem());
             	add(root_root);
             }
-            
+
+            if(bookmarks.size() > 0) {
+                add(new SpacerItem());
+                for (RootInfo bookmark : bookmarks) {
+                    add(new BookmarkItem(bookmark));
+                }
+            }
+
             add(new SpacerItem());
             if (recents != null) add(recents);
             if (images != null) add(images);
@@ -391,7 +443,7 @@ public class RootsFragment extends Fragment {
             //if (includeApps == null) {
             	add(new SpacerItem());
                 for (RootInfo cloud : clouds) {
-                    add(new RootItem(cloud));
+                    add(new RootItem(cloud, defaultColor));
                 }
 /*                final PackageManager pm = context.getPackageManager();
                 final List<ResolveInfo> infos = pm.queryIntentActivities(

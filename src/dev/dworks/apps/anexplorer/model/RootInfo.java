@@ -16,15 +16,6 @@
 
 package dev.dworks.apps.anexplorer.model;
 
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ProtocolException;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,6 +23,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ProtocolException;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
@@ -41,6 +38,10 @@ import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 /**
  * Representation of a {@link Root}.
@@ -59,7 +60,9 @@ public class RootInfo implements Durable, Parcelable {
     public String summary;
     public String documentId;
     public long availableBytes;
+    public long totalBytes;
     public String mimeTypes;
+    public String path;
 
     /** Derived fields that aren't persisted */
     public String derivedPackageName;
@@ -80,7 +83,9 @@ public class RootInfo implements Durable, Parcelable {
         summary = null;
         documentId = null;
         availableBytes = -1;
+        totalBytes = -1;
         mimeTypes = null;
+        path = null;
 
         derivedPackageName = null;
         derivedMimeTypes = null;
@@ -100,6 +105,7 @@ public class RootInfo implements Durable, Parcelable {
                 summary = DurableUtils.readNullableString(in);
                 documentId = DurableUtils.readNullableString(in);
                 availableBytes = in.readLong();
+                totalBytes = in.readLong();
                 mimeTypes = DurableUtils.readNullableString(in);
                 deriveFields();
                 break;
@@ -119,6 +125,7 @@ public class RootInfo implements Durable, Parcelable {
         DurableUtils.writeNullableString(out, summary);
         DurableUtils.writeNullableString(out, documentId);
         out.writeLong(availableBytes);
+        out.writeLong(totalBytes);
         DurableUtils.writeNullableString(out, mimeTypes);
     }
 
@@ -156,7 +163,9 @@ public class RootInfo implements Durable, Parcelable {
         root.summary = getCursorString(cursor, Root.COLUMN_SUMMARY);
         root.documentId = getCursorString(cursor, Root.COLUMN_DOCUMENT_ID);
         root.availableBytes = getCursorLong(cursor, Root.COLUMN_AVAILABLE_BYTES);
+        root.totalBytes = getCursorLong(cursor, Root.COLUMN_TOTAL_BYTES);
         root.mimeTypes = getCursorString(cursor, Root.COLUMN_MIME_TYPES);
+        root.path = getCursorString(cursor, Root.COLUMN_PATH);
         root.deriveFields();
         return root;
     }
@@ -165,18 +174,20 @@ public class RootInfo implements Durable, Parcelable {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
 
         // TODO: remove these special case icons
-        if (isExternalStorage()) {
+        if (isInternalStorage()) {
+            derivedIcon = R.drawable.ic_root_internal;
+        } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
         } else if (isPhoneStorage()) {
             derivedIcon = R.drawable.ic_root_phone;
-        } else if (isSecondayStorage()) {
-	        if (isSecondayStorageSD()) {
+        } else if (isSecondaryStorage()) {
+	        if (isSecondaryStorageSD()) {
 	            derivedIcon = R.drawable.ic_root_sdcard;
-	        } else if (isSecondayStorageUSB()) {
+	        } else if (isSecondaryStorageUSB()) {
 	            derivedIcon = R.drawable.ic_root_usb;
-	        } else if (isSecondayStorageHDD()) {
+	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;
 	        }
             derivedIcon = R.drawable.ic_root_sdcard;
@@ -184,6 +195,10 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
             derivedIcon = R.drawable.ic_root_bluetooth;
+        } else if (isAppBackupFolder()) {
+            derivedIcon = R.drawable.ic_root_folder_am;
+        } else if (isBookmarkFolder()) {
+            derivedIcon = R.drawable.ic_root_bookmark;
         } else if (isHiddenFolder()) {
             derivedIcon = R.drawable.ic_root_hidden;
         } else if (isDownloads()) {
@@ -211,46 +226,61 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isExternalStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "primary".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_PRIMARY_EMULATED.equals(rootId);
+    }
+
+    public boolean isInternalStorage() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && title.toLowerCase().contains("internal");
     }
 
     public boolean isPhoneStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "phone".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_PHONE.equals(rootId);
     }
     
-    public boolean isSecondayStorage() {
+    public boolean isSecondaryStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& rootId.startsWith("secondary");
+        		&& rootId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
     }
 
-    public boolean isSecondayStorageSD() {
+    public boolean isSecondaryStorageSD() {
         return rootId.toLowerCase().contains("sd")
 				|| rootId.toLowerCase().contains("card")
 				|| rootId.toLowerCase().contains("emmc");
     }
     
-    public boolean isSecondayStorageUSB() {
+    public boolean isSecondaryStorageUSB() {
         return rootId.toLowerCase().contains("usd");
     }
     
-    public boolean isSecondayStorageHDD() {
+    public boolean isSecondaryStorageHDD() {
         return rootId.toLowerCase().contains("hdd");
     }
 
     public boolean isDownloadsFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "download".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_DOWNLOAD.equals(rootId);
     }
-    
+
+    public boolean isAppBackupFolder() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && ExternalStorageProvider.ROOT_ID_APP_BACKUP.equals(rootId);
+    }
+
     public boolean isBluetoothFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "bluetooth".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_BLUETOOTH.equals(rootId);
+    }
+
+    public boolean isBookmarkFolder() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && rootId.startsWith(ExternalStorageProvider.ROOT_ID_BOOKMARK);
     }
 
     public boolean isHiddenFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-        		&& "hidden".equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_HIDDEN.equals(rootId);
     }
     
     public boolean isDownloads() {
@@ -259,17 +289,17 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isImages() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
-                && "images_root".equals(rootId);
+                && MediaDocumentsProvider.TYPE_IMAGES_ROOT.equals(rootId);
     }
 
     public boolean isVideos() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
-                && "videos_root".equals(rootId);
+                && MediaDocumentsProvider.TYPE_VIDEOS_ROOT.equals(rootId);
     }
 
     public boolean isAudio() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
-                && "audio_root".equals(rootId);
+                && MediaDocumentsProvider.TYPE_AUDIO_ROOT.equals(rootId);
     }
 
     public boolean isApp() {
@@ -298,6 +328,32 @@ public class RootInfo implements Durable, Parcelable {
     public Drawable loadIcon(Context context) {
         if (derivedIcon != 0) {
             return context.getResources().getDrawable(derivedIcon);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadDrawerIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintColor(context, derivedIcon, R.color.item_root_icon);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadGridIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.textColorPrimaryInverse);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadToolbarIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.colorControlNormal);
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }

@@ -22,6 +22,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +31,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 
 /**
@@ -76,13 +79,10 @@ public class SaveFragment extends Fragment implements OnClickListener{
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		//final Context context = inflater.getContext();
-
 		final View view = inflater.inflate(R.layout.fragment_save, container, false);
 
 		mCancel = (ImageButton) view.findViewById(android.R.id.button2);
 		mCancel.setOnClickListener(this);
-		//mCancel.setImageDrawable(IconUtils.loadMimeIcon(context, getArguments().getString(EXTRA_MIME_TYPE)));
 
 		mDisplayName = (EditText) view.findViewById(android.R.id.title);
 		mDisplayName.addTextChangedListener(mDisplayNameWatcher);
@@ -152,7 +152,8 @@ public class SaveFragment extends Fragment implements OnClickListener{
 			} else {
 				final String mimeType = getArguments().getString(EXTRA_MIME_TYPE);
 				final String displayName = mDisplayName.getText().toString();
-				activity.onSaveRequested(mimeType, displayName);
+                String extension = FileUtils.getExtFromFilename(displayName);
+				activity.onSaveRequested(TextUtils.isEmpty(extension) ? mimeType : extension, displayName);
 			}
 			break;
 

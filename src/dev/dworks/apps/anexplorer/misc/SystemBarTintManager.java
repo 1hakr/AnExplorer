@@ -31,11 +31,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.RelativeLayout;
+
+import java.lang.reflect.Method;
+
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
@@ -45,10 +47,29 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
  */
 public class SystemBarTintManager {
 
+    static {
+        // Android allows a system property to override the presence of the navigation bar.
+        // Used by the emulator.
+        // See https://github.com/android/platform_frameworks_base/blob/master/policy/src/com/android/internal/policy/impl/PhoneWindowManager.java#L1076
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                Class c = Class.forName("android.os.SystemProperties");
+                Method m = c.getDeclaredMethod("get", String.class);
+                m.setAccessible(true);
+                sNavBarOverride = (String) m.invoke(null, "qemu.hw.mainkeys");
+            } catch (Throwable e) {
+                sNavBarOverride = null;
+            }
+        }
+    }
+
+
     /**
      * The default system bar tint color value.
      */
     public static final int DEFAULT_TINT_COLOR = 0x99000000;
+
+    private static String sNavBarOverride;
 
     private final SystemBarConfig mConfig;
     private boolean mStatusBarAvailable;
@@ -341,6 +362,7 @@ public class SystemBarTintManager {
         private static final String NAV_BAR_HEIGHT_RES_NAME = "navigation_bar_height";
         private static final String NAV_BAR_HEIGHT_LANDSCAPE_RES_NAME = "navigation_bar_height_landscape";
         private static final String NAV_BAR_WIDTH_RES_NAME = "navigation_bar_width";
+        private static final String SHOW_NAV_BAR_RES_NAME = "config_showNavigationBar";
 
         private final boolean mTranslucentStatusBar;
         private final boolean mTranslucentNavBar;
@@ -371,7 +393,7 @@ public class SystemBarTintManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 TypedValue tv = new TypedValue();
                 context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true);
-                result = context.getResources().getDimensionPixelSize(tv.resourceId);
+                result = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
             }
             return result;
         }
@@ -381,7 +403,7 @@ public class SystemBarTintManager {
             Resources res = context.getResources();
             int result = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                if (!ViewConfiguration.get(context).hasPermanentMenuKey()) {
+                if (hasNavBar(context)) {
                     String key;
                     if (mInPortrait) {
                         key = NAV_BAR_HEIGHT_RES_NAME;
@@ -399,11 +421,29 @@ public class SystemBarTintManager {
             Resources res = context.getResources();
             int result = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                if (!ViewConfiguration.get(context).hasPermanentMenuKey()) {
+                if (hasNavBar(context)) {
                     return getInternalDimensionSize(res, NAV_BAR_WIDTH_RES_NAME);
                 }
             }
             return result;
+        }
+
+        @TargetApi(14)
+        private boolean hasNavBar(Context context) {
+            Resources res = context.getResources();
+            int resourceId = res.getIdentifier(SHOW_NAV_BAR_RES_NAME, "bool", "android");
+            if (resourceId != 0) {
+                boolean hasNav = res.getBoolean(resourceId);
+                // check override flag (see static block)
+                if ("1".equals(sNavBarOverride)) {
+                    hasNav = false;
+                } else if ("0".equals(sNavBarOverride)) {
+                    hasNav = true;
+                }
+                return hasNav;
+            } else { // fallback
+                return !ViewConfiguration.get(context).hasPermanentMenuKey();
+            }
         }
 
         private int getInternalDimensionSize(Resources res, String key) {
@@ -522,8 +562,10 @@ public class SystemBarTintManager {
                 return 0;
             }
         }
+
     }
-    
+
+
     public static void setupTint(Activity context) {
         // Only set the tint if the device is running KitKat or above
         if (Utils.hasKitKat()) {
@@ -532,7 +574,7 @@ public class SystemBarTintManager {
             tintManager.setStatusBarTintColor(SettingsActivity.getActionBarColor(context));
         }
     }
-    
+
     public static void setupTint(Activity context, int resource) {
         // Only set the tint if the device is running KitKat or above
         if (Utils.hasKitKat()) {
@@ -541,42 +583,44 @@ public class SystemBarTintManager {
             tintManager.setStatusBarTintResource(resource);
         }
     }
-	
+
     public static void setInsets(Activity context, View view) {
-    	if (Utils.hasKitKat()) {
-	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 2*config.getPixelInsetBottom());
-    	}
+        if (Utils.hasKitKat()) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+            view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 2*config.getPixelInsetBottom());
+        }
     }
-    
+
     public static void setInsetsTop(Activity context, View view) {
-    	if (Utils.hasKitKat()) {
-	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-	        view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 0);
-    	}
+        if (Utils.hasKitKat()) {
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+            view.setPadding(0, config.getPixelInsetTop(true), config.getPixelInsetRight(), 0);
+        }
     }
-    
+
     public static void setNavigationInsets(Activity context, View view) {
-    	if (Utils.hasKitKat()) {
-    		//final android.view.ViewGroup.MarginLayoutParams a = (android.view.ViewGroup.MarginLayoutParams) view.getLayoutParams();
-	        SystemBarTintManager tintManager = new SystemBarTintManager(context);
-	        SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-    		//a.bottomMargin = config.getPixelInsetBottom();
-    		//view.setLayoutParams(a);
-	        view.setPadding(0, 0, 0, config.getPixelInsetBottom());
-    	}
+        if (Utils.hasKitKat()) {
+            //final android.view.ViewGroup.MarginLayoutParams a = (android.view.ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            SystemBarTintManager tintManager = new SystemBarTintManager(context);
+            SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+            //a.bottomMargin = config.getPixelInsetBottom();
+            //view.setLayoutParams(a);
+            view.setPadding(0, 0, 0, config.getPixelInsetBottom());
+        }
     }
-	
-	public static MarginLayoutParams getToggleParams(boolean toggle, int id) {
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static ViewGroup.MarginLayoutParams getToggleParams(boolean toggle, int id) {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
         if(toggle){
-            params.addRule(RelativeLayout.ABOVE, id);	
+            params.addRule(RelativeLayout.ABOVE, id);
         }
         else{
             params.removeRule(RelativeLayout.ABOVE);
         }
         return params;
-	}
+    }
+
 }

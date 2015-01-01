@@ -6,14 +6,65 @@
     <color name="chip">#ddd</color>
     <color name="item_root_pressed">#33cccccc</color>
     <color name="item_root_focused">#66cccccc</color>
-    <color name="blue">#ff0099cc</color>
+    <color name="accentColor">#03a9f4</color>
+    <color name="statusBarColor">#28000000</color>
+    <color name="defaultColor">#0288D1</color>
+    <color name="alertColor">#323232</color>
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
+        <item>#4285F4</item>
+        <item>#0288D1</item>
+        <item>#0F9D58</item>
+        <item>#009688</item>
+        <item>#F3B60C</item>
+        <item>#EF6C00</item>
+        <item>#DA4336</item>
+        <item>#795548</item>
+        <item>#607d8b</item>
         <item>#222222</item>
-        <item>#0099cc</item>
-        <item>#669900</item>
-        <item>#ff8800</item>
-        <item>#cc0000</item>
     </string-array>
+
+    <color name="material_blue_grey_800">#ff37474f</color>
+    <color name="material_grey_50">#fffafafa</color>
+    <color name="material_grey_300">#ffeeeeee</color>
+
+    <color name="item_doc_grid_background">@color/material_grey_300</color>
+
+    <color name="item_doc_grid_protect_background">#88000000</color>
+
+    <color name="item_doc_grid_overlay_activated">#88000000</color>
+    <color name="item_doc_grid_overlay_disabled">#88ffffff</color>
+
+    <color name="item_doc_list_overlay_disabled">#88ffffff</color>
+
+    <!-- 10% alpha of material_deep_teal_500 -->
+    <color name="item_doc_list_background_activated">#1a009688</color>
+
+
+    <color name="item_doc_generic">#ddd</color>
+    <color name="item_doc_folder">#404040</color>
+    <color name="item_doc_file">#808080</color>
+    <color name="item_doc_audio">#FF9800</color>
+    <color name="item_doc_video">#C74141</color>
+    <color name="item_doc_image">#00838F</color>
+
+    <color name="item_doc_apk">#8BC34A</color>
+
+    <color name="item_doc_pdf">#C62828</color>
+    <color name="item_doc_doc">#4285f4</color>
+    <color name="item_doc_sheet">#0f9d58</color>
+    <color name="item_doc_slide">#f4b400</color>
+    <color name="item_doc_word">#2B5796</color>
+    <color name="item_doc_excel">#1E7145</color>
+    <color name="item_doc_powerpoint">#D04525</color>
+
+    <color name="item_doc_compressed">#795548</color>
+    <color name="item_doc_code">#607D8B</color>
+    <color name="item_doc_certificate">#757575</color>
+
+    <color name="item_doc_contact">#03A9F4</color>
+    <color name="item_doc_event">#1E88E5</color>
+    <color name="item_doc_font">#455A64</color>
+
 
 </resources>

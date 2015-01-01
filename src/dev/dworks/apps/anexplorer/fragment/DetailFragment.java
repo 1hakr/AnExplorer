@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import java.io.File;
-
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -40,19 +38,23 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.File;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
-import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.CircleImage;
 
 /**
  * Display document title editor and save button.
@@ -75,8 +77,9 @@ public class DetailFragment extends DialogFragment{
 	private ImageView iconThumb;
 	private FrameLayout icon;
 	private View contents_layout;
+    private CircleImage iconMimeBackground;
 
-	public static void show(FragmentManager fm, DocumentInfo doc) {
+    public static void show(FragmentManager fm, DocumentInfo doc) {
 		final Bundle args = new Bundle();
 		args.putParcelable(EXTRA_DOC, doc);
 		
@@ -133,29 +136,24 @@ public class DetailFragment extends DialogFragment{
 		
 		iconMime = (ImageView) view.findViewById(R.id.icon_mime);
 		iconThumb = (ImageView) view.findViewById(R.id.icon_thumb);
-		
+        iconMimeBackground = (CircleImage)view.findViewById(R.id.icon_mime_background);
+
 		icon = (FrameLayout)view.findViewById(android.R.id.icon);
 		
 		return view;
 	}
-	
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-    	super.onViewCreated(view, savedInstanceState);
-    	if(SettingsActivity.getTranslucentMode(getActivity())){
-    		SystemBarTintManager.setInsets(getActivity(), view.findViewById(R.id.scroll_view));
-    	}
-    }
 
-	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if(isDialog){
+            setShowsDialog(isDialog);
 			getDialog().setTitle("Details");
 		}
 		
 		name.setText(doc.displayName);
+        name.setTextColor(Utils.getLightColor(SettingsActivity.getActionBarColor(getActivity())));
+        iconMimeBackground.setBackgroundColor(IconColorUtils.loadMimeColor(getActivity(), doc.mimeType, doc.authority, doc.documentId, SettingsActivity.getActionBarColor(getActivity())));
 		path.setText(doc.path);
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
 		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
@@ -164,7 +162,16 @@ public class DetailFragment extends DialogFragment{
 			contents.setText(doc.summary);
 			contents_layout.setVisibility(View.VISIBLE);
 		}
+        int docIcon = doc.icon;
+        iconMime.setAlpha(1f);
+        iconThumb.setAlpha(0f);
+        iconThumb.setImageDrawable(null);
 
+        if (docIcon != 0) {
+            iconMime.setImageDrawable(IconUtils.loadPackageIcon(getActivity(), doc.authority, docIcon));
+        } else {
+            iconMime.setImageDrawable(IconUtils.loadMimeIcon(getActivity(), doc.mimeType, doc.authority, doc.documentId, DocumentsActivity.State.MODE_GRID));
+        }
 		new DetailTask().execute();
 	}
 	
@@ -179,6 +186,7 @@ public class DetailFragment extends DialogFragment{
 			filePath = doc.path;
 
 			if (!Document.MIME_TYPE_DIR.equals(doc.mimeType)) {
+                final boolean allowThumbnail = MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, doc.mimeType);
 				int thumbSize = getResources().getDimensionPixelSize(R.dimen.grid_width);
 				Point mThumbSize = new Point(thumbSize, thumbSize);
 				final Uri uri = DocumentsContract.buildDocumentUri(doc.authority, doc.documentId);
@@ -186,7 +194,7 @@ public class DetailFragment extends DialogFragment{
 				final ContentResolver resolver = context.getContentResolver();
 				ContentProviderClient client = null;
 				try {
-					
+
 					if (doc.mimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(filePath)) {
 						result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, filePath, Document.MIME_TYPE_APK)).getBitmap();
 					} else {
@@ -200,7 +208,7 @@ public class DetailFragment extends DialogFragment{
 				} finally {
 					ContentProviderClientCompat.releaseQuietly(client);
 				}
-				
+
 				sizeString = Formatter.formatFileSize(context, doc.size);
 			}
 			else{
@@ -216,30 +224,22 @@ public class DetailFragment extends DialogFragment{
 		@Override
 		protected void onPostExecute(Void e) {
 			super.onPostExecute(e);
-			int docIcon = doc.icon;
 			if(!TextUtils.isEmpty(filePath)){
 				size.setText(sizeString);
 			}			
-			iconMime.setAlpha(1f);
-			iconThumb.setAlpha(0f);
-			iconThumb.setImageDrawable(null);
-			if (docIcon != 0) {
-				iconMime.setImageDrawable(IconUtils.loadPackageIcon(getActivity(), doc.authority, docIcon));
-			} else {
-				iconMime.setImageDrawable(IconUtils.loadMimeIcon(getActivity(), doc.mimeType, doc.authority, doc.documentId, DocumentsActivity.State.MODE_GRID));
-			}
-			
+
 			if(null != result || Document.MIME_TYPE_DIR.equals(doc.mimeType)){
-				ViewCompat.setBackground(icon, null);
-				icon.setForeground(null);
+				//ViewCompat.setBackground(icon, null);
+				//icon.setForeground(null);
 			}
-			
+
 			if(null != result){
-				iconThumb.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                ImageView.ScaleType scaleType = doc.mimeType.equals(Document.MIME_TYPE_APK) ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP;
+				iconThumb.setScaleType(scaleType);
 				iconThumb.setTag(null);
 				iconThumb.setImageBitmap(result);
-				
 				final float targetAlpha = iconMime.isEnabled() ? 1f : 0.5f;
+                iconMimeBackground.animate().alpha(0f).start();
 				iconMime.setAlpha(targetAlpha);
 				iconMime.animate().alpha(0f).start();
 				iconThumb.setAlpha(0f);

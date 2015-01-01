@@ -16,19 +16,14 @@
 
 package dev.dworks.apps.anexplorer.model;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -37,6 +32,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
@@ -44,9 +40,21 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.SearchView.OnCloseListener;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.ExifInterfaceCompat;
+import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 
@@ -67,6 +75,8 @@ public final class DocumentsContract {
     // content://com.example/root/sdcard/search/?query=pony
     // content://com.example/document/12/
     // content://com.example/document/12/children/
+    // content://com.example/tree/12/document/24/
+    // content://com.example/tree/12/document/24/children/
 
     private DocumentsContract() {
     }
@@ -230,7 +240,7 @@ public final class DocumentsContract {
          * @see DocumentsContract#getDocumentThumbnail(ContentResolver, Uri,
          *      Point, CancellationSignal)
          * @see DocumentsProvider#openDocumentThumbnail(String, Point,
-         *      android.os.CancellationSignal)
+         *      CancellationSignal)
          */
         public static final int FLAG_SUPPORTS_THUMBNAIL = 1;
 
@@ -288,6 +298,14 @@ public final class DocumentsContract {
          * @see #COLUMN_FLAGS
          */
         public static final int FLAG_DIR_PREFERS_LAST_MODIFIED = 1 << 5;
+
+        /**
+         * Flag indicating that a document can be renamed.
+         *
+         * @see #COLUMN_FLAGS
+         * @see android.provider.DocumentsProvider#renameDocument(String, String)
+         */
+        public static final int FLAG_SUPPORTS_RENAME = 1 << 6;
 
         /**
          * Flag indicating that document titles should be hidden when viewing
@@ -383,6 +401,7 @@ public final class DocumentsContract {
          */
         public static final String COLUMN_AVAILABLE_BYTES = "available_bytes";
         public static final String COLUMN_TOTAL_BYTES = "total_bytes";
+        public static final String COLUMN_PATH = "path";
 
         /**
          * MIME types supported by this root. This column is optional, and if
@@ -437,6 +456,15 @@ public final class DocumentsContract {
         public static final int FLAG_SUPPORTS_SEARCH = 1 << 3;
 
         /**
+         * Flag indicating that this root supports testing parent child
+         * relationships.
+         *
+         * @see #COLUMN_FLAGS
+         * @see android.provider.DocumentsProvider#isChildDocument(String, String)
+         */
+        public static final int FLAG_SUPPORTS_IS_CHILD = 1 << 4;
+
+        /**
          * Flag indicating that this root is currently empty. This may be used
          * to hide the root when opening documents, but the root will still be
          * shown when creating documents and {@link #FLAG_SUPPORTS_CREATE} is
@@ -462,7 +490,7 @@ public final class DocumentsContract {
         
         public static final int FLAG_SUPPORTS_EDIT = 1 << 18;
         
-        public static final int FLAG_SHOW = 1 << 19;
+        public static final int FLAG_SUPER_ADVANCED = 1 << 19;
     }
 
     /**
@@ -497,16 +525,22 @@ public final class DocumentsContract {
     public static final String METHOD_DELETE_DOCUMENT = "android:deleteDocument";
     public static final String METHOD_RENAME_DOCUMENT = "android:renameDocument";
     public static final String METHOD_MOVE_DOCUMENT = "android:moveDocument";
+    public static final String METHOD_COMPRESS_DOCUMENT = "android:compressDocument";
+    public static final String METHOD_UNCOMPRESS_DOCUMENT = "android:uncompressDocument";
 
+    public static final String EXTRA_URI = "uri";
     public static final String EXTRA_THUMBNAIL_SIZE = "thumbnail_size";
     public static final String EXTRA_DOCUMENT_TO= "document_to";
     public static final String EXTRA_DELETE_AFTER = "delete_after";
+    public static final String EXTRA_DOCUMENTS_COMPRESS = "documents_compress";
+    public static final String EXTRA_DOCUMENTS_UNCOMPRESS = "documents_uncompress";
 
     private static final String PATH_ROOT = "root";
     private static final String PATH_RECENT = "recent";
     private static final String PATH_DOCUMENT = "document";
     private static final String PATH_CHILDREN = "children";
     private static final String PATH_SEARCH = "search";
+    private static final String PATH_TREE = "tree";
 
     private static final String PARAM_QUERY = "query";
     private static final String PARAM_MANAGE = "manage";
@@ -549,12 +583,23 @@ public final class DocumentsContract {
     }
 
     /**
-     * Build URI representing the given {@link Document#COLUMN_DOCUMENT_ID} in a
-     * document provider. When queried, a provider will return a single row with
-     * columns defined by {@link Document}.
+     * Build URI representing access to descendant documents of the given
+     * {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document#COLUMN_DOCUMENT_ID}.
      *
-     * @see DocumentsProvider#queryDocument(String, String[])
-     * @see #getDocumentId(Uri)
+     * @see #getTreeDocumentId(android.net.Uri)
+     */
+    public static Uri buildTreeDocumentUri(String authority, String documentId) {
+        return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority)
+                .appendPath(PATH_TREE).appendPath(documentId).build();
+    }
+
+    /**
+     * Build URI representing the target {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document#COLUMN_DOCUMENT_ID} in
+     * a document provider. When queried, a provider will return a single row
+     * with columns defined by {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document}.
+     *
+     * @see android.provider.DocumentsProvider#queryDocument(String, String[])
+     * @see #getDocumentId(android.net.Uri)
      */
     public static Uri buildDocumentUri(String authority, String documentId) {
         return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
@@ -562,7 +607,46 @@ public final class DocumentsContract {
     }
 
     /**
-     * Build URI representing the children of the given directory in a document
+     * Build URI representing the target {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document#COLUMN_DOCUMENT_ID} in
+     * a document provider. When queried, a provider will return a single row
+     * with columns defined by {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document}.
+     * <p>
+     * However, instead of directly accessing the target document, the returned
+     * URI will leverage access granted through a subtree URI, typically
+     * returned by {@link android.content.Intent#ACTION_OPEN_DOCUMENT_TREE}. The target document
+     * must be a descendant (child, grandchild, etc) of the subtree.
+     * <p>
+     * This is typically used to access documents under a user-selected
+     * directory tree, since it doesn't require the user to separately confirm
+     * each new document access.
+     *
+     * @param treeUri the subtree to leverage to gain access to the target
+     *            document. The target directory must be a descendant of this
+     *            subtree.
+     * @param documentId the target document, which the caller may not have
+     *            direct access to.
+     * @see android.content.Intent#ACTION_OPEN_DOCUMENT_TREE
+     * @see android.provider.DocumentsProvider#isChildDocument(String, String)
+     * @see #buildDocumentUri(String, String)
+     */
+    public static Uri buildDocumentUriUsingTree(Uri treeUri, String documentId) {
+        return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(treeUri.getAuthority()).appendPath(PATH_TREE)
+                .appendPath(getTreeDocumentId(treeUri)).appendPath(PATH_DOCUMENT)
+                .appendPath(documentId).build();
+    }
+
+    /** {@hide} */
+    public static Uri buildDocumentUriMaybeUsingTree(Uri baseUri, String documentId) {
+        if (isTreeUri(baseUri)) {
+            return buildDocumentUriUsingTree(baseUri, documentId);
+        } else {
+            return buildDocumentUri(baseUri.getAuthority(), documentId);
+        }
+    }
+
+    /**
+     * Build URI representing the children of the target directory in a document
      * provider. When queried, a provider will return zero or more rows with
      * columns defined by {@link Document}.
      *
@@ -576,6 +660,37 @@ public final class DocumentsContract {
         return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority)
                 .appendPath(PATH_DOCUMENT).appendPath(parentDocumentId).appendPath(PATH_CHILDREN)
                 .build();
+    }
+
+    /**
+     * Build URI representing the children of the target directory in a document
+     * provider. When queried, a provider will return zero or more rows with
+     * columns defined by {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document}.
+     * <p>
+     * However, instead of directly accessing the target directory, the returned
+     * URI will leverage access granted through a subtree URI, typically
+     * returned by {@link android.content.Intent#ACTION_OPEN_DOCUMENT_TREE}. The target
+     * directory must be a descendant (child, grandchild, etc) of the subtree.
+     * <p>
+     * This is typically used to access documents under a user-selected
+     * directory tree, since it doesn't require the user to separately confirm
+     * each new document access.
+     *
+     * @param treeUri the subtree to leverage to gain access to the target
+     *            document. The target directory must be a descendant of this
+     *            subtree.
+     * @param parentDocumentId the document to return children for, which the
+     *            caller may not have direct access to, and which must be a
+     *            directory with MIME type of {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document#MIME_TYPE_DIR}.
+     * @see android.content.Intent#ACTION_OPEN_DOCUMENT_TREE
+     * @see android.provider.DocumentsProvider#isChildDocument(String, String)
+     * @see #buildChildDocumentsUri(String, String)
+     */
+    public static Uri buildChildDocumentsUriUsingTree(Uri treeUri, String parentDocumentId) {
+        return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(treeUri.getAuthority()).appendPath(PATH_TREE)
+                .appendPath(getTreeDocumentId(treeUri)).appendPath(PATH_DOCUMENT)
+                .appendPath(parentDocumentId).appendPath(PATH_CHILDREN).build();
     }
 
     /**
@@ -597,24 +712,49 @@ public final class DocumentsContract {
     /**
      * Test if the given URI represents a {@link Document} backed by a
      * {@link DocumentsProvider}.
+     *
+     * @see #buildDocumentUri(String, String)
+     * @see #buildDocumentUriUsingTree(android.net.Uri, String)
      */
     public static boolean isDocumentUri(Context context, Uri uri) {
         final List<String> paths = uri.getPathSegments();
-        if (paths.size() < 2) {
-            return false;
+        if (paths.size() == 2 && PATH_DOCUMENT.equals(paths.get(0))) {
+            return isDocumentsProvider(context, uri.getAuthority());
         }
-        if (!PATH_DOCUMENT.equals(paths.get(0))) {
-            return false;
+        if (paths.size() == 4 && PATH_TREE.equals(paths.get(0))
+                && PATH_DOCUMENT.equals(paths.get(2))) {
+            return isDocumentsProvider(context, uri.getAuthority());
         }
+        return false;
+    }
 
-        List<ProviderInfo> providers = context.getPackageManager()
-        	    .queryContentProviders(context.getPackageName(), context.getApplicationInfo().uid, 0);
-        for (ProviderInfo providerInfo : providers) {
-        	if (uri.getAuthority().equals(providerInfo.authority)) {
-                return true;
+    /** {@hide} */
+    public static boolean isTreeUri(Uri uri) {
+        final List<String> paths = uri.getPathSegments();
+        return (paths.size() >= 2 && PATH_TREE.equals(paths.get(0)));
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private static boolean isDocumentsProvider(Context context, String authority) {
+        PackageManager pm = context.getPackageManager();
+        if(Utils.hasKitKat()){
+            final Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
+            final List<ResolveInfo> providers = pm.queryIntentContentProviders(intent, 0);
+            for (ResolveInfo info : providers) {
+                if (authority.equals(info.providerInfo.authority)) {
+                    return true;
+                }
             }
-		}
-
+        }
+        else{
+            List<ProviderInfo> providers = context.getPackageManager()
+                    .queryContentProviders(context.getPackageName(), context.getApplicationInfo().uid, 0);
+            for (ProviderInfo providerInfo : providers) {
+                if (authority.equals(providerInfo.authority)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -623,29 +763,39 @@ public final class DocumentsContract {
      */
     public static String getRootId(Uri rootUri) {
         final List<String> paths = rootUri.getPathSegments();
-        if (paths.size() < 2) {
-            throw new IllegalArgumentException("Not a root: " + rootUri);
+        if (paths.size() >= 2 && PATH_ROOT.equals(paths.get(0))) {
+            return paths.get(1);
         }
-        if (!PATH_ROOT.equals(paths.get(0))) {
-            throw new IllegalArgumentException("Not a root: " + rootUri);
-        }
-        return paths.get(1);
+        throw new IllegalArgumentException("Invalid URI: " + rootUri);
     }
 
     /**
-     * Extract the {@link Document#COLUMN_DOCUMENT_ID} from the given URI.
+     * Extract the {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document#COLUMN_DOCUMENT_ID} from the given URI.
+     *
+     * @see #isDocumentUri(android.content.Context, android.net.Uri)
      */
     public static String getDocumentId(Uri documentUri) {
         final List<String> paths = documentUri.getPathSegments();
-        if (paths.size() < 2) {
-            throw new IllegalArgumentException("Not a document: " + documentUri);
+        if (paths.size() >= 2 && PATH_DOCUMENT.equals(paths.get(0))) {
+            return paths.get(1);
         }
-        if (!PATH_DOCUMENT.equals(paths.get(0))) {
-            throw new IllegalArgumentException("Not a document: " + documentUri);
+        if (paths.size() >= 4 && PATH_TREE.equals(paths.get(0))
+                && PATH_DOCUMENT.equals(paths.get(2))) {
+            return paths.get(3);
         }
-        return paths.get(1);
+        throw new IllegalArgumentException("Invalid URI: " + documentUri);
     }
 
+    /**
+     * Extract the via {@link dev.dworks.apps.anexplorer.model.DocumentsContract.Document#COLUMN_DOCUMENT_ID} from the given URI.
+     */
+    public static String getTreeDocumentId(Uri documentUri) {
+        final List<String> paths = documentUri.getPathSegments();
+        if (paths.size() >= 2 && PATH_TREE.equals(paths.get(0))) {
+            return paths.get(1);
+        }
+        throw new IllegalArgumentException("Invalid URI: " + documentUri);
+    }
     /**
      * Extract the search query from a URI built by
      * {@link #buildSearchDocumentsUri(String, String, String)}.
@@ -659,7 +809,7 @@ public final class DocumentsContract {
     }
 
     public static boolean isManageMode(Uri uri) {
-        return Boolean.valueOf(uri.getQueryParameter(PARAM_MANAGE));
+        return uri.getBooleanQueryParameter(PARAM_MANAGE, false);
     }
 
     /**
@@ -675,7 +825,7 @@ public final class DocumentsContract {
      *            in the thumbnail.
      * @return decoded thumbnail, or {@code null} if problem was encountered.
      * @see DocumentsProvider#openDocumentThumbnail(String, Point,
-     *      android.os.CancellationSignal)
+     *      CancellationSignal)
      */
     public static Bitmap getDocumentThumbnail(
             ContentResolver resolver, Uri documentUri, Point size, CancellationSignal signal) {
@@ -684,7 +834,9 @@ public final class DocumentsContract {
         try {
             return getDocumentThumbnails(client, documentUri, size, signal);
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load thumbnail for " + documentUri + ": " + e);
+            if (!(e instanceof OperationCanceledException)) {
+                Log.w(TAG, "Failed to load thumbnail for " + documentUri + ": " + e);
+            }
             return null;
         } finally {
         	ContentProviderClientCompat.releaseQuietly(client);
@@ -692,11 +844,17 @@ public final class DocumentsContract {
     }
 
     /** {@hide} */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static Bitmap getDocumentThumbnails(
             ContentProviderClient client, Uri documentUri, Point size, CancellationSignal signal)
             throws RemoteException, IOException {
         final Bundle openOpts = new Bundle();
-        openOpts.putParcelable(DocumentsContract.EXTRA_THUMBNAIL_SIZE, size);
+        if(Utils.hasKitKat()) {
+            openOpts.putParcelable(ContentResolver.EXTRA_SIZE, size);
+        }
+        else {
+            openOpts.putParcelable(DocumentsContract.EXTRA_THUMBNAIL_SIZE, size);
+        }
 
         AssetFileDescriptor afd = null;
         Bitmap bitmap = null;
@@ -746,16 +904,19 @@ public final class DocumentsContract {
             // Transform the bitmap if requested. We use a side-channel to
             // communicate the orientation, since EXIF thumbnails don't contain
             // the rotation flags of the original image.
-            final Bundle extras = null;//afd.getExtras();
-            final int orientation = (extras != null) ? extras.getInt(EXTRA_ORIENTATION, 0) : 0;
-            if (orientation != 0) {
-                final int width = bitmap.getWidth();
-                final int height = bitmap.getHeight();
+            if(Utils.hasKitKat()) {
+                final Bundle extras = afd.getExtras();
+                final int orientation = extras != null ? extras.getInt(EXTRA_ORIENTATION, 0) : 0;
+                if (orientation != 0) {
+                    final int width = bitmap.getWidth();
+                    final int height = bitmap.getHeight();
 
-                final Matrix m = new Matrix();
-                m.setRotate(orientation, width / 2, height / 2);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+                    final Matrix m = new Matrix();
+                    m.setRotate(orientation, width / 2, height / 2);
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+                }
             }
+
         } finally {
             IoUtils.closeQuietly(afd);
         }
@@ -782,6 +943,8 @@ public final class DocumentsContract {
             //return createDocument(client, parentDocumentUri, mimeType, displayName);
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(parentDocumentUri));
+            in.putParcelable(DocumentsContract.EXTRA_URI, parentDocumentUri);
+
             in.putString(Document.COLUMN_MIME_TYPE, mimeType);
             in.putString(Document.COLUMN_DISPLAY_NAME, displayName);
 
@@ -823,6 +986,7 @@ public final class DocumentsContract {
             //deleteDocument(resolver, documentUri);
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(documentUri));
+            in.putParcelable(DocumentsContract.EXTRA_URI, documentUri);
 
             //resolver.call(documentUri, METHOD_DELETE_DOCUMENT, null, in);
             ContentProviderClientCompat.call(resolver, client, documentUri, METHOD_DELETE_DOCUMENT, null, in);
@@ -835,14 +999,24 @@ public final class DocumentsContract {
         }
     }
 
+    /** {@hide} */
+/*    public static void deleteDocuments(ContentProviderClient client, Uri documentUri)
+            throws RemoteException {
+        final Bundle in = new Bundle();
+        in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(documentUri));
+
+        client.call(METHOD_DELETE_DOCUMENT, null, in);
+    }*/
+
     public static boolean moveDocument(ContentResolver resolver, Uri fromDocumentUri, Uri toDocumentUri, boolean deleteAfter) {
-    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
-    			fromDocumentUri.getAuthority());
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                fromDocumentUri.getAuthority());
         try {
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
+            in.putParcelable(DocumentsContract.EXTRA_URI, fromDocumentUri);
             if(null != toDocumentUri){
-            	in.putString(DocumentsContract.EXTRA_DOCUMENT_TO, getDocumentId(toDocumentUri));
+                in.putString(DocumentsContract.EXTRA_DOCUMENT_TO, getDocumentId(toDocumentUri));
             }
             in.putBoolean(DocumentsContract.EXTRA_DELETE_AFTER, deleteAfter);
 
@@ -853,10 +1027,10 @@ public final class DocumentsContract {
             Log.w(TAG, "Failed to delete document", e);
             return false;
         } finally {
-        	ContentProviderClientCompat.releaseQuietly(client);
+            ContentProviderClientCompat.releaseQuietly(client);
         }
     }
-    
+
     /**
      * Rename a document with given MIME type and display name.
      *
@@ -868,13 +1042,14 @@ public final class DocumentsContract {
      * @hide
      */
     public static Uri renameDocument(ContentResolver resolver, Uri parentDocumentUri,
-            String mimeType, String displayName) {
-    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
-    			parentDocumentUri.getAuthority());
+                                     String mimeType, String displayName) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                parentDocumentUri.getAuthority());
         try {
             //return createDocument(client, parentDocumentUri, mimeType, displayName);
             final Bundle in = new Bundle();
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(parentDocumentUri));
+            in.putParcelable(DocumentsContract.EXTRA_URI, parentDocumentUri);
             in.putString(Document.COLUMN_MIME_TYPE, mimeType);
             in.putString(Document.COLUMN_DISPLAY_NAME, displayName);
 
@@ -886,19 +1061,48 @@ public final class DocumentsContract {
             Log.w(TAG, "Failed to rename document", e);
             return null;
         } finally {
-        	ContentProviderClientCompat.releaseQuietly(client);
+            ContentProviderClientCompat.releaseQuietly(client);
         }
     }
-    
-    /** {@hide} */
-/*    public static void deleteDocuments(ContentProviderClient client, Uri documentUri)
-            throws RemoteException {
-        final Bundle in = new Bundle();
-        in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(documentUri));
 
-        client.call(METHOD_DELETE_DOCUMENT, null, in);
+
+    public static boolean compressDocument(ContentResolver resolver, Uri fromDocumentUri, ArrayList<String> fromDocumentIds) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                fromDocumentUri.getAuthority());
+        try {
+            final Bundle in = new Bundle();
+            in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
+            in.putParcelable(DocumentsContract.EXTRA_URI, fromDocumentUri);
+            in.putStringArrayList(DocumentsContract.EXTRA_DOCUMENTS_COMPRESS, fromDocumentIds);
+            //resolver.call(fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_COMPRESS_DOCUMENT, null, in);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to delete document", e);
+            return false;
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
     }
-    */
+
+    public static boolean uncompressDocument(ContentResolver resolver, Uri fromDocumentUri) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                fromDocumentUri.getAuthority());
+        try {
+            final Bundle in = new Bundle();
+            in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
+            in.putParcelable(DocumentsContract.EXTRA_URI, fromDocumentUri);
+
+            //resolver.call(fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to delete document", e);
+            return false;
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
+    }
 
     /**
      * Open the given image for thumbnail purposes, using any embedded EXIF
@@ -907,6 +1111,7 @@ public final class DocumentsContract {
      *
      * @hide
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static AssetFileDescriptor openImageThumbnail(File file) throws FileNotFoundException {
         final ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
                 file, ParcelFileDescriptor.MODE_READ_ONLY);
@@ -930,10 +1135,12 @@ public final class DocumentsContract {
                     break;
             }
 
-/*            final long[] thumb = exif.getThumbnailRange();
-            if (thumb != null) {
-                return new AssetFileDescriptor(pfd, thumb[0], thumb[1]);
-            }*/
+            if(Utils.hasKitKat()){
+                final long[] thumb = ExifInterfaceCompat.getThumbnailRange(exif);
+                if (thumb != null) {
+                    return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
+                }
+            }
         } catch (IOException e) {
         }
 

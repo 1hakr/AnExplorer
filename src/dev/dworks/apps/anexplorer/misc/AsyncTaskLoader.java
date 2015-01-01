@@ -17,17 +17,19 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Loader;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.util.Log;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
-
-import android.content.Context;
-import android.content.Loader;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.util.Log;
 
 /**
  * Abstract Loader that provides an {@link AsyncTask} to do the work.  See
@@ -240,6 +242,7 @@ public abstract class AsyncTaskLoader<D> extends Loader<D> {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     void dispatchOnCancelled(LoadTask task, D data) {
         onCanceled(data);
         if (mCancellingTask == task) {
@@ -257,6 +260,7 @@ public abstract class AsyncTaskLoader<D> extends Loader<D> {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     void dispatchOnLoadComplete(LoadTask task, D data) {
         if (mTask != task) {
             if (DEBUG) Log.v(TAG, "Load complete of old task, trying to cancel");

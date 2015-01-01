@@ -4,7 +4,7 @@ AnExplorer
 
 AnExplorer is fully Open Source Minimalist Holo Designed File Manager built for Phones and Tablets with Android 4.0+. With AnExplorer File Manager you can easily find, browse, move, compress, and otherwise manage your apps easily!
 
-Features present : 
+Features present :
 * All types of storage like emmc, internal SD card, external SD cards USB OTG On-The-Go
 * Different theme of colors
 * Intuitive left/right swiping to browse folders and files

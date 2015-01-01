@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+    <!-- Menu item title that compress the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_compress" translatable="false">Compress</string>
+    <!-- Menu item title that uncompress the selected documents [CHAR LIMIT=24] -->
+    <string name="menu_uncompress">Uncompress</string>
+    <string name="menu_rename">Rename</string>
+    <string name="menu_paste">Paste</string>
+    <string name="menu_create_file">Create file</string>
+
+    <string name="root_images">Images</string>
+    <string name="root_audio">Audio</string>
+    <string name="root_videos">Video</string>
+    <string name="root_internal_storage">Internal Storage</string>
+    <string name="root_external_storage">External Storage</string>
+    <string name="root_phone_storage">Phone</string>
+    <string name="root_root_storage">Root</string>
+    <string name="root_bluetooth">Bluetooth</string>
+    <string name="root_downloads">Downloads</string>
+    <string name="root_app_backup">App Backup</string>
+    <string name="root_hidden">Hidden</string>
+    <string name="root_apps">Apps</string>
+    <string name="root_heat_map">Heat map</string>
+    <string name="root_processes">Processes</string>
+
+    <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
+    <string name="pref_advanced_devices">Display advanced</string>
+    <!-- Title for setting that will show file sizes for all documents [CHAR LIMIT=32] -->
+    <string name="pref_file_size">Display file size</string>
+    <string name="pref_device_size">Display device size</string>
+
+    <!--
+         Status indicating that the download has been queued to start in the future.  Appears for an
+         individual item in the download list.  [CHAR LIMIT=24]
+    -->
+    <string name="download_queued">Queued</string>
+    <!--
+         Status indicating that the system is currently downloading the file.  Appears for an
+         individual item in the download list.  [CHAR LIMIT=24]
+    -->
+    <string name="download_running">In progress</string>
+    <!--
+         Status indicating that the download has ended without completing successfully.  Appears for
+         an individual item in the download list.  [CHAR LIMIT=24]
+    -->
+    <string name="download_error">Unsuccessful</string>
+
+    <!-- Representation of download progress percentage when running. [CHAR LIMIT=24] -->
+    <string name="download_running_percent">In progress, <xliff:g id="number">%d</xliff:g><xliff:g id="percent">%%</xliff:g></string>
+    <string name="app_name">AnExplorer</string>
+    <string name="app_ver">Another Explorer</string>
+    <string name="app_company">Developed By DWorkS</string>
+    <string name="app_url">http://www.dworks.in</string>
+    <string name="app_about_info">To make a small difference.</string>
+    <string name="app_contrib">Contributions by Hari Krishna Dulipudi</string>
+    <string name="app_about">This file explorer helps you  organise your files, save app, monitor process and many more</string>
+    <string name="twitter"><a href="https://twitter.com/1HaKr">  Twitter</a></string>
+    <string name="gplus"><a href="https://plus.google.com/109240246596102887385">  Google+</a></string>
+    <string name="pref_folder_size">Display folder size</string>
+    <string name="pref_thumbnail">Display file thumbnails</string>
+    <string name="pref_root_mode">Display Root Mode</string>
+    <string name="pref_translucent_mode">Display Translucent Mode</string>
+    <string name="pref_as_dialog">Display as Dailog</string>
+    <string name="pref_folder_animations">Enable folder animations</string>
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_header_login">Login</string>
+    <string name="pref_title_pin_enable">Enable PIN Protection</string>
+    <string name="pref_description_pin_enable">Gives security to your files</string>
+    <string name="pref_title_pin_set">Set PIN</string>
+    <string name="pref_default_pin_set">PIN protection disabled</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="enter_new_pin">Enter New PIN</string>
+    <string name="incorrect_pin">Incorrect PIN</string>
+    <string name="confirm_pin">Confirm PIN</string>
+    <string name="pin_mismatch">PIN did not match</string>
+    <string name="pin_set">PIN protection enabled</string>
+    <string name="pin_disabled">PIN protection disabled</string>
+    <string name="pin_protection">PIN Protection</string>
+    <string name="loading">Loading...</string>
+    <string name="pref_foreground_color_title">ActionBar Color</string>
+    <string name="pref_foreground_color_description">The color of action bar</string>
+
+    <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
+    <string name="bytes"><xliff:g id="count">%s</xliff:g> B</string>
+    <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
+    <string name="kilobytes"><xliff:g id="count">%s</xliff:g> KB</string>
+    <!-- Size unit, displayed in a button next to an attachment  [CHAR LIMIT=5] -->
+    <string name="megabytes"><xliff:g id="count">%s</xliff:g> MB</string>
+    <!-- Size unit, displayed in a button next to an attachment  [CHAR LIMIT=5] -->
+    <string name="gigabytes"><xliff:g id="count">%s</xliff:g> GB</string>
+    <string name="title_activity_donate">Donate</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="save">Save</string>
+    <string name="saving">Saving...</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="unsaved_changes_desc">You have unsaved changes, Save them?</string>
+    <string name="unable_to_open_app">Unable to open app</string>
+    <string name="more">More</string>
+
+</resources>

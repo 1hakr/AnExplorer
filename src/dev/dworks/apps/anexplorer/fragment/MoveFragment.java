@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import java.util.ArrayList;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -30,6 +28,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
@@ -109,7 +110,15 @@ public class MoveFragment extends Fragment implements OnClickListener{
 		return view;
 	}
 
-	/**
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (mReplaceTarget != null) {
+            mRootInfo.setText(mReplaceTarget.displayName);
+        }
+    }
+
+    /**
 	 * Set given document as target for in-place writing if user hits save
 	 * without changing the filename. Can be set to {@code null} if user
 	 * navigates outside the target directory.
@@ -117,7 +126,7 @@ public class MoveFragment extends Fragment implements OnClickListener{
 	public void setReplaceTarget(DocumentInfo replaceTarget) {
 		mReplaceTarget = replaceTarget;
 
-		if (mReplaceTarget != null) {
+		if (mRootInfo != null && mReplaceTarget != null) {
 			mRootInfo.setText(replaceTarget.displayName);
 		}
 	}

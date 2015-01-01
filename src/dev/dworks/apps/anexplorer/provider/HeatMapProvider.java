@@ -17,19 +17,15 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
@@ -38,6 +34,12 @@ import android.webkit.MimeTypeMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
@@ -64,7 +66,7 @@ public class HeatMapProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -112,6 +114,7 @@ public class HeatMapProvider extends StorageProvider {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void updateVolumesLocked() {
         mRoots.clear();
         mIdToPath.clear();
@@ -292,6 +295,7 @@ public class HeatMapProvider extends StorageProvider {
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_heat_map));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_HEAT_MAP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, -1);
+        row.add(Root.COLUMN_TOTAL_BYTES, -1);
 
         return result;
     }

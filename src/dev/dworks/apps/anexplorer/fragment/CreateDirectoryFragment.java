@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -34,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -43,6 +43,8 @@ import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 
 /**
  * Dialog to create a new directory.
@@ -58,7 +60,6 @@ public class CreateDirectoryFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
-        //final ContentResolver resolver = context.getContentResolver();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
         final LayoutInflater dialogInflater = LayoutInflater.from(builder.getContext());

@@ -32,8 +32,6 @@ import android.net.Uri;
 import android.text.format.DateUtils;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.analytics.tracking.android.GoogleAnalytics;
-import com.google.analytics.tracking.android.Tracker;
 
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RemoteException;
@@ -46,7 +44,7 @@ public class DocumentsApplication extends Application {
     private RootsCache mRoots;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
-    public static Tracker tracker;
+    //public static Tracker tracker;
 
     public static String APP_VERSION;
     public static int APP_VERSION_CODE;
@@ -79,9 +77,9 @@ public class DocumentsApplication extends Application {
     public void onCreate() {
     	
     	Crashlytics.start(this);
-		GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
-		googleAnalytics.getTracker(getString(R.string.ga_trackingId));
-		tracker = googleAnalytics.getDefaultTracker();
+		//GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
+		//googleAnalytics.getTracker(getString(R.string.ga_trackingId));
+		//tracker = googleAnalytics.getDefaultTracker();
 		
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;

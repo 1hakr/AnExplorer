@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_save"
         android:alphabeticShortcut="s"
         android:icon="@drawable/ic_menu_save"
-        android:showAsAction="ifRoom|withText"
+        support:showAsAction="ifRoom|withText"
         android:title="@string/menu_save"/>
     <item
         android:id="@+id/menu_revert"
         android:icon="@drawable/ic_menu_undo"
+        support:showAsAction="ifRoom|withText"
         android:title="Revert"/>
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_menu_delete"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/menu_delete"/>
+        support:showAsAction="never|withText"
+        android:title="@string/menu_delete"
+        android:visible="false"/>
 
 </menu>

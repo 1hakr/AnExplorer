@@ -16,22 +16,19 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.pm.ResolveInfo;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -43,6 +40,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -53,6 +56,8 @@ import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 
 /**
  * Cache of known storage backends and their roots.
@@ -91,7 +96,6 @@ public class RootsCache {
 
         @Override
         public void onChange(boolean selfChange) {
-        	//FIXME: update authority
         	super.onChange(selfChange);
         }
         
@@ -110,7 +114,8 @@ public class RootsCache {
         mRecentsRoot.authority = null;
         mRecentsRoot.rootId = null;
         mRecentsRoot.icon = R.drawable.ic_root_recent;
-        mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY;
+        mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_CREATE
+                | Root.FLAG_SUPPORTS_IS_CHILD;
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
         mRecentsRoot.availableBytes = -1;
 
@@ -121,9 +126,6 @@ public class RootsCache {
      * Gather roots from storage providers belonging to given package name.
      */
     public void updatePackageAsync(String packageName) {
-        // Need at least first load, since we're going to be using previously
-        // cached values for non-matching packages.
-        waitForFirstLoad();
         new UpdateTask(packageName).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -184,20 +186,37 @@ public class RootsCache {
             mFilterPackage = filterPackage;
         }
 
+        @TargetApi(Build.VERSION_CODES.KITKAT)
         @Override
         protected Void doInBackground(Void... params) {
             final long start = SystemClock.elapsedRealtime();
 
+            if (mFilterPackage != null) {
+                // Need at least first load, since we're going to be using
+                // previously cached values for non-matching packages.
+                waitForFirstLoad();
+            }
+
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
             final ContentResolver resolver = mContext.getContentResolver();
-            
-            List<ProviderInfo> providers = mContext.getPackageManager()
-            	    .queryContentProviders(mContext.getPackageName(), mContext.getApplicationInfo().uid, 0);
-            for (ProviderInfo providerInfo : providers) {
-            	handleDocumentsProvider(providerInfo);
-			}
+            final PackageManager pm = mContext.getPackageManager();
 
+            // Pick up provider with action string
+            if(Utils.hasKitKat()){
+                final Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
+                final List<ResolveInfo> providers = pm.queryIntentContentProviders(intent, 0);
+                for (ResolveInfo info : providers) {
+                    handleDocumentsProvider(info.providerInfo);
+                }
+            }
+            else{
+                List<ProviderInfo> providers = pm.queryContentProviders(mContext.getPackageName(),
+                        mContext.getApplicationInfo().uid, 0);
+                for (ProviderInfo providerInfo : providers) {
+                    handleDocumentsProvider(providerInfo);
+                }
+            }
             final long delta = SystemClock.elapsedRealtime() - start;
             Log.d(TAG, "Update found " + mTaskRoots.size() + " roots in " + delta + "ms");
             synchronized (mLock) {
@@ -326,7 +345,7 @@ public class RootsCache {
     
     public RootInfo getDefaultRoot() {
     	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (root.isExternalStorage() || root.isSecondayStorage()) {
+    		if (root.isExternalStorage() || root.isSecondaryStorage()) {
                 return root;
             }
 		}
@@ -371,7 +390,9 @@ public class RootsCache {
         final List<RootInfo> matching = Lists.newArrayList();
         for (RootInfo root : roots) {
             final boolean supportsCreate = (root.flags & Root.FLAG_SUPPORTS_CREATE) != 0;
+            final boolean supportsIsChild = (root.flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;
             final boolean advanced = (root.flags & DocumentsContract.Root.FLAG_ADVANCED) != 0;
+            final boolean superAdvanced = (root.flags & Root.FLAG_SUPER_ADVANCED) != 0;
             final boolean localOnly = (root.flags & Root.FLAG_LOCAL_ONLY) != 0;
             final boolean empty = (root.flags & DocumentsContract.Root.FLAG_EMPTY) != 0;
 
@@ -383,6 +404,8 @@ public class RootsCache {
             }
             // Exclude read-only devices when creating
             if (state.action == State.ACTION_CREATE && !supportsCreate) continue;
+            // Exclude roots that don't support directory picking
+            if (state.action == State.ACTION_OPEN_TREE && !supportsIsChild) continue;
             // Exclude advanced devices when not requested
             if (!state.showAdvanced && advanced) continue;
             // Exclude non-local devices when local only
@@ -390,6 +413,11 @@ public class RootsCache {
             // Only show empty roots when creating
             if (state.action != State.ACTION_CREATE && empty) continue;
 
+            if ((state.action == State.ACTION_GET_CONTENT
+                    || state.action == State.ACTION_GET_CONTENT || state.action == State.ACTION_OPEN
+                    || state.action == State.ACTION_OPEN_TREE) && superAdvanced){
+                continue;
+            }
             // Only include roots that serve requested content
             final boolean overlap =
                     MimePredicate.mimeMatches(root.derivedMimeTypes, state.acceptMimes) ||

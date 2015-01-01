@@ -14,18 +14,30 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/menu_open"
+        support:showAsAction="ifRoom"
+        android:title="@string/menu_open"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/menu_details"
+        android:icon="@drawable/ic_menu_info"
+        support:showAsAction="always"
+        android:title="Details"/>
     <item
         android:id="@+id/menu_save"
         android:icon="@drawable/ic_menu_save"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="Save"
         android:visible="false"/>
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_menu_stop"
-        android:showAsAction="always"
+        support:showAsAction="always"
         android:title="@string/menu_delete"/>
 
 </menu>
