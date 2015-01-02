@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -66,7 +67,7 @@ public class RootsCache {
     private static final boolean LOGD = true;
 
     public static final Uri sNotificationUri = Uri.parse(
-            "content://dev.dworks.apps.anexplorer.roots/");
+            "content://"+ BuildConfig.APPLICATION_ID+".roots/");
 
     private final Context mContext;
     private final ContentObserver mObserver;

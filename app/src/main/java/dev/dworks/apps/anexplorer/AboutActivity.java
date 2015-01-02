@@ -68,7 +68,8 @@ public class AboutActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
         logo.setTextColor(SettingsActivity.getActionBarColor(this));
-		logo.setText(logo.getText() + " v" + DocumentsApplication.APP_VERSION);
+        String header = logo.getText() + getSuffix() + " v" + DocumentsApplication.APP_VERSION;
+		logo.setText(header);
 	}
 
 	@Override
@@ -99,12 +100,12 @@ public class AboutActivity extends ActionBarActivity {
 			Intent intentFeedback = new Intent("android.intent.action.SEND");
 			intentFeedback.setType("text/email");
 			intentFeedback.putExtra("android.intent.extra.EMAIL", new String[]{"hakr@dworks.in"});
-			intentFeedback.putExtra("android.intent.extra.SUBJECT", "AnExplorer Feedback");
+			intentFeedback.putExtra("android.intent.extra.SUBJECT", "AnExplorer Feedback" + getSuffix());
 			startActivity(Intent.createChooser(intentFeedback, "Send Feedback"));
 			break;
 		case R.id.action_rate:
 			Intent intentMarket = new Intent("android.intent.action.VIEW");
-			intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
+			intentMarket.setData(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
 			startActivity(intentMarket);
 			break;
 		case R.id.action_support:
@@ -115,4 +116,8 @@ public class AboutActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+    private String getSuffix(){
+        return BuildConfig.APPLICATION_ID.contains("pro") ? " Pro" : "";
+    }
 }

@@ -31,8 +31,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.text.format.DateUtils;
 
-import com.crashlytics.android.Crashlytics;
-
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RemoteException;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
@@ -75,8 +73,7 @@ public class DocumentsApplication extends Application {
 
     @Override
     public void onCreate() {
-    	
-    	Crashlytics.start(this);
+        super.onCreate();
 		//GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
 		//googleAnalytics.getTracker(getString(R.string.ga_trackingId));
 		//tracker = googleAnalytics.getDefaultTracker();

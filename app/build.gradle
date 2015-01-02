@@ -11,8 +11,8 @@ android {
     }
     signingConfigs {
         release {
-/*            def Properties localProps = new Properties()
-            localProps.load(new FileInputStream(file('../local.properties')))
+            def Properties localProps = new Properties()
+            localProps.load(new FileInputStream(file('../default.properties')))
             def Properties keyProps = new Properties()
             if (localProps['keystore.props.file'] != null) {
                 keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
@@ -20,7 +20,7 @@ android {
             storeFile keyProps["store"] != null ? file(keyProps["store"]) : null
             keyAlias keyProps["alias"]
             storePassword keyProps["storePass"]
-            keyPassword keyProps["pass"]*/
+            keyPassword keyProps["pass"]
         }
     }
     buildTypes {
@@ -37,10 +37,12 @@ android {
         free {
             applicationId "dev.dworks.apps.anexplorer"
             versionName "2.5"
+            versionCode = 40
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
             versionName "2.5"
+            versionCode = 40
         }
     }
     lintOptions {
@@ -53,10 +55,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile files('libs/rootcommands.jar')
     compile 'com.android.support:support-v4:+'
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.github.mrengineer13:snackbar:+'
-    compile 'com.google.android.gms:play-services-ads:6.5.+'
     compile 'com.google.guava:guava:18.0'
+    freeCompile files('libs/crashlytics.jar')
+    freeCompile 'com.google.android.gms:play-services-ads:6.5.+'
 }

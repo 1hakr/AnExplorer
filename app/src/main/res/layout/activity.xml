@@ -70,14 +70,7 @@
                 <include layout="@layout/fab_layout" />
             </FrameLayout>
 
-            <com.google.android.gms.ads.AdView
-                android:id="@+id/adView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                ads:adSize="SMART_BANNER"
-                ads:adUnitId="a14e25123e38970" />
-
+            <include layout="@layout/ads_layout" />
             <FrameLayout
                 android:id="@+id/container_save"
                 android:layout_width="match_parent"
