@@ -1,81 +1,15 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
-    }
-}
-apply plugin: 'com.android.application'
 
-dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:support-v4:+'
-    compile 'com.android.support:appcompat-v7:+'
-    compile 'com.github.mrengineer13:snackbar:+'
-    compile 'com.google.android.gms:play-services-ads:6.5.+'
-    compile 'com.google.guava:guava:18.0'
-}
-
-android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-        instrumentTest.setRoot('tests')
-    }
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 21
-    }
-    signingConfigs {
-        release {
-            def Properties localProps = new Properties()
-            localProps.load(new FileInputStream(file('local.properties')))
-            def Properties keyProps = new Properties()
-            if (localProps['keystore.props.file'] != null) {
-                keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
-            }
-            storeFile keyProps["store"] != null ? file(keyProps["store"]) : null
-            keyAlias keyProps["alias"]
-            storePassword keyProps["storePass"]
-            keyPassword keyProps["pass"]
-        }
-    }
-    buildTypes {
-        release {
-            proguardFiles 'proguard/proguard-project.pro',
-                    'proguard/proguard-guava.pro',
-                    'proguard/proguard-google-play-services.pro'
-            signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
-        }
-    }
-/*    productFlavors {
-        pro {
-            applicationId "dev.dworks.apps.anexplorer.pro"
-            versionName "2.5"
-        }
-        main {
-            applicationId "dev.dworks.apps.anexplorer"
-            versionName "2.5"
-        }
-    }*/
-    lintOptions {
-        abortOnError false
-    }
-
-    aaptOptions {
-        noCompress 'apk'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 

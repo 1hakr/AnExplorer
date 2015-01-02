@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+
+
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
+
+<!--    <item
+        android:id="@+id/menu_create_file"
+        android:icon="@drawable/ic_add_white"
+        support:showAsAction="always"
+        android:title="@string/menu_create_file"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_create_dir"
+        android:icon="@drawable/ic_menu_new_folder"
+        support:showAsAction="always"
+        android:title="@string/menu_create_dir"
+        android:visible="false"/>-->
+    <item
+        android:id="@+id/menu_search"
+        support:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/ic_menu_search"
+        support:showAsAction="always|collapseActionView"
+        android:title="@string/menu_search"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_list"
+        android:icon="@drawable/ic_menu_view_list"
+        support:showAsAction="ifRoom"
+        android:title="@string/menu_list"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_grid"
+        android:icon="@drawable/ic_menu_view_grid"
+        support:showAsAction="ifRoom"
+        android:title="@string/menu_grid"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_sort"
+        android:icon="@drawable/ic_menu_sortby"
+        support:showAsAction="ifRoom"
+        android:title="@string/menu_sort"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@+id/menu_sort_name"
+                android:title="@string/sort_name"/>
+            <item
+                android:id="@+id/menu_sort_date"
+                android:title="@string/sort_date"/>
+            <item
+                android:id="@+id/menu_sort_size"
+                android:title="@string/sort_size"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_menu_settings"
+        support:showAsAction="never"
+        android:title="@string/menu_settings"/>
+    <item
+        android:id="@+id/menu_about"
+        android:icon="@drawable/ic_dialog_info"
+        support:showAsAction="never"
+        android:title="About"/>
+
+</menu>
