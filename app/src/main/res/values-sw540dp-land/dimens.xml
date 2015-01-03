@@ -17,7 +17,7 @@
 -->
 
 <resources>
-    <bool name="show_as_dialog">false</bool>
+    <bool name="show_as_dialog">true</bool>
     <dimen name="grid_padding_horiz">20dp</dimen>
     <bool name="always_show_summary">true</bool>
 
