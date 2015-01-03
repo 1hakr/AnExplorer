@@ -58,6 +58,7 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
@@ -203,7 +204,9 @@ public class RootsFragment extends Fragment {
         final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.fromParts("package", ri.activityInfo.packageName, null));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        startActivity(intent);
+        if(Utils.isIntentAvailable(getActivity(), intent)) {
+            startActivity(intent);
+        }
     }
 
     private OnItemClickListener mItemListener = new OnItemClickListener() {

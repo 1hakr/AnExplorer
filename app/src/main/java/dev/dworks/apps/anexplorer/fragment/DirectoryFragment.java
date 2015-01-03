@@ -1722,15 +1722,20 @@ public class DirectoryFragment extends ListFragment {
         case R.id.menu_open:
             Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(docs.get(0).documentId));
             if (intent!= null) {
-                getActivity().startActivity(intent);
+                if(Utils.isIntentAvailable(getActivity(), intent)) {
+                    getActivity().startActivity(intent);
+                }
             }
             else{
                 ((DocumentsActivity) getActivity()).showError(R.string.unable_to_open_app);
             }
             return true;
         case R.id.menu_details:
-            getActivity().startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
-                    + AppsProvider.getPackageForDocId(docs.get(0).documentId))));
+            Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+                    + AppsProvider.getPackageForDocId(docs.get(0).documentId)));
+            if(Utils.isIntentAvailable(getActivity(), intent2)) {
+                getActivity().startActivity(intent2);
+            }
             return true;
 		case R.id.menu_info:
 			final DocumentsActivity activity = (DocumentsActivity) getActivity();

@@ -190,7 +190,10 @@ public class AppRate {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName())));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName()));
+                if(Utils.isIntentAvailable(activity, intent)) {
+                    activity.startActivity(intent);
+                }
                 if (onShowListener != null)onShowListener.onRateAppClicked();
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);
