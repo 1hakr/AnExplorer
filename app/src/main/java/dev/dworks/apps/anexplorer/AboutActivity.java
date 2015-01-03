@@ -68,7 +68,7 @@ public class AboutActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
         logo.setTextColor(SettingsActivity.getActionBarColor(this));
-        String header = logo.getText() + getSuffix() + " v" + DocumentsApplication.APP_VERSION;
+        String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 	}
 
@@ -118,6 +118,6 @@ public class AboutActivity extends ActionBarActivity {
 	}
 
     private String getSuffix(){
-        return BuildConfig.APPLICATION_ID.contains("pro") ? " Pro" : "";
+        return BuildConfig.FLAVOR.startsWith("pro") ? " Pro" : "";
     }
 }

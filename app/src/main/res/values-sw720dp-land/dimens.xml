@@ -15,6 +15,7 @@
 -->
 
 <resources>
+    <bool name="show_as_dialog">true</bool>
     <bool name="always_show_summary">true</bool>
     <dimen name="activity_actionbar_size">48dp</dimen>
 

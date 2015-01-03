@@ -25,8 +25,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.net.Uri;
 import android.text.format.DateUtils;
@@ -44,9 +42,7 @@ public class DocumentsApplication extends Application {
     private ThumbnailCache mThumbnails;
     //public static Tracker tracker;
 
-    public static String APP_VERSION;
-    public static int APP_VERSION_CODE;
-    
+
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
     }
@@ -97,16 +93,6 @@ public class DocumentsApplication extends Application {
         final IntentFilter localeFilter = new IntentFilter();
         localeFilter.addAction(Intent.ACTION_LOCALE_CHANGED);
         registerReceiver(mCacheReceiver, localeFilter);
-        
-    	try {
-            final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-    		APP_VERSION = info.versionName;
-    		APP_VERSION_CODE = info.versionCode;
-		} catch (NameNotFoundException e) {
-			APP_VERSION = "Unknown";
-			APP_VERSION_CODE = 0;
-			e.printStackTrace();
-		}
     }
 
     @Override

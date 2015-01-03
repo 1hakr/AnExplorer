@@ -4,12 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
+    <dev.dworks.apps.anexplorer.ui.AdWrapper
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        ads:adSize="SMART_BANNER"
-        ads:adUnitId="a14e25123e38970" />
+        android:layout_height="wrap_content"/>
 
 </FrameLayout>

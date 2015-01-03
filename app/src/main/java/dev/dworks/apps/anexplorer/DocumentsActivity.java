@@ -73,9 +73,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mrengineer13.snackbar.SnackBar;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -173,7 +170,6 @@ public class DocumentsActivity extends ActionBarActivity {
 	private FrameLayout mSaveContainer;
     private FrameLayout mAlertContainer;
     private FrameLayout mRateContainer;
-    private AdView mAdView;
     private boolean mActionMode;
     private LruCache<String, Long> mFileSizeCache;
     private FloatingActionsMenu mActionMenu;
@@ -1871,11 +1867,6 @@ public class DocumentsActivity extends ActionBarActivity {
 
         mPaste = (FloatingActionButton) findViewById(R.id.fab_paste);
         mPaste.setOnClickListener(mOnClickListener);
-
-        //Ads
-        mAdView = (AdView) findViewById(R.id.adView);
-        mAdView.setAdListener(adListener);
-        mAdView.loadAd(new AdRequest.Builder().build());
     }
 
     public void upadateActionItems(AbsListView currentView) {
@@ -1923,20 +1914,6 @@ public class DocumentsActivity extends ActionBarActivity {
                     break;
 
             }
-        }
-    };
-
-    AdListener adListener = new AdListener() {
-        @Override
-        public void onAdLoaded() {
-            super.onAdLoaded();
-            mAdView.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        public void onAdFailedToLoad(int errorCode) {
-            super.onAdFailedToLoad(errorCode);
-            mAdView.setVisibility(View.GONE);
         }
     };
 }
