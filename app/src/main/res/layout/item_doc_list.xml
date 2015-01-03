@@ -23,6 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/list_item_height"
+        android:paddingLeft="@dimen/list_item_padding"
+        android:paddingRight="@dimen/list_item_padding"
         android:paddingStart="@dimen/list_item_padding"
         android:paddingEnd="@dimen/list_item_padding"
         android:gravity="center_vertical"

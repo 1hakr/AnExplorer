@@ -22,6 +22,8 @@
     android:gravity="center_vertical"
     android:minHeight="48dp"
     android:orientation="horizontal"
+    android:paddingLeft="@dimen/list_item_padding"
+    android:paddingRight="@dimen/list_item_padding"
     android:paddingEnd="@dimen/list_item_padding"
     android:paddingStart="@dimen/list_item_padding">
 
