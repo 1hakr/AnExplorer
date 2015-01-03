@@ -30,7 +30,7 @@
             android:drawableRight="@drawable/ic_menu_rate"
             android:drawablePadding="10dp"
             android:fontFamily="sans-serif-light"
-            android:gravity="end|center_vertical"
+            android:gravity="center"
             android:textAlignment="center"
             android:ellipsize="end"
             android:singleLine="true"

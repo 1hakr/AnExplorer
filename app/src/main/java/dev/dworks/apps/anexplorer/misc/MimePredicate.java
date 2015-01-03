@@ -19,6 +19,7 @@ package dev.dworks.apps.anexplorer.misc;
 import com.google.common.base.Predicate;
 
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
 public class MimePredicate implements Predicate<DocumentInfo> {
@@ -44,7 +45,10 @@ public class MimePredicate implements Predicate<DocumentInfo> {
     	"application/zip",
     	"application/rar",
     	"application/gzip"};
-    
+
+    public static final String[] SHARE_SKIP_MIMES = new String[] {
+            DocumentsContract.Document.MIME_TYPE_APK };
+
     public MimePredicate(String[] filters) {
         mFilters = filters;
     }

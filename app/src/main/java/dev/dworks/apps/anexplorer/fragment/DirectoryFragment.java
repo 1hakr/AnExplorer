@@ -729,8 +729,11 @@ public class DirectoryFragment extends ListFragment {
 			intent = new Intent(Intent.ACTION_SEND);
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			// intent.addCategory(Intent.CATEGORY_DEFAULT);
-            if(!MimePredicate.mimeMatches(MimeTypes.SHARE_SKIP_MIMES, doc.mimeType)) {
+            if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, doc.mimeType)) {
                 intent.setType(doc.mimeType);
+            }
+            else{
+                intent.setType(MimeTypes.ALL_MIME_TYPES);
             }
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
@@ -747,8 +750,11 @@ public class DirectoryFragment extends ListFragment {
 			}
 
             String mimeType = findCommonMimeType(mimeTypes);
-            if(!MimePredicate.mimeMatches(MimeTypes.SHARE_SKIP_MIMES, mimeType)) {
+            if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, mimeType)) {
                 intent.setType(mimeType);
+            }
+            else{
+                intent.setType(MimeTypes.ALL_MIME_TYPES);
             }
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
