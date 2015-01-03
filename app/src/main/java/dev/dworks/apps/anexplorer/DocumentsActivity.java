@@ -1876,6 +1876,7 @@ public class DocumentsActivity extends ActionBarActivity {
         int defaultColor = SettingsActivity.getActionBarColor(this);
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
 
+        mActionMenu.show();
         mActionMenu.setVisibility(showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setColorNormal(complimentaryColor);
         mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
