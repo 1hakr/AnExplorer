@@ -755,7 +755,9 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		intent = Intent.createChooser(intent, getActivity().getText(R.string.share_via));
-		startActivity(intent);
+        if(Utils.isIntentAvailable(getActivity(), intent)) {
+            startActivity(intent);
+        }
 	}
 
 	private boolean onDeleteDocuments(ArrayList<DocumentInfo> docs) {
