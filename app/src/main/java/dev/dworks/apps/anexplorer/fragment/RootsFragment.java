@@ -311,11 +311,16 @@ public class RootsFragment extends Fragment {
             if (TextUtils.isEmpty(summaryText) && root.availableBytes >= 0) {
                 summaryText = context.getString(R.string.root_available_bytes,
                         Formatter.formatFileSize(context, root.availableBytes));
-                Long current = 100 * root.availableBytes / root.totalBytes ;
-                progress.setVisibility(View.VISIBLE);
-                progress.setMax(100);
-                progress.setProgress(100 - current.intValue());
-                progress.setColor(color);
+                try {
+                    Long current = 100 * root.availableBytes / root.totalBytes ;
+                    progress.setVisibility(View.VISIBLE);
+                    progress.setMax(100);
+                    progress.setProgress(100 - current.intValue());
+                    progress.setColor(color);
+                }
+                catch (Exception e){
+                    progress.setVisibility(View.GONE);
+                }
             }
             else{
                 progress.setVisibility(View.GONE);

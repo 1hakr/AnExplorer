@@ -778,10 +778,6 @@ public class DirectoryFragment extends ListFragment {
 			}
 		}
 
-        if (hadTrouble) {
-            ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
-        }
-
 		return hadTrouble;
 	}
 
