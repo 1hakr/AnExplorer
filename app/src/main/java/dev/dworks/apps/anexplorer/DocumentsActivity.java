@@ -544,7 +544,7 @@ public class DocumentsActivity extends ActionBarActivity {
             @Override
             public void onRateAppClicked() {
     			Intent intentMarket = new Intent("android.intent.action.VIEW");
-    			intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
+    			intentMarket.setData(Uri.parse("market://details?id="+BuildConfig.APPLICATION_ID));
                 if(Utils.isIntentAvailable(DocumentsActivity.this, intentMarket)){
                     startActivity(intentMarket);
                 }
