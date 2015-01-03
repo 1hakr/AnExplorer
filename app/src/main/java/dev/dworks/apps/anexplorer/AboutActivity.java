@@ -117,6 +117,13 @@ public class AboutActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+    @Override
+    public void startActivity(Intent intent) {
+        if(Utils.isIntentAvailable(this, intent)) {
+            super.startActivity(intent);
+        }
+    }
+
     private String getSuffix(){
         return BuildConfig.FLAVOR.startsWith("pro") ? " Pro" : "";
     }

@@ -61,7 +61,6 @@ import android.widget.AbsListView.RecyclerListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -93,7 +92,6 @@ import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 import dev.dworks.apps.anexplorer.model.DirectoryResult;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -172,12 +170,6 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
-/*
-    private FloatingActionsMenu mActionMenu;
-    private FloatingActionButton mCreateFile;
-    private FloatingActionButton mCreateFolder;
-    private FloatingActionButton mPaste;
-*/
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -729,8 +721,11 @@ public class DirectoryFragment extends ListFragment {
 			intent = new Intent(Intent.ACTION_SEND);
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			// intent.addCategory(Intent.CATEGORY_DEFAULT);
-            if(!MimePredicate.mimeMatches(MimeTypes.SHARE_SKIP_MIMES, doc.mimeType)) {
+            if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, doc.mimeType)) {
                 intent.setType(doc.mimeType);
+            }
+            else{
+                intent.setType(MimeTypes.ALL_MIME_TYPES);
             }
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
@@ -747,8 +742,11 @@ public class DirectoryFragment extends ListFragment {
 			}
 
             String mimeType = findCommonMimeType(mimeTypes);
-            if(!MimePredicate.mimeMatches(MimeTypes.SHARE_SKIP_MIMES, mimeType)) {
+            if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, mimeType)) {
                 intent.setType(mimeType);
+            }
+            else{
+                intent.setType(MimeTypes.ALL_MIME_TYPES);
             }
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
@@ -757,7 +755,9 @@ public class DirectoryFragment extends ListFragment {
 		}
 
 		intent = Intent.createChooser(intent, getActivity().getText(R.string.share_via));
-		startActivity(intent);
+        if(Utils.isIntentAvailable(getActivity(), intent)) {
+            startActivity(intent);
+        }
 	}
 
 	private boolean onDeleteDocuments(ArrayList<DocumentInfo> docs) {
@@ -779,10 +779,6 @@ public class DirectoryFragment extends ListFragment {
 				hadTrouble = true;
 			}
 		}
-
-        if (hadTrouble) {
-            ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
-        }
 
 		return hadTrouble;
 	}
@@ -1148,35 +1144,16 @@ public class DirectoryFragment extends ListFragment {
 			final RootsCache roots = DocumentsApplication.getRootsCache(context);
 			final ThumbnailCache thumbs = DocumentsApplication.getThumbnailsCache(context, mThumbSize);
 
-			if (convertView == null) {
-				final LayoutInflater inflater = LayoutInflater.from(context);
-				if (state.derivedMode == MODE_LIST) {
-					convertView = inflater.inflate(R.layout.item_doc_list, parent, false);
-				} else if (state.derivedMode == MODE_GRID) {
-                    int layoutId = R.layout.item_doc_grid;
-                    if(isApp){
-                        layoutId = R.layout.item_doc_app_grid;
-                    }
-                    convertView = inflater.inflate(layoutId, parent, false);
-					// Apply padding to grid items
-					final FrameLayout grid = (FrameLayout) convertView;
-					final int gridPadding = 0;//getResources().getDimensionPixelSize(R.dimen.grid_padding);
-
-					// Tricksy hobbitses! We need to fully clear the drawable so
-					// the view doesn't clobber the new InsetDrawable callback
-					// when setting back later.
-					final Drawable fg = grid.getForeground();
-					final Drawable bg = grid.getBackground();
-					grid.setForeground(null);
-					// grid.setBackground(null);
-					ViewCompat.setBackground(grid, null);
-					//grid.setForeground(new InsetDrawable(fg, gridPadding));
-					// grid.setBackground(new InsetDrawable(bg, gridPadding));
-					ViewCompat.setBackground(grid, new InsetDrawable(bg, gridPadding));
-				} else {
-					throw new IllegalStateException();
-				}
-			}
+            if (convertView == null) {
+                final LayoutInflater inflater = LayoutInflater.from(context);
+                if (state.derivedMode == MODE_LIST) {
+                    convertView = inflater.inflate(R.layout.item_doc_list, parent, false);
+                } else if (state.derivedMode == MODE_GRID) {
+                    convertView = inflater.inflate(R.layout.item_doc_grid, parent, false);
+                } else {
+                    throw new IllegalStateException();
+                }
+            }
 
 			final Cursor cursor = getItem(position);
 
@@ -1743,15 +1720,20 @@ public class DirectoryFragment extends ListFragment {
         case R.id.menu_open:
             Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(docs.get(0).documentId));
             if (intent!= null) {
-                getActivity().startActivity(intent);
+                if(Utils.isIntentAvailable(getActivity(), intent)) {
+                    getActivity().startActivity(intent);
+                }
             }
             else{
                 ((DocumentsActivity) getActivity()).showError(R.string.unable_to_open_app);
             }
             return true;
         case R.id.menu_details:
-            getActivity().startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
-                    + AppsProvider.getPackageForDocId(docs.get(0).documentId))));
+            Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+                    + AppsProvider.getPackageForDocId(docs.get(0).documentId)));
+            if(Utils.isIntentAvailable(getActivity(), intent2)) {
+                getActivity().startActivity(intent2);
+            }
             return true;
 		case R.id.menu_info:
 			final DocumentsActivity activity = (DocumentsActivity) getActivity();

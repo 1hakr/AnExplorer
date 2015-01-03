@@ -46,7 +46,7 @@ public class AppRate {
 
     public static AppRate with(Activity activity) {
         AppRate instance = new AppRate(activity);
-        instance.text = "Like AnExplorer? Rate It!";//activity.getString(R.string.dra_rate_app);
+        instance.text = "Like AnExplorer? Spread the word!";//activity.getString(R.string.dra_rate_app);
         instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
         instance.editor = instance.settings.edit();
         return instance;
@@ -190,7 +190,10 @@ public class AppRate {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName())));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName()));
+                if(Utils.isIntentAvailable(activity, intent)) {
+                    activity.startActivity(intent);
+                }
                 if (onShowListener != null)onShowListener.onRateAppClicked();
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);

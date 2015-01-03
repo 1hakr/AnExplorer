@@ -545,7 +545,9 @@ public class DocumentsActivity extends ActionBarActivity {
             public void onRateAppClicked() {
     			Intent intentMarket = new Intent("android.intent.action.VIEW");
     			intentMarket.setData(Uri.parse("market://details?id=dev.dworks.apps.anexplorer"));
-    			startActivity(intentMarket);
+                if(Utils.isIntentAvailable(DocumentsActivity.this, intentMarket)){
+                    startActivity(intentMarket);
+                }
             }
         }).checkAndShow();
     }
@@ -1311,7 +1313,7 @@ public class DocumentsActivity extends ActionBarActivity {
             	view.setDataAndType(doc.derivedUri, doc.mimeType);
             }
 
-            if(null != view.resolveActivity(getPackageManager())){
+            if(Utils.isIntentAvailable(this, view)){
             	startActivity(view);
             }
             else{
@@ -1327,19 +1329,24 @@ public class DocumentsActivity extends ActionBarActivity {
             final Intent manage = new Intent(DocumentsContract.ACTION_MANAGE_DOCUMENT);
             manage.setData(doc.derivedUri);
 
-            try {
-                startActivity(manage);
-            } catch (ActivityNotFoundException ex) {
-                // Fall back to viewing
-                final Intent view = new Intent(Intent.ACTION_VIEW);
-                view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                view.setData(doc.derivedUri);
-
+            if(Utils.isIntentAvailable(this, manage)){
                 try {
-                    startActivity(view);
-                } catch (ActivityNotFoundException ex2) {
-                    showError(R.string.toast_no_application);
+                    startActivity(manage);
+                } catch (ActivityNotFoundException ex) {
+                    // Fall back to viewing
+                    final Intent view = new Intent(Intent.ACTION_VIEW);
+                    view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    view.setData(doc.derivedUri);
+
+                    try {
+                        startActivity(view);
+                    } catch (ActivityNotFoundException ex2) {
+                        showError(R.string.toast_no_application);
+                    }
                 }
+            }
+            else{
+                showError(R.string.toast_no_application);
             }
         }
     }
@@ -1876,6 +1883,7 @@ public class DocumentsActivity extends ActionBarActivity {
         int defaultColor = SettingsActivity.getActionBarColor(this);
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
 
+        mActionMenu.show();
         mActionMenu.setVisibility(showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setColorNormal(complimentaryColor);
         mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));

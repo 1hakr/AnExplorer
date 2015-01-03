@@ -9,23 +9,10 @@
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:background="#323232"
         android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:paddingStart="10dp"
         android:paddingEnd="10dp">
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:drawableStart="@drawable/ic_menu_rate"
-            android:drawableLeft="@drawable/ic_menu_rate"
-            android:drawablePadding="10dp"
-            android:fontFamily="sans-serif-light"
-            android:gravity="start|center_vertical"
-            android:textAlignment="viewStart"
-            android:textColor="@android:color/white"
-            android:text="fdkjjdfjdhf"
-            android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/close"
@@ -33,6 +20,24 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_close"
             android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_menu_rate"
+            android:drawableRight="@drawable/ic_menu_rate"
+            android:drawablePadding="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:text="Like AnExplore! Spread the word"
+            android:textSize="18sp" />
+
     </LinearLayout>
 
 </FrameLayout>
