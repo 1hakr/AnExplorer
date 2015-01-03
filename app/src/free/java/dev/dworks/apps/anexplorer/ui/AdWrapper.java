@@ -45,6 +45,9 @@ public class AdWrapper extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if(isInEditMode()){
+            return;
+        }
         if(null != mAdView){
             mAdView.loadAd(new AdRequest.Builder().build());
         }

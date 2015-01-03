@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <application
         android:name="dev.dworks.apps.anexplorer.DocumentsApplicationFree"
         tools:replace="android:name">
@@ -86,7 +85,7 @@
             android:name="dev.dworks.apps.anexplorer.provider.ExplorerProvider"
             android:authorities="dev.dworks.apps.anexplorer.explorer"
             android:enabled="true"
-            android:exported="false"></provider>
+            android:exported="false" />
 
         <!-- AdMob -->
         <activity

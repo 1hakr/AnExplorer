@@ -170,12 +170,6 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
-/*
-    private FloatingActionsMenu mActionMenu;
-    private FloatingActionButton mCreateFile;
-    private FloatingActionButton mCreateFolder;
-    private FloatingActionButton mPaste;
-*/
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
