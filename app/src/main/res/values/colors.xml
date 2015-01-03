@@ -12,8 +12,8 @@
     <color name="alertColor">#323232</color>
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
-        <item>#4285F4</item>
         <item>#0288D1</item>
+        <item>#4285F4</item>
         <item>#0F9D58</item>
         <item>#009688</item>
         <item>#F3B60C</item>
@@ -31,6 +31,7 @@
     <color name="item_doc_grid_background">@color/material_grey_300</color>
 
     <color name="item_doc_grid_protect_background">#88000000</color>
+    <color name="item_doc_grid_protect_background_light">#08000000</color>
 
     <color name="item_doc_grid_overlay_activated">#88000000</color>
     <color name="item_doc_grid_overlay_disabled">#88ffffff</color>

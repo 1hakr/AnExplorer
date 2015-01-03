@@ -73,8 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:scrollbarStyle="outsideOverlay"
-                tools:listitem="@layout/item_doc_list"/>
+                android:scrollbarStyle="outsideOverlay"/>
 
             <GridView
                 android:id="@+id/grid"
@@ -85,6 +84,7 @@
                 android:horizontalSpacing="@dimen/grid_item_padding"
                 android:paddingBottom="@dimen/grid_padding_vert"
                 android:paddingLeft="@dimen/grid_padding_horiz"
+                android:background="@color/background_material_light"
                 android:paddingRight="@dimen/grid_padding_horiz"
                 android:paddingEnd="@dimen/grid_padding_horiz"
                 android:paddingStart="@dimen/grid_padding_horiz"
