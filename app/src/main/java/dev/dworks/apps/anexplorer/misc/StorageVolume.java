@@ -34,7 +34,7 @@ public final class StorageVolume {
     }
 
     public String getLabel() {
-        return TextUtils.isEmpty(label) ? new File(path).getName() : label;
+        return label;
     }
 
     public String getPath() {
