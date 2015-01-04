@@ -72,6 +72,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mrengineer13.snackbar.BuildConfig;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.collect.Maps;
 
@@ -530,6 +531,9 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
             invalidateMenu();
         }
+        if(BuildConfig.FLAVOR.contains("other")){
+            return;
+        }
         AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
             @Override
             public void onRateAppShowing() {
@@ -544,7 +548,7 @@ public class DocumentsActivity extends ActionBarActivity {
             @Override
             public void onRateAppClicked() {
     			Intent intentMarket = new Intent("android.intent.action.VIEW");
-    			intentMarket.setData(Uri.parse("market://details?id="+BuildConfig.APPLICATION_ID));
+    			intentMarket.setData(Uri.parse("market://details?id="+ BuildConfig.APPLICATION_ID));
                 if(Utils.isIntentAvailable(DocumentsActivity.this, intentMarket)){
                     startActivity(intentMarket);
                 }

@@ -75,6 +75,10 @@ public class AboutActivity extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.about, menu);
+        if(isNonPlay()){
+            menu.removeItem(R.id.action_rate);
+            menu.removeItem(R.id.action_support);
+        }
 		return true;
 	}
 
@@ -125,6 +129,10 @@ public class AboutActivity extends ActionBarActivity {
     }
 
     private String getSuffix(){
-        return BuildConfig.FLAVOR.startsWith("pro") ? " Pro" : "";
+        return BuildConfig.FLAVOR.contains("pro") ? " Pro" : "";
+    }
+
+    private boolean isNonPlay(){
+        return BuildConfig.FLAVOR.contains("other");
     }
 }

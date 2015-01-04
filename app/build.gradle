@@ -33,16 +33,25 @@ android {
             shrinkResources true
         }
     }
+    flavorDimensions   "release", "default"
     productFlavors {
         free {
             applicationId "dev.dworks.apps.anexplorer"
             versionName "2.5"
             versionCode = 40
+            flavorDimension "default"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
             versionName "2.5"
             versionCode = 40
+            flavorDimension "default"
+        }
+        play {
+            flavorDimension "release"
+        }
+        other {
+            flavorDimension "release"
         }
     }
     lintOptions {
@@ -62,4 +71,6 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     freeCompile files('libs/crashlytics.jar')
     freeCompile 'com.google.android.gms:play-services-ads:6.5.+'
+    otherCompile files('libs/crashlytics.jar')
+    otherCompile 'com.google.android.gms:play-services-ads:6.5.+'
 }
