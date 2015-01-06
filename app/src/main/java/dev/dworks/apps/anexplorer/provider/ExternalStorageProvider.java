@@ -126,8 +126,8 @@ public class ExternalStorageProvider extends StorageProvider {
         mHandler = new Handler();
 
         mRoots = Lists.newArrayList();
-        mIdToRoot = Maps.newHashMap();
-        mIdToPath = Maps.newHashMap();
+        mIdToRoot = Maps.newLinkedHashMap();
+        mIdToPath = Maps.newLinkedHashMap();
 
         updateVolumes();
         includeOtherRoot();

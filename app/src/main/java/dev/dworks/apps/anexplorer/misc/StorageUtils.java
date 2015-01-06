@@ -26,6 +26,8 @@ import android.os.StatFs;
 import android.os.storage.StorageManager;
 import android.text.TextUtils;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
@@ -131,6 +133,9 @@ public final class StorageUtils {
             Field mDescription = object.getClass().getDeclaredField("mUserLabel");
             mDescription.setAccessible(true);
             userLabel = (String) mDescription.get(object);
+            if(TextUtils.isEmpty(userLabel)){
+                userLabel = getDescription(object);
+            }
         }
         return userLabel;
     }
