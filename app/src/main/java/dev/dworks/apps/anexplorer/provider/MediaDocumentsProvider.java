@@ -631,13 +631,15 @@ public class MediaDocumentsProvider extends StorageProvider {
                 ImageColumns.DISPLAY_NAME,
                 ImageColumns.MIME_TYPE,
                 ImageColumns.SIZE,
+                ImageColumns.DATA,
                 ImageColumns.DATE_MODIFIED };
 
         final int _ID = 0;
         final int DISPLAY_NAME = 1;
         final int MIME_TYPE = 2;
         final int SIZE = 3;
-        final int DATE_MODIFIED = 4;
+        final int DATA = 4;
+        final int DATE_MODIFIED = 5;
     }
 
     private void includeImage(MatrixCursor result, Cursor cursor) {
@@ -649,6 +651,7 @@ public class MediaDocumentsProvider extends StorageProvider {
         row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(ImageQuery.DISPLAY_NAME));
         row.add(Document.COLUMN_SIZE, cursor.getLong(ImageQuery.SIZE));
         row.add(Document.COLUMN_MIME_TYPE, cursor.getString(ImageQuery.MIME_TYPE));
+        row.add(Document.COLUMN_PATH, cursor.getString(ImageQuery.DATA));
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(ImageQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
@@ -689,13 +692,15 @@ public class MediaDocumentsProvider extends StorageProvider {
                 VideoColumns.DISPLAY_NAME,
                 VideoColumns.MIME_TYPE,
                 VideoColumns.SIZE,
+                VideoColumns.DATA,
                 VideoColumns.DATE_MODIFIED };
 
         final int _ID = 0;
         final int DISPLAY_NAME = 1;
         final int MIME_TYPE = 2;
         final int SIZE = 3;
-        final int DATE_MODIFIED = 4;
+        final int DATA = 4;
+        final int DATE_MODIFIED = 5;
     }
 
     private void includeVideo(MatrixCursor result, Cursor cursor) {
@@ -707,6 +712,7 @@ public class MediaDocumentsProvider extends StorageProvider {
         row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(VideoQuery.DISPLAY_NAME));
         row.add(Document.COLUMN_SIZE, cursor.getLong(VideoQuery.SIZE));
         row.add(Document.COLUMN_MIME_TYPE, cursor.getString(VideoQuery.MIME_TYPE));
+        row.add(Document.COLUMN_PATH, cursor.getString(VideoQuery.DATA));
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(VideoQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
@@ -758,13 +764,15 @@ public class MediaDocumentsProvider extends StorageProvider {
                 AudioColumns.TITLE,
                 AudioColumns.MIME_TYPE,
                 AudioColumns.SIZE,
+                AudioColumns.DATA,
                 AudioColumns.DATE_MODIFIED };
 
         final int _ID = 0;
         final int TITLE = 1;
         final int MIME_TYPE = 2;
         final int SIZE = 3;
-        final int DATE_MODIFIED = 4;
+        final int DATA = 4;
+        final int DATE_MODIFIED = 5;
     }
 
     private void includeAudio(MatrixCursor result, Cursor cursor) {
@@ -776,6 +784,7 @@ public class MediaDocumentsProvider extends StorageProvider {
         row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(SongQuery.TITLE));
         row.add(Document.COLUMN_SIZE, cursor.getLong(SongQuery.SIZE));
         row.add(Document.COLUMN_MIME_TYPE, cursor.getString(SongQuery.MIME_TYPE));
+        row.add(Document.COLUMN_PATH, cursor.getString(SongQuery.DATA));
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(SongQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
