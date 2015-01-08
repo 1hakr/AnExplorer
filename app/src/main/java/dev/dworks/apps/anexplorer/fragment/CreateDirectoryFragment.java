@@ -32,7 +32,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
@@ -127,7 +126,7 @@ public class CreateDirectoryFragment extends DialogFragment {
                 // Navigate into newly created child
                 mActivity.onDocumentPicked(result);
             } else {
-                Toast.makeText(mActivity, R.string.create_error, Toast.LENGTH_SHORT).show();
+                mActivity.showError(R.string.create_error);
             }
 
             mActivity.setPending(false);

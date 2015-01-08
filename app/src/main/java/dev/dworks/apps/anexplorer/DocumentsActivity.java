@@ -1305,7 +1305,8 @@ public class DocumentsActivity extends ActionBarActivity {
             // Fall back to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             if(MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)){
             	try {
                 	File file = new File(doc.path);
@@ -1339,7 +1340,8 @@ public class DocumentsActivity extends ActionBarActivity {
                 } catch (ActivityNotFoundException ex) {
                     // Fall back to viewing
                     final Intent view = new Intent(Intent.ACTION_VIEW);
-                    view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     view.setData(doc.derivedUri);
 
                     try {
