@@ -395,6 +395,42 @@ public class FileUtils {
         return name;
     }
 
+    public static String getName(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = filename.lastIndexOf(File.separator);
+        return filename.substring(index + 1);
+    }
+
+    public static String removeExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = filename.lastIndexOf('.');
+        if (index == -1) {
+            return filename;
+        } else {
+            return filename.substring(0, index);
+        }
+    }
+
+    public static String getFullNameFromFilepath(String filename) {
+        return removeExtension(getName(filename));
+    }
+
+    public static String getPathFromFilepath(String filepath) {
+        int index = filepath.lastIndexOf(File.separator);
+        if (index != -1) {
+            int end = index + 1;
+            if (end == 0) {
+                end++;
+            }
+            return filepath.substring(0, end);
+        }
+        return "";
+    }
+
     private static class SearchFilter implements FilenameFilter {
         String searchQuery;
         boolean onlyFolders;

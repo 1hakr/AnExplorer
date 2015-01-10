@@ -171,6 +171,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
+    private boolean isRootedStorage;
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -280,6 +281,7 @@ public class DirectoryFragment extends ListFragment {
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
 		isApp = root != null && root.isApp();
+        isRootedStorage = root != null && root.isRootedStorage();
 
 		mAdapter = new DocumentsAdapter();
 		mType = getArguments().getInt(EXTRA_TYPE);
@@ -566,7 +568,7 @@ public class DirectoryFragment extends ListFragment {
 					final MenuItem compress = menu.findItem(R.id.menu_compress);
 					copy.setVisible(editMode);
 					cut.setVisible(editMode);
-                    compress.setVisible(editMode);
+                    compress.setVisible(editMode && !isRootedStorage);
 
 					info.setVisible(count == 1);
 					rename.setVisible(count == 1);
@@ -1673,11 +1675,11 @@ public class DirectoryFragment extends ListFragment {
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
             final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
             if(null != compress)
-                compress.setVisible(!isCompressed);
+                compress.setVisible(!isCompressed && !isRootedStorage);
             if(null != uncompress)
-                uncompress.setVisible(isCompressed);
+                uncompress.setVisible(isCompressed && !isRootedStorage);
             if(null != bookmark) {
-                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType));
+                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType) && !isRootedStorage);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);

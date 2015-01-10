@@ -103,7 +103,8 @@ public class RootedStorageProvider extends StorageProvider {
 
             final RootInfo root = new RootInfo();
             root.rootId = rootId;
-            root.flags =  Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED;
+            root.flags =  Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                    | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_root_storage);
             root.docId = getDocIdForRootFile(path);
             mRoots.add(root);
@@ -213,9 +214,9 @@ public class RootedStorageProvider extends StorageProvider {
         row.add(Document.COLUMN_FLAGS, flags);
 /*        if(file.isDirectory() && null != file.list()){
         	row.add(Document.COLUMN_SUMMARY, file.list().length + " files");
-        }
+        }*/
         // Only publish dates reasonably after epoch
-        long lastModified = file.lastModified();
+/*        long lastModified = file.lastModified();
         if (lastModified > 31536000000L) {
             row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
         }*/
@@ -301,6 +302,29 @@ public class RootedStorageProvider extends StorageProvider {
     }
 
     @Override
+    public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
+        final RootFile file = getRootFileForDocId(parentDocumentId);
+        File newFile;
+        String path = file.getPath();
+        String parentPath = FileUtils.getPathFromFilepath(path);
+        String newName = displayName;
+
+
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+            newFile = new File(parentPath, FileUtils.removeExtension(mimeType, displayName));
+        }
+        else{
+            displayName = FileUtils.removeExtension(mimeType, displayName);
+            newFile = new File(parentPath, FileUtils.addExtension(mimeType, displayName));
+        }
+
+        if(RootCommands.renameRootTarget(parentPath, FileUtils.getName(path), newName)){
+            throw new IllegalStateException("Failed to rename " + file);
+        }
+        return getDocIdForRootFile(new RootFile(newFile.getParent(), displayName));
+    }
+
+    @Override
     public Cursor queryDocument(String documentId, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
@@ -347,22 +371,24 @@ public class RootedStorageProvider extends StorageProvider {
             parent = mIdToPath.get(rootId);
         }
 
-/*        final LinkedList<File> pending = new LinkedList<File>();
-        pending.add(parent);
-        while (!pending.isEmpty() && result.getCount() < 24) {
-            final File file = pending.removeFirst();
-            if (file.isDirectory()) {
-                for (File child : file.listFiles()) {
-                    pending.add(child);
+        try {
+            BufferedReader br = RootCommands.findFiles(parent.getPath(), query);
+            if (null != br){
+                Scanner scanner = new Scanner(br);
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    try {
+                        includeRootFile(result, null, new RootFile(parent, line));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
+                scanner.close();
             }
-            if (file.getName().toLowerCase().contains(query)) {
-                includeFile(result, null, file);
-            }
-        }*/
-        /*for (File file : FileUtils.searchDirectory(parent.getPath(), query)) {
-        	includeRootFile(result, null, file);
-		}*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return result;
     }
 

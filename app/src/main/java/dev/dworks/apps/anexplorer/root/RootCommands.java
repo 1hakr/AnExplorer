@@ -80,7 +80,20 @@ public class RootCommands {
         return mDirContent;
     }
 
-    public static ArrayList<String> findFiles(String path, String query) {
+    public static BufferedReader findFiles(String path, String query) {
+        ArrayList<String> mDirContent = new ArrayList<>();
+        BufferedReader in = null;
+
+        try {
+            in = execute("find " + getCommandLineString(path) + " -type f -iname " + '*' + getCommandLineString(query) + '*' + " -exec ls -a {} \\;");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return in;
+    }
+
+    public static ArrayList<String> findFile(String path, String query) {
         ArrayList<String> mDirContent = new ArrayList<>();
         BufferedReader in;
 
@@ -155,12 +168,12 @@ public class RootCommands {
     // path = currentDir
     // oldName = currentDir + "/" + selected Item
     // name = new name
-    public static void renameRootTarget(String path, String oldname, String name) {
-        File file = new File(path + "/" + oldname);
-        File newf = new File(path + "/" + name);
+    public static boolean renameRootTarget(String path, String oldname, String name) {
+        File file = new File(path + File.separator + oldname);
+        File newf = new File(path + File.separator + name);
 
         if (name.length() < 1)
-            return;
+            return false;
 
         try {
             if (!readReadWriteFile())
@@ -168,9 +181,12 @@ public class RootCommands {
 
             execute("mv " + getCommandLineString(file.getAbsolutePath()) + " "
                     + getCommandLineString(newf.getAbsolutePath()));
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
     // Delete file with root
