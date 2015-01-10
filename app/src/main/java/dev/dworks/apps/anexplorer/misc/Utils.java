@@ -32,6 +32,8 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 
+import com.stericson.RootTools.RootTools;
+
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
@@ -192,17 +194,16 @@ public class Utils {
     }
     
     public static boolean isRooted(){
-        for (String p : Utils.BinaryPlaces) {
+/*        for (String p : Utils.BinaryPlaces) {
             File su = new File(p + "su");
             if (su.exists()) {
                 return true;
             } else {
             }
-        }
-        return false;
+        }*/
+        return RootTools.isRootAvailable();
     }
     
-
     public static String formatTime(Context context, long when) {
 		// TODO: DateUtils should make this easier
 		Time then = new Time();

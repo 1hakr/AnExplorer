@@ -436,13 +436,9 @@ public class ExternalStorageProvider extends StorageProvider {
 
         final String displayName = file.getName();
         final String mimeType = getTypeForFile(file);
-        if (mimeType.startsWith("image/")
-        		|| mimeType.startsWith("audio/")
-        		|| mimeType.startsWith("video/") 
-        		|| mimeType.startsWith("application/vnd.android.package-archive")) {
+        if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         }
-
         
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);

@@ -1,4 +1,4 @@
-package dev.dworks.apps.anexplorer.misc;
+package dev.dworks.apps.anexplorer.root;
 
 import java.io.File;
 
@@ -29,14 +29,14 @@ public class RootFile {
         	isValid =  false;
         }
 	}
+
+    public RootFile(String target, String result) {
+        name = result;
+        path = target+ result;
+    }
 	
 	public boolean isValid() {
 		return isValid;
-	}
-	
-	public RootFile(String target, String result) {
-    	name = result;
-    	path = target+ result;
 	}
 	
 	public String getName() {
@@ -64,7 +64,7 @@ public class RootFile {
 	}
 
 	public boolean canWrite() {
-		return false;
+		return true;
 	}
 
 	public String getPath() {

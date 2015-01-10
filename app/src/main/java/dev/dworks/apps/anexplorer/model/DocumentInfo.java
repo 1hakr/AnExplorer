@@ -236,7 +236,6 @@ public class DocumentInfo implements Durable, Parcelable {
         return MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, mimeType);
     }
 
-
     public boolean isGridPreferred() {
         return (flags & Document.FLAG_DIR_PREFERS_GRID) != 0;
     }

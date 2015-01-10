@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+import dev.dworks.apps.anexplorer.root.RootFile;
 
 public class FileUtils {
 
@@ -152,7 +153,6 @@ public class FileUtils {
         totalList.addAll(searchFiles(searchDirectory, new SearchFilter(searchQuery)));
         return totalList;
     }
-
 
     public static boolean moveFile(File fileFrom, File fileTo, String name) {
 
@@ -394,7 +394,6 @@ public class FileUtils {
         }
         return name;
     }
-
 
     private static class SearchFilter implements FilenameFilter {
         String searchQuery;

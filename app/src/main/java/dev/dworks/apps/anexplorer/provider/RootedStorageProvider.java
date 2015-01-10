@@ -29,12 +29,12 @@ import android.webkit.MimeTypeMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.stericson.RootTools.RootTools;
 
-import org.sufficientlysecure.rootcommands.Shell;
-import org.sufficientlysecure.rootcommands.command.SimpleCommand;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,10 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
-import dev.dworks.apps.anexplorer.misc.RootFile;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
+import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.root.RootCommands;
+import dev.dworks.apps.anexplorer.root.RootFile;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -60,7 +63,7 @@ public class RootedStorageProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -73,7 +76,10 @@ public class RootedStorageProvider extends StorageProvider {
         public int flags;
         public String title;
         public String docId;
+        public String path;
     }
+
+    public static final String ROOT_ID_ROOT = "Root";
 
     private final Object mRootsLock = new Object();
 
@@ -91,13 +97,13 @@ public class RootedStorageProvider extends StorageProvider {
         mIdToPath = Maps.newHashMap();
 
     	try {
-            final String rootId = "Root";
+            final String rootId = ROOT_ID_ROOT;
             final RootFile path = new RootFile("/");
             mIdToPath.put(rootId, path);
 
             final RootInfo root = new RootInfo();
             root.rootId = rootId;
-            root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED;
+            root.flags =  Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED;
             root.title = getContext().getString(R.string.root_root_storage);
             root.docId = getDocIdForRootFile(path);
             mRoots.add(root);
@@ -182,18 +188,19 @@ public class RootedStorageProvider extends StorageProvider {
         if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
+                flags |= Document.FLAG_SUPPORTS_DELETE;
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             } else {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
+                flags |= Document.FLAG_SUPPORTS_DELETE;
+                flags |= Document.FLAG_SUPPORTS_RENAME;
             }
             flags |= Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_EDIT ;
         }
 
         final String displayName = file.getName();
         final String mimeType = getTypeForFile(file);
-        if (mimeType.startsWith("image/")
-        		|| mimeType.startsWith("audio/")
-        		|| mimeType.startsWith("video/") 
-        		|| mimeType.startsWith("application/vnd.android.package-archive")) {
+        if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         }
 
@@ -207,9 +214,8 @@ public class RootedStorageProvider extends StorageProvider {
 /*        if(file.isDirectory() && null != file.list()){
         	row.add(Document.COLUMN_SUMMARY, file.list().length + " files");
         }
-*/
         // Only publish dates reasonably after epoch
-/*        long lastModified = file.lastModified();
+        long lastModified = file.lastModified();
         if (lastModified > 31536000000L) {
             row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
         }*/
@@ -221,12 +227,13 @@ public class RootedStorageProvider extends StorageProvider {
         synchronized (mRootsLock) {
             for (String rootId : mIdToPath.keySet()) {
                 final RootInfo root = mIdToRoot.get(rootId);
-                //final RootFile path = mIdToPath.get(rootId);
+                final RootFile file = mIdToPath.get(rootId);
                 
                 final RowBuilder row = result.newRow();
                 row.add(Root.COLUMN_ROOT_ID, root.rootId);
                 row.add(Root.COLUMN_FLAGS, root.flags);
                 row.add(Root.COLUMN_TITLE, root.title);
+                row.add(Root.COLUMN_PATH, root.path);
                 row.add(Root.COLUMN_DOCUMENT_ID, root.docId);
             }
         }
@@ -236,31 +243,61 @@ public class RootedStorageProvider extends StorageProvider {
     @Override
     public String createDocument(String docId, String mimeType, String displayName)
             throws FileNotFoundException {
-        return "";
+        final RootFile parent = getRootFileForDocId(docId);
+        if (!parent.isDirectory()) {
+            throw new IllegalArgumentException("Parent document isn't a directory");
+        }
+
+        File file;
+        String path = parent.getPath();
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+            file = new File(parent.getPath(), displayName);
+            if (!RootCommands.createRootdir(path, displayName)) {
+                throw new IllegalStateException("Failed to mkdir " + file);
+            }
+        } else {
+            displayName = FileUtils.removeExtension(mimeType, displayName);
+            file = new File(path, FileUtils.addExtension(mimeType, displayName));
+
+            // If conflicting file, try adding counter suffix
+            int n = 0;
+            while (file.exists() && n++ < 32) {
+                file = new File(path, FileUtils.addExtension(mimeType, displayName + " (" + n + ")"));
+            }
+
+            try {
+                if (!RootCommands.createRootFile(path, file.getName())) {
+                    throw new IllegalStateException("Failed to touch " + file);
+                }
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to touch " + file + ": " + e);
+            }
+        }
+        return getDocIdForRootFile(new RootFile(path, displayName));
     }
 
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
-        //final RootFile file = getRootFileForDocId(docId);
-/*        if (!FileUtils.deleteFile(file)) {
+        final RootFile file = getRootFileForDocId(docId);
+        if (!RootCommands.deleteFileRoot(file.getPath())) {
             throw new IllegalStateException("Failed to delete " + file);
-        }*/
+        }
     }
     
     @Override
     public void moveDocument(String documentIdFrom, String documentIdTo, boolean deleteAfter) throws FileNotFoundException {
-/*    	final File fileFrom = getRootFileForDocId(documentIdFrom);
-    	final File fileTo = getRootFileForDocId(documentIdTo);
-        if (!FileUtils.moveFile(fileFrom, fileTo, null)) {
+    	final RootFile fileFrom = getRootFileForDocId(documentIdFrom);
+    	final RootFile fileTo = getRootFileForDocId(documentIdTo);
+        if (!RootCommands.moveCopyRoot(fileFrom.getPath(), fileTo.getPath())) {
             throw new IllegalStateException("Failed to copy " + fileFrom);
         }
         else{
         	if (deleteAfter) {
-                if (!FileUtils.deleteFile(fileFrom)) {
+                if (!RootCommands.deleteFileRoot(fileFrom.getPath())) {
                     throw new IllegalStateException("Failed to delete " + fileFrom);
                 }
 			}
-        }*/
+        }
     }
 
     @Override
@@ -268,7 +305,6 @@ public class RootedStorageProvider extends StorageProvider {
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
         includeRootFile(result, documentId, null);
-        //includeDefaultDocument(result, documentId);
         return result;
     }
 
@@ -280,13 +316,9 @@ public class RootedStorageProvider extends StorageProvider {
         final MatrixCursor result = new DirectoryCursor(
                 resolveDocumentProjection(projection), parentDocumentId, parent);
         try {
-        	Shell shell = Shell.startRootShell();
-    		String command = "ls -ls "+parent.getPath();
-      	  	Log.i(TAG, command);
-    		SimpleCommand localSimpleCommand = new SimpleCommand(command);
-    		shell.add(localSimpleCommand).waitForFinish();
-            if (localSimpleCommand.getExitCode() == 0){
-            	Scanner scanner = new Scanner(localSimpleCommand.getOutput());
+            BufferedReader br = RootCommands.listFiles(parent.getPath());
+            if (null != br){
+            	Scanner scanner = new Scanner(br);
             	while (scanner.hasNextLine()) {
             	  String line = scanner.nextLine();
             	  try {
@@ -294,24 +326,16 @@ public class RootedStorageProvider extends StorageProvider {
             	  } catch (Exception e) {
             		  e.printStackTrace();
             	  }
-            	  
+
             	}
             	scanner.close();
             }
-			shell.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-/*        for (File file : parent.listFiles()) {
-            includeFile(result, null, file);
-        }*/
         return result;
     }
 
-    public static String getCmdPath(String path){
-        return path.replace(" ", "\\ ").replace("'", "\\'");
-    }
-    
     @SuppressWarnings("unused")
 	@Override
     public Cursor querySearchDocuments(String rootId, String query, String[] projection)
