@@ -828,7 +828,7 @@ public class DirectoryFragment extends ListFragment {
 			this.id = id;
 			progressDialog = new MaterialProgressDialog(getActivity());
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			// progressDialog.setIndeterminate(true);
+			progressDialog.setIndeterminate(true);
             progressDialog.setColor(mDefaultColor);
 			progressDialog.setCancelable(false);
 
