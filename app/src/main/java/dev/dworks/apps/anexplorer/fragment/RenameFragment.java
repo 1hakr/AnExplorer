@@ -39,6 +39,7 @@ import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
@@ -141,11 +142,10 @@ public class RenameFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
-            if (result == null) {
-                ((DocumentsActivity) getActivity()).showError("Failed to rename");
+            if (result == null && Utils.isActivityAlive(getActivity())) {
+                mActivity.showError("Failed to rename");
+                mActivity.setPending(false);
             }
-
-            mActivity.setPending(false);
         }
     }
 }

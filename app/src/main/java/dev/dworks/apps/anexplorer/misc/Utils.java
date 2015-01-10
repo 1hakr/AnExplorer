@@ -17,6 +17,7 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -296,5 +297,14 @@ public class Utils {
         List<ResolveInfo> list =
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean isActivityAlive(Activity activity) {
+        if (null == activity
+                || (null != activity && Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing())) {
+            return false;
+        }
+        return true;
     }
 }

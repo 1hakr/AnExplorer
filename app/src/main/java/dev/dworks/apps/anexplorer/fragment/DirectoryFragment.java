@@ -114,6 +114,7 @@ import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.get;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -890,7 +891,9 @@ public class DirectoryFragment extends ListFragment {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
-
+            if(!Utils.isActivityAlive(getActivity())) {
+                return;
+            }
 			progressDialog.dismiss();
 			if (result) {
 				switch (id) {

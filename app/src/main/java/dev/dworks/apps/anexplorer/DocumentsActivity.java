@@ -423,7 +423,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(RootInfo root) {
-            if (isFinishing()) return;
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             mState.restored = true;
 
             if (root != null) {
@@ -491,7 +493,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            if (isFinishing()) return;
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             mState.restored = true;
 
             // Show drawer when no stack restored, but only when requesting
@@ -1099,9 +1103,9 @@ public class DocumentsActivity extends ActionBarActivity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onCurrentDirectoryChanged(int anim) {
     	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
-    	if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
-    		return;
-    	}
+        if(!Utils.isActivityAlive(DocumentsActivity.this)){
+            return;
+        }
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
@@ -1233,6 +1237,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             if (result != null) {
                 mState.stack.push(result);
                 mState.stackTouched = true;
@@ -1486,6 +1493,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Uri result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             if (result != null) {
                 onFinished(result);
             } else {
@@ -1576,6 +1586,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             if (result){
                 showError(R.string.save_error);
             }

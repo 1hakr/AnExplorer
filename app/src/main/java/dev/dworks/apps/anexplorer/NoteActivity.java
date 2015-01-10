@@ -43,6 +43,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
@@ -128,7 +129,11 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 break;
             case R.id.menu_revert:
                 setSaveProgress(true);
-                mInput.setText(mOriginal);
+                try {
+                    mInput.setText(mOriginal);
+                } catch (OutOfMemoryError e){
+                    showError("Unable to Load file");
+                }
                 setSaveProgress(false);
                 break;
         }
@@ -207,6 +212,9 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         @Override
         protected void onPostExecute(StringBuilder result) {
             super.onPostExecute(result);
+            if(!Utils.isActivityAlive(NoteActivity.this)) {
+                return;
+            }
             setProgress(false);
             if(null == result){
                 showError(errorMsg);
@@ -259,6 +267,9 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            if(!Utils.isActivityAlive(NoteActivity.this)) {
+                return;
+            }
             setSaveProgress(false);
             if(!TextUtils.isEmpty(errorMsg)){
                 showError(errorMsg);
