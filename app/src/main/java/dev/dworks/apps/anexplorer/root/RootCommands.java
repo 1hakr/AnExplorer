@@ -85,7 +85,7 @@ public class RootCommands {
         BufferedReader in = null;
 
         try {
-            in = execute("find " + getCommandLineString(path) + " -type f -iname " + '*' + getCommandLineString(query) + '*' + " -exec ls -a {} \\;");
+            in = execute("find " + getCommandLineString(path) + " -type f -iname " + '*' + getCommandLineString(query) + '*' + " -exec ls -ls {} \\;");
         } catch (Exception e) {
             e.printStackTrace();
         }

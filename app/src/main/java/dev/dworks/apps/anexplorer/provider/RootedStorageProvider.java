@@ -18,6 +18,7 @@
 package dev.dworks.apps.anexplorer.provider;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
@@ -103,8 +104,7 @@ public class RootedStorageProvider extends StorageProvider {
 
             final RootInfo root = new RootInfo();
             root.rootId = rootId;
-            root.flags =  Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                    | Root.FLAG_SUPPORTS_SEARCH;
+            root.flags =  Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED;
             root.title = getContext().getString(R.string.root_root_storage);
             root.docId = getDocIdForRootFile(path);
             mRoots.add(root);
@@ -121,6 +121,11 @@ public class RootedStorageProvider extends StorageProvider {
 
     private static String[] resolveDocumentProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION;
+    }
+
+    public static void notifyRootsChanged(Context context) {
+        context.getContentResolver()
+                .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
 
     private String getDocIdForRootFile(RootFile file) throws FileNotFoundException {
@@ -175,6 +180,9 @@ public class RootedStorageProvider extends StorageProvider {
     private void includeRootFile(MatrixCursor result, String docId, RootFile file)
             throws FileNotFoundException {
         if (docId == null) {
+            if(!file.isValid()){
+                return;
+            }
             docId = getDocIdForRootFile(file);
         } else {
             file = getRootFileForDocId(docId);
@@ -318,7 +326,7 @@ public class RootedStorageProvider extends StorageProvider {
             newFile = new File(parentPath, FileUtils.addExtension(mimeType, displayName));
         }
 
-        if(RootCommands.renameRootTarget(parentPath, FileUtils.getName(path), newName)){
+        if(!RootCommands.renameRootTarget(parentPath, FileUtils.getName(path), newName)){
             throw new IllegalStateException("Failed to rename " + file);
         }
         return getDocIdForRootFile(new RootFile(newFile.getParent(), displayName));
@@ -412,15 +420,15 @@ public class RootedStorageProvider extends StorageProvider {
             throws FileNotFoundException {
         return openOrCreateDocumentThumbnail(documentId, sizeHint, signal);
     }
-    
+
     public AssetFileDescriptor openOrCreateDocumentThumbnail(
             String docId, Point sizeHint, CancellationSignal signal) throws FileNotFoundException {
 //        final ContentResolver resolver = getContext().getContentResolver();
         final RootFile file = getRootFileForDocId(docId);
         final String mimeType = getTypeForFile(file);
-    	
+
         final String typeOnly = mimeType.split("/")[0];
-    
+
         final long token = Binder.clearCallingIdentity();
         try {
             if ("audio".equals(typeOnly)) {
@@ -440,36 +448,14 @@ public class RootedStorageProvider extends StorageProvider {
         }
     }
 
-    @SuppressWarnings("unused")
-	private static String getTypeForFile(File file) {
-        if (file.isDirectory()) {
-            return Document.MIME_TYPE_DIR;
-        } else {
-            return getTypeForName(file.getName());
-        }
-    }
-
     private static String getTypeForFile(RootFile file) {
         if (file.isDirectory()) {
             return Document.MIME_TYPE_DIR;
         } else {
-            return getTypeForName(file.getName());
+            return FileUtils.getTypeForName(file.getName());
         }
     }
-    
-    @SuppressLint("DefaultLocale")
-	private static String getTypeForName(String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (mime != null) {
-                return mime;
-            }
-        }
 
-        return "application/octet-stream";
-    }
 
     private class DirectoryCursor extends MatrixCursor {
 

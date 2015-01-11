@@ -102,6 +102,7 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
+import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
@@ -915,6 +916,10 @@ public class DirectoryFragment extends ListFragment {
             else if (null != root && root.isAppProcess()) {
                 AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
                 AppsProvider.notifyRootsChanged(getActivity());
+            }
+
+            if(id == R.id.menu_delete && isRootedStorage){
+                onUserSortOrderChanged();
             }
 		}
 	}

@@ -142,10 +142,13 @@ public class RenameFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
-            if (result == null && Utils.isActivityAlive(getActivity())) {
-                mActivity.showError("Failed to rename");
-                mActivity.setPending(false);
+            if (!Utils.isActivityAlive(mActivity)){
+               return;
             }
+            if (result == null) {
+                mActivity.showError("Failed to rename");
+            }
+            mActivity.setPending(false);
         }
     }
 }
