@@ -400,7 +400,11 @@ public class FileUtils {
             return null;
         }
         int index = filename.lastIndexOf(File.separator);
-        return filename.substring(index + 1);
+        if (index == -1) {
+            return filename;
+        } else {
+            return filename.substring(index+1);
+        }
     }
 
     public static String removeExtension(String filename) {
@@ -522,6 +526,22 @@ public class FileUtils {
             }
             else{
                 Uri contentUri = Uri.fromFile(new File(parentPath).getParentFile());
+                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
+                context.sendBroadcast(mediaScanIntent);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateMedia(Context context, String path) {
+        try {
+            if(Utils.hasKitKat()){
+                FileUtils.updateMedia(context, new String[]{path});
+            }
+            else{
+                Uri contentUri = Uri.fromFile(new File(path).getParentFile());
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
                 context.sendBroadcast(mediaScanIntent);
             }

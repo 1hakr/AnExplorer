@@ -715,10 +715,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     return ParcelFileDescriptor.open(file, pfdMode, mHandler, new ParcelFileDescriptor.OnCloseListener() {
                         @Override
                         public void onClose(IOException e) {
-                            final Intent intent = new Intent(
-                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                            intent.setData(Uri.fromFile(file));
-                            getContext().sendBroadcast(intent);
+                            FileUtils.updateMedia(getContext(), file.getPath());
                         }
                     });
                 } catch (IOException e) {

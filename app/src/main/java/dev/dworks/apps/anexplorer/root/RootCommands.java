@@ -45,6 +45,18 @@ public class RootCommands {
         return input.replaceAll(UNIX_ESCAPE_EXPRESSION, "\\\\$1");
     }
 
+    public static InputStream getFile(String path) {
+        InputStream in = null;
+
+        try {
+            in = openFile(getCommandLineString(path));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return in;
+    }
+
     public static BufferedReader listFiles(String path) {
         BufferedReader in = null;
 
@@ -277,6 +289,31 @@ public class RootCommands {
                 return null;
             }
             return reader;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static InputStream openFile(String cmd) {
+        InputStream inputStream;
+        try {
+            Process process = Runtime.getRuntime().exec("su");
+            DataOutputStream os = new DataOutputStream(
+                    process.getOutputStream());
+            os.writeBytes(cmd + "\n");
+            os.writeBytes("exit\n");
+            inputStream = process.getInputStream();
+            String err = (new BufferedReader(new InputStreamReader(
+                    process.getErrorStream()))).readLine();
+            os.flush();
+
+            if (process.waitFor() != 0 || (!"".equals(err) && null != err)
+                    && !containsIllegals(err)) {
+                Log.e("Root Error, cmd: " + cmd, err);
+                return null;
+            }
+            return inputStream;
         } catch (Exception e) {
             e.printStackTrace();
         }

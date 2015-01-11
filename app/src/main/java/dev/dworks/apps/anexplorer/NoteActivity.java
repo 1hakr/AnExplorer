@@ -43,6 +43,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
@@ -354,7 +355,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         else if (uri.getScheme().startsWith(ContentResolver.SCHEME_FILE)) {
             name = uri.getLastPathSegment();
         }
-        return name;
+        return FileUtils.getName(name);
     }
 
     public void showError(String msg){

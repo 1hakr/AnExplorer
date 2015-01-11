@@ -34,8 +34,10 @@ import com.stericson.RootTools.RootTools;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,7 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.root.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.root.RootCommands;
 import dev.dworks.apps.anexplorer.root.RootFile;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -410,8 +413,16 @@ public class RootedStorageProvider extends StorageProvider {
     public ParcelFileDescriptor openDocument(
             String documentId, String mode, CancellationSignal signal)
             throws FileNotFoundException {
-        //final File file = getRootFileForDocId(documentId);
-        return null;//ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);//ParcelFileDescriptor.parseMode(mode));
+        final RootFile file = getRootFileForDocId(documentId);
+        /*InputStream is = RootCommands.getFile(file.getPath());
+
+        try {
+            return ParcelFileDescriptorUtil.pipeFrom(is);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }*/
+        return ParcelFileDescriptor.open(new File(file.getPath()), ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
     @Override
