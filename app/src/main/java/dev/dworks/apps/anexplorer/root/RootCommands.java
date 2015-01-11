@@ -49,7 +49,19 @@ public class RootCommands {
         InputStream in = null;
 
         try {
-            in = openFile(getCommandLineString(path));
+            in = openFile("cat " + getCommandLineString(path));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return in;
+    }
+
+    public static InputStream putFile(String path, String text) {
+        InputStream in = null;
+
+        try {
+            in = openFile("echo \"" + text + "\" > " + getCommandLineString(path));
         } catch (Exception e) {
             e.printStackTrace();
         }

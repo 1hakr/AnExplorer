@@ -45,6 +45,8 @@ import java.util.TimerTask;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+import dev.dworks.apps.anexplorer.root.RootCommands;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
@@ -62,7 +64,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         mInput.addTextChangedListener(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(getName(getIntent().getData()));
+        getName();
     }
 
     @Override
@@ -189,7 +191,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 return null;
             }
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(getInputStream(uri), "UTF-8"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                 String line;
                 final StringBuilder text = new StringBuilder();
                 try {
@@ -206,6 +208,14 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             }catch (Exception e){
                 e.printStackTrace();
                 errorMsg = e.getLocalizedMessage();
+            }finally {
+                if(null != is){
+                    try {
+                        is.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             return null;
         }
@@ -250,6 +260,14 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
         @Override
         protected Void doInBackground(Void... params) {
+            String authority = uri.getAuthority();
+            if(authority.equalsIgnoreCase(RootedStorageProvider.AUTHORITY)){
+                InputStream is = RootCommands.putFile(getPath(uri), mInput.getText().toString());
+                if(null == is){
+                    errorMsg = "Unable to save file";
+                }
+                return null;
+            }
             OutputStream os = getOutStream(uri);
             if(null == os){
                 errorMsg = "Unable to save file";
@@ -299,6 +317,10 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
     private InputStream getInputStream(Uri uri){
         String scheme = uri.getScheme();
+        String authority = uri.getAuthority();
+        if(authority.equalsIgnoreCase(RootedStorageProvider.AUTHORITY)){
+            return RootCommands.getFile(getPath(uri));
+        }
         if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
             try {
                 return getContentResolver().openInputStream(uri);
@@ -339,7 +361,11 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         return null;
     }
 
-    private String getName(Uri uri){
+    private void getName(){
+        Uri uri = getIntent().getData();
+        if(null == uri){
+            return;
+        }
         String name = "";
         String scheme = uri.getScheme();
         if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
@@ -355,7 +381,18 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         else if (uri.getScheme().startsWith(ContentResolver.SCHEME_FILE)) {
             name = uri.getLastPathSegment();
         }
-        return FileUtils.getName(name);
+        getSupportActionBar().setTitle(FileUtils.getName(name));
+        getSupportActionBar().setSubtitle("");
+    }
+
+    private  String getPath(Uri uri){
+        String path = uri.getSchemeSpecificPart();
+        String part = uri.getSchemeSpecificPart();
+        final int splitIndex = part.indexOf(':', 1);
+        if(splitIndex != -1) {
+            path = part.substring(splitIndex + 1);
+        }
+        return path;
     }
 
     public void showError(String msg){
