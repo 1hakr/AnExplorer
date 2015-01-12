@@ -130,7 +130,7 @@ public class RenameFragment extends DialogFragment {
             ContentProviderClient client = null;
             try {
                 final Uri childUri = DocumentsContract.renameDocument(
-                		resolver, mDoc.derivedUri, Document.MIME_TYPE_DIR, mFileName);
+                		resolver, mDoc.derivedUri, mDoc.mimeType, mFileName);
                 return DocumentInfo.fromUri(resolver, childUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to rename directory", e);
@@ -142,10 +142,13 @@ public class RenameFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
-            if (result == null && Utils.isActivityAlive(getActivity())) {
-                mActivity.showError("Failed to rename");
-                mActivity.setPending(false);
+            if (!Utils.isActivityAlive(mActivity)){
+               return;
             }
+            if (result == null) {
+                mActivity.showError("Failed to rename");
+            }
+            mActivity.setPending(false);
         }
     }
 }

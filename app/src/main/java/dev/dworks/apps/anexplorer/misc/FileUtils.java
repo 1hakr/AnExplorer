@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+import dev.dworks.apps.anexplorer.root.RootFile;
 
 public class FileUtils {
 
@@ -152,7 +153,6 @@ public class FileUtils {
         totalList.addAll(searchFiles(searchDirectory, new SearchFilter(searchQuery)));
         return totalList;
     }
-
 
     public static boolean moveFile(File fileFrom, File fileTo, String name) {
 
@@ -395,6 +395,45 @@ public class FileUtils {
         return name;
     }
 
+    public static String getName(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = filename.lastIndexOf(File.separator);
+        if (index == -1) {
+            return filename;
+        } else {
+            return filename.substring(index+1);
+        }
+    }
+
+    public static String removeExtension(String filename) {
+        if (filename == null) {
+            return null;
+        }
+        int index = filename.lastIndexOf('.');
+        if (index == -1) {
+            return filename;
+        } else {
+            return filename.substring(0, index);
+        }
+    }
+
+    public static String getFullNameFromFilepath(String filename) {
+        return removeExtension(getName(filename));
+    }
+
+    public static String getPathFromFilepath(String filepath) {
+        int index = filepath.lastIndexOf(File.separator);
+        if (index != -1) {
+            int end = index + 1;
+            if (end == 0) {
+                end++;
+            }
+            return filepath.substring(0, end);
+        }
+        return "";
+    }
 
     private static class SearchFilter implements FilenameFilter {
         String searchQuery;
@@ -487,6 +526,22 @@ public class FileUtils {
             }
             else{
                 Uri contentUri = Uri.fromFile(new File(parentPath).getParentFile());
+                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
+                context.sendBroadcast(mediaScanIntent);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateMedia(Context context, String path) {
+        try {
+            if(Utils.hasKitKat()){
+                FileUtils.updateMedia(context, new String[]{path});
+            }
+            else{
+                Uri contentUri = Uri.fromFile(new File(path).getParentFile());
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
                 context.sendBroadcast(mediaScanIntent);
             }

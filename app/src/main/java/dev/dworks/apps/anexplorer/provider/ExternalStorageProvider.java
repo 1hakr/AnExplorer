@@ -436,13 +436,9 @@ public class ExternalStorageProvider extends StorageProvider {
 
         final String displayName = file.getName();
         final String mimeType = getTypeForFile(file);
-        if (mimeType.startsWith("image/")
-        		|| mimeType.startsWith("audio/")
-        		|| mimeType.startsWith("video/") 
-        		|| mimeType.startsWith("application/vnd.android.package-archive")) {
+        if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         }
-
         
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
@@ -719,10 +715,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     return ParcelFileDescriptor.open(file, pfdMode, mHandler, new ParcelFileDescriptor.OnCloseListener() {
                         @Override
                         public void onClose(IOException e) {
-                            final Intent intent = new Intent(
-                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                            intent.setData(Uri.fromFile(file));
-                            getContext().sendBroadcast(intent);
+                            FileUtils.updateMedia(getContext(), file.getPath());
                         }
                     });
                 } catch (IOException e) {

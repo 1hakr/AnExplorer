@@ -930,6 +930,11 @@ public class DocumentsActivity extends ActionBarActivity {
         if (save != null) {
             save.setPending(pending);
         }
+
+        final RootInfo root = getCurrentRoot();
+        if(root != null && root.isRootedStorage()){
+            refreshData();
+        }
     }
 
     @Override
@@ -1002,7 +1007,7 @@ public class DocumentsActivity extends ActionBarActivity {
             }
 
             // No padding when shown in actionbar
-            convertView.setPadding(0, 0, 0, 0);
+            //convertView.setPadding(0, 0, 0, 0);
             return convertView;
         }
 
