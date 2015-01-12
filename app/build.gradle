@@ -69,8 +69,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.github.mrengineer13:snackbar:+'
     compile 'com.google.guava:guava:18.0'
-    freeCompile files('libs/crashlytics.jar')
-    freeCompile 'com.google.android.gms:play-services-ads:6.5.+'
-    otherCompile files('libs/crashlytics.jar')
-    otherCompile 'com.google.android.gms:play-services-ads:6.5.+'
+    freeCompile 'com.crashlytics.android:crashlytics:+'
+    freeCompile 'com.google.android.gms:play-services-ads:+'
+    otherCompile 'com.crashlytics.android:crashlytics:+'
+    otherCompile 'com.google.android.gms:play-services-ads:+'
 }
