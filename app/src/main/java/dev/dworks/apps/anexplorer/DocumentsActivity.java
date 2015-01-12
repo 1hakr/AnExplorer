@@ -880,6 +880,9 @@ public class DocumentsActivity extends ActionBarActivity {
         } else if (id == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
+        } else if (id == R.id.menu_exit) {
+            finish();
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
