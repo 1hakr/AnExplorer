@@ -202,7 +202,8 @@ public class AppsProvider extends DocumentsProvider {
             throw new IllegalStateException("Failed to copy " + fileFrom);
         }
         else{
-            FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(), fileName));
+            FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(),
+                    fileName +"."+ FileUtils.getExtFromFilename(fileFrom.getPath())));
         }
     }
 
