@@ -39,6 +39,7 @@ import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
@@ -129,7 +130,7 @@ public class RenameFragment extends DialogFragment {
             ContentProviderClient client = null;
             try {
                 final Uri childUri = DocumentsContract.renameDocument(
-                		resolver, mDoc.derivedUri, Document.MIME_TYPE_DIR, mFileName);
+                		resolver, mDoc.derivedUri, mDoc.mimeType, mFileName);
                 return DocumentInfo.fromUri(resolver, childUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to rename directory", e);
@@ -141,10 +142,12 @@ public class RenameFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
-            if (result == null) {
-                ((DocumentsActivity) getActivity()).showError("Failed to rename");
+            if (!Utils.isActivityAlive(mActivity)){
+               return;
             }
-
+            if (result == null) {
+                mActivity.showError("Failed to rename");
+            }
             mActivity.setPending(false);
         }
     }

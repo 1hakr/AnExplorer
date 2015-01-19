@@ -49,6 +49,9 @@ public class MimePredicate implements Predicate<DocumentInfo> {
     public static final String[] SHARE_SKIP_MIMES = new String[] {
             DocumentsContract.Document.MIME_TYPE_APK };
 
+    public static final String[] TEXT_MIMES = new String[] {
+            "text/*", };
+
     public MimePredicate(String[] filters) {
         mFilters = filters;
     }

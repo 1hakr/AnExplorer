@@ -18,6 +18,11 @@
     xmlns:support="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_info"
+        android:icon="@drawable/ic_menu_info"
+        support:showAsAction="always"
+        android:title="Info" />
+    <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_menu_share"
         support:showAsAction="always"

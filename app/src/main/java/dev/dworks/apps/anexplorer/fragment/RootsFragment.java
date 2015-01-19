@@ -418,7 +418,7 @@ public class RootsFragment extends Fragment {
             final RootComparator comp = new RootComparator();
             Collections.sort(clouds, comp);
             //Collections.sort(locals, comp);
-            Collections.reverse(locals);
+            //Collections.reverse(locals);
             
             for (RootInfo local : locals) {
                 add(new RootItem(local, defaultColor));

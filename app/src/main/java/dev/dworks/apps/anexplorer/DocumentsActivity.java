@@ -72,6 +72,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.mrengineer13.snackbar.BuildConfig;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.collect.Maps;
 
@@ -422,7 +423,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(RootInfo root) {
-            if (isFinishing()) return;
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             mState.restored = true;
 
             if (root != null) {
@@ -445,7 +448,7 @@ public class DocumentsActivity extends ActionBarActivity {
             final Cursor cursor = getContentResolver()
                     .query(RecentsProvider.buildResume(packageName), null, null, null, null);
             try {
-                if (cursor.moveToFirst()) {
+                if (null != cursor && cursor.moveToFirst()) {
                     mExternal = cursor.getInt(cursor.getColumnIndex(ResumeColumns.EXTERNAL)) != 0;
                     final byte[] rawStack = cursor.getBlob(
                             cursor.getColumnIndex(ResumeColumns.STACK));
@@ -490,7 +493,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            if (isFinishing()) return;
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             mState.restored = true;
 
             // Show drawer when no stack restored, but only when requesting
@@ -528,7 +533,11 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showSize = SettingsActivity.getDisplayFileSize(this);
             mState.showFolderSize = SettingsActivity.getDisplayFolderSize(this);
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
+            mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
+        }
+        if(BuildConfig.FLAVOR.contains("other")){
+            return;
         }
         AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
             @Override
@@ -544,7 +553,7 @@ public class DocumentsActivity extends ActionBarActivity {
             @Override
             public void onRateAppClicked() {
     			Intent intentMarket = new Intent("android.intent.action.VIEW");
-    			intentMarket.setData(Uri.parse("market://details?id="+BuildConfig.APPLICATION_ID));
+    			intentMarket.setData(Uri.parse("market://details?id="+ BuildConfig.APPLICATION_ID));
                 if(Utils.isIntentAvailable(DocumentsActivity.this, intentMarket)){
                     startActivity(intentMarket);
                 }
@@ -872,6 +881,9 @@ public class DocumentsActivity extends ActionBarActivity {
         } else if (id == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
             return true;
+        } else if (id == R.id.menu_exit) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+            return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
@@ -921,6 +933,11 @@ public class DocumentsActivity extends ActionBarActivity {
         final SaveFragment save = SaveFragment.get(getFragmentManager());
         if (save != null) {
             save.setPending(pending);
+        }
+
+        final RootInfo root = getCurrentRoot();
+        if(root != null && root.isRootedStorage()){
+            refreshData();
         }
     }
 
@@ -994,7 +1011,7 @@ public class DocumentsActivity extends ActionBarActivity {
             }
 
             // No padding when shown in actionbar
-            convertView.setPadding(0, 0, 0, 0);
+            //convertView.setPadding(0, 0, 0, 0);
             return convertView;
         }
 
@@ -1095,9 +1112,9 @@ public class DocumentsActivity extends ActionBarActivity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onCurrentDirectoryChanged(int anim) {
     	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
-    	if((Utils.hasJellyBeanMR1() && isDestroyed()) || isFinishing()){
-    		return;
-    	}
+        if(!Utils.isActivityAlive(DocumentsActivity.this)){
+            return;
+        }
         final FragmentManager fm = getFragmentManager();
         final RootInfo root = getCurrentRoot();
         DocumentInfo cwd = getCurrentDirectory();
@@ -1229,6 +1246,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             if (result != null) {
                 mState.stack.push(result);
                 mState.stackTouched = true;
@@ -1301,7 +1321,8 @@ public class DocumentsActivity extends ActionBarActivity {
             // Fall back to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             if(MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)){
             	try {
                 	File file = new File(doc.path);
@@ -1335,7 +1356,8 @@ public class DocumentsActivity extends ActionBarActivity {
                 } catch (ActivityNotFoundException ex) {
                     // Fall back to viewing
                     final Intent view = new Intent(Intent.ACTION_VIEW);
-                    view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     view.setData(doc.derivedUri);
 
                     try {
@@ -1480,6 +1502,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Uri result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             if (result != null) {
                 onFinished(result);
             } else {
@@ -1570,6 +1595,9 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
+            if(!Utils.isActivityAlive(DocumentsActivity.this)){
+                return;
+            }
             if (result){
                 showError(R.string.save_error);
             }
@@ -1604,6 +1632,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public boolean showSize = false;
         public boolean showFolderSize = false;
         public boolean showThumbnail = false;
+        public boolean showHiddenFiles = false;
         public boolean localOnly = false;
         public boolean forceAdvanced = false;
         public boolean showAdvanced = false;
@@ -1651,6 +1680,7 @@ public class DocumentsActivity extends ActionBarActivity {
             out.writeInt(showSize ? 1 : 0);
             out.writeInt(showFolderSize ? 1 : 0);
             out.writeInt(showThumbnail ? 1 : 0);
+            out.writeInt(showHiddenFiles ? 1 : 0);
             out.writeInt(localOnly ? 1 : 0);
             out.writeInt(forceAdvanced ? 1 : 0);
             out.writeInt(showAdvanced ? 1 : 0);
@@ -1675,6 +1705,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 state.showSize = in.readInt() != 0;
                 state.showFolderSize = in.readInt() != 0;
                 state.showThumbnail = in.readInt() != 0;
+                state.showHiddenFiles = in.readInt() != 0;
                 state.localOnly = in.readInt() != 0;
                 state.forceAdvanced = in.readInt() != 0;
                 state.showAdvanced = in.readInt() != 0;

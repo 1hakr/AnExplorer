@@ -10,18 +10,21 @@ android {
         targetSdkVersion 21
     }
     signingConfigs {
-        release {
-            def Properties localProps = new Properties()
-            localProps.load(new FileInputStream(file('../default.properties')))
-            def Properties keyProps = new Properties()
-            if (localProps['keystore.props.file'] != null) {
-                keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
+        try {
+            release {
+                def Properties localProps = new Properties()
+                localProps.load(new FileInputStream(file('../default.properties')))
+                def Properties keyProps = new Properties()
+                if (localProps['keystore.props.file'] != null) {
+                    keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
+                }
+                storeFile keyProps["store"] != null ? file(keyProps["store"]) : null
+                keyAlias keyProps["alias"]
+                storePassword keyProps["storePass"]
+                keyPassword keyProps["pass"]
             }
-            storeFile keyProps["store"] != null ? file(keyProps["store"]) : null
-            keyAlias keyProps["alias"]
-            storePassword keyProps["storePass"]
-            keyPassword keyProps["pass"]
         }
+        catch (java.lang.Exception e){ }
     }
     buildTypes {
         release {
@@ -33,16 +36,25 @@ android {
             shrinkResources true
         }
     }
+    flavorDimensions   "release", "default"
     productFlavors {
         free {
             applicationId "dev.dworks.apps.anexplorer"
-            versionName "2.5"
-            versionCode = 40
+            versionName "2.6"
+            versionCode = 41
+            flavorDimension "default"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
-            versionName "2.5"
-            versionCode = 40
+            versionName "2.6"
+            versionCode = 41
+            flavorDimension "default"
+        }
+        play {
+            flavorDimension "release"
+        }
+        other {
+            flavorDimension "release"
         }
     }
     lintOptions {
@@ -55,11 +67,13 @@ android {
 }
 
 dependencies {
-    compile files('libs/rootcommands.jar')
+    compile files('libs/RootTools.jar')
     compile 'com.android.support:support-v4:+'
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.github.mrengineer13:snackbar:+'
     compile 'com.google.guava:guava:18.0'
-    freeCompile files('libs/crashlytics.jar')
-    freeCompile 'com.google.android.gms:play-services-ads:6.5.+'
+    freeCompile 'com.crashlytics.android:crashlytics:+'
+    freeCompile 'com.google.android.gms:play-services-ads:+'
+    otherCompile 'com.crashlytics.android:crashlytics:+'
+    otherCompile 'com.google.android.gms:play-services-ads:+'
 }

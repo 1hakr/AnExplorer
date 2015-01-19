@@ -190,7 +190,9 @@ public class RootInfo implements Durable, Parcelable {
 	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;
 	        }
-            derivedIcon = R.drawable.ic_root_sdcard;
+            else {
+                derivedIcon = R.drawable.ic_root_sdcard;
+            }
         } else if (isDownloadsFolder()) {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
@@ -245,17 +247,17 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isSecondaryStorageSD() {
-        return rootId.toLowerCase().contains("sd")
-				|| rootId.toLowerCase().contains("card")
-				|| rootId.toLowerCase().contains("emmc");
+        return path.toLowerCase().contains("sd")
+				|| path.toLowerCase().contains("card")
+				|| path.toLowerCase().contains("emmc");
     }
     
     public boolean isSecondaryStorageUSB() {
-        return rootId.toLowerCase().contains("usd");
+        return path.toLowerCase().contains("usb");
     }
     
     public boolean isSecondaryStorageHDD() {
-        return rootId.toLowerCase().contains("hdd");
+        return path.toLowerCase().contains("hdd");
     }
 
     public boolean isDownloadsFolder() {

@@ -78,6 +78,7 @@ public class DetailFragment extends DialogFragment{
 	private FrameLayout icon;
 	private View contents_layout;
     private CircleImage iconMimeBackground;
+    private View path_layout;
 
     public static void show(FragmentManager fm, DocumentInfo doc) {
 		final Bundle args = new Bundle();
@@ -133,7 +134,8 @@ public class DetailFragment extends DialogFragment{
 		path = (TextView) view.findViewById(R.id.path);
 		
 		contents_layout = view.findViewById(R.id.contents_layout);
-		
+		path_layout = view.findViewById(R.id.path_layout);
+
 		iconMime = (ImageView) view.findViewById(R.id.icon_mime);
 		iconThumb = (ImageView) view.findViewById(R.id.icon_thumb);
         iconMimeBackground = (CircleImage)view.findViewById(R.id.icon_mime_background);
@@ -155,6 +157,12 @@ public class DetailFragment extends DialogFragment{
         name.setTextColor(Utils.getLightColor(SettingsActivity.getActionBarColor(getActivity())));
         iconMimeBackground.setBackgroundColor(IconColorUtils.loadMimeColor(getActivity(), doc.mimeType, doc.authority, doc.documentId, SettingsActivity.getActionBarColor(getActivity())));
 		path.setText(doc.path);
+        if(!TextUtils.isEmpty(doc.path)){
+            path.setText(doc.path);
+        }
+        else{
+            path_layout.setVisibility(View.GONE);
+        }
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
 		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
 		
@@ -224,14 +232,9 @@ public class DetailFragment extends DialogFragment{
 		@Override
 		protected void onPostExecute(Void e) {
 			super.onPostExecute(e);
-			if(!TextUtils.isEmpty(filePath)){
-				size.setText(sizeString);
-			}			
-
-			if(null != result || Document.MIME_TYPE_DIR.equals(doc.mimeType)){
-				//ViewCompat.setBackground(icon, null);
-				//icon.setForeground(null);
-			}
+			if(!TextUtils.isEmpty(sizeString)) {
+                size.setText(sizeString);
+            }
 
 			if(null != result){
                 ImageView.ScaleType scaleType = doc.mimeType.equals(Document.MIME_TYPE_APK) ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP;

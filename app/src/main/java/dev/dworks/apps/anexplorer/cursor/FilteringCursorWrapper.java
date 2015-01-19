@@ -22,6 +22,7 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
@@ -36,15 +37,19 @@ public class FilteringCursorWrapper extends AbstractCursor {
     private int mCount;
 
     public FilteringCursorWrapper(Cursor cursor, String[] acceptMimes) {
-        this(cursor, acceptMimes, null, Long.MIN_VALUE);
+        this(cursor, acceptMimes, null, Long.MIN_VALUE, true);
     }
 
     public FilteringCursorWrapper(Cursor cursor, String[] acceptMimes, String[] rejectMimes) {
-        this(cursor, acceptMimes, rejectMimes, Long.MIN_VALUE);
+        this(cursor, acceptMimes, rejectMimes, Long.MIN_VALUE, true);
+    }
+
+    public FilteringCursorWrapper(Cursor cursor, String[] acceptMimes, String[] rejectMimes, boolean showHidden) {
+        this(cursor, acceptMimes, rejectMimes, Long.MIN_VALUE, showHidden);
     }
 
     public FilteringCursorWrapper(
-            Cursor cursor, String[] acceptMimes, String[] rejectMimes, long rejectBefore) {
+            Cursor cursor, String[] acceptMimes, String[] rejectMimes, long rejectBefore, boolean showHidden) {
         mCursor = cursor;
 
         final int count = cursor.getCount();
@@ -53,6 +58,7 @@ public class FilteringCursorWrapper extends AbstractCursor {
         cursor.moveToPosition(-1);
         while (cursor.moveToNext() && mCount < count) {
             final String mimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
+            final String name = getCursorString(cursor, Document.COLUMN_DISPLAY_NAME);
             final long lastModified = getCursorLong(cursor, Document.COLUMN_LAST_MODIFIED);
             if (rejectMimes != null && MimePredicate.mimeMatches(rejectMimes, mimeType)) {
                 continue;
@@ -60,6 +66,13 @@ public class FilteringCursorWrapper extends AbstractCursor {
             if (lastModified < rejectBefore) {
                 continue;
             }
+
+            if (!showHidden && !TextUtils.isEmpty(name)) {
+                if(name.charAt(0) == '.'){
+                    continue;
+                }
+            }
+
             if (MimePredicate.mimeMatches(acceptMimes, mimeType)) {
                 mPosition[mCount++] = cursor.getPosition();
             }

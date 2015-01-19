@@ -102,6 +102,7 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
+import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
@@ -114,6 +115,7 @@ import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsActivity.get;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -147,6 +149,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean mLastShowFolderSize = false;
 	private boolean mLastShowThumbnail = false;
     private int mLastShowColor = 0;
+    private boolean mLastShowHiddenFiles = false;
 
 	private boolean mHideGridTitles = false;
 
@@ -170,6 +173,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
+    private boolean isRootedStorage;
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -279,6 +283,7 @@ public class DirectoryFragment extends ListFragment {
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
 		isApp = root != null && root.isApp();
+        isRootedStorage = root != null && root.isRootedStorage();
 
 		mAdapter = new DocumentsAdapter();
 		mType = getArguments().getInt(EXTRA_TYPE);
@@ -432,13 +437,18 @@ public class DirectoryFragment extends ListFragment {
 		final State state = getDisplayState(this);
 
         mDefaultColor = SettingsActivity.getActionBarColor(getActivity());
-		if (mLastMode == state.derivedMode && mLastShowSize == state.showSize && mLastShowFolderSize == state.showFolderSize
-				&& mLastShowThumbnail == state.showThumbnail && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
+        if (mLastMode == state.derivedMode && mLastShowSize == state.showSize
+                && mLastShowFolderSize == state.showFolderSize
+				&& mLastShowThumbnail == state.showThumbnail
+				&& mLastShowHiddenFiles == state.showHiddenFiles
+                && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
 			return;
+        boolean refreshData = mLastShowHiddenFiles != state.showHiddenFiles;
 		mLastMode = state.derivedMode;
 		mLastShowSize = state.showSize;
 		mLastShowFolderSize = state.showFolderSize;
 		mLastShowThumbnail = state.showThumbnail;
+		mLastShowHiddenFiles = state.showHiddenFiles;
 
         mLastShowColor = mDefaultColor;
         mProgressBar.setColor(mLastShowColor);
@@ -475,6 +485,10 @@ public class DirectoryFragment extends ListFragment {
 
         ((DocumentsActivity) getActivity()).upadateActionItems(mCurrentView);
 		mThumbSize = new Point(thumbSize, thumbSize);
+
+        if(refreshData) {
+            onUserSortOrderChanged();
+        }
 	}
 
     private OnItemClickListener mItemListener = new OnItemClickListener() {
@@ -565,7 +579,7 @@ public class DirectoryFragment extends ListFragment {
 					final MenuItem compress = menu.findItem(R.id.menu_compress);
 					copy.setVisible(editMode);
 					cut.setVisible(editMode);
-                    compress.setVisible(editMode);
+                    compress.setVisible(editMode && !isRootedStorage);
 
 					info.setVisible(count == 1);
 					rename.setVisible(count == 1);
@@ -828,7 +842,7 @@ public class DirectoryFragment extends ListFragment {
 			this.id = id;
 			progressDialog = new MaterialProgressDialog(getActivity());
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			// progressDialog.setIndeterminate(true);
+			progressDialog.setIndeterminate(true);
             progressDialog.setColor(mDefaultColor);
 			progressDialog.setCancelable(false);
 
@@ -890,7 +904,9 @@ public class DirectoryFragment extends ListFragment {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
-
+            if(!Utils.isActivityAlive(getActivity())) {
+                return;
+            }
 			progressDialog.dismiss();
 			if (result) {
 				switch (id) {
@@ -910,6 +926,10 @@ public class DirectoryFragment extends ListFragment {
             else if (null != root && root.isAppProcess()) {
                 AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
                 AppsProvider.notifyRootsChanged(getActivity());
+            }
+
+            if(id == R.id.menu_delete && isRootedStorage){
+                onUserSortOrderChanged();
             }
 		}
 	}
@@ -1670,11 +1690,11 @@ public class DirectoryFragment extends ListFragment {
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
             final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
             if(null != compress)
-                compress.setVisible(!isCompressed);
+                compress.setVisible(!isCompressed && !isRootedStorage);
             if(null != uncompress)
-                uncompress.setVisible(isCompressed);
+                uncompress.setVisible(isCompressed && !isRootedStorage);
             if(null != bookmark) {
-                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType));
+                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType) && !isRootedStorage);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);

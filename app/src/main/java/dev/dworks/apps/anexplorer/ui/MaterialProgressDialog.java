@@ -11,6 +11,7 @@ public class MaterialProgressDialog extends ProgressDialog {
     // Default background for the progress spinner
     private static final int CIRCLE_BG_LIGHT = 0xFFFAFAFA;
     private MaterialProgressDrawable indeterminateDrawable;
+    private int mDefaultColor;
     private int mColor;
 
     public MaterialProgressDialog(Context context) {
@@ -26,23 +27,25 @@ public class MaterialProgressDialog extends ProgressDialog {
         super.onCreate(savedInstanceState);
 
         Resources res = getContext().getResources();
-        mColor = res.getColor(R.color.accentColor);
+        mDefaultColor = res.getColor(R.color.accentColor);
 
         indeterminateDrawable = new MaterialProgressDrawable(getContext(), findViewById(android.R.id.progress));
         indeterminateDrawable.setBackgroundColor(CIRCLE_BG_LIGHT);
         indeterminateDrawable.setAlpha(255);
         indeterminateDrawable.updateSizes(MaterialProgressDrawable.XLARGE);
-        indeterminateDrawable.setColorSchemeColors(mColor);
+        indeterminateDrawable.setColorSchemeColors(getColor());
         indeterminateDrawable.start();
         setIndeterminateDrawable(indeterminateDrawable);
     }
 
     public void setColor(int color){
         mColor = color;
-        if(indeterminateDrawable != null){
-            indeterminateDrawable.stop();
-            indeterminateDrawable.setColorSchemeColors(mColor);
-            indeterminateDrawable.start();
+    }
+
+    public int getColor(){
+        if(mColor == 0){
+            return mDefaultColor;
         }
+        return mColor;
     }
 }

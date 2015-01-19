@@ -33,6 +33,8 @@ import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.support.v4.os.EnvironmentCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
@@ -124,8 +126,8 @@ public class ExternalStorageProvider extends StorageProvider {
         mHandler = new Handler();
 
         mRoots = Lists.newArrayList();
-        mIdToRoot = Maps.newHashMap();
-        mIdToPath = Maps.newHashMap();
+        mIdToRoot = Maps.newLinkedHashMap();
+        mIdToPath = Maps.newLinkedHashMap();
 
         updateVolumes();
         includeOtherRoot();
@@ -151,12 +153,11 @@ public class ExternalStorageProvider extends StorageProvider {
         StorageUtils storageUtils = new StorageUtils(getContext());
         for (StorageVolume volume : storageUtils.getStorageMounts()) {
             final File path = volume.getPathFile();
-            if(Utils.hasKitKat()){
-	        	String state = Environment.getStorageState(path);
-	            final boolean mounted = Environment.MEDIA_MOUNTED.equals(state)
-	                    || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
-	            if (!mounted) continue;
-            }
+            String state = EnvironmentCompat.getStorageState(path);
+            final boolean mounted = Environment.MEDIA_MOUNTED.equals(state)
+                    || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+            if (!mounted) continue;
+
             final String rootId;
             if (volume.isPrimary && volume.isEmulated) {
                 rootId = ROOT_ID_PRIMARY_EMULATED;
@@ -185,7 +186,17 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
-                    root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " "+count : "");// + volume.getLabel();
+                    if(Utils.hasKitKat()){
+                        root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                                | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
+                    }
+                    String label = volume.getLabel();
+                    if(TextUtils.isEmpty(label)) {
+                        root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " " + count : "");
+                    }
+                    else{
+                        root.title = label;
+                    }
                     count++;
                 }
                 root.docId = getDocIdForFile(path);
@@ -211,7 +222,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
             final RootInfo root = new RootInfo();
             root.rootId = rootId;
-            root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+            root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                     | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH ;
             root.title = getContext().getString(R.string.root_phone_storage);
             root.docId = getDocIdForFile(path);
@@ -407,7 +418,10 @@ public class ExternalStorageProvider extends StorageProvider {
 
         int flags = 0;
 
-        if (file.canWrite()) {
+        // Damn SAF
+        boolean isWriteDisabled = Utils.hasKitKat() && !TextUtils.isEmpty(docId) && docId.startsWith(ROOT_ID_SECONDARY);
+
+        if (file.canWrite() && !isWriteDisabled) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
                 flags |= Document.FLAG_SUPPORTS_DELETE;
@@ -422,13 +436,9 @@ public class ExternalStorageProvider extends StorageProvider {
 
         final String displayName = file.getName();
         final String mimeType = getTypeForFile(file);
-        if (mimeType.startsWith("image/")
-        		|| mimeType.startsWith("audio/")
-        		|| mimeType.startsWith("video/") 
-        		|| mimeType.startsWith("application/vnd.android.package-archive")) {
+        if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         }
-
         
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
@@ -705,10 +715,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     return ParcelFileDescriptor.open(file, pfdMode, mHandler, new ParcelFileDescriptor.OnCloseListener() {
                         @Override
                         public void onClose(IOException e) {
-                            final Intent intent = new Intent(
-                                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-                            intent.setData(Uri.fromFile(file));
-                            getContext().sendBroadcast(intent);
+                            FileUtils.updateMedia(getContext(), file.getPath());
                         }
                     });
                 } catch (IOException e) {

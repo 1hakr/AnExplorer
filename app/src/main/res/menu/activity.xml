@@ -81,4 +81,9 @@
         support:showAsAction="never"
         android:title="About"/>
 
+    <item
+        android:id="@+id/menu_exit"
+        support:showAsAction="never"
+        android:title="Exit"/>
+
 </menu>

@@ -17,6 +17,7 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,8 @@ import android.text.format.Time;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
+
+import com.stericson.RootTools.RootTools;
 
 import java.io.File;
 import java.util.List;
@@ -191,17 +194,16 @@ public class Utils {
     }
     
     public static boolean isRooted(){
-        for (String p : Utils.BinaryPlaces) {
+/*        for (String p : Utils.BinaryPlaces) {
             File su = new File(p + "su");
             if (su.exists()) {
                 return true;
             } else {
             }
-        }
-        return false;
+        }*/
+        return RootTools.isRootAvailable();
     }
     
-
     public static String formatTime(Context context, long when) {
 		// TODO: DateUtils should make this easier
 		Time then = new Time();
@@ -296,5 +298,14 @@ public class Utils {
         List<ResolveInfo> list =
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean isActivityAlive(Activity activity) {
+        if (null == activity
+                || (null != activity && Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing())) {
+            return false;
+        }
+        return true;
     }
 }
