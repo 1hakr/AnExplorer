@@ -448,7 +448,7 @@ public class DocumentsActivity extends ActionBarActivity {
             final Cursor cursor = getContentResolver()
                     .query(RecentsProvider.buildResume(packageName), null, null, null, null);
             try {
-                if (cursor.moveToFirst()) {
+                if (null != cursor && cursor.moveToFirst()) {
                     mExternal = cursor.getInt(cursor.getColumnIndex(ResumeColumns.EXTERNAL)) != 0;
                     final byte[] rawStack = cursor.getBlob(
                             cursor.getColumnIndex(ResumeColumns.STACK));
@@ -533,6 +533,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showSize = SettingsActivity.getDisplayFileSize(this);
             mState.showFolderSize = SettingsActivity.getDisplayFolderSize(this);
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
+            mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
         }
         if(BuildConfig.FLAVOR.contains("other")){
@@ -1631,6 +1632,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public boolean showSize = false;
         public boolean showFolderSize = false;
         public boolean showThumbnail = false;
+        public boolean showHiddenFiles = false;
         public boolean localOnly = false;
         public boolean forceAdvanced = false;
         public boolean showAdvanced = false;
@@ -1678,6 +1680,7 @@ public class DocumentsActivity extends ActionBarActivity {
             out.writeInt(showSize ? 1 : 0);
             out.writeInt(showFolderSize ? 1 : 0);
             out.writeInt(showThumbnail ? 1 : 0);
+            out.writeInt(showHiddenFiles ? 1 : 0);
             out.writeInt(localOnly ? 1 : 0);
             out.writeInt(forceAdvanced ? 1 : 0);
             out.writeInt(showAdvanced ? 1 : 0);
@@ -1702,6 +1705,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 state.showSize = in.readInt() != 0;
                 state.showFolderSize = in.readInt() != 0;
                 state.showThumbnail = in.readInt() != 0;
+                state.showHiddenFiles = in.readInt() != 0;
                 state.localOnly = in.readInt() != 0;
                 state.forceAdvanced = in.readInt() != 0;
                 state.showAdvanced = in.readInt() != 0;

@@ -211,7 +211,7 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
                     if (cursor == null) continue;
 
                     final FilteringCursorWrapper filtered = new FilteringCursorWrapper(
-                            cursor, mState.acceptMimes, RECENT_REJECT_MIMES, rejectBefore) {
+                            cursor, mState.acceptMimes, RECENT_REJECT_MIMES, rejectBefore, true) {
                         @Override
                         public void close() {
                             // Ignored, since we manage cursor lifecycle internally

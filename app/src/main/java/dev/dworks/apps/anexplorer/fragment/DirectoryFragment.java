@@ -149,6 +149,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean mLastShowFolderSize = false;
 	private boolean mLastShowThumbnail = false;
     private int mLastShowColor = 0;
+    private boolean mLastShowHiddenFiles = false;
 
 	private boolean mHideGridTitles = false;
 
@@ -436,13 +437,18 @@ public class DirectoryFragment extends ListFragment {
 		final State state = getDisplayState(this);
 
         mDefaultColor = SettingsActivity.getActionBarColor(getActivity());
-		if (mLastMode == state.derivedMode && mLastShowSize == state.showSize && mLastShowFolderSize == state.showFolderSize
-				&& mLastShowThumbnail == state.showThumbnail && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
+        if (mLastMode == state.derivedMode && mLastShowSize == state.showSize
+                && mLastShowFolderSize == state.showFolderSize
+				&& mLastShowThumbnail == state.showThumbnail
+				&& mLastShowHiddenFiles == state.showHiddenFiles
+                && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
 			return;
+        boolean refreshData = mLastShowHiddenFiles != state.showHiddenFiles;
 		mLastMode = state.derivedMode;
 		mLastShowSize = state.showSize;
 		mLastShowFolderSize = state.showFolderSize;
 		mLastShowThumbnail = state.showThumbnail;
+		mLastShowHiddenFiles = state.showHiddenFiles;
 
         mLastShowColor = mDefaultColor;
         mProgressBar.setColor(mLastShowColor);
@@ -479,6 +485,10 @@ public class DirectoryFragment extends ListFragment {
 
         ((DocumentsActivity) getActivity()).upadateActionItems(mCurrentView);
 		mThumbSize = new Point(thumbSize, thumbSize);
+
+        if(refreshData) {
+            onUserSortOrderChanged();
+        }
 	}
 
     private OnItemClickListener mItemListener = new OnItemClickListener() {

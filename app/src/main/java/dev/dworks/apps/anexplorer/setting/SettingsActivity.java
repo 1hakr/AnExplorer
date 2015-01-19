@@ -50,6 +50,7 @@ public class SettingsActivity extends PreferenceActivity {
     private static final String KEY_FILE_SIZE = "fileSize";
     private static final String KEY_FOLDER_SIZE = "folderSize";
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
+    private static final String KEY_FILE_HIDDEN = "fileHidden";
     public static final String KEY_ROOT_MODE = "rootMode";
     public static final String KEY_TRANSLUCENT_MODE = "translucentMode";
     public static final String KEY_AS_DIALOG = "asDialog";
@@ -83,7 +84,12 @@ public class SettingsActivity extends PreferenceActivity {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_FILE_THUMBNAIL, true);
     }
-    
+
+    public static boolean getDisplayFileHidden(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_FILE_HIDDEN, false);
+    }
+
     public static boolean getRootMode(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_ROOT_MODE, false);
