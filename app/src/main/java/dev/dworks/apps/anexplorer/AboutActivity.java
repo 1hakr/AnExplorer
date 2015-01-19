@@ -129,7 +129,7 @@ public class AboutActivity extends ActionBarActivity {
     }
 
     private String getSuffix(){
-        return BuildConfig.FLAVOR.contains("pro") ? " Pro" : "";
+        return BuildConfig.FLAVOR.contains("Pro") ? " Pro" : "";
     }
 
     private boolean isNonPlay(){
