@@ -186,10 +186,6 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
-                    if(Utils.hasKitKat()){
-                        root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                                | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
-                    }
                     String label = volume.getLabel();
                     if(TextUtils.isEmpty(label)) {
                         root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " " + count : "");
@@ -418,10 +414,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
         int flags = 0;
 
-        // Damn SAF
-        boolean isWriteDisabled = Utils.hasKitKat() && !TextUtils.isEmpty(docId) && docId.startsWith(ROOT_ID_SECONDARY);
-
-        if (file.canWrite() && !isWriteDisabled) {
+        if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
                 flags |= Document.FLAG_SUPPORTS_DELETE;
