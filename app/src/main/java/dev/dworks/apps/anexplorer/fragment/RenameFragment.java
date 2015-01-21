@@ -146,7 +146,9 @@ public class RenameFragment extends DialogFragment {
                return;
             }
             if (result == null) {
-                mActivity.showError("Failed to rename");
+                if(!mActivity.isSAFIssue(mDoc.documentId)) {
+                    mActivity.showError(R.string.rename_error);
+                }
             }
             mActivity.setPending(false);
         }

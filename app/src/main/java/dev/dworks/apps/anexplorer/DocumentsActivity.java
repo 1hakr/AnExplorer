@@ -52,6 +52,7 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -1508,7 +1509,10 @@ public class DocumentsActivity extends ActionBarActivity {
             if (result != null) {
                 onFinished(result);
             } else {
-                showError(R.string.save_error);
+                final DocumentInfo cwd = getCurrentDirectory();
+                if(!isSAFIssue(cwd.documentId)) {
+                    showError(R.string.save_error);
+                }
             }
             setPending(false);
         }
@@ -1583,9 +1587,9 @@ public class DocumentsActivity extends ActionBarActivity {
     			}
 
     			try {
-    				DocumentsContract.moveDocument(resolver, doc.derivedUri, cwd.derivedUri, deleteAfter);
+                    hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, cwd.derivedUri, deleteAfter);
     			} catch (Exception e) {
-    				Log.w(TAG, "Failed to save " + doc);
+    				Log.w(TAG, "Failed to move " + doc);
     				hadTrouble = true;
     			}
     		}
@@ -1599,7 +1603,9 @@ public class DocumentsActivity extends ActionBarActivity {
                 return;
             }
             if (result){
-                showError(R.string.save_error);
+                if(!isSAFIssue(toDoc.documentId)){
+                    showError(R.string.save_error);
+                }
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
@@ -1955,4 +1961,14 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         }
     };
+
+    public boolean isSAFIssue(String docId){
+        boolean isSAFIssue = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT
+                && !TextUtils.isEmpty(docId) && docId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
+
+        if(isSAFIssue){
+            showError(R.string.saf_issue);
+        }
+        return isSAFIssue;
+    }
 }
