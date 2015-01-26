@@ -671,6 +671,7 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+            selectAll = true;
 			final Context context = getActivity();
 			if(null != context){
 				final DocumentsActivity activity = (DocumentsActivity) context;
