@@ -67,6 +67,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
@@ -89,6 +90,7 @@ public class ExternalStorageProvider extends StorageProvider {
             Document.COLUMN_DOCUMENT_ID, Document.COLUMN_MIME_TYPE, Document.COLUMN_PATH, Document.COLUMN_DISPLAY_NAME,
             Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE, Document.COLUMN_SUMMARY,
     };
+    private boolean showFilesHidden;
 
     private static class RootInfo {
         public String rootId;
@@ -132,6 +134,8 @@ public class ExternalStorageProvider extends StorageProvider {
         updateVolumes();
         includeOtherRoot();
         includeBookmarkRoot();
+        updateSettings();
+
         return true;
     }
 
@@ -319,6 +323,10 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
+    public void updateSettings(){
+        showFilesHidden = SettingsActivity.getDisplayFileHidden(getContext());
+    }
+
     private static String[] resolveRootProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_ROOT_PROJECTION;
     }
@@ -428,6 +436,11 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         final String displayName = file.getName();
+        if (!showFilesHidden && !TextUtils.isEmpty(displayName)) {
+            if(displayName.charAt(0) == '.'){
+                return;
+            }
+        }
         final String mimeType = getTypeForFile(file);
         if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
@@ -621,6 +634,7 @@ public class ExternalStorageProvider extends StorageProvider {
     public Cursor queryDocument(String documentId, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
+        updateSettings();
         includeFile(result, documentId, null);
         return result;
     }
@@ -633,6 +647,7 @@ public class ExternalStorageProvider extends StorageProvider {
         final File parent = getFileForDocId(parentDocumentId);
         final MatrixCursor result = new DirectoryCursor(
                 resolveDocumentProjection(projection), parentDocumentId, parent);
+        updateSettings();
         if(!MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, mimeType)){
             for (File file : parent.listFiles()) {
                 includeFile(result, null, file);
@@ -680,6 +695,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 includeFile(result, null, file);
             }
         }*/
+        updateSettings();
         for (File file : FileUtils.searchDirectory(parent.getPath(), query)) {
         	includeFile(result, null, file);
 		}

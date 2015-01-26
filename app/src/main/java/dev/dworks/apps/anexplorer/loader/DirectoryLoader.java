@@ -67,7 +67,6 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
 
     private CancellationSignal mSignal;
     private DirectoryResult mResult;
-    private boolean mShowHiddenFiles;
 
     public DirectoryLoader(Context context, int type, RootInfo root, DocumentInfo doc, Uri uri,
             int userSortOrder) {
@@ -77,7 +76,6 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
         mDoc = doc;
         mUri = uri;
         mUserSortOrder = userSortOrder;
-        mShowHiddenFiles = SettingsActivity.getDisplayFileHidden(context);
     }
 
     @Override
@@ -161,15 +159,12 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             cursor = new RootCursorWrapper(mUri.getAuthority(), mRoot.rootId, cursor, -1);
 
             if (mType == DirectoryFragment.TYPE_SEARCH) {
-                // Normal directories should have sorting applied
                 cursor = new SortingCursorWrapper(cursor, result.sortOrder);
                 // Filter directories out of search results, for now
-                cursor = new FilteringCursorWrapper(cursor, null, SEARCH_REJECT_MIMES, mShowHiddenFiles);
+                cursor = new FilteringCursorWrapper(cursor, null, SEARCH_REJECT_MIMES);
             } else {
                 // Normal directories should have sorting applied
                 cursor = new SortingCursorWrapper(cursor, result.sortOrder);
-                // Filter directories out of search results, for now
-                cursor = new FilteringCursorWrapper(cursor, null, SEARCH_REJECT_MIMES, mShowHiddenFiles);
             }
 
             result.client = client;
