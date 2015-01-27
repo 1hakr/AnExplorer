@@ -787,7 +787,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			try {
-                hadTrouble = ! DocumentsContract.deleteDocument(resolver, doc.derivedUri);
+				DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to delete " + doc);
 				hadTrouble = true;
@@ -911,28 +911,12 @@ public class DirectoryFragment extends ListFragment {
 			if (result) {
 				switch (id) {
 				case R.id.menu_delete:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
-                    }
+                    ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
 					break;
 
 				case R.id.menu_save:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.save_error);
-                    }
+                    ((DocumentsActivity) getActivity()).showError(R.string.save_error);
 					break;
-
-                case R.id.menu_compress:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.compress_error);
-                    }
-
-                    break;
-                case R.id.menu_uncompress:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(doc.documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.uncompress_error);
-                    }
-                    break;
 				}
 			}
 
@@ -986,7 +970,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			try {
-                hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, null, false);
+				DocumentsContract.moveDocument(resolver, doc.derivedUri, null, false);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
 				hadTrouble = true;
@@ -1011,7 +995,7 @@ public class DirectoryFragment extends ListFragment {
             for (DocumentInfo doc : docs){
                 documentIds.add(DocumentsContract.getDocumentId(doc.derivedUri));
             }
-            hadTrouble = ! DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
+            DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
         } catch (Exception e) {
             Log.w(TAG, "Failed to Compress " + doc);
             hadTrouble = true;
@@ -1033,7 +1017,7 @@ public class DirectoryFragment extends ListFragment {
             }
 
             try {
-                hadTrouble = ! DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
+                DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to Uncompress " + doc);
                 hadTrouble = true;

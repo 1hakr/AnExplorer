@@ -116,9 +116,5 @@
     <string name="unsaved_changes_desc">You have unsaved changes, Save them?</string>
     <string name="unable_to_open_app">Unable to open app</string>
     <string name="more">More</string>
-    <string name="saf_issue">Your System doesnt allow this operation on Secondary storage on Kitkat. Upgrade to Lollipop to solve this issue..</string>
-    <string name="rename_error">Failed to rename</string>
-    <string name="compress_error">Failed to compress</string>
-    <string name="uncompress_error">Failed to uncompress</string>
 
 </resources>
