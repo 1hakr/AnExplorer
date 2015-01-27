@@ -146,9 +146,7 @@ public class CreateFileFragment extends DialogFragment {
         @Override
         protected void onPostExecute(Uri result) {
             if (result == null) {
-                if(!mActivity.isSAFIssue(mCwd.documentId)) {
-                    mActivity.showError(R.string.save_error);
-                }
+                mActivity.showError(R.string.save_error);
             }
 
             mActivity.setPending(false);

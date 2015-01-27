@@ -1024,7 +1024,7 @@ public final class DocumentsContract {
             ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_MOVE_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
-            Log.w(TAG, "Failed to move document", e);
+            Log.w(TAG, "Failed to delete document", e);
             return false;
         } finally {
             ContentProviderClientCompat.releaseQuietly(client);
@@ -1078,7 +1078,7 @@ public final class DocumentsContract {
             ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_COMPRESS_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
-            Log.w(TAG, "Failed to compress document", e);
+            Log.w(TAG, "Failed to delete document", e);
             return false;
         } finally {
             ContentProviderClientCompat.releaseQuietly(client);
@@ -1097,7 +1097,7 @@ public final class DocumentsContract {
             ContentProviderClientCompat.call(resolver, client, fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
-            Log.w(TAG, "Failed to uncompress document", e);
+            Log.w(TAG, "Failed to delete document", e);
             return false;
         } finally {
             ContentProviderClientCompat.releaseQuietly(client);
