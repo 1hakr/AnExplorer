@@ -348,20 +348,15 @@ public class AppsProvider extends DocumentsProvider {
 	        row.add(Document.COLUMN_FLAGS, flags);
 		}
     }
-	
-	private String getAppName(String packageName){
-		String name = packageName;
-		try {
-			int start = packageName.lastIndexOf('.');
-			name = start != -1 ? packageName.substring(start+1) : packageName;
-			if(name.equalsIgnoreCase("android")){
-				start = packageName.substring(0, start).lastIndexOf('.');
-				name = start != -1 ? packageName.substring(start+1) : packageName;
-			}	
-		} catch (Exception e) {
-		}
-		return name;
-	}
+
+    private String getAppName(String packageName){
+        try {
+            ApplicationInfo appInfo = packageManager.getPackageInfo(packageName, 0).applicationInfo;
+            packageName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
+        }catch(android.content.pm.PackageManager.NameNotFoundException e){}
+
+        return packageName;
+    }
 	
 	private boolean isAppUseful(ApplicationInfo appInfo) {
 		 if (appInfo.flags != 0 
