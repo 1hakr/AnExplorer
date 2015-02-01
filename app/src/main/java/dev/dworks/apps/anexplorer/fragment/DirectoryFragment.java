@@ -596,8 +596,10 @@ public class DirectoryFragment extends ListFragment {
 			for (int i = 0; i < size; i++) {
 				if (checked.valueAt(i)) {
 					final Cursor cursor = mAdapter.getItem(checked.keyAt(i));
-					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
-					docs.add(doc);
+                    if(null != cursor) {
+                        final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
+                        docs.add(doc);
+                    }
 				}
 			}
 
@@ -669,6 +671,7 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+            selectAll = true;
 			final Context context = getActivity();
 			if(null != context){
 				final DocumentsActivity activity = (DocumentsActivity) context;

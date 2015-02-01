@@ -247,17 +247,15 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isSecondaryStorageSD() {
-        return path.toLowerCase().contains("sd")
-				|| path.toLowerCase().contains("card")
-				|| path.toLowerCase().contains("emmc");
+        return contains(path, "sd", "card", "emmc");
     }
     
     public boolean isSecondaryStorageUSB() {
-        return path.toLowerCase().contains("usb");
+        return contains(path, "usb");
     }
     
     public boolean isSecondaryStorageHDD() {
-        return path.toLowerCase().contains("hdd");
+        return contains(path, "hdd");
     }
 
     public boolean isDownloadsFolder() {
@@ -378,5 +376,23 @@ public class RootInfo implements Durable, Parcelable {
 
     public String getDirectoryString() {
         return !TextUtils.isEmpty(summary) ? summary : title;
+    }
+
+    /**
+     * Checks if the path contains any of the given tags or not
+     *
+     * @param path The Folder path
+     * @param tags the list of tags to check against
+     * @return true if path has atleast one tag matched else false
+     */
+    public boolean contains(String path, String... tags) {
+        if(!TextUtils.isEmpty(path)){
+            for (String tag : tags){
+                if(path.toLowerCase().contains(tag)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
