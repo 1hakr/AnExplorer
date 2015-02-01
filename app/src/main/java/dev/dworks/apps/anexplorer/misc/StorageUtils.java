@@ -134,7 +134,10 @@ public final class StorageUtils {
             mDescription.setAccessible(true);
             userLabel = (String) mDescription.get(object);
             if(TextUtils.isEmpty(userLabel)){
-                userLabel = getDescription(object);
+                try{
+                    userLabel = getDescription(object);
+                }
+                catch (Exception e){ }
             }
         }
         return userLabel;
