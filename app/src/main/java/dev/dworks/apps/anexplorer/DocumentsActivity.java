@@ -34,6 +34,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteFullException;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -213,30 +214,6 @@ public class DocumentsActivity extends ActionBarActivity {
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
-        if (mShowAsDialog) {
-        	if(SettingsActivity.getAsDialog(this)){
-                final WindowManager.LayoutParams a = getWindow().getAttributes();
-
-                final Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-
-                getWindow().setAttributes(a);
-        	}
-        } else {
-
-            mRootsContainer = findViewById(R.id.drawer_roots);
-            mInfoContainer = findViewById(R.id.container_info);
-
-            // Non-dialog means we have a drawer
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
-            mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
-            lockInfoContainter();
-        }
-
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
@@ -264,6 +241,31 @@ public class DocumentsActivity extends ActionBarActivity {
         mToolbarStack.setOnItemSelectedListener(mStackListener);
 
         setSupportActionBar(mToolbar);
+
+
+        if (mShowAsDialog) {
+            if(SettingsActivity.getAsDialog(this)){
+                final WindowManager.LayoutParams a = getWindow().getAttributes();
+
+                final Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
+                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+
+                getWindow().setAttributes(a);
+            }
+        } else {
+
+            mRootsContainer = findViewById(R.id.drawer_roots);
+            mInfoContainer = findViewById(R.id.container_info);
+
+            // Non-dialog means we have a drawer
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+            mDrawerLayout.setDrawerListener(mDrawerListener);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
+            lockInfoContainter();
+        }
 
         changeActionBarColor();
         initProtection();
@@ -303,7 +305,10 @@ public class DocumentsActivity extends ActionBarActivity {
             		onRootPicked(getDownloadRoot(), true);
             	}
             	else{
-                    new RestoreStackTask().execute();
+                    try {
+                        new RestoreStackTask().execute();
+                    }
+                    catch (SQLiteFullException e){ }
             	}
             }
         } else {
@@ -335,6 +340,7 @@ public class DocumentsActivity extends ActionBarActivity {
         return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
                 directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
     }
+
     private void initProtection() {
 
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
@@ -570,7 +576,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
-            if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            if(!mInfoContainer.equals(drawerView) && mDrawerLayout.isDrawerOpen(mInfoContainer)){
                 mDrawerLayout.closeDrawer(mInfoContainer);
             }
             mDrawerToggle.onDrawerOpened(drawerView);
@@ -606,6 +612,7 @@ public class DocumentsActivity extends ActionBarActivity {
         if (mDrawerToggle != null) {
             mDrawerToggle.syncState();
         }
+        updateActionBar();
     }
 
     public void setRootsDrawerOpen(boolean open) {
@@ -975,7 +982,6 @@ public class DocumentsActivity extends ActionBarActivity {
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
-        updateActionBar();
     }
 
     private BaseAdapter mStackAdapter = new BaseAdapter() {
@@ -1336,7 +1342,11 @@ public class DocumentsActivity extends ActionBarActivity {
             }
 
             if(Utils.isIntentAvailable(this, view)){
-            	startActivity(view);
+                //TODO: This temporarily fixes crash when the Activity that is opened is not
+                // exported gives java.lang.SecurityException: Permission Denial:
+                try {
+                    startActivity(view);
+                } catch (Exception e){ }
             }
             else{
                 showError(R.string.toast_no_application);

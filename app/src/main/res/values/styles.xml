@@ -49,6 +49,7 @@
         <item name="actionBarWidgetTheme">@null</item>
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="actionModeBackground">@color/alertDarkColor</item>
 
         <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorPrimary">@color/material_blue_grey_800</item>

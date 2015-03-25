@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         applicationId "dev.dworks.apps.anexplorer"
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
     signingConfigs {
         try {
@@ -40,14 +40,14 @@ android {
     productFlavors {
         free {
             applicationId "dev.dworks.apps.anexplorer"
-            versionName "2.7"
-            versionCode = 42
+            versionName "2.8"
+            versionCode = 43
             flavorDimension "default"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
-            versionName "2.7"
-            versionCode = 42
+            versionName "2.8"
+            versionCode = 43
             flavorDimension "default"
         }
         play {

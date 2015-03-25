@@ -124,7 +124,7 @@ public class FileUtils {
 
     public static String formatFileCount(int count) {
         String value = NumberFormat.getInstance().format(count);
-        return count == 0 ? "emtpy" : value + " file" + (count == 1 ? "" : "s");
+        return count == 0 ? "empty" : value + " file" + (count == 1 ? "" : "s");
     }
 
     private static List<File> searchFiles(File dir, FilenameFilter filter) {

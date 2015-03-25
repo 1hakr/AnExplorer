@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
@@ -63,6 +64,9 @@ public final class StorageUtils {
         try {
 			Method getVolumeList = StorageManager.class.getDeclaredMethod("getVolumeList");
 			Object[] sv = (Object[])getVolumeList.invoke(mStorageManager);
+            if(null == sv){
+                return mounts;
+            }
 			for (Object object : sv) {
 				String filePath = getPath(object);
 				boolean emulated = getEmulated(object);
@@ -114,15 +118,30 @@ public final class StorageUtils {
     private String getDescription(Object object) throws IllegalAccessException, NoSuchFieldException {
         String description = "";
         if(Utils.hasJellyBean()){
+            try {
+                description = getDescription(object, true);
+            }
+            catch (Resources.NotFoundException e){
+                description = getDescription(object, false);
+            }
+        }
+        else{
+            description = getDescription(object, false);
+        }
+        return description;
+    }
+
+    private String getDescription(Object object, boolean hasId) throws IllegalAccessException, NoSuchFieldException {
+        String description = "";
+        if (hasId) {
             Field mDescription = object.getClass().getDeclaredField("mDescriptionId");
             mDescription.setAccessible(true);
             int mDescriptionInt = mDescription.getInt(object);
             description = mContext.getResources().getString(mDescriptionInt);
-        }
-        else{
+        } else {
             Field mDescription = object.getClass().getDeclaredField("mDescription");
             mDescription.setAccessible(true);
-            description = (String)mDescription.get(object);
+            description = (String) mDescription.get(object);
         }
         return description;
     }
@@ -134,10 +153,7 @@ public final class StorageUtils {
             mDescription.setAccessible(true);
             userLabel = (String) mDescription.get(object);
             if(TextUtils.isEmpty(userLabel)){
-                try{
-                    userLabel = getDescription(object);
-                }
-                catch (Exception e){ }
+                userLabel = getDescription(object);
             }
         }
         return userLabel;

@@ -602,7 +602,9 @@ public class DirectoryFragment extends ListFragment {
                     }
 				}
 			}
-
+            if(docs.isEmpty()){
+                return false;
+            }
 			final int id = item.getItemId();
 			switch (id) {
 			case R.id.menu_open:
@@ -1254,7 +1256,7 @@ public class DirectoryFragment extends ListFragment {
 				final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
 				final Bitmap cachedResult = thumbs.get(uri);
 				if (cachedResult != null) {
-					iconThumb.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
+					iconThumb.setScaleType(Utils.isAPK(docMimeType) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
 									: ImageView.ScaleType.CENTER_CROP);
 					iconThumb.setImageBitmap(cachedResult);
                     iconMimeBackground.setVisibility(View.INVISIBLE);
@@ -1262,7 +1264,7 @@ public class DirectoryFragment extends ListFragment {
 				} else {
 					iconThumb.setImageDrawable(null);
 					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, iconMimeBackground, mThumbSize,
-							docMimeType.equals(Document.MIME_TYPE_APK) ? docPath : null, iconAlpha);
+                            Utils.isAPK(docMimeType) ? docPath : null, iconAlpha);
 					iconThumb.setTag(task);
 					ProviderExecutor.forAuthority(docAuthority).execute(task);
 				}
@@ -1326,7 +1328,7 @@ public class DirectoryFragment extends ListFragment {
 			} else {
 				// Directories showing thumbnails in grid mode get a little icon
 				// hint to remind user they're a directory.
-				if (Document.MIME_TYPE_DIR.equals(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
+				if (Utils.isDir(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
                     iconDrawable = IconUtils.applyTintAttr(context, R.drawable.ic_root_folder,
                             android.R.attr.textColorPrimaryInverse);
 				}
@@ -1371,7 +1373,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 			if (state.showSize) {
 				size.setVisibility(View.VISIBLE);
-				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
+				if (Utils.isDir(docMimeType) || docSize == -1) {
 					size.setText(null);
 					if (state.showFolderSize) {
 						long sizeInBytes = mSizes.containsKey(position) ? mSizes.get(position) : -1;
@@ -1655,7 +1657,7 @@ public class DirectoryFragment extends ListFragment {
 			return false;
 		}
 		// Directories are always enabled
-		if (Document.MIME_TYPE_DIR.equals(docMimeType)) {
+		if (Utils.isDir(docMimeType)) {
 			return true;
 		}
 
@@ -1713,7 +1715,7 @@ public class DirectoryFragment extends ListFragment {
             if(null != uncompress)
                 uncompress.setVisible(isCompressed && !isRootedStorage);
             if(null != bookmark) {
-                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType) && !isRootedStorage);
+                bookmark.setVisible(Utils.isDir(doc.mimeType) && !isRootedStorage);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);

@@ -54,7 +54,7 @@
     <dimen name="list_item_height">72dp</dimen>
     <dimen name="list_item_padding">16dp</dimen>
 
-    <dimen name="list_divider_inset">72dp</dimen>
+    <dimen name="list_divider_inset">80dp</dimen>
     <bool name="list_divider_inset_left">true</bool>
 
     <dimen name="dir_elevation">8dp</dimen>
