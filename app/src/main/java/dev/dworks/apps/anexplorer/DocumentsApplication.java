@@ -40,8 +40,6 @@ public class DocumentsApplication extends Application {
     private RootsCache mRoots;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
-    //public static Tracker tracker;
-
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
@@ -70,9 +68,6 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-		//GoogleAnalytics googleAnalytics = GoogleAnalytics.getInstance(this);
-		//googleAnalytics.getTracker(getString(R.string.ga_trackingId));
-		//tracker = googleAnalytics.getDefaultTracker();
 		
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;

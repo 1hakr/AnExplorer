@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="TypographyDashes">
+
+    <string name="ga_trackingId">UA-41161328-1</string>
+    <integer name="ga_sessionTimeout">300</integer>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+
+    <screenName name="dev.dworks.apps.anexplorer.DocumentsActivity">Documents</screenName>
+    <screenName name="dev.dworks.apps.anexplorer.NoteActivity">Note</screenName>
+    <screenName name="dev.dworks.apps.anexplorer.AboutActivity">About</screenName>
+    <screenName name="dev.dworks.apps.anexplorer.setting.SettingActivity">Setting</screenName>
+
+</resources>

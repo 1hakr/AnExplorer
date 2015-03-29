@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 
 public class Utils {
@@ -316,5 +317,9 @@ public class Utils {
 
     public static boolean isDir(String mimeType){
         return MimePredicate.mimeMatches(DocumentsContract.Document.MIME_TYPE_DIR, mimeType);
+    }
+
+    public static boolean isProVersion(){
+        return BuildConfig.FLAVOR.contains("Pro");
     }
 }
