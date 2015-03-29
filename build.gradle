@@ -4,7 +4,7 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url 'http://download.crashlytics.com/maven' }
+        maven { url 'https://maven.fabric.io/repo' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.0.0'
@@ -18,6 +18,6 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url 'http://download.crashlytics.com/maven' }
+        maven { url 'https://maven.fabric.io/repo' }
     }
 }

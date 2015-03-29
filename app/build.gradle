@@ -27,13 +27,20 @@ android {
         catch (java.lang.Exception e){ }
     }
     buildTypes {
-        release {
+        debug {
+            minifyEnabled false
+            shrinkResources false
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
+        }
+        release {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
+            proguardFiles 'proguard/proguard-project.pro',
+                    'proguard/proguard-guava.pro',
+                    'proguard/proguard-google-play-services.pro'
         }
     }
     flavorDimensions   "release", "default"
@@ -72,8 +79,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.github.mrengineer13:snackbar:+'
     compile 'com.google.guava:guava:18.0'
-    freeCompile 'com.crashlytics.android:crashlytics:+'
+    freeCompile 'com.crashlytics.sdk.android:crashlytics:+'
     freeCompile 'com.google.android.gms:play-services-ads:+'
-    otherCompile 'com.crashlytics.android:crashlytics:+'
+    otherCompile 'com.crashlytics.sdk.android:crashlytics:+'
     otherCompile 'com.google.android.gms:play-services-ads:+'
 }
