@@ -8,6 +8,9 @@
     <application
         android:name="dev.dworks.apps.anexplorer.DocumentsApplicationFree"
         tools:replace="android:name">
+        <meta-data
+            android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/analytics_global_config" />
         <provider
             android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"
             android:authorities="dev.dworks.apps.anexplorer.recents"

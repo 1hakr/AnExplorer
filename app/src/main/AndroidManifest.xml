@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dev.dworks.apps.anexplorer">
+    package="dev.dworks.apps.anexplorer"
+    android:installLocation="auto">
 
     <permission
         android:name="android.permission.MANAGE_DOCUMENTS"
@@ -14,7 +15,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="22" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"

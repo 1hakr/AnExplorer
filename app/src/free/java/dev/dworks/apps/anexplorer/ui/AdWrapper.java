@@ -48,9 +48,12 @@ public class AdWrapper extends FrameLayout {
         if(isInEditMode()){
             return;
         }
-        if(null != mAdView){
-            mAdView.loadAd(new AdRequest.Builder().build());
-        }
+        //Fixes GPS AIOB Exception
+        try {
+            if(null != mAdView){
+                mAdView.loadAd(new AdRequest.Builder().build());
+            }
+        } catch (Exception e){ }
     }
 
     AdListener adListener = new AdListener() {

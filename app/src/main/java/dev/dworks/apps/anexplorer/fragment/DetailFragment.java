@@ -193,7 +193,7 @@ public class DetailFragment extends DialogFragment{
 		protected Void doInBackground(Void... params) {
 			filePath = doc.path;
 
-			if (!Document.MIME_TYPE_DIR.equals(doc.mimeType)) {
+			if (!Utils.isDir(doc.mimeType)) {
                 final boolean allowThumbnail = MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, doc.mimeType);
 				int thumbSize = getResources().getDimensionPixelSize(R.dimen.grid_width);
 				Point mThumbSize = new Point(thumbSize, thumbSize);

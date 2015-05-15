@@ -76,28 +76,90 @@ public class FileUtils {
         return success;
     }
 
+    private static boolean isValidExtFilenameChar(char c) {
+        switch (c) {
+            case '\0':
+            case '/':
+                return false;
+            default:
+                return true;
+        }
+    }
     /**
-     * Assert that given filename is valid on ext4.
+     * Check if given filename is valid for an ext4 filesystem.
      */
     public static boolean isValidExtFilename(String name) {
+        return (name != null) && name.equals(buildValidExtFilename(name));
+    }
+    /**
+     * Mutate the given filename to make it valid for an ext4 filesystem,
+     * replacing any invalid characters with "_".
+     */
+    public static String buildValidExtFilename(String name) {
         if (TextUtils.isEmpty(name) || ".".equals(name) || "..".equals(name)) {
-            return false;
+            return "(invalid)";
         }
+        final StringBuilder res = new StringBuilder(name.length());
         for (int i = 0; i < name.length(); i++) {
             final char c = name.charAt(i);
-            if (c == '\0' || c == '/') {
-                return false;
+            if (isValidExtFilenameChar(c)) {
+                res.append(c);
+            } else {
+                res.append('_');
             }
         }
-        return true;
+        return res.toString();
     }
-
+    private static boolean isValidFatFilenameChar(char c) {
+        if ((0x00 <= c && c <= 0x1f)) {
+            return false;
+        }
+        switch (c) {
+            case '"':
+            case '*':
+            case '/':
+            case ':':
+            case '<':
+            case '>':
+            case '?':
+            case '\\':
+            case '|':
+            case 0x7F:
+                return false;
+            default:
+                return true;
+        }
+    }
+    /**
+     * Check if given filename is valid for a FAT filesystem.
+     */
+    public static boolean isValidFatFilename(String name) {
+        return (name != null) && name.equals(buildValidFatFilename(name));
+    }
+    /**
+     * Mutate the given filename to make it valid for a FAT filesystem,
+     * replacing any invalid characters with "_".
+     */
+    public static String buildValidFatFilename(String name) {
+        if (TextUtils.isEmpty(name) || ".".equals(name) || "..".equals(name)) {
+            return "(invalid)";
+        }
+        final StringBuilder res = new StringBuilder(name.length());
+        for (int i = 0; i < name.length(); i++) {
+            final char c = name.charAt(i);
+            if (isValidFatFilenameChar(c)) {
+                res.append(c);
+            } else {
+                res.append('_');
+            }
+        }
+        return res.toString();
+    }
     public static String rewriteAfterRename(File beforeDir, File afterDir, String path) {
         if (path == null) return null;
         final File result = rewriteAfterRename(beforeDir, afterDir, new File(path));
         return (result != null) ? result.getAbsolutePath() : null;
     }
-
     public static String[] rewriteAfterRename(File beforeDir, File afterDir, String[] paths) {
         if (paths == null) return null;
         final String[] result = new String[paths.length];
@@ -106,7 +168,6 @@ public class FileUtils {
         }
         return result;
     }
-
     /**
      * Given a path under the "before" directory, rewrite it to live under the
      * "after" directory. For example, {@code /before/foo/bar.txt} would become
@@ -124,7 +185,7 @@ public class FileUtils {
 
     public static String formatFileCount(int count) {
         String value = NumberFormat.getInstance().format(count);
-        return count == 0 ? "emtpy" : value + " file" + (count == 1 ? "" : "s");
+        return count == 0 ? "empty" : value + " file" + (count == 1 ? "" : "s");
     }
 
     private static List<File> searchFiles(File dir, FilenameFilter filter) {

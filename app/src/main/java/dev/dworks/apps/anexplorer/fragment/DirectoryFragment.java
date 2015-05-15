@@ -149,6 +149,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean mLastShowFolderSize = false;
 	private boolean mLastShowThumbnail = false;
     private int mLastShowColor = 0;
+    private boolean mLastShowHiddenFiles = false;
 
 	private boolean mHideGridTitles = false;
 
@@ -436,13 +437,18 @@ public class DirectoryFragment extends ListFragment {
 		final State state = getDisplayState(this);
 
         mDefaultColor = SettingsActivity.getActionBarColor(getActivity());
-		if (mLastMode == state.derivedMode && mLastShowSize == state.showSize && mLastShowFolderSize == state.showFolderSize
-				&& mLastShowThumbnail == state.showThumbnail && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
+        if (mLastMode == state.derivedMode && mLastShowSize == state.showSize
+                && mLastShowFolderSize == state.showFolderSize
+				&& mLastShowThumbnail == state.showThumbnail
+				&& mLastShowHiddenFiles == state.showHiddenFiles
+                && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
 			return;
+        boolean refreshData = mLastShowHiddenFiles != state.showHiddenFiles;
 		mLastMode = state.derivedMode;
 		mLastShowSize = state.showSize;
 		mLastShowFolderSize = state.showFolderSize;
 		mLastShowThumbnail = state.showThumbnail;
+		mLastShowHiddenFiles = state.showHiddenFiles;
 
         mLastShowColor = mDefaultColor;
         mProgressBar.setColor(mLastShowColor);
@@ -479,6 +485,10 @@ public class DirectoryFragment extends ListFragment {
 
         ((DocumentsActivity) getActivity()).upadateActionItems(mCurrentView);
 		mThumbSize = new Point(thumbSize, thumbSize);
+
+        if(refreshData) {
+            onUserSortOrderChanged();
+        }
 	}
 
     private OnItemClickListener mItemListener = new OnItemClickListener() {
@@ -586,11 +596,15 @@ public class DirectoryFragment extends ListFragment {
 			for (int i = 0; i < size; i++) {
 				if (checked.valueAt(i)) {
 					final Cursor cursor = mAdapter.getItem(checked.keyAt(i));
-					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
-					docs.add(doc);
+                    if(null != cursor) {
+                        final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
+                        docs.add(doc);
+                    }
 				}
 			}
-
+            if(docs.isEmpty()){
+                return false;
+            }
 			final int id = item.getItemId();
 			switch (id) {
 			case R.id.menu_open:
@@ -659,6 +673,7 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
+            selectAll = true;
 			final Context context = getActivity();
 			if(null != context){
 				final DocumentsActivity activity = (DocumentsActivity) context;
@@ -777,7 +792,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			try {
-				DocumentsContract.deleteDocument(resolver, doc.derivedUri);
+                hadTrouble = ! DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to delete " + doc);
 				hadTrouble = true;
@@ -901,12 +916,28 @@ public class DirectoryFragment extends ListFragment {
 			if (result) {
 				switch (id) {
 				case R.id.menu_delete:
-                    ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
+                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
+                        ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
+                    }
 					break;
 
 				case R.id.menu_save:
-                    ((DocumentsActivity) getActivity()).showError(R.string.save_error);
+                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
+                        ((DocumentsActivity) getActivity()).showError(R.string.save_error);
+                    }
 					break;
+
+                case R.id.menu_compress:
+                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
+                        ((DocumentsActivity) getActivity()).showError(R.string.compress_error);
+                    }
+
+                    break;
+                case R.id.menu_uncompress:
+                    if(!((DocumentsActivity) getActivity()).isSAFIssue(doc.documentId)) {
+                        ((DocumentsActivity) getActivity()).showError(R.string.uncompress_error);
+                    }
+                    break;
 				}
 			}
 
@@ -960,7 +991,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 
 			try {
-				DocumentsContract.moveDocument(resolver, doc.derivedUri, null, false);
+                hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, null, false);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
 				hadTrouble = true;
@@ -985,7 +1016,7 @@ public class DirectoryFragment extends ListFragment {
             for (DocumentInfo doc : docs){
                 documentIds.add(DocumentsContract.getDocumentId(doc.derivedUri));
             }
-            DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
+            hadTrouble = ! DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
         } catch (Exception e) {
             Log.w(TAG, "Failed to Compress " + doc);
             hadTrouble = true;
@@ -1007,7 +1038,7 @@ public class DirectoryFragment extends ListFragment {
             }
 
             try {
-                DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
+                hadTrouble = ! DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to Uncompress " + doc);
                 hadTrouble = true;
@@ -1225,7 +1256,7 @@ public class DirectoryFragment extends ListFragment {
 				final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
 				final Bitmap cachedResult = thumbs.get(uri);
 				if (cachedResult != null) {
-					iconThumb.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
+					iconThumb.setScaleType(Utils.isAPK(docMimeType) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
 									: ImageView.ScaleType.CENTER_CROP);
 					iconThumb.setImageBitmap(cachedResult);
                     iconMimeBackground.setVisibility(View.INVISIBLE);
@@ -1233,7 +1264,7 @@ public class DirectoryFragment extends ListFragment {
 				} else {
 					iconThumb.setImageDrawable(null);
 					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, iconMimeBackground, mThumbSize,
-							docMimeType.equals(Document.MIME_TYPE_APK) ? docPath : null, iconAlpha);
+                            Utils.isAPK(docMimeType) ? docPath : null, iconAlpha);
 					iconThumb.setTag(task);
 					ProviderExecutor.forAuthority(docAuthority).execute(task);
 				}
@@ -1297,7 +1328,7 @@ public class DirectoryFragment extends ListFragment {
 			} else {
 				// Directories showing thumbnails in grid mode get a little icon
 				// hint to remind user they're a directory.
-				if (Document.MIME_TYPE_DIR.equals(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
+				if (Utils.isDir(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
                     iconDrawable = IconUtils.applyTintAttr(context, R.drawable.ic_root_folder,
                             android.R.attr.textColorPrimaryInverse);
 				}
@@ -1342,7 +1373,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 			if (state.showSize) {
 				size.setVisibility(View.VISIBLE);
-				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
+				if (Utils.isDir(docMimeType) || docSize == -1) {
 					size.setText(null);
 					if (state.showFolderSize) {
 						long sizeInBytes = mSizes.containsKey(position) ? mSizes.get(position) : -1;
@@ -1626,7 +1657,7 @@ public class DirectoryFragment extends ListFragment {
 			return false;
 		}
 		// Directories are always enabled
-		if (Document.MIME_TYPE_DIR.equals(docMimeType)) {
+		if (Utils.isDir(docMimeType)) {
 			return true;
 		}
 
@@ -1684,7 +1715,7 @@ public class DirectoryFragment extends ListFragment {
             if(null != uncompress)
                 uncompress.setVisible(isCompressed && !isRootedStorage);
             if(null != bookmark) {
-                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType) && !isRootedStorage);
+                bookmark.setVisible(Utils.isDir(doc.mimeType) && !isRootedStorage);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);

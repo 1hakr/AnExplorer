@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,6 +78,10 @@ public class CreateDirectoryFragment extends DialogFragment {
                 final DocumentsActivity activity = (DocumentsActivity) getActivity();
                 final DocumentInfo cwd = activity.getCurrentDirectory();
 
+                if(TextUtils.isEmpty(displayName)){
+                    activity.showError(R.string.create_error);
+                    return;
+                }
                 new CreateDirectoryTask(activity, cwd, displayName).executeOnExecutor(
                         ProviderExecutor.forAuthority(cwd.authority));
             }
@@ -126,7 +131,9 @@ public class CreateDirectoryFragment extends DialogFragment {
                 // Navigate into newly created child
                 mActivity.onDocumentPicked(result);
             } else {
-                mActivity.showError(R.string.create_error);
+                if(!mActivity.isSAFIssue(mCwd.documentId)) {
+                    mActivity.showError(R.string.create_error);
+                }
             }
 
             mActivity.setPending(false);

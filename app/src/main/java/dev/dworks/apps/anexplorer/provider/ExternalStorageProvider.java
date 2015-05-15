@@ -36,7 +36,9 @@ import android.os.ParcelFileDescriptor;
 import android.support.v4.os.EnvironmentCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -55,6 +57,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
@@ -67,6 +70,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
@@ -89,6 +93,7 @@ public class ExternalStorageProvider extends StorageProvider {
             Document.COLUMN_DOCUMENT_ID, Document.COLUMN_MIME_TYPE, Document.COLUMN_PATH, Document.COLUMN_DISPLAY_NAME,
             Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE, Document.COLUMN_SUMMARY,
     };
+    private boolean showFilesHidden;
 
     private static class RootInfo {
         public String rootId;
@@ -132,6 +137,8 @@ public class ExternalStorageProvider extends StorageProvider {
         updateVolumes();
         includeOtherRoot();
         includeBookmarkRoot();
+        updateSettings();
+
         return true;
     }
 
@@ -186,10 +193,6 @@ public class ExternalStorageProvider extends StorageProvider {
                 if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
                     root.title = getContext().getString(R.string.root_internal_storage);
                 } else {
-                    if(Utils.hasKitKat()){
-                        root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                                | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
-                    }
                     String label = volume.getLabel();
                     if(TextUtils.isEmpty(label)) {
                         root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " " + count : "");
@@ -323,6 +326,10 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
+    public void updateSettings(){
+        showFilesHidden = SettingsActivity.getDisplayFileHidden(getContext());
+    }
+
     private static String[] resolveRootProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_ROOT_PROJECTION;
     }
@@ -418,10 +425,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
         int flags = 0;
 
-        // Damn SAF
-        boolean isWriteDisabled = Utils.hasKitKat() && !TextUtils.isEmpty(docId) && docId.startsWith(ROOT_ID_SECONDARY);
-
-        if (file.canWrite() && !isWriteDisabled) {
+        if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
                 flags |= Document.FLAG_SUPPORTS_DELETE;
@@ -435,6 +439,11 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         final String displayName = file.getName();
+        if (!showFilesHidden && !TextUtils.isEmpty(displayName)) {
+            if(displayName.charAt(0) == '.'){
+                return;
+            }
+        }
         final String mimeType = getTypeForFile(file);
         if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
@@ -523,27 +532,19 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public String createDocument(String docId, String mimeType, String displayName)
             throws FileNotFoundException {
+        displayName = FileUtils.buildValidFatFilename(displayName);
+
         final File parent = getFileForDocId(docId);
         if (!parent.isDirectory()) {
             throw new IllegalArgumentException("Parent document isn't a directory");
         }
 
-        File file;
+        final File file = buildUniqueFile(parent, mimeType, displayName);
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            file = new File(parent, displayName);
             if (!file.mkdir()) {
                 throw new IllegalStateException("Failed to mkdir " + file);
             }
         } else {
-            displayName = FileUtils.removeExtension(mimeType, displayName);
-            file = new File(parent, FileUtils.addExtension(mimeType, displayName));
-
-            // If conflicting file, try adding counter suffix
-            int n = 0;
-            while (file.exists() && n++ < 32) {
-                file = new File(parent, FileUtils.addExtension(mimeType, displayName + " (" + n + ")"));
-            }
-
             try {
                 if (!file.createNewFile()) {
                     throw new IllegalStateException("Failed to touch " + file);
@@ -584,6 +585,11 @@ public class ExternalStorageProvider extends StorageProvider {
     
     @Override
     public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
+
+        // Since this provider treats renames as generating a completely new
+        // docId, we're okay with letting the MIME type change.
+        displayName = FileUtils.buildValidFatFilename(displayName);
+
         final File parent = getFileForDocId(parentDocumentId);
         File file;
     	
@@ -628,6 +634,7 @@ public class ExternalStorageProvider extends StorageProvider {
     public Cursor queryDocument(String documentId, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
+        updateSettings();
         includeFile(result, documentId, null);
         return result;
     }
@@ -640,6 +647,7 @@ public class ExternalStorageProvider extends StorageProvider {
         final File parent = getFileForDocId(parentDocumentId);
         final MatrixCursor result = new DirectoryCursor(
                 resolveDocumentProjection(projection), parentDocumentId, parent);
+        updateSettings();
         if(!MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, mimeType)){
             for (File file : parent.listFiles()) {
                 includeFile(result, null, file);
@@ -687,6 +695,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 includeFile(result, null, file);
             }
         }*/
+        updateSettings();
         for (File file : FileUtils.searchDirectory(parent.getPath(), query)) {
         	includeFile(result, null, file);
 		}
@@ -872,5 +881,60 @@ public class ExternalStorageProvider extends StorageProvider {
             super.close();
             stopObserving(mFile);
         }
+    }
+
+    private static File buildFile(File parent, String name, String ext) {
+        if (TextUtils.isEmpty(ext)) {
+            return new File(parent, name);
+        } else {
+            return new File(parent, name + "." + ext);
+        }
+    }
+
+    @VisibleForTesting
+    public static File buildUniqueFile(File parent, String mimeType, String displayName)
+            throws FileNotFoundException {
+        String name;
+        String ext;
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+            name = displayName;
+            ext = null;
+        } else {
+            String mimeTypeFromExt;
+            // Extract requested extension from display name
+            final int lastDot = displayName.lastIndexOf('.');
+            if (lastDot >= 0) {
+                name = displayName.substring(0, lastDot);
+                ext = displayName.substring(lastDot + 1);
+                mimeTypeFromExt = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                        ext.toLowerCase());
+            } else {
+                name = displayName;
+                ext = null;
+                mimeTypeFromExt = null;
+            }
+            if (mimeTypeFromExt == null) {
+                mimeTypeFromExt = "application/octet-stream";
+            }
+            final String extFromMimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(
+                    mimeType);
+            if (Objects.equals(mimeType, mimeTypeFromExt) || Objects.equals(ext, extFromMimeType)) {
+                // Extension maps back to requested MIME type; allow it
+            } else {
+                // No match; insist that create file matches requested MIME
+                name = displayName;
+                ext = extFromMimeType;
+            }
+        }
+        File file = buildFile(parent, name, ext);
+        // If conflicting file, try adding counter suffix
+        int n = 0;
+        while (file.exists()) {
+            if (n++ >= 32) {
+                throw new FileNotFoundException("Failed to create unique file");
+            }
+            file = buildFile(parent, name + " (" + n + ")", ext);
+        }
+        return file;
     }
 }

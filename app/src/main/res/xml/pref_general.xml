@@ -39,6 +39,11 @@
             android:key="fileThumbnail"
             android:persistent="true"
             android:title="@string/pref_thumbnail" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="fileHidden"
+            android:persistent="true"
+            android:title="@string/pref_hidden" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="advanced"

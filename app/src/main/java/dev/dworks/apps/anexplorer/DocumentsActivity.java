@@ -34,6 +34,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteFullException;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -52,6 +53,7 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -212,30 +214,6 @@ public class DocumentsActivity extends ActionBarActivity {
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
-        if (mShowAsDialog) {
-        	if(SettingsActivity.getAsDialog(this)){
-                final WindowManager.LayoutParams a = getWindow().getAttributes();
-
-                final Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-
-                getWindow().setAttributes(a);
-        	}
-        } else {
-
-            mRootsContainer = findViewById(R.id.drawer_roots);
-            mInfoContainer = findViewById(R.id.container_info);
-
-            // Non-dialog means we have a drawer
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
-            mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
-            lockInfoContainter();
-        }
-
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
@@ -263,6 +241,31 @@ public class DocumentsActivity extends ActionBarActivity {
         mToolbarStack.setOnItemSelectedListener(mStackListener);
 
         setSupportActionBar(mToolbar);
+
+
+        if (mShowAsDialog) {
+            if(SettingsActivity.getAsDialog(this)){
+                final WindowManager.LayoutParams a = getWindow().getAttributes();
+
+                final Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
+                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+
+                getWindow().setAttributes(a);
+            }
+        } else {
+
+            mRootsContainer = findViewById(R.id.drawer_roots);
+            mInfoContainer = findViewById(R.id.container_info);
+
+            // Non-dialog means we have a drawer
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+            mDrawerLayout.setDrawerListener(mDrawerListener);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
+            lockInfoContainter();
+        }
 
         changeActionBarColor();
         initProtection();
@@ -302,7 +305,10 @@ public class DocumentsActivity extends ActionBarActivity {
             		onRootPicked(getDownloadRoot(), true);
             	}
             	else{
-                    new RestoreStackTask().execute();
+                    try {
+                        new RestoreStackTask().execute();
+                    }
+                    catch (SQLiteFullException e){ }
             	}
             }
         } else {
@@ -334,6 +340,7 @@ public class DocumentsActivity extends ActionBarActivity {
         return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
                 directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
     }
+
     private void initProtection() {
 
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
@@ -448,7 +455,7 @@ public class DocumentsActivity extends ActionBarActivity {
             final Cursor cursor = getContentResolver()
                     .query(RecentsProvider.buildResume(packageName), null, null, null, null);
             try {
-                if (cursor.moveToFirst()) {
+                if (null != cursor && cursor.moveToFirst()) {
                     mExternal = cursor.getInt(cursor.getColumnIndex(ResumeColumns.EXTERNAL)) != 0;
                     final byte[] rawStack = cursor.getBlob(
                             cursor.getColumnIndex(ResumeColumns.STACK));
@@ -533,6 +540,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showSize = SettingsActivity.getDisplayFileSize(this);
             mState.showFolderSize = SettingsActivity.getDisplayFolderSize(this);
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
+            mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
         }
         if(BuildConfig.FLAVOR.contains("other")){
@@ -568,7 +576,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
-            if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            if(!mInfoContainer.equals(drawerView) && mDrawerLayout.isDrawerOpen(mInfoContainer)){
                 mDrawerLayout.closeDrawer(mInfoContainer);
             }
             mDrawerToggle.onDrawerOpened(drawerView);
@@ -604,6 +612,7 @@ public class DocumentsActivity extends ActionBarActivity {
         if (mDrawerToggle != null) {
             mDrawerToggle.syncState();
         }
+        updateActionBar();
     }
 
     public void setRootsDrawerOpen(boolean open) {
@@ -698,7 +707,7 @@ public class DocumentsActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.activity, menu);
 
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
-        mSearchView = (SearchView) searchMenu.getActionView();
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -973,7 +982,6 @@ public class DocumentsActivity extends ActionBarActivity {
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
-        updateActionBar();
     }
 
     private BaseAdapter mStackAdapter = new BaseAdapter() {
@@ -1334,7 +1342,11 @@ public class DocumentsActivity extends ActionBarActivity {
             }
 
             if(Utils.isIntentAvailable(this, view)){
-            	startActivity(view);
+                //TODO: This temporarily fixes crash when the Activity that is opened is not
+                // exported gives java.lang.SecurityException: Permission Denial:
+                try {
+                    startActivity(view);
+                } catch (Exception e){ }
             }
             else{
                 showError(R.string.toast_no_application);
@@ -1507,7 +1519,10 @@ public class DocumentsActivity extends ActionBarActivity {
             if (result != null) {
                 onFinished(result);
             } else {
-                showError(R.string.save_error);
+                final DocumentInfo cwd = getCurrentDirectory();
+                if(!isSAFIssue(cwd.documentId)) {
+                    showError(R.string.save_error);
+                }
             }
             setPending(false);
         }
@@ -1582,9 +1597,9 @@ public class DocumentsActivity extends ActionBarActivity {
     			}
 
     			try {
-    				DocumentsContract.moveDocument(resolver, doc.derivedUri, cwd.derivedUri, deleteAfter);
+                    hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, cwd.derivedUri, deleteAfter);
     			} catch (Exception e) {
-    				Log.w(TAG, "Failed to save " + doc);
+    				Log.w(TAG, "Failed to move " + doc);
     				hadTrouble = true;
     			}
     		}
@@ -1598,7 +1613,9 @@ public class DocumentsActivity extends ActionBarActivity {
                 return;
             }
             if (result){
-                showError(R.string.save_error);
+                if(!isSAFIssue(toDoc.documentId)){
+                    showError(R.string.save_error);
+                }
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
@@ -1631,6 +1648,7 @@ public class DocumentsActivity extends ActionBarActivity {
         public boolean showSize = false;
         public boolean showFolderSize = false;
         public boolean showThumbnail = false;
+        public boolean showHiddenFiles = false;
         public boolean localOnly = false;
         public boolean forceAdvanced = false;
         public boolean showAdvanced = false;
@@ -1678,6 +1696,7 @@ public class DocumentsActivity extends ActionBarActivity {
             out.writeInt(showSize ? 1 : 0);
             out.writeInt(showFolderSize ? 1 : 0);
             out.writeInt(showThumbnail ? 1 : 0);
+            out.writeInt(showHiddenFiles ? 1 : 0);
             out.writeInt(localOnly ? 1 : 0);
             out.writeInt(forceAdvanced ? 1 : 0);
             out.writeInt(showAdvanced ? 1 : 0);
@@ -1702,6 +1721,7 @@ public class DocumentsActivity extends ActionBarActivity {
                 state.showSize = in.readInt() != 0;
                 state.showFolderSize = in.readInt() != 0;
                 state.showThumbnail = in.readInt() != 0;
+                state.showHiddenFiles = in.readInt() != 0;
                 state.localOnly = in.readInt() != 0;
                 state.forceAdvanced = in.readInt() != 0;
                 state.showAdvanced = in.readInt() != 0;
@@ -1951,4 +1971,14 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         }
     };
+
+    public boolean isSAFIssue(String docId){
+        boolean isSAFIssue = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT
+                && !TextUtils.isEmpty(docId) && docId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
+
+        if(isSAFIssue){
+            showError(R.string.saf_issue);
+        }
+        return isSAFIssue;
+    }
 }

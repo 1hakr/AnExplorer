@@ -45,6 +45,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_DISPLAY_NAME;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_LAST_MODIFIED;

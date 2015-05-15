@@ -22,6 +22,7 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
@@ -53,6 +54,7 @@ public class FilteringCursorWrapper extends AbstractCursor {
         cursor.moveToPosition(-1);
         while (cursor.moveToNext() && mCount < count) {
             final String mimeType = getCursorString(cursor, Document.COLUMN_MIME_TYPE);
+            final String name = getCursorString(cursor, Document.COLUMN_DISPLAY_NAME);
             final long lastModified = getCursorLong(cursor, Document.COLUMN_LAST_MODIFIED);
             if (rejectMimes != null && MimePredicate.mimeMatches(rejectMimes, mimeType)) {
                 continue;
@@ -60,6 +62,7 @@ public class FilteringCursorWrapper extends AbstractCursor {
             if (lastModified < rejectBefore) {
                 continue;
             }
+
             if (MimePredicate.mimeMatches(acceptMimes, mimeType)) {
                 mPosition[mCount++] = cursor.getPosition();
             }

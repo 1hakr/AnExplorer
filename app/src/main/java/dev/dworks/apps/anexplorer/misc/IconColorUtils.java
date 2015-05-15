@@ -208,7 +208,7 @@ public class IconColorUtils {
                                     String authority, String docId, int defaultColor) {
         final Resources res = context.getResources();
 
-        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+        if (Utils.isDir(mimeType)) {
             if (MediaDocumentsProvider.AUTHORITY.equals(authority)){
                 if(docId.startsWith(MediaDocumentsProvider.TYPE_ALBUM)){
                     return res.getColor(R.color.item_doc_audio);
@@ -251,7 +251,7 @@ public class IconColorUtils {
     }
 
     public static boolean isMimeSpecial(String mimeType) {
-        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+        if (Utils.isDir(mimeType)) {
             return false;
         }
 
