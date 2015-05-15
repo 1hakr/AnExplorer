@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -224,6 +225,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isRootedStorage() {
         return RootedStorageProvider.AUTHORITY.equals(authority);
+    }
+
+    public boolean isUsbStorage() {
+        return UsbStorageProvider.AUTHORITY.equals(authority);
     }
 
     public boolean isExternalStorage() {

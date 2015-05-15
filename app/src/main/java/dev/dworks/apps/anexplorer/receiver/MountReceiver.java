@@ -20,18 +20,35 @@ import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbManager;
+
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 public class MountReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(), 
-    			ExternalStorageProvider.AUTHORITY);
-		try {
-			((ExternalStorageProvider) client.getLocalContentProvider()).updateVolumes();
-		} finally {
-			ContentProviderClientCompat.releaseQuietly(client);
-		}
+        String action = intent.getAction();
+        if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+            || action.equals(UsbManager.ACTION_USB_DEVICE_DETACHED)){
+            final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(),
+                    UsbStorageProvider.AUTHORITY);
+            try {
+                ((UsbStorageProvider) client.getLocalContentProvider()).updateVolumes();
+            } finally {
+                ContentProviderClientCompat.releaseQuietly(client);
+            }
+        }
+        else if (action.equals("android.intent.action.MEDIA_MOUNTED")
+                || action.equals("android.intent.action.MEDIA_UNMOUNTED")){
+            final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(),
+                    ExternalStorageProvider.AUTHORITY);
+            try {
+                ((ExternalStorageProvider) client.getLocalContentProvider()).updateVolumes();
+            } finally {
+                ContentProviderClientCompat.releaseQuietly(client);
+            }
+        }
 	}
 }
