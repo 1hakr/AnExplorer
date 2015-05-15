@@ -59,10 +59,10 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
-import dev.dworks.apps.anexplorer.usb.UsbMassStorageDevice;
+import dev.dworks.apps.anexplorer.libaums.UsbMassStorageDevice;
 import dev.dworks.apps.anexplorer.usb.UsbRootFile;
-import dev.dworks.apps.anexplorer.usb.fs.FileSystem;
-import dev.dworks.apps.anexplorer.usb.fs.UsbFile;
+import dev.dworks.apps.anexplorer.libaums.fs.FileSystem;
+import dev.dworks.apps.anexplorer.libaums.fs.UsbFile;
 
 @SuppressLint("DefaultLocale")
 public class UsbStorageProvider extends StorageProvider {
