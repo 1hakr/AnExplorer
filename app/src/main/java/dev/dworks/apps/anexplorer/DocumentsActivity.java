@@ -707,7 +707,7 @@ public class DocumentsActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.activity, menu);
 
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
-        mSearchView = (SearchView) searchMenu.getActionView();
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

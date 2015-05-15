@@ -24,6 +24,8 @@
 
     -->
     <style name="Theme.Document" parent="@style/DocumentsTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
