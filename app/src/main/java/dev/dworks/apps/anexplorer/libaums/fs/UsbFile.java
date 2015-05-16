@@ -146,7 +146,7 @@ public interface UsbFile extends Closeable {
 	 * 
 	 * @param offset
 	 *            The offset in bytes where writing in the file should be begin.
-	 * @param destination
+	 * @param source
 	 *            Buffer which contains the data which shall be transferred.
 	 * @throws IOException
 	 *             If writing fails.

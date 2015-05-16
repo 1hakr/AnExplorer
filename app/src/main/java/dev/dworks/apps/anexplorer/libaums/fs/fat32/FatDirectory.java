@@ -17,6 +17,8 @@
 
 package dev.dworks.apps.anexplorer.libaums.fs.fat32;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -25,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import android.util.Log;
 
 import dev.dworks.apps.anexplorer.libaums.driver.BlockDeviceDriver;
 import dev.dworks.apps.anexplorer.libaums.fs.UsbFile;
@@ -405,7 +405,7 @@ public class FatDirectory implements UsbFile {
 
 	@Override
 	public String getName() {
-		return entry.getName();
+		return null == entry ? "root" : entry.getName();
 	}
 
 	@Override

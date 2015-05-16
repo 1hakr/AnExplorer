@@ -1,6 +1,9 @@
-package dev.dworks.apps.anexplorer.usb;
+package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.TargetApi;
 import android.hardware.usb.UsbConstants;
+import android.hardware.usb.UsbDevice;
+import android.os.Build;
 
 /**
  * Created by HaKr on 17/01/15.
@@ -49,4 +52,12 @@ public class UsbUtils {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static String getName(UsbDevice device){
+        return Utils.hasLollipop() ? device.getProductName() : device.getDeviceName();
+    }
+
+    public static String getPath(UsbDevice device){
+        return device.getDeviceName();
+    }
 }
