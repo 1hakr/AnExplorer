@@ -19,6 +19,7 @@ package dev.dworks.apps.anexplorer.libaums.fs.fat32;
 
 import android.util.Log;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -422,7 +423,7 @@ public class FatDirectory implements UsbFile {
 
 	@Override
 	public long lastModified() {
-		return entry.getActualEntry().getLastModifiedDateTime();
+		return null == entry ? 0 : entry.getActualEntry().getLastModifiedDateTime();
 	}
 
 	@Override
@@ -572,5 +573,10 @@ public class FatDirectory implements UsbFile {
 		parent.removeEntry(entry);
 		parent.write();
 		chain.setLength(0);
+	}
+
+	@Override
+	public String getPath() {
+		return (null == getParent() ? "" : getParent().getPath() + File.separator) + getName();
 	}
 }

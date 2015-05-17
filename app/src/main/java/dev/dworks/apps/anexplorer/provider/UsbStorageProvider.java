@@ -209,11 +209,11 @@ public class UsbStorageProvider extends StorageProvider {
     }
 
     private String getUsbPath(UsbFile file){
-        return mRootPath + File.separator + file.getName();
+        return mRootPath + File.separator + file.getPath();
     }
 
     private String getDocIdForFile(UsbFile file) throws FileNotFoundException {
-        String path =getUsbPath(file);
+        String path = getUsbPath(file);
 
         // Find the most-specific root path
         Map.Entry<String, UsbFile> mostSpecific = null;
@@ -294,7 +294,7 @@ public class UsbStorageProvider extends StorageProvider {
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
         row.add(Document.COLUMN_DISPLAY_NAME, displayName);
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
-        row.add(Document.COLUMN_PATH, file.getName());
+        row.add(Document.COLUMN_PATH, getUsbPath(file));
         row.add(Document.COLUMN_FLAGS, flags);
         if (file.isDirectory()) {
             try {
@@ -428,18 +428,12 @@ public class UsbStorageProvider extends StorageProvider {
         return  "";
     }
 
-    private void includeDefaultDocument(MatrixCursor result, String docId) {
-        final RowBuilder row = result.newRow();
-        row.add(Document.COLUMN_DOCUMENT_ID, docId);
-        row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
-    }
-
     @Override
     public Cursor queryDocument(String documentId, String[] projection)
             throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
         final UsbFile parent = getFileForDocId(documentId);
-        includeDefaultDocument(result, documentId);
+        includeUSBFile(result, documentId, parent);
         return result;
     }
 
@@ -447,13 +441,11 @@ public class UsbStorageProvider extends StorageProvider {
     public Cursor queryChildDocuments(
             String parentDocumentId, String[] projection, String sortOrder)
             throws FileNotFoundException {
-    	String mimeType = getDocumentType(parentDocumentId);
+    	//String mimeType = getDocumentType(parentDocumentId);
         final UsbFile parent = getFileForDocId(parentDocumentId);
         final MatrixCursor result = new DirectoryCursor(
                 resolveDocumentProjection(projection), parentDocumentId, parent);
         try {
-            // we always use the first partition of the device
-            UsbFile root = fileSystem.getRootDirectory();
             for (UsbFile file : parent.listFiles()) {
                 includeUSBFile(result, null, file);
             }

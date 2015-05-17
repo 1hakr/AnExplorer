@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer.libaums.fs.fat32;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -205,4 +206,8 @@ public class FatFile implements UsbFile {
 		chain.setLength(0);
 	}
 
+	@Override
+	public String getPath() {
+		return (null == getParent() ? "" : getParent().getPath() + File.separator) + getName();
+	}
 }

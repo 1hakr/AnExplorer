@@ -219,4 +219,6 @@ public interface UsbFile extends Closeable {
 	 *             If operation fails due to write errors.
 	 */
 	public void delete() throws IOException;
+
+	public String getPath();
 }
