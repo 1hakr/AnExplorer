@@ -102,7 +102,6 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
-import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
@@ -115,7 +114,6 @@ import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.get;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -1188,7 +1186,11 @@ public class DirectoryFragment extends ListFragment {
             if (convertView == null) {
                 final LayoutInflater inflater = LayoutInflater.from(context);
                 if (state.derivedMode == MODE_LIST) {
-                    convertView = inflater.inflate(R.layout.item_doc_list, parent, false);
+					int layoutId = R.layout.item_doc_list;
+					if(isApp){
+						layoutId = root.isAppProcess() ? R.layout.item_doc_process_list : R.layout.item_doc_app_list;
+					}
+                    convertView = inflater.inflate(layoutId, parent, false);
                 } else if (state.derivedMode == MODE_GRID) {
                     convertView = inflater.inflate(R.layout.item_doc_grid, parent, false);
                 } else {
