@@ -15,7 +15,6 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,6 +26,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="8dp"
+        app:contentInsetLeft="@dimen/second_keyline_default"
+        app:contentInsetStart="@dimen/second_keyline_default"
         app:popupTheme="?attr/actionBarPopupTheme"
         app:theme="?attr/actionBarTheme">
 
@@ -88,7 +89,7 @@
 
         <LinearLayout
             android:id="@+id/drawer_roots"
-            android:layout_width="256dp"
+            android:layout_width="302dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:elevation="16dp"

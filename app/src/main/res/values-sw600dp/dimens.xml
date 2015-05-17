@@ -32,4 +32,7 @@
 
     <dimen name="grid_item_padding">8dp</dimen>
     <dimen name="progress_bar_size">80dp</dimen>
+
+    <dimen name="first_keyline">24dp</dimen>
+    <dimen name="second_keyline">80dp</dimen>
 </resources>

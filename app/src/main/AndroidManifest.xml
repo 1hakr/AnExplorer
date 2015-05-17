@@ -26,7 +26,6 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="AnExplorer"
-        android:logo="@drawable/logo"
         android:banner="@drawable/banner"
         android:supportsRtl="true">
 

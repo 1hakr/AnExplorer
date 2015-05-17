@@ -652,7 +652,7 @@ public class DocumentsActivity extends ActionBarActivity {
         final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
         if(mShowAsDialog){
             //getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
-            mToolbar.setLogo(R.drawable.logo);
+            //mToolbar.setLogo(R.drawable.logo);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             if (mDrawerToggle != null) {
                 mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
