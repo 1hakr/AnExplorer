@@ -82,7 +82,10 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.Setting" parent="@android:style/Theme.Holo.Light.DarkActionBar"/>
+    <style name="Theme.Setting" parent="@style/DocumentsTheme">
+        <item name="colorControlNormal">@color/material_blue_grey_800</item>
+        <item name="windowActionBar">true</item>
+    </style>
 
     <style name="Theme.Note" parent="@style/DocumentsTheme">
         <item name="windowActionBar">true</item>

@@ -17,34 +17,27 @@
 
 package dev.dworks.apps.anexplorer.setting;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
 	
     private static final String KEY_ADVANCED_DEVICES = "advancedDevices";
     private static final String KEY_FILE_SIZE = "fileSize";
@@ -120,14 +113,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActionBar bar = getActionBar();
-        if (bar != null) {
-            if(!Utils.hasLollipop()) {
-                bar.setDisplayShowHomeEnabled(true);
-            }
-            bar.setDisplayHomeAsUpEnabled(true);
-        }
-        
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
         changeActionBarColor(0);
@@ -255,7 +241,7 @@ public class SettingsActivity extends PreferenceActivity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				ld.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(ld);
+				getSupportActionBar().setBackgroundDrawable(ld);
 			}
 
 		} else {
@@ -266,7 +252,7 @@ public class SettingsActivity extends PreferenceActivity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				td.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(td);
+                getSupportActionBar().setBackgroundDrawable(td);
 			}
 			td.startTransition(200);
 		}
@@ -274,14 +260,14 @@ public class SettingsActivity extends PreferenceActivity {
 		oldBackground = ld;
 		
 		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-		getActionBar().setDisplayShowTitleEnabled(false);
-		getActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 	}
 	
 	private Drawable.Callback drawableCallback = new Drawable.Callback() {
 		@Override
 		public void invalidateDrawable(Drawable who) {
-			getActionBar().setBackgroundDrawable(who);
+            getSupportActionBar().setBackgroundDrawable(who);
 		}
 
 		@Override

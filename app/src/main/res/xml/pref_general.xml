@@ -1,9 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:key="theme"
-        android:title="Theme" >
+        android:title="Theme">
         <dev.dworks.apps.anexplorer.ui.ColorPreference
             android:defaultValue="@color/defaultColor"
             android:dialogTitle="@string/pref_foreground_color_title"
@@ -24,7 +24,7 @@
             android:key="asDialog"
             android:title="@string/pref_as_dialog" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Basic" >
+    <PreferenceCategory android:title="Basic">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="fileSize"
@@ -47,7 +47,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="advanced"
-        android:title="Advanced" >
+        android:title="Advanced">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="advancedDevices"

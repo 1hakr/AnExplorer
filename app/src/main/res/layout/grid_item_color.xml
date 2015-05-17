@@ -1,12 +1,9 @@
 <!--
   Copyright 2013 Google Inc.
-
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-
       http://www.apache.org/licenses/LICENSE-2.0
-
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +12,14 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="8dp">
+    android:layout_width="@dimen/color_grid_item_size"
+    android:layout_height="@dimen/color_grid_item_size"
+    android:background="?android:selectableItemBackground">
 
     <ImageView
         android:id="@+id/color_view"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/color_grid_circle_size"
+        android:layout_height="@dimen/color_grid_circle_size"
         android:layout_gravity="center"
         android:scaleType="fitXY" />
 </FrameLayout>
