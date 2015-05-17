@@ -18,11 +18,14 @@
 package dev.dworks.apps.anexplorer;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.ContentProviderClient;
@@ -30,6 +33,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -40,6 +44,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -97,6 +103,9 @@ import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
+import dev.dworks.apps.anexplorer.libaums.UsbMassStorageDevice;
+import dev.dworks.apps.anexplorer.libaums.fs.FileSystem;
+import dev.dworks.apps.anexplorer.libaums.fs.UsbFile;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -119,6 +128,7 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
@@ -136,6 +146,7 @@ import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
+import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ACTION_USB_PERMISSION;
 
 public class DocumentsActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
@@ -184,11 +195,10 @@ public class DocumentsActivity extends ActionBarActivity {
     @Override
     public void onCreate(Bundle icicle) {
 
-        if(SettingsActivity.getTranslucentMode(this)){
-            if(Utils.hasLollipop()){
+        if (SettingsActivity.getTranslucentMode(this)) {
+            if (Utils.hasLollipop()) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            }
-            else if(Utils.hasKitKat()){
+            } else if (Utils.hasKitKat()) {
                 setTheme(R.style.Theme_Document_Translucent);
             }
         }
@@ -203,7 +213,7 @@ public class DocumentsActivity extends ActionBarActivity {
 */
         super.onCreate(icicle);
 
-		mRoots = DocumentsApplication.getRootsCache(this);
+        mRoots = DocumentsApplication.getRootsCache(this);
 
         mFileSizeCache = new LruCache<String, Long>(100);
 
@@ -231,7 +241,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
-        if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat() && !Utils.hasLollipop()) {
+        if (SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat() && !Utils.hasLollipop()) {
             ((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
             mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
         }
@@ -244,7 +254,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
 
         if (mShowAsDialog) {
-            if(SettingsActivity.getAsDialog(this)){
+            if (SettingsActivity.getAsDialog(this)) {
                 final WindowManager.LayoutParams a = getWindow().getAttributes();
 
                 final Point size = new Point();
@@ -301,19 +311,91 @@ public class DocumentsActivity extends ActionBarActivity {
                 final Uri rootUri = getIntent().getData();
                 new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
             } else {
-            	if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
-            		onRootPicked(getDownloadRoot(), true);
-            	}
-            	else{
+                if (ExternalStorageProvider.isDownloadAuthority(getIntent())) {
+                    onRootPicked(getDownloadRoot(), true);
+                } else {
                     try {
                         new RestoreStackTask().execute();
+                    } catch (SQLiteFullException e) {
                     }
-                    catch (SQLiteFullException e){ }
-            	}
+                }
             }
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        registerReceiver(mUsbReceiver, filter);
+
+        discoverDevice();
+    }
+
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            String deviceName = usbDevice.getDeviceName();
+            if (UsbStorageProvider.ACTION_USB_PERMISSION.equals(action)) {
+                boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
+                if (permission) {
+                    setupDevice();
+                } else {
+                    // so we don't ask for permission again
+                }
+            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+                if (usbDevice != null) {
+                    discoverDevice();
+                }
+            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+                if (usbDevice != null) {
+                    setupDevice();
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Searches for connected mass storage devices, and initializes them if it
+     * could find some.
+     */
+    private void discoverDevice() {
+        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        UsbMassStorageDevice[] devices = UsbMassStorageDevice.getMassStorageDevices(this);
+
+        if (devices.length == 0) {
+            return;
+        }
+
+        // we only use the first device
+        UsbMassStorageDevice device = devices[0];
+
+        UsbDevice usbDevice = (UsbDevice) getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+        if (usbDevice != null && usbManager.hasPermission(usbDevice)) {
+            setupDevice();
+        } else {
+            PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
+                    ACTION_USB_PERMISSION), 0);
+            usbManager.requestPermission(device.getUsbDevice(), permissionIntent);
+        }
+    }
+
+    /**
+     * Sets the device up and shows the contents of the root directory.
+     */
+    private void setupDevice() {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(getContentResolver(),
+                UsbStorageProvider.AUTHORITY);
+        try {
+            ((UsbStorageProvider) client.getLocalContentProvider()).updateVolumes();
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
+
     }
 
     private void lockInfoContainter() {

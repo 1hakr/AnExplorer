@@ -398,7 +398,7 @@ public class RootsFragment extends Fragment {
                     bookmarks.add(root);
                 } else if (root.isPhoneStorage()) {
                 	phone = new RootItem(root, defaultColor);
-                } else if (root.isStorage()) {
+                } else if (root.isStorage() || root.isUsbStorage()) {
                     locals.add(root);
                 } else if (root.isRootedStorage()) {
                 	root_root = new RootItem(root, defaultColor);
