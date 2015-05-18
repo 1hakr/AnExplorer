@@ -1812,6 +1812,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
 	public void setActionMode(boolean actionMode) {
 		mActionMode = actionMode;
+        mToolbar.setVisibility(actionMode ? View.INVISIBLE : View.VISIBLE);
 	}
 
     public void invalidateMenu(){
