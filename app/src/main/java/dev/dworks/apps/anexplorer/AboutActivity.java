@@ -68,7 +68,7 @@ public class AboutActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
         logo.setTextColor(SettingsActivity.getActionBarColor(this));
-        String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
+        String header = logo.getText() + getSuffix() + (Utils.hasLeanback(this)? " for Android TV" : "") + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 	}
 
@@ -78,7 +78,12 @@ public class AboutActivity extends ActionBarActivity {
         if(isNonPlay()){
             menu.removeItem(R.id.action_rate);
             menu.removeItem(R.id.action_support);
-        }
+        } else if(Utils.hasLeanback(this)){
+			menu.removeItem(R.id.action_feedback);
+			menu.removeItem(R.id.action_github);
+			menu.removeItem(R.id.action_gplus);
+			menu.removeItem(R.id.action_twitter);
+		}
 		return true;
 	}
 
