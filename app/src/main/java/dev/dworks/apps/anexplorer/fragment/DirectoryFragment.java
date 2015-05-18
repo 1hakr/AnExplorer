@@ -172,6 +172,7 @@ public class DirectoryFragment extends ListFragment {
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
     private boolean isRootedStorage;
+    private boolean hasLeanback;
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -280,6 +281,7 @@ public class DirectoryFragment extends ListFragment {
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
+        hasLeanback = Utils.hasLeanback(getActivity());
 		isApp = root != null && root.isApp();
         isRootedStorage = root != null && root.isRootedStorage();
 
@@ -570,6 +572,7 @@ public class DirectoryFragment extends ListFragment {
 						edit.setVisible(manageMode);
 					}
 					final MenuItem info = menu.findItem(R.id.menu_info);
+					final MenuItem bookmark = menu.findItem(R.id.menu_bookmark);
 					final MenuItem rename = menu.findItem(R.id.menu_rename);
 
 					final MenuItem copy = menu.findItem(R.id.menu_copy);
@@ -580,6 +583,7 @@ public class DirectoryFragment extends ListFragment {
                     compress.setVisible(editMode && !isRootedStorage);
 
 					info.setVisible(count == 1);
+                    bookmark.setVisible(count == 1);
 					rename.setVisible(count == 1);
 				}
 			}
@@ -1227,7 +1231,7 @@ public class DirectoryFragment extends ListFragment {
 			final View popupButton = convertView.findViewById(R.id.button_popup);
 
 			popupButton.setOnClickListener(this);
-
+            popupButton.setVisibility(hasLeanback ? View.INVISIBLE : View.VISIBLE);
             if(state.action == ACTION_BROWSE){
                 final View iconView = convertView.findViewById(android.R.id.icon);
                 if (null != iconView) {
