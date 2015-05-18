@@ -32,8 +32,6 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 
-import com.stericson.RootTools.RootTools;
-
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
@@ -321,5 +319,13 @@ public class Utils {
 
     public static boolean isProVersion(){
         return BuildConfig.FLAVOR.contains("Pro");
+    }
+
+    public static boolean hasFeature(Context context, String feature) {
+        return context.getPackageManager().hasSystemFeature(feature);
+    }
+
+    public static boolean hasLeanback(Context context) {
+        return hasFeature(context, PackageManager.FEATURE_LEANBACK);
     }
 }

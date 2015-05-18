@@ -778,6 +778,10 @@ public class DocumentsActivity extends ActionBarActivity {
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
+        if(Utils.hasLeanback(this)) {
+            menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
+            //menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
+        }
         final MenuItem search = menu.findItem(R.id.menu_search);
         final MenuItem sort = menu.findItem(R.id.menu_sort);
         final MenuItem sortSize = menu.findItem(R.id.menu_sort_size);
@@ -865,6 +869,13 @@ public class DocumentsActivity extends ActionBarActivity {
         final int id = item.getItemId();
         if (id == android.R.id.home) {
             onBackPressed();
+            return true;
+        }  else if (id == R.id.menu_create_dir) {
+            CreateDirectoryFragment.show(getFragmentManager());
+            return true;
+        } else if (id == R.id.menu_create_file) {
+            onStateChanged();
+            SaveFragment.show(getFragmentManager(), "text/plain", "File.txt");
             return true;
         } else if (id == R.id.menu_search) {
             return false;
@@ -1891,7 +1902,7 @@ public class DocumentsActivity extends ActionBarActivity {
     }
 
     public void showInfo(String msg){
-        showToast(msg, SnackBar.Style.INFO,SnackBar.SHORT_SNACK);
+        showToast(msg, SnackBar.Style.INFO, SnackBar.SHORT_SNACK);
     }
 
     public void showToast(String msg, SnackBar.Style style, short duration){
@@ -1932,7 +1943,7 @@ public class DocumentsActivity extends ActionBarActivity {
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
 
         mActionMenu.show();
-        mActionMenu.setVisibility(showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!Utils.hasLeanback(this) && showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setColorNormal(complimentaryColor);
         mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
 
