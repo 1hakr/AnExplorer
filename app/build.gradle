@@ -51,6 +51,7 @@ android {
             flavorDimension "default"
         }
         pro {
+            applicationId "dev.dworks.apps.anexplorer.pro"
             flavorDimension "default"
         }
         play {
