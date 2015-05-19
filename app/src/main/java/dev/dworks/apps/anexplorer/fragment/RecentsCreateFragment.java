@@ -17,13 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -51,6 +44,11 @@ import android.widget.TextView;
 
 import com.google.common.collect.Lists;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
@@ -64,6 +62,8 @@ import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 
 /**
  * Display directories where recent creates took place.
@@ -96,12 +96,18 @@ public class RecentsCreateFragment extends ListFragment {
 
         mListView = (ListView) view.findViewById(R.id.list);
         mListView.setOnItemClickListener(mItemListener);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        final Context context = getActivity();
 
         mAdapter = new DocumentStackAdapter();
         mListView.setAdapter(mAdapter);
 
-		setListAdapter(mAdapter);
-		setListShown(false);
         final RootsCache roots = DocumentsApplication.getRootsCache(context);
         final State state = ((DocumentsActivity) getActivity()).getDisplayState();
 
@@ -116,11 +122,11 @@ public class RecentsCreateFragment extends ListFragment {
                     Loader<List<DocumentStack>> loader, List<DocumentStack> data) {
                 mAdapter.swapStacks(data);
 
-		        if (isResumed()) {
-		            setListShown(true);
-		        } else {
-		            setListShownNoAnimation(true);
-		        }
+                if (isResumed()) {
+                    setListShown(true);
+                } else {
+                    setListShownNoAnimation(true);
+                }
                 // When launched into empty recents, show drawer
                 if (mAdapter.isEmpty() && !state.stackTouched) {
                     ((DocumentsActivity) context).setRootsDrawerOpen(true);
@@ -133,19 +139,9 @@ public class RecentsCreateFragment extends ListFragment {
             }
         };
 
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
+        setListAdapter(mAdapter);
+        setListShown(false);
         getLoaderManager().restartLoader(LOADER_RECENTS, getArguments(), mCallbacks);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        getLoaderManager().destroyLoader(LOADER_RECENTS);
     }
 
     private OnItemClickListener mItemListener = new OnItemClickListener() {

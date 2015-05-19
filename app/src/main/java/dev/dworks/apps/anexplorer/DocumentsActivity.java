@@ -780,7 +780,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         if(Utils.hasLeanback(this)) {
             menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
-            //menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
+            menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
         }
         final MenuItem search = menu.findItem(R.id.menu_search);
         final MenuItem sort = menu.findItem(R.id.menu_sort);
@@ -875,7 +875,7 @@ public class DocumentsActivity extends ActionBarActivity {
             return true;
         } else if (id == R.id.menu_create_file) {
             onStateChanged();
-            SaveFragment.show(getFragmentManager(), "text/plain", "File.txt");
+            CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
             return true;
         } else if (id == R.id.menu_search) {
             return false;

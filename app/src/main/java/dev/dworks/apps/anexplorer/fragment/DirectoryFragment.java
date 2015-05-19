@@ -583,7 +583,7 @@ public class DirectoryFragment extends ListFragment {
                     compress.setVisible(editMode && !isRootedStorage);
 
 					info.setVisible(count == 1);
-                    bookmark.setVisible(count == 1);
+                    bookmark.setVisible(Utils.hasLeanback(getActivity()) && count == 1);
 					rename.setVisible(count == 1);
 				}
 			}
