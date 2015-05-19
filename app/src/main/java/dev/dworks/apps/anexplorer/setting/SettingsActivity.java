@@ -49,7 +49,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String KEY_AS_DIALOG = "asDialog";
     public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
     public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
-    
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
 	
@@ -57,7 +56,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 	private boolean mShowAsDialog;
 	private Resources res;
 	private int actionBarColor;
-    
+    private final Handler handler = new Handler();
+    private Drawable oldBackground;
+
     public static boolean getDisplayAdvancedDevices(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_ADVANCED_DEVICES, true);
@@ -133,7 +134,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         actionBarColor = getActionBarColor(this);
     }
 
-	/** {@inheritDoc} */
+    /** {@inheritDoc} */
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.pref_headers, target);
@@ -203,9 +204,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	if(getActionBarColor(this) != actionBarColor){
-    		changeActionBarColor(0);
-    	}
+        changeActionBarColor(0);
     }
     
     @Override
@@ -227,9 +226,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     	super.onRestoreInstanceState(state);
     	translucentMode = state.getBoolean("changed");
     }
-    
-    private final Handler handler = new Handler();
-	private Drawable oldBackground;
+
 	public void changeActionBarColor(int newColor) {
 
 		int color = newColor != 0 ? newColor : SettingsActivity.getActionBarColor(this);
