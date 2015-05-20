@@ -34,6 +34,7 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteFullException;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -213,30 +214,6 @@ public class DocumentsActivity extends ActionBarActivity {
         final Resources res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
-        if (mShowAsDialog) {
-        	if(SettingsActivity.getAsDialog(this)){
-                final WindowManager.LayoutParams a = getWindow().getAttributes();
-
-                final Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-
-                getWindow().setAttributes(a);
-        	}
-        } else {
-
-            mRootsContainer = findViewById(R.id.drawer_roots);
-            mInfoContainer = findViewById(R.id.container_info);
-
-            // Non-dialog means we have a drawer
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
-            mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
-            lockInfoContainter();
-        }
-
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
@@ -264,6 +241,31 @@ public class DocumentsActivity extends ActionBarActivity {
         mToolbarStack.setOnItemSelectedListener(mStackListener);
 
         setSupportActionBar(mToolbar);
+
+
+        if (mShowAsDialog) {
+            if(SettingsActivity.getAsDialog(this)){
+                final WindowManager.LayoutParams a = getWindow().getAttributes();
+
+                final Point size = new Point();
+                getWindowManager().getDefaultDisplay().getSize(size);
+                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
+
+                getWindow().setAttributes(a);
+            }
+        } else {
+
+            mRootsContainer = findViewById(R.id.drawer_roots);
+            mInfoContainer = findViewById(R.id.container_info);
+
+            // Non-dialog means we have a drawer
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+            mDrawerLayout.setDrawerListener(mDrawerListener);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
+            lockInfoContainter();
+        }
 
         changeActionBarColor();
         initProtection();
@@ -303,7 +305,10 @@ public class DocumentsActivity extends ActionBarActivity {
             		onRootPicked(getDownloadRoot(), true);
             	}
             	else{
-                    new RestoreStackTask().execute();
+                    try {
+                        new RestoreStackTask().execute();
+                    }
+                    catch (SQLiteFullException e){ }
             	}
             }
         } else {
@@ -335,6 +340,7 @@ public class DocumentsActivity extends ActionBarActivity {
         return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
                 directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
     }
+
     private void initProtection() {
 
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
@@ -570,7 +576,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
         @Override
         public void onDrawerOpened(View drawerView) {
-            if(mDrawerLayout.isDrawerOpen(mInfoContainer)){
+            if(!mInfoContainer.equals(drawerView) && mDrawerLayout.isDrawerOpen(mInfoContainer)){
                 mDrawerLayout.closeDrawer(mInfoContainer);
             }
             mDrawerToggle.onDrawerOpened(drawerView);
@@ -606,6 +612,7 @@ public class DocumentsActivity extends ActionBarActivity {
         if (mDrawerToggle != null) {
             mDrawerToggle.syncState();
         }
+        updateActionBar();
     }
 
     public void setRootsDrawerOpen(boolean open) {
@@ -645,7 +652,7 @@ public class DocumentsActivity extends ActionBarActivity {
         final boolean showIndicator = !mShowAsDialog && (mState.action != ACTION_MANAGE);
         if(mShowAsDialog){
             //getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
-            mToolbar.setLogo(R.drawable.logo);
+            //mToolbar.setLogo(R.drawable.logo);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             if (mDrawerToggle != null) {
                 mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
@@ -700,7 +707,7 @@ public class DocumentsActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.activity, menu);
 
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
-        mSearchView = (SearchView) searchMenu.getActionView();
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -771,6 +778,10 @@ public class DocumentsActivity extends ActionBarActivity {
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
+        if(Utils.isTelevision(this)) {
+            menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
+            menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
+        }
         final MenuItem search = menu.findItem(R.id.menu_search);
         final MenuItem sort = menu.findItem(R.id.menu_sort);
         final MenuItem sortSize = menu.findItem(R.id.menu_sort_size);
@@ -858,6 +869,13 @@ public class DocumentsActivity extends ActionBarActivity {
         final int id = item.getItemId();
         if (id == android.R.id.home) {
             onBackPressed();
+            return true;
+        }  else if (id == R.id.menu_create_dir) {
+            CreateDirectoryFragment.show(getFragmentManager());
+            return true;
+        } else if (id == R.id.menu_create_file) {
+            onStateChanged();
+            CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
             return true;
         } else if (id == R.id.menu_search) {
             return false;
@@ -975,7 +993,6 @@ public class DocumentsActivity extends ActionBarActivity {
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
-        updateActionBar();
     }
 
     private BaseAdapter mStackAdapter = new BaseAdapter() {
@@ -1336,7 +1353,11 @@ public class DocumentsActivity extends ActionBarActivity {
             }
 
             if(Utils.isIntentAvailable(this, view)){
-            	startActivity(view);
+                //TODO: This temporarily fixes crash when the Activity that is opened is not
+                // exported gives java.lang.SecurityException: Permission Denial:
+                try {
+                    startActivity(view);
+                } catch (Exception e){ }
             }
             else{
                 showError(R.string.toast_no_application);
@@ -1802,6 +1823,7 @@ public class DocumentsActivity extends ActionBarActivity {
 
 	public void setActionMode(boolean actionMode) {
 		mActionMode = actionMode;
+        mToolbar.setVisibility(actionMode ? View.INVISIBLE : View.VISIBLE);
 	}
 
     public void invalidateMenu(){
@@ -1880,7 +1902,7 @@ public class DocumentsActivity extends ActionBarActivity {
     }
 
     public void showInfo(String msg){
-        showToast(msg, SnackBar.Style.INFO,SnackBar.SHORT_SNACK);
+        showToast(msg, SnackBar.Style.INFO, SnackBar.SHORT_SNACK);
     }
 
     public void showToast(String msg, SnackBar.Style style, short duration){
@@ -1921,7 +1943,7 @@ public class DocumentsActivity extends ActionBarActivity {
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
 
         mActionMenu.show();
-        mActionMenu.setVisibility(showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setColorNormal(complimentaryColor);
         mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
 

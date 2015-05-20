@@ -9,8 +9,10 @@ import android.widget.FrameLayout;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 
 /**
@@ -19,6 +21,7 @@ import dev.dworks.apps.anexplorer.R;
 public class AdWrapper extends FrameLayout {
 
     private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
 
     public AdWrapper(Context context) {
         super(context);
@@ -38,8 +41,34 @@ public class AdWrapper extends FrameLayout {
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
         //Ads
-        mAdView = (AdView) findViewById(R.id.adView);
-        mAdView.setAdListener(adListener);
+        if(!Utils.isTelevision(context)) {
+            mAdView = (AdView) findViewById(R.id.adView);
+            mAdView.setAdListener(adListener);
+        } else {
+            mInterstitialAd = new InterstitialAd(context);
+            mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/2724050870");
+            requestNewInterstitial();
+        }
+    }
+
+    private void requestNewInterstitial() {
+        if(null != mInterstitialAd){
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
+    }
+
+    private void showInterstitial() {
+        if(null != mInterstitialAd){
+            if(mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        showInterstitial();
     }
 
     @Override

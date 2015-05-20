@@ -17,6 +17,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:background="@drawable/item_doc_list_background">
 
     <LinearLayout
@@ -51,6 +52,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:contentDescription="@null"
+                android:padding="5dp"
                 android:layout_gravity="center" />
 
             <ImageView
@@ -58,6 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
                 android:contentDescription="@null" />
 
         </FrameLayout>
@@ -155,6 +159,7 @@
         android:id="@+id/button_popup"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:clickable="true"
         android:layout_gravity="end"
         android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
         android:paddingRight="10dp"

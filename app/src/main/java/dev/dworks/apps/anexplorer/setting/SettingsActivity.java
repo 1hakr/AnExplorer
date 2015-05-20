@@ -17,34 +17,27 @@
 
 package dev.dworks.apps.anexplorer.setting;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.misc.ViewCompat;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
 	
     private static final String KEY_ADVANCED_DEVICES = "advancedDevices";
     private static final String KEY_FILE_SIZE = "fileSize";
@@ -56,7 +49,6 @@ public class SettingsActivity extends PreferenceActivity {
     public static final String KEY_AS_DIALOG = "asDialog";
     public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
     public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
-    
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
 	
@@ -64,7 +56,9 @@ public class SettingsActivity extends PreferenceActivity {
 	private boolean mShowAsDialog;
 	private Resources res;
 	private int actionBarColor;
-    
+    private final Handler handler = new Handler();
+    private Drawable oldBackground;
+
     public static boolean getDisplayAdvancedDevices(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_ADVANCED_DEVICES, true);
@@ -120,14 +114,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActionBar bar = getActionBar();
-        if (bar != null) {
-            if(!Utils.hasLollipop()) {
-                bar.setDisplayShowHomeEnabled(true);
-            }
-            bar.setDisplayHomeAsUpEnabled(true);
-        }
-        
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         res = getResources();
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
         changeActionBarColor(0);
@@ -147,7 +134,7 @@ public class SettingsActivity extends PreferenceActivity {
         actionBarColor = getActionBarColor(this);
     }
 
-	/** {@inheritDoc} */
+    /** {@inheritDoc} */
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.pref_headers, target);
@@ -217,9 +204,7 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onResume() {
     	super.onResume();
-    	if(getActionBarColor(this) != actionBarColor){
-    		changeActionBarColor(0);
-    	}
+        changeActionBarColor(0);
     }
     
     @Override
@@ -241,9 +226,7 @@ public class SettingsActivity extends PreferenceActivity {
     	super.onRestoreInstanceState(state);
     	translucentMode = state.getBoolean("changed");
     }
-    
-    private final Handler handler = new Handler();
-	private Drawable oldBackground;
+
 	public void changeActionBarColor(int newColor) {
 
 		int color = newColor != 0 ? newColor : SettingsActivity.getActionBarColor(this);
@@ -255,7 +238,7 @@ public class SettingsActivity extends PreferenceActivity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				ld.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(ld);
+				getSupportActionBar().setBackgroundDrawable(ld);
 			}
 
 		} else {
@@ -266,7 +249,7 @@ public class SettingsActivity extends PreferenceActivity {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				td.setCallback(drawableCallback);
 			} else {
-				getActionBar().setBackgroundDrawable(td);
+                getSupportActionBar().setBackgroundDrawable(td);
 			}
 			td.startTransition(200);
 		}
@@ -274,14 +257,14 @@ public class SettingsActivity extends PreferenceActivity {
 		oldBackground = ld;
 		
 		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-		getActionBar().setDisplayShowTitleEnabled(false);
-		getActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 	}
 	
 	private Drawable.Callback drawableCallback = new Drawable.Callback() {
 		@Override
 		public void invalidateDrawable(Drawable who) {
-			getActionBar().setBackgroundDrawable(who);
+            getSupportActionBar().setBackgroundDrawable(who);
 		}
 
 		@Override

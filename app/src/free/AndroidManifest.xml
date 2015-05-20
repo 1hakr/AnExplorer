@@ -8,6 +8,9 @@
     <application
         android:name="dev.dworks.apps.anexplorer.DocumentsApplicationFree"
         tools:replace="android:name">
+        <meta-data
+            android:name="com.google.android.gms.analytics.globalConfigResource"
+            android:resource="@xml/analytics_global_config" />
         <provider
             android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"
             android:authorities="dev.dworks.apps.anexplorer.recents"
@@ -93,13 +96,14 @@
         <!-- AdMob -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
+            android:theme="@android:style/Theme.Translucent"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="8d9d245a1d53a9ea0d140f5ea40de7cf4b3ab098" />
 
-        <activity
+<!--        <activity
             android:name="dev.dworks.apps.anexplorer.TestActivity"
             android:enabled="false">
             <intent-filter>
@@ -108,7 +112,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity>-->
     </application>
 
 </manifest>

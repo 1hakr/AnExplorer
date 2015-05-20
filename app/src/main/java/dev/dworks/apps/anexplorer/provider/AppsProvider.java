@@ -190,6 +190,7 @@ public class AppsProvider extends DocumentsProvider {
         	ApplicationInfo appInfo = packageInfo.applicationInfo;
         	fromFilePath = appInfo.sourceDir;
         	fileName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
+            fileName += getAppVersion(packageInfo.versionName);
 		} catch (Exception e) {
 		}
 
@@ -318,10 +319,10 @@ public class AppsProvider extends DocumentsProvider {
 
 		ApplicationInfo appInfo = packageInfo.applicationInfo;
 		if(isAppUseful(appInfo)){
-			String summary = "";
 			String displayName = "";
 			final String packageName = packageInfo.packageName;
-	        displayName = packageName;
+            String summary = packageName;
+            displayName = packageName;
 /*			try {
 				displayName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
 				summary = packageInfo.versionName == null ? "" : packageInfo.versionName;
@@ -339,7 +340,7 @@ public class AppsProvider extends DocumentsProvider {
 	        final long lastModified = packageInfo.lastUpdateTime;
 	        final RowBuilder row = result.newRow();
 	        row.add(Document.COLUMN_DOCUMENT_ID, getDocIdForApp(docId, packageName));
-	        row.add(Document.COLUMN_DISPLAY_NAME, getAppName(displayName));
+	        row.add(Document.COLUMN_DISPLAY_NAME, getAppName(displayName) + getAppVersion(packageInfo.versionName));
 	        row.add(Document.COLUMN_SUMMARY, summary);
 	        row.add(Document.COLUMN_SIZE, size);
 	        row.add(Document.COLUMN_MIME_TYPE, mimeType);
@@ -349,7 +350,7 @@ public class AppsProvider extends DocumentsProvider {
 		}
     }
 	
-	private String getAppName(String packageName){
+	private static String getAppName(String packageName){
 		String name = packageName;
 		try {
 			int start = packageName.lastIndexOf('.');
@@ -360,10 +361,18 @@ public class AppsProvider extends DocumentsProvider {
 			}	
 		} catch (Exception e) {
 		}
-		return name;
+		return capitalize(name);
 	}
-	
-	private boolean isAppUseful(ApplicationInfo appInfo) {
+
+    private static String capitalize(String string){
+        return TextUtils.isEmpty(string) ? string : Character.toUpperCase(string.charAt(0)) + string.substring(1);
+    }
+
+    private static String getAppVersion(String packageVersion){
+        return  TextUtils.isEmpty(packageVersion) ? "" : "-" + packageVersion;
+    }
+
+	private static boolean isAppUseful(ApplicationInfo appInfo) {
 		 if (appInfo.flags != 0 
 				 && ((appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
 				 || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)) {

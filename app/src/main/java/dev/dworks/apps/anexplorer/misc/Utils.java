@@ -19,10 +19,12 @@ package dev.dworks.apps.anexplorer.misc;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
@@ -32,11 +34,12 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.ViewConfiguration;
 
-import com.stericson.RootTools.RootTools;
-
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
+
+import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
 
 public class Utils {
 
@@ -194,14 +197,13 @@ public class Utils {
     }
     
     public static boolean isRooted(){
-/*        for (String p : Utils.BinaryPlaces) {
+        for (String p : Utils.BinaryPlaces) {
             File su = new File(p + "su");
             if (su.exists()) {
                 return true;
-            } else {
             }
-        }*/
-        return RootTools.isRootAvailable();
+        }
+        return false;//RootTools.isRootAvailable();
     }
     
     public static String formatTime(Context context, long when) {
@@ -307,5 +309,30 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static boolean isAPK(String mimeType){
+        return MimePredicate.mimeMatches(DocumentsContract.Document.MIME_TYPE_APK, mimeType);
+    }
+
+    public static boolean isDir(String mimeType){
+        return MimePredicate.mimeMatches(DocumentsContract.Document.MIME_TYPE_DIR, mimeType);
+    }
+
+    public static boolean isProVersion(){
+        return BuildConfig.FLAVOR.contains("Pro");
+    }
+
+    public static boolean hasFeature(Context context, String feature) {
+        return context.getPackageManager().hasSystemFeature(feature);
+    }
+
+    public static boolean hasLeanback(Context context) {
+        return hasFeature(context, PackageManager.FEATURE_LEANBACK);
+    }
+
+    public static boolean isTelevision(Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
     }
 }

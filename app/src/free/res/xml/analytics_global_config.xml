@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="TypographyDashes">
+    <!-- 1800 seconds is 30 minutes, which is the default.
+        Included explicitly for ease of tweaking. -->
+    <integer name="ga_dispatchPeriod">1800</integer>
+    <bool name="ga_dryRun">false</bool>
+</resources>

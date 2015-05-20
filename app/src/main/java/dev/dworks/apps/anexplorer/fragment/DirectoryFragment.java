@@ -102,7 +102,6 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
-import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
@@ -115,7 +114,6 @@ import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.get;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -174,6 +172,7 @@ public class DirectoryFragment extends ListFragment {
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
     private boolean isRootedStorage;
+    private boolean hasLeanback;
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -282,6 +281,7 @@ public class DirectoryFragment extends ListFragment {
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
+        hasLeanback = Utils.isTelevision(getActivity());
 		isApp = root != null && root.isApp();
         isRootedStorage = root != null && root.isRootedStorage();
 
@@ -361,6 +361,9 @@ public class DirectoryFragment extends ListFragment {
 				}
 
 				mLastSortOrder = state.derivedSortOrder;
+				if(Utils.isTelevision(getActivity())){
+					mCurrentView.requestFocus();
+				}
 			}
 
 			@Override
@@ -572,6 +575,7 @@ public class DirectoryFragment extends ListFragment {
 						edit.setVisible(manageMode);
 					}
 					final MenuItem info = menu.findItem(R.id.menu_info);
+					final MenuItem bookmark = menu.findItem(R.id.menu_bookmark);
 					final MenuItem rename = menu.findItem(R.id.menu_rename);
 
 					final MenuItem copy = menu.findItem(R.id.menu_copy);
@@ -582,6 +586,7 @@ public class DirectoryFragment extends ListFragment {
                     compress.setVisible(editMode && !isRootedStorage);
 
 					info.setVisible(count == 1);
+                    bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
 					rename.setVisible(count == 1);
 				}
 			}
@@ -602,7 +607,9 @@ public class DirectoryFragment extends ListFragment {
                     }
 				}
 			}
-
+            if(docs.isEmpty()){
+                return false;
+            }
 			final int id = item.getItemId();
 			switch (id) {
 			case R.id.menu_open:
@@ -1186,7 +1193,11 @@ public class DirectoryFragment extends ListFragment {
             if (convertView == null) {
                 final LayoutInflater inflater = LayoutInflater.from(context);
                 if (state.derivedMode == MODE_LIST) {
-                    convertView = inflater.inflate(R.layout.item_doc_list, parent, false);
+					int layoutId = R.layout.item_doc_list;
+					if(isApp){
+						layoutId = root.isAppProcess() ? R.layout.item_doc_process_list : R.layout.item_doc_app_list;
+					}
+                    convertView = inflater.inflate(layoutId, parent, false);
                 } else if (state.derivedMode == MODE_GRID) {
                     convertView = inflater.inflate(R.layout.item_doc_grid, parent, false);
                 } else {
@@ -1223,7 +1234,7 @@ public class DirectoryFragment extends ListFragment {
 			final View popupButton = convertView.findViewById(R.id.button_popup);
 
 			popupButton.setOnClickListener(this);
-
+            popupButton.setVisibility(hasLeanback ? View.INVISIBLE : View.VISIBLE);
             if(state.action == ACTION_BROWSE){
                 final View iconView = convertView.findViewById(android.R.id.icon);
                 if (null != iconView) {
@@ -1254,7 +1265,7 @@ public class DirectoryFragment extends ListFragment {
 				final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
 				final Bitmap cachedResult = thumbs.get(uri);
 				if (cachedResult != null) {
-					iconThumb.setScaleType(docMimeType.equals(Document.MIME_TYPE_APK) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
+					iconThumb.setScaleType(Utils.isAPK(docMimeType) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
 									: ImageView.ScaleType.CENTER_CROP);
 					iconThumb.setImageBitmap(cachedResult);
                     iconMimeBackground.setVisibility(View.INVISIBLE);
@@ -1262,7 +1273,7 @@ public class DirectoryFragment extends ListFragment {
 				} else {
 					iconThumb.setImageDrawable(null);
 					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, iconMimeBackground, mThumbSize,
-							docMimeType.equals(Document.MIME_TYPE_APK) ? docPath : null, iconAlpha);
+                            Utils.isAPK(docMimeType) ? docPath : null, iconAlpha);
 					iconThumb.setTag(task);
 					ProviderExecutor.forAuthority(docAuthority).execute(task);
 				}
@@ -1326,7 +1337,7 @@ public class DirectoryFragment extends ListFragment {
 			} else {
 				// Directories showing thumbnails in grid mode get a little icon
 				// hint to remind user they're a directory.
-				if (Document.MIME_TYPE_DIR.equals(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
+				if (Utils.isDir(docMimeType) && state.derivedMode == MODE_GRID && showThumbnail) {
                     iconDrawable = IconUtils.applyTintAttr(context, R.drawable.ic_root_folder,
                             android.R.attr.textColorPrimaryInverse);
 				}
@@ -1371,7 +1382,7 @@ public class DirectoryFragment extends ListFragment {
 			}
 			if (state.showSize) {
 				size.setVisibility(View.VISIBLE);
-				if (Document.MIME_TYPE_DIR.equals(docMimeType) || docSize == -1) {
+				if (Utils.isDir(docMimeType) || docSize == -1) {
 					size.setText(null);
 					if (state.showFolderSize) {
 						long sizeInBytes = mSizes.containsKey(position) ? mSizes.get(position) : -1;
@@ -1655,7 +1666,7 @@ public class DirectoryFragment extends ListFragment {
 			return false;
 		}
 		// Directories are always enabled
-		if (Document.MIME_TYPE_DIR.equals(docMimeType)) {
+		if (Utils.isDir(docMimeType)) {
 			return true;
 		}
 
@@ -1713,7 +1724,7 @@ public class DirectoryFragment extends ListFragment {
             if(null != uncompress)
                 uncompress.setVisible(isCompressed && !isRootedStorage);
             if(null != bookmark) {
-                bookmark.setVisible(Document.MIME_TYPE_DIR.equals(doc.mimeType) && !isRootedStorage);
+                bookmark.setVisible(Utils.isDir(doc.mimeType) && !isRootedStorage);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);

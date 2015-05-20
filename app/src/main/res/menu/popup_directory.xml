@@ -24,7 +24,7 @@
         android:title="Info" />
     <item
         android:id="@+id/menu_bookmark"
-        android:icon="@drawable/ic_menu_info"
+        android:icon="@drawable/ic_menu_bookmark"
         support:showAsAction="always"
         android:title="Bookmark" />
     <item

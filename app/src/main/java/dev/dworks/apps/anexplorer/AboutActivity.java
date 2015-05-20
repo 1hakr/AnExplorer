@@ -68,7 +68,7 @@ public class AboutActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
         logo.setTextColor(SettingsActivity.getActionBarColor(this));
-        String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
+        String header = logo.getText() + getSuffix() + (Utils.isTelevision(this)? " for Android TV" : "") + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 	}
 
@@ -78,7 +78,12 @@ public class AboutActivity extends ActionBarActivity {
         if(isNonPlay()){
             menu.removeItem(R.id.action_rate);
             menu.removeItem(R.id.action_support);
-        }
+        } else if(Utils.isTelevision(this)){
+			menu.removeItem(R.id.action_feedback);
+			menu.removeItem(R.id.action_github);
+			menu.removeItem(R.id.action_gplus);
+			menu.removeItem(R.id.action_twitter);
+		}
 		return true;
 	}
 
@@ -114,7 +119,7 @@ public class AboutActivity extends ActionBarActivity {
 			break;
 		case R.id.action_support:
 			Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-			intentMarketAll.setData(Uri.parse("market://search?q=pub:D WorkS"));
+			intentMarketAll.setData(Uri.parse("market://search?q=pub:DWorkS"));
 			startActivity(intentMarketAll);
 			break;
 		}
@@ -129,7 +134,7 @@ public class AboutActivity extends ActionBarActivity {
     }
 
     private String getSuffix(){
-        return BuildConfig.FLAVOR.contains("Pro") ? " Pro" : "";
+        return Utils.isProVersion() ? " Pro" : "";
     }
 
     private boolean isNonPlay(){

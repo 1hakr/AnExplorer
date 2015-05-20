@@ -36,7 +36,9 @@ import android.os.ParcelFileDescriptor;
 import android.support.v4.os.EnvironmentCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -55,6 +57,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
@@ -529,27 +532,19 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public String createDocument(String docId, String mimeType, String displayName)
             throws FileNotFoundException {
+        displayName = FileUtils.buildValidFatFilename(displayName);
+
         final File parent = getFileForDocId(docId);
         if (!parent.isDirectory()) {
             throw new IllegalArgumentException("Parent document isn't a directory");
         }
 
-        File file;
+        final File file = buildUniqueFile(parent, mimeType, displayName);
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            file = new File(parent, displayName);
             if (!file.mkdir()) {
                 throw new IllegalStateException("Failed to mkdir " + file);
             }
         } else {
-            displayName = FileUtils.removeExtension(mimeType, displayName);
-            file = new File(parent, FileUtils.addExtension(mimeType, displayName));
-
-            // If conflicting file, try adding counter suffix
-            int n = 0;
-            while (file.exists() && n++ < 32) {
-                file = new File(parent, FileUtils.addExtension(mimeType, displayName + " (" + n + ")"));
-            }
-
             try {
                 if (!file.createNewFile()) {
                     throw new IllegalStateException("Failed to touch " + file);
@@ -590,6 +585,11 @@ public class ExternalStorageProvider extends StorageProvider {
     
     @Override
     public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
+
+        // Since this provider treats renames as generating a completely new
+        // docId, we're okay with letting the MIME type change.
+        displayName = FileUtils.buildValidFatFilename(displayName);
+
         final File parent = getFileForDocId(parentDocumentId);
         File file;
     	
@@ -881,5 +881,60 @@ public class ExternalStorageProvider extends StorageProvider {
             super.close();
             stopObserving(mFile);
         }
+    }
+
+    private static File buildFile(File parent, String name, String ext) {
+        if (TextUtils.isEmpty(ext)) {
+            return new File(parent, name);
+        } else {
+            return new File(parent, name + "." + ext);
+        }
+    }
+
+    @VisibleForTesting
+    public static File buildUniqueFile(File parent, String mimeType, String displayName)
+            throws FileNotFoundException {
+        String name;
+        String ext;
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+            name = displayName;
+            ext = null;
+        } else {
+            String mimeTypeFromExt;
+            // Extract requested extension from display name
+            final int lastDot = displayName.lastIndexOf('.');
+            if (lastDot >= 0) {
+                name = displayName.substring(0, lastDot);
+                ext = displayName.substring(lastDot + 1);
+                mimeTypeFromExt = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                        ext.toLowerCase());
+            } else {
+                name = displayName;
+                ext = null;
+                mimeTypeFromExt = null;
+            }
+            if (mimeTypeFromExt == null) {
+                mimeTypeFromExt = "application/octet-stream";
+            }
+            final String extFromMimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(
+                    mimeType);
+            if (Objects.equals(mimeType, mimeTypeFromExt) || Objects.equals(ext, extFromMimeType)) {
+                // Extension maps back to requested MIME type; allow it
+            } else {
+                // No match; insist that create file matches requested MIME
+                name = displayName;
+                ext = extFromMimeType;
+            }
+        }
+        File file = buildFile(parent, name, ext);
+        // If conflicting file, try adding counter suffix
+        int n = 0;
+        while (file.exists()) {
+            if (n++ >= 32) {
+                throw new FileNotFoundException("Failed to create unique file");
+            }
+            file = buildFile(parent, name + " (" + n + ")", ext);
+        }
+        return file;
     }
 }

@@ -16,9 +16,9 @@
 -->
 <resources>
 
-    <dimen name="icon_size">48dp</dimen>
+    <dimen name="icon_size">40dp</dimen>
     <dimen name="grid_icon_size">72dp</dimen>
-    <dimen name="root_icon_size">32dp</dimen>
+    <dimen name="root_icon_size">24dp</dimen>
     <dimen name="grid_padding">4dp</dimen>
 
     <bool name="show_as_dialog">false</bool>
@@ -68,4 +68,9 @@
     <item name="default_rotation_speed" format="float" type="string">1</item>
 
     <dimen name="scroll_threshold">4dp</dimen>
+
+    <dimen name="first_keyline">16dp</dimen>
+    <dimen name="second_keyline">72dp</dimen>
+    <dimen name="second_keyline_default">72dp</dimen>
+
 </resources>

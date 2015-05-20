@@ -20,8 +20,8 @@
     <dimen name="activity_actionbar_size">48dp</dimen>
 
     <dimen name="list_item_height">64dp</dimen>
-    <dimen name="list_item_padding">24dp</dimen>
+    <dimen name="list_item_padding">16dp</dimen>
 
-    <dimen name="list_divider_inset">80dp</dimen>
+    <dimen name="list_divider_inset">72dp</dimen>
 
 </resources>

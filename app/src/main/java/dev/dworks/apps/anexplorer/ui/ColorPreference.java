@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
@@ -32,21 +33,15 @@ import android.preference.Preference;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.Utils;
+
 
 /**
  * A preference that allows the user to choose an application or shortcut.
@@ -59,7 +54,7 @@ public class ColorPreference extends Preference {
     private View mPreviewView;
 
     public ColorPreference(Context context) {
-        super(context);	
+        super(context);
         initAttrs(null, 0);
     }
 
@@ -158,9 +153,7 @@ public class ColorPreference extends Preference {
 
     public static class ColorDialogFragment extends DialogFragment {
         private ColorPreference mPreference;
-        private ColorGridAdapter mAdapter;
-        private GridView mColorGrid;
-        private GridLayout mColorGridLayout;
+        private GridLayout mColorGrid;
 
         public ColorDialogFragment() {
         }
@@ -183,52 +176,27 @@ public class ColorPreference extends Preference {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View rootView;
+            View rootView = layoutInflater.inflate(R.layout.dialog_colors, null);
 
-/*            if(Utils.hasIceCreamSandwich()){
-            	rootView = layoutInflater.inflate(R.layout.dialog_colors_grid, null);
-                mColorGridLayout = (GridLayout) rootView.findViewById(R.id.color_grid);
-                mColorGridLayout.setColumnCount(mPreference.mNumColumns);
-                
-                repopulateItems();
-            }
-            else{*/
-            	rootView = layoutInflater.inflate(R.layout.dialog_colors, null);
-                mColorGrid = (GridView) rootView.findViewById(R.id.color_grid);
-                mColorGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> listView, View view,
-                            int position, long itemId) {
-                        mPreference.setValue((Integer) mAdapter.getItem(position));
-                        dismiss();
-                    }
-                });
-
-                tryBindLists();
-            //}
+            mColorGrid = (GridLayout) rootView.findViewById(R.id.color_grid);
+            mColorGrid.setColumnCount(mPreference.mNumColumns);
+            repopulateItems();
 
             return new AlertDialog.Builder(getActivity())
                     .setView(rootView)
                     .create();
         }
 
-        private ViewGroup getGrid(){
-        	if(Utils.hasIceCreamSandwich()){
-        		return mColorGridLayout;
-        	}
-    		return mColorGrid;
-        }
-        
         private void repopulateItems() {
-            if (mPreference == null || mColorGridLayout == null) {
+            if (mPreference == null || mColorGrid == null) {
                 return;
             }
 
-            Context context = mColorGridLayout.getContext();
-            mColorGridLayout.removeAllViews();
+            Context context = mColorGrid.getContext();
+            mColorGrid.removeAllViews();
             for (final int color : mPreference.mColorChoices) {
                 View itemView = LayoutInflater.from(context)
-                            .inflate(R.layout.grid_item_color, mColorGridLayout, false);
+                        .inflate(R.layout.grid_item_color, mColorGrid, false);
 
                 setColorViewValue(itemView.findViewById(R.id.color_view), color,
                         color == mPreference.getValue());
@@ -242,37 +210,20 @@ public class ColorPreference extends Preference {
                     }
                 });
 
-                mColorGridLayout.addView(itemView);
+                mColorGrid.addView(itemView);
             }
 
-            sizeDialog(mColorGridLayout);
-        }
-        
-        private void tryBindLists() {
-            if (mPreference == null) {
-                return;
-            }
-
-            if (isAdded() && mAdapter == null) {
-                mAdapter = new ColorGridAdapter();
-            }
-
-            if (mAdapter != null && mColorGrid != null) {
-                mAdapter.setSelectedColor(mPreference.getValue());
-                mColorGrid.setAdapter(mAdapter);
-            }
-            
-            sizeDialog(mColorGrid);
+            sizeDialog();
         }
 
         @Override
         public void onStart() {
             super.onStart();
-            sizeDialog(getGrid());
+            sizeDialog();
         }
 
-        private void sizeDialog(ViewGroup grid) {
-            if (mPreference == null || grid == null) {
+        private void sizeDialog() {
+            if (mPreference == null || mColorGrid == null) {
                 return;
             }
 
@@ -281,15 +232,15 @@ public class ColorPreference extends Preference {
                 return;
             }
 
-            final Resources res = grid.getContext().getResources();
+            final Resources res = mColorGrid.getContext().getResources();
             DisplayMetrics dm = res.getDisplayMetrics();
 
             // Can't use Integer.MAX_VALUE here (weird issue observed otherwise on 4.2)
-            grid.measure(
+            mColorGrid.measure(
                     View.MeasureSpec.makeMeasureSpec(dm.widthPixels, View.MeasureSpec.AT_MOST),
                     View.MeasureSpec.makeMeasureSpec(dm.heightPixels, View.MeasureSpec.AT_MOST));
-            int width = grid.getMeasuredWidth();
-            int height = grid.getMeasuredHeight();
+            int width = mColorGrid.getMeasuredWidth();
+            int height = mColorGrid.getMeasuredHeight();
 
             int extraPadding = res.getDimensionPixelSize(R.dimen.color_grid_extra_padding);
 
@@ -297,49 +248,6 @@ public class ColorPreference extends Preference {
             height += extraPadding;
 
             dialog.getWindow().setLayout(width, height);
-        }
-
-        private class ColorGridAdapter extends BaseAdapter {
-            private List<Integer> mChoices = new ArrayList<Integer>();
-
-            private ColorGridAdapter() {
-                for (int color : mPreference.mColorChoices) {
-                    mChoices.add(color);
-                }
-            }
-
-            @Override
-            public int getCount() {
-                return mChoices.size();
-            }
-
-            @Override
-            public Object getItem(int position) {
-                return mChoices.get(position);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return mChoices.get(position);
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup container) {
-                if (convertView == null) {
-                    convertView = LayoutInflater.from(getActivity())
-                            .inflate(R.layout.grid_item_color, container, false);
-                }
-
-                int color = mChoices.get(position);
-                setColorViewValue(convertView.findViewById(R.id.color_view), color,
-                        color == mPreference.getValue());
-                
-                return convertView;
-            }
-
-            public void setSelectedColor(int selectedColor) {
-                notifyDataSetChanged();
-            }
         }
     }
 
@@ -350,7 +258,7 @@ public class ColorPreference extends Preference {
 
             Drawable currentDrawable = imageView.getDrawable();
             GradientDrawable colorChoiceDrawable;
-            if (currentDrawable != null && currentDrawable instanceof GradientDrawable) {
+            if (currentDrawable instanceof GradientDrawable) {
                 // Reuse drawable
                 colorChoiceDrawable = (GradientDrawable) currentDrawable;
             } else {
@@ -366,14 +274,15 @@ public class ColorPreference extends Preference {
 
             colorChoiceDrawable.setColor(color);
             colorChoiceDrawable.setStroke((int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, 1, res.getDisplayMetrics()), darkenedColor);
+                    TypedValue.COMPLEX_UNIT_DIP, 2, res.getDisplayMetrics()), darkenedColor);
 
             Drawable drawable = colorChoiceDrawable;
             if (selected) {
+                BitmapDrawable checkmark = (BitmapDrawable) res.getDrawable(R.drawable.checkmark_white);
+                checkmark.setGravity(Gravity.CENTER);
                 drawable = new LayerDrawable(new Drawable[]{
                         colorChoiceDrawable,
-                        res.getDrawable(R.drawable.checkmark_white)
-                });
+                        checkmark});
             }
 
             imageView.setImageDrawable(drawable);

@@ -83,7 +83,9 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
     }
 
     private void save(boolean exitAfter) {
-        new SaveContent(getIntent().getData(), exitAfter).execute();
+        if (getIntent().getData() != null) {
+            new SaveContent(getIntent().getData(), exitAfter).execute();
+        }
     }
 
     @Override
@@ -368,7 +370,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         }
         String name = "";
         String scheme = uri.getScheme();
-        if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
+        if (!TextUtils.isEmpty(scheme) && scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
             String part = uri.getSchemeSpecificPart();
             final int splitIndex = part.indexOf(':', 1);
             if(splitIndex != -1) {
