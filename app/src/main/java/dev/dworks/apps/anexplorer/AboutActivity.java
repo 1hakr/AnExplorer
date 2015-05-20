@@ -119,7 +119,7 @@ public class AboutActivity extends ActionBarActivity {
 			break;
 		case R.id.action_support:
 			Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-			intentMarketAll.setData(Uri.parse("market://search?q=pub:D WorkS"));
+			intentMarketAll.setData(Uri.parse("market://search?q=pub:DWorkS"));
 			startActivity(intentMarketAll);
 			break;
 		}
