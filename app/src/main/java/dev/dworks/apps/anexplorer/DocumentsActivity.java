@@ -778,7 +778,7 @@ public class DocumentsActivity extends ActionBarActivity {
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        if(Utils.hasLeanback(this)) {
+        if(Utils.isTelevision(this)) {
             menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
             menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
         }
@@ -1943,7 +1943,7 @@ public class DocumentsActivity extends ActionBarActivity {
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
 
         mActionMenu.show();
-        mActionMenu.setVisibility(!Utils.hasLeanback(this) && showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setColorNormal(complimentaryColor);
         mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
 

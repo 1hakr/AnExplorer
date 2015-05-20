@@ -19,10 +19,12 @@ package dev.dworks.apps.anexplorer.misc;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
@@ -327,5 +329,10 @@ public class Utils {
 
     public static boolean hasLeanback(Context context) {
         return hasFeature(context, PackageManager.FEATURE_LEANBACK);
+    }
+
+    public static boolean isTelevision(Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
     }
 }

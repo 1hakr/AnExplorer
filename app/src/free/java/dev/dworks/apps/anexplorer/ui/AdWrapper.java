@@ -41,7 +41,7 @@ public class AdWrapper extends FrameLayout {
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
         //Ads
-        if(!Utils.hasLeanback(context)) {
+        if(!Utils.isTelevision(context)) {
             mAdView = (AdView) findViewById(R.id.adView);
             mAdView.setAdListener(adListener);
         } else {

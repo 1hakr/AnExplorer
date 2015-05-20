@@ -281,7 +281,7 @@ public class DirectoryFragment extends ListFragment {
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
-        hasLeanback = Utils.hasLeanback(getActivity());
+        hasLeanback = Utils.isTelevision(getActivity());
 		isApp = root != null && root.isApp();
         isRootedStorage = root != null && root.isRootedStorage();
 
@@ -361,6 +361,9 @@ public class DirectoryFragment extends ListFragment {
 				}
 
 				mLastSortOrder = state.derivedSortOrder;
+				if(Utils.isTelevision(getActivity())){
+					mCurrentView.requestFocus();
+				}
 			}
 
 			@Override
@@ -583,7 +586,7 @@ public class DirectoryFragment extends ListFragment {
                     compress.setVisible(editMode && !isRootedStorage);
 
 					info.setVisible(count == 1);
-                    bookmark.setVisible(Utils.hasLeanback(getActivity()) && count == 1);
+                    bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
 					rename.setVisible(count == 1);
 				}
 			}
