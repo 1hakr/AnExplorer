@@ -46,6 +46,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.util.LruCache;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -74,8 +75,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.github.mrengineer13.snackbar.BuildConfig;
-import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.common.collect.Maps;
 
 import java.io.File;
@@ -1882,45 +1881,49 @@ public class DocumentsActivity extends ActionBarActivity {
     }
 
     public void showMsg(int msg){
-        showToast(msg, SnackBar.Style.DEFAULT, SnackBar.SHORT_SNACK);
+        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
     }
 
     public void showError(int msg){
-        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
     }
 
     public void showInfo(int msg){
-        showToast(msg, SnackBar.Style.INFO, SnackBar.SHORT_SNACK);
+        showToast(msg, R.color.button_text_color_yellow, Snackbar.LENGTH_SHORT);
     }
 
     public void showMsg(String msg){
-        showToast(msg, SnackBar.Style.DEFAULT, SnackBar.SHORT_SNACK);
+        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
     }
 
     public void showError(String msg){
-        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
     }
 
     public void showInfo(String msg){
-        showToast(msg, SnackBar.Style.INFO, SnackBar.SHORT_SNACK);
+        showToast(msg, R.color.button_text_color_yellow, Snackbar.LENGTH_SHORT);
     }
 
-    public void showToast(String msg, SnackBar.Style style, short duration){
-        new SnackBar.Builder(this, mAlertContainer)
-                .withMessage(msg)
-                .withStyle(style)
-                .withActionMessageId(android.R.string.ok)
-                .withDuration(duration)
-                .show();
+    public void showToast(String msg, int actionColor, int duration){
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+                    }
+                })
+                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
     }
 
-    public void showToast(int msgId, SnackBar.Style style, short duration){
-        new SnackBar.Builder(this, mAlertContainer)
-                .withMessageId(msgId)
-                .withStyle(style)
-                .withActionMessageId(android.R.string.ok)
-                .withDuration(duration)
-                .show();
+    public void showToast(int msg, int actionColor, int duration){
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+                    }
+                })
+                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
     }
 
     private void initControls() {

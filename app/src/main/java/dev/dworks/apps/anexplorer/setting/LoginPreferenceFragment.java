@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.github.mrengineer13.snackbar.SnackBar;
-
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class LoginPreferenceFragment extends PreferenceFragment {
     private Preference pin_set_preference;
@@ -47,21 +47,13 @@ public class LoginPreferenceFragment extends PreferenceFragment {
                 	SettingsActivity.setPin(getActivity(), password);
                 	pin_set_preference.setSummary(SettingsActivity.isPinProtected(getActivity()) ? R.string.pin_set : R.string.pin_disabled);
                     if (password != null && password.length() > 0){
-                        new SnackBar.Builder(getActivity())
-                                .withMessageId(R.string.pin_set)
-                                .withStyle(SnackBar.Style.DEFAULT)
-                                .withDuration(SnackBar.SHORT_SNACK)
-                                .show();
+                        showMsg(R.string.pin_set);
                         setInstruction(R.string.pin_set);
                     }
                     d.dismiss();
                     return;
                 }
-                new SnackBar.Builder(getActivity())
-                        .withMessageId(R.string.pin_mismatch)
-                        .withStyle(SnackBar.Style.ALERT)
-                        .withDuration(SnackBar.SHORT_SNACK)
-                        .show();
+                showError(R.string.pin_mismatch);
                 setInstruction(R.string.pin_mismatch);
             };
             
@@ -107,20 +99,12 @@ public class LoginPreferenceFragment extends PreferenceFragment {
                         super.onEnter(password);
                         SettingsActivity.setPin(getActivity(), "");
                         pin_set_preference.setSummary(R.string.pin_disabled);
-                        new SnackBar.Builder(getActivity())
-                                .withMessageId(R.string.pin_disabled)
-                                .withStyle(SnackBar.Style.DEFAULT)
-                                .withDuration(SnackBar.SHORT_SNACK)
-                                .show();
+                        showMsg(R.string.pin_disabled);
                         setInstruction(R.string.pin_disabled);
                         d.dismiss();
                         return;
                     }
-                    new SnackBar.Builder(getActivity())
-                            .withMessageId(R.string.incorrect_pin)
-                            .withStyle(SnackBar.Style.ALERT)
-                            .withDuration(SnackBar.SHORT_SNACK)
-                            .show();
+                    showError(R.string.incorrect_pin);
                     setInstruction(R.string.incorrect_pin);
                 };
                 
@@ -136,5 +120,26 @@ public class LoginPreferenceFragment extends PreferenceFragment {
         else {
             setPin();
         }
+    }
+    public void showMsg(int msg){
+        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
+    }
+
+    public void showError(int msg){
+        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
+    }
+
+    public void showToast(int msg, int actionColor, int duration){
+        if(!Utils.isActivityAlive(getActivity())){
+            return;
+        }
+        final Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        })
+                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
     }
 }
