@@ -542,7 +542,7 @@ public class DocumentsActivity extends ActionBarActivity {
             mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
         }
-        if(BuildConfig.FLAVOR.contains("other")){
+        if(BuildConfig.FLAVOR.contains("other") || Utils.isTelevision(this)){
             return;
         }
         AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {

@@ -22,6 +22,7 @@ public class AdWrapper extends FrameLayout {
 
     private AdView mAdView;
     private InterstitialAd mInterstitialAd;
+    private boolean showInterstiatial = true;
 
     public AdWrapper(Context context) {
         super(context);
@@ -39,9 +40,9 @@ public class AdWrapper extends FrameLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
         //Ads
-        if(!Utils.isTelevision(context)) {
+        if(!Utils.isTelevision(context) && !showInterstiatial) {
+            LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
             mAdView = (AdView) findViewById(R.id.adView);
             mAdView.setAdListener(adListener);
         } else {
