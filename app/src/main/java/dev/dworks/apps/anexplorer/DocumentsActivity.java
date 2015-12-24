@@ -45,6 +45,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.util.LruCache;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
@@ -253,7 +254,7 @@ public class DocumentsActivity extends BaseActivity {
 
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
             mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, Gravity.START);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
             lockInfoContainter();
         }
 
@@ -303,6 +304,18 @@ public class DocumentsActivity extends BaseActivity {
             }
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
+        }
+
+        requestStoragePermissions();
+    }
+
+    @Override
+    public void again() {
+        if(Utils.hasMarshmallow()) {
+            ExternalStorageProvider.updateVolumes(this);
+            mRoots = DocumentsApplication.getRootsCache(this);
+            mRoots.updateAsync();
+            onRootPicked(getCurrentRoot(), true);
         }
     }
 
@@ -626,7 +639,6 @@ public class DocumentsActivity extends BaseActivity {
             }
     	}
     }
-
 
     private boolean isRootsDrawerOpen() {
         if (mShowAsDialog) {

@@ -28,10 +28,12 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
+import android.support.design.widget.Snackbar;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 
 import java.io.File;
@@ -40,6 +42,7 @@ import java.util.Locale;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class Utils {
 
@@ -339,5 +342,23 @@ public class Utils {
     public static boolean isTelevision(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+    }
+
+    public static void showRetrySnackBar(View view, String text, View.OnClickListener listener){
+        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
+        if (null != listener) {
+            snackbar.setAction("RETRY", listener)
+                    .setActionTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+        }
+        snackbar.show();
+    }
+
+    public static void showRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), text, Snackbar.LENGTH_INDEFINITE);
+        if (null != listener) {
+            snackbar.setAction("RETRY", listener)
+                    .setActionTextColor(SettingsActivity.getActionBarColor(activity));
+        }
+        snackbar.show();
     }
 }

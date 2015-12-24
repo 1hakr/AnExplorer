@@ -558,6 +558,11 @@ public class StandaloneActivity extends BaseActivity {
 
     }
 
+    @Override
+    public void again() {
+
+    }
+
     public DocumentInfo getCurrentDirectory() {
         return mState.stack.peek();
     }

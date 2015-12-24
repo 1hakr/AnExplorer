@@ -15,12 +15,15 @@
  */
 package dev.dworks.apps.anexplorer;
 
+import android.Manifest;
 import android.app.Fragment;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -31,6 +34,8 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.List;
 
+import dev.dworks.apps.anexplorer.misc.PermissionUtil;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
@@ -66,6 +71,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     public abstract boolean isShowAsDialog();
     public abstract void upadateActionItems(AbsListView mCurrentView);
     public abstract void setInfoDrawerOpen(boolean open);
+    public abstract void again();
 
     public static BaseActivity get(Fragment fragment) {
         return (BaseActivity) fragment.getActivity();
@@ -239,4 +245,39 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
         return isSAFIssue;
     }
+
+    private static String[] storagePermissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    public static final int REQUEST_STORAGE = 47;
+
+    protected void requestStoragePermissions() {
+        if(PermissionUtil.hasGetAccountsPermission(this)) {
+            again();
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                Utils.showRetrySnackBar(this, "Storage permissions are needed for Exploring.", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ActivityCompat.requestPermissions(BaseActivity.this, storagePermissions, REQUEST_STORAGE);
+                    }
+                });
+            } else {
+                ActivityCompat.requestPermissions(this, storagePermissions, REQUEST_STORAGE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    again();
+                }
+                return;
+            }
+        }
+    }
+
 }
