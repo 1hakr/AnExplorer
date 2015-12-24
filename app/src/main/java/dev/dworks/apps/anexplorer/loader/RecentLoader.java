@@ -17,19 +17,6 @@
 
 package dev.dworks.apps.anexplorer.loader;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_LAST_MODIFIED;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.database.Cursor;
@@ -44,7 +31,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractFuture;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity.State;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.cursor.FilteringCursorWrapper;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
@@ -60,6 +57,9 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+
+import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_LAST_MODIFIED;
+import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
 
 public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
     private static final boolean LOGD = true;

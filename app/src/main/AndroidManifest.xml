@@ -80,6 +80,12 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="dev.dworks.apps.anexplorer.StandaloneActivity"
+            android:theme="@style/Theme.Document" >
+        </activity>
+
         <activity
             android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
             android:exported="false"

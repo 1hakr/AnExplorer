@@ -27,8 +27,6 @@ import android.os.StatFs;
 import android.os.storage.StorageManager;
 import android.text.TextUtils;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
@@ -81,7 +79,7 @@ public final class StorageUtils {
                     }
                 }
 
-                String description = Utils.hasKitKat() ? getUserLabel(object) : getDescription(object);
+                String description = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT ? getUserLabel(object) : getDescription(object);
 				StorageVolume mount = new StorageVolume(description, filePath);
 				mount.isEmulated = emulated;
 				mount.isPrimary = primary;
@@ -117,7 +115,10 @@ public final class StorageUtils {
 
     private String getDescription(Object object) throws IllegalAccessException, NoSuchFieldException {
         String description = "";
-        if(Utils.hasJellyBean()){
+        if(Utils.hasMarshmallow()){
+            description = getDescription(object, false);
+        }
+        else if(Utils.hasJellyBean()){
             try {
                 description = getDescription(object, true);
             }
@@ -251,7 +252,7 @@ public final class StorageUtils {
 	
 	/**
 	 * @param isTotal  The parameter for calculating total size
-	 * @return return Total Size when isTotal is {@value true} else return Free Size of Internal memory(data folder) 
+	 * @return return Total Size when isTotal is {@value true} else return Free Size of Internal memory(data folder)
 	 */
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressWarnings("deprecation")

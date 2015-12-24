@@ -17,10 +17,11 @@
 
 package dev.dworks.apps.anexplorer.loader;
 
+import android.content.Context;
+
 import java.util.Collection;
 
-import android.content.Context;
-import dev.dworks.apps.anexplorer.DocumentsActivity.State;
+import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.misc.AsyncTaskLoader;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.model.RootInfo;

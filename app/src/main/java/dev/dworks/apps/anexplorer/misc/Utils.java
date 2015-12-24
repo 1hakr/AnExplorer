@@ -136,6 +136,11 @@ public class Utils {
     public static boolean hasLollipop() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
+
+    public static boolean hasMarshmallow() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
     public static boolean hasMoreHeap(){
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }

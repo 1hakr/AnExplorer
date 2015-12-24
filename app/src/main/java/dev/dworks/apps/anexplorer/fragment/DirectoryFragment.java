@@ -72,8 +72,8 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.ArrayList;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
-import dev.dworks.apps.anexplorer.DocumentsActivity.State;
+import dev.dworks.apps.anexplorer.BaseActivity;
+import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
@@ -106,14 +106,14 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_MANAGE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
+import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -338,13 +338,13 @@ public class DirectoryFragment extends ListFragment {
 					state.derivedMode = result.mode;
 				}
 				state.derivedSortOrder = result.sortOrder;
-				((DocumentsActivity) context).onStateChanged();
+				((BaseActivity) context).onStateChanged();
 
 				updateDisplayState();
 
 				// When launched into empty recents, show drawer
 				if (mType == TYPE_RECENT_OPEN && mAdapter.isEmpty() && !state.stackTouched) {
-					((DocumentsActivity) context).setRootsDrawerOpen(true);
+					((BaseActivity) context).setRootsDrawerOpen(true);
 				}
 				if (isResumed()) {
 					setListShown(true);
@@ -431,7 +431,7 @@ public class DirectoryFragment extends ListFragment {
 		// Mode change is just visual change; no need to kick loader, and
 		// deliver change event immediately.
 		state.derivedMode = state.userMode;
-		((DocumentsActivity) getActivity()).onStateChanged();
+		((BaseActivity) getActivity()).onStateChanged();
 
 		updateDisplayState();
 	}
@@ -486,7 +486,7 @@ public class DirectoryFragment extends ListFragment {
 			throw new IllegalStateException("Unknown state " + state.derivedMode);
 		}
 
-        ((DocumentsActivity) getActivity()).upadateActionItems(mCurrentView);
+        ((BaseActivity) getActivity()).upadateActionItems(mCurrentView);
 		mThumbSize = new Point(thumbSize, thumbSize);
 
         if(refreshData) {
@@ -507,7 +507,7 @@ public class DirectoryFragment extends ListFragment {
 							+ AppsProvider.getPackageForDocId(docId))));*/
 				} else if (isDocumentEnabled(docMimeType, docFlags)) {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
-					((DocumentsActivity) getActivity()).onDocumentPicked(doc);
+					((BaseActivity) getActivity()).onDocumentPicked(doc);
 				}
 			}
 		}
@@ -541,7 +541,7 @@ public class DirectoryFragment extends ListFragment {
 
 			final Context context = getActivity();
 			if(null != context){
-				final DocumentsActivity activity = (DocumentsActivity) context;
+				final BaseActivity activity = (BaseActivity) context;
 				if(!activity.getActionMode()){
                     activity.setUpDefaultStatusBar();
 					activity.setActionMode(true);
@@ -613,7 +613,7 @@ public class DirectoryFragment extends ListFragment {
 			final int id = item.getItemId();
 			switch (id) {
 			case R.id.menu_open:
-				DocumentsActivity.get(DirectoryFragment.this).onDocumentsPicked(docs);
+				BaseActivity.get(DirectoryFragment.this).onDocumentsPicked(docs);
 				mode.finish();
 				return true;
 
@@ -656,7 +656,7 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 
 			case R.id.menu_info:
-				final DocumentsActivity activity = (DocumentsActivity) getActivity();
+				final BaseActivity activity = (BaseActivity) getActivity();
 				activity.setInfoDrawerOpen(true);
 				if (activity.isShowAsDialog()) {
 					DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
@@ -681,7 +681,7 @@ public class DirectoryFragment extends ListFragment {
             selectAll = true;
 			final Context context = getActivity();
 			if(null != context){
-				final DocumentsActivity activity = (DocumentsActivity) context;
+				final BaseActivity activity = (BaseActivity) context;
 				activity.setActionMode(false);
                 activity.setUpStatusBar();
 			}
@@ -921,26 +921,26 @@ public class DirectoryFragment extends ListFragment {
 			if (result) {
 				switch (id) {
 				case R.id.menu_delete:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.toast_failed_delete);
+                    if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
+                        ((BaseActivity) getActivity()).showError(R.string.toast_failed_delete);
                     }
 					break;
 
 				case R.id.menu_save:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.save_error);
+                    if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
+                        ((BaseActivity) getActivity()).showError(R.string.save_error);
                     }
 					break;
 
                 case R.id.menu_compress:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.compress_error);
+                    if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
+                        ((BaseActivity) getActivity()).showError(R.string.compress_error);
                     }
 
                     break;
                 case R.id.menu_uncompress:
-                    if(!((DocumentsActivity) getActivity()).isSAFIssue(doc.documentId)) {
-                        ((DocumentsActivity) getActivity()).showError(R.string.uncompress_error);
+                    if(!((BaseActivity) getActivity()).isSAFIssue(doc.documentId)) {
+                        ((BaseActivity) getActivity()).showError(R.string.uncompress_error);
                     }
                     break;
 				}
@@ -976,11 +976,11 @@ public class DirectoryFragment extends ListFragment {
 	}
 
 	private static State getDisplayState(Fragment fragment) {
-		return ((DocumentsActivity) fragment.getActivity()).getDisplayState();
+		return ((BaseActivity) fragment.getActivity()).getDisplayState();
 	}
 
     private static boolean isCreateSupported(Fragment fragment) {
-        return ((DocumentsActivity) fragment.getActivity()).isCreateSupported();
+        return ((BaseActivity) fragment.getActivity()).isCreateSupported();
     }
 
 	public boolean onSaveDocuments(ArrayList<DocumentInfo> docs) {
@@ -1775,7 +1775,7 @@ public class DirectoryFragment extends ListFragment {
                 }
             }
             else{
-                ((DocumentsActivity) getActivity()).showError(R.string.unable_to_open_app);
+                ((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
             }
             return true;
         case R.id.menu_details:
@@ -1786,7 +1786,7 @@ public class DirectoryFragment extends ListFragment {
             }
             return true;
 		case R.id.menu_info:
-			final DocumentsActivity activity = (DocumentsActivity) getActivity();
+			final BaseActivity activity = (BaseActivity) getActivity();
 			activity.setInfoDrawerOpen(true);
 			if (activity.isShowAsDialog()) {
 				DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
@@ -1807,7 +1807,7 @@ public class DirectoryFragment extends ListFragment {
             contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
             Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
             if(null != uri) {
-                ((DocumentsActivity) getActivity()).showInfo("Bookmark added");
+                ((BaseActivity) getActivity()).showInfo("Bookmark added");
                 ExternalStorageProvider.updateVolumes(getActivity());
             }
             return true;

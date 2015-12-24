@@ -78,6 +78,15 @@
         <item name="*android:windowAllowReturnTransitionOverlap">true</item>
     </style>
 
+    <style name="StandaloneTheme" parent="@style/DocumentsTheme">
+        <item name="android:actionBarWidgetTheme">@null</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="colorPrimaryDark">@*android:color/material_blue_grey_900</item>
+        <item name="colorPrimary">@*android:color/material_blue_grey_800</item>
+        <item name="colorAccent">@*android:color/material_deep_teal_500</item>
+    </style>
+
     <style name="Theme.Document.DailogPIN">
         <item name="android:windowNoTitle">true</item>
     </style>

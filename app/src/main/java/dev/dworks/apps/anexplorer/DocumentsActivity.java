@@ -44,9 +44,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.util.LruCache;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -54,9 +51,7 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
-import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -75,15 +70,12 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.common.collect.Maps;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
@@ -123,21 +115,20 @@ import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_CREATE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_GET_CONTENT;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_MANAGE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_OPEN_TREE;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_GET_CONTENT;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_MANAGE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_OPEN;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_OPEN_TREE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
 
-public class DocumentsActivity extends ActionBarActivity {
-    public static final String TAG = "Documents";
+public class DocumentsActivity extends BaseActivity {
 
     private static final String EXTRA_STATE = "state";
     private static final String EXTRA_AUTHENTICATED = "authenticated";
@@ -1640,117 +1631,6 @@ public class DocumentsActivity extends ActionBarActivity {
         }
     }
 
-    public static class State implements android.os.Parcelable {
-        public int action;
-        public String[] acceptMimes;
-
-        /** Explicit user choice */
-        public int userMode = MODE_UNKNOWN;
-        /** Derived after loader */
-        public int derivedMode = MODE_LIST;
-
-        /** Explicit user choice */
-        public int userSortOrder = SORT_ORDER_UNKNOWN;
-        /** Derived after loader */
-        public int derivedSortOrder = SORT_ORDER_DISPLAY_NAME;
-
-        public boolean allowMultiple = false;
-        public boolean showSize = false;
-        public boolean showFolderSize = false;
-        public boolean showThumbnail = false;
-        public boolean showHiddenFiles = false;
-        public boolean localOnly = false;
-        public boolean forceAdvanced = false;
-        public boolean showAdvanced = false;
-        public boolean rootMode = false;
-        public boolean stackTouched = false;
-        public boolean restored = false;
-
-        /** Current user navigation stack; empty implies recents. */
-        public DocumentStack stack = new DocumentStack();
-        /** Currently active search, overriding any stack. */
-        public String currentSearch;
-
-        /** Instance state for every shown directory */
-        public HashMap<String, SparseArray<Parcelable>> dirState = Maps.newHashMap();
-
-        public static final int ACTION_OPEN = 1;
-        public static final int ACTION_CREATE = 2;
-        public static final int ACTION_GET_CONTENT = 3;
-        public static final int ACTION_OPEN_TREE = 4;
-        public static final int ACTION_MANAGE = 5;
-        public static final int ACTION_BROWSE = 6;
-
-        public static final int MODE_UNKNOWN = 0;
-        public static final int MODE_LIST = 1;
-        public static final int MODE_GRID = 2;
-
-        public static final int SORT_ORDER_UNKNOWN = 0;
-        public static final int SORT_ORDER_DISPLAY_NAME = 1;
-        public static final int SORT_ORDER_LAST_MODIFIED = 2;
-        public static final int SORT_ORDER_SIZE = 3;
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            out.writeInt(action);
-            out.writeInt(userMode);
-            out.writeInt(acceptMimes.length);
-            out.writeStringArray(acceptMimes);
-            out.writeInt(userSortOrder);
-            out.writeInt(allowMultiple ? 1 : 0);
-            out.writeInt(showSize ? 1 : 0);
-            out.writeInt(showFolderSize ? 1 : 0);
-            out.writeInt(showThumbnail ? 1 : 0);
-            out.writeInt(showHiddenFiles ? 1 : 0);
-            out.writeInt(localOnly ? 1 : 0);
-            out.writeInt(forceAdvanced ? 1 : 0);
-            out.writeInt(showAdvanced ? 1 : 0);
-            out.writeInt(rootMode ? 1 : 0);
-            out.writeInt(stackTouched ? 1 : 0);
-            out.writeInt(restored ? 1 : 0);
-            DurableUtils.writeToParcel(out, stack);
-            out.writeString(currentSearch);
-            out.writeMap(dirState);
-        }
-
-        public static final Creator<State> CREATOR = new Creator<State>() {
-            @Override
-            public State createFromParcel(Parcel in) {
-                final State state = new State();
-                state.action = in.readInt();
-                state.userMode = in.readInt();
-                state.acceptMimes = new String[in.readInt()];
-                in.readStringArray(state.acceptMimes);
-                state.userSortOrder = in.readInt();
-                state.allowMultiple = in.readInt() != 0;
-                state.showSize = in.readInt() != 0;
-                state.showFolderSize = in.readInt() != 0;
-                state.showThumbnail = in.readInt() != 0;
-                state.showHiddenFiles = in.readInt() != 0;
-                state.localOnly = in.readInt() != 0;
-                state.forceAdvanced = in.readInt() != 0;
-                state.showAdvanced = in.readInt() != 0;
-                state.rootMode = in.readInt() != 0;
-                state.stackTouched = in.readInt() != 0;
-                state.restored = in.readInt() != 0;
-                DurableUtils.readFromParcel(in, state.stack);
-                state.currentSearch = in.readString();
-                in.readMap(state.dirState, null);
-                return state;
-            }
-
-            @Override
-            public State[] newArray(int size) {
-                return new State[size];
-            }
-        };
-    }
-
     private void dumpStack() {
         Log.d(TAG, "Current stack: ");
         Log.d(TAG, " * " + mState.stack.root);
@@ -1880,52 +1760,6 @@ public class DocumentsActivity extends ActionBarActivity {
         return result;
     }
 
-    public void showMsg(int msg){
-        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showError(int msg){
-        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showInfo(int msg){
-        showToast(msg, R.color.button_text_color_yellow, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showMsg(String msg){
-        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showError(String msg){
-        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showInfo(String msg){
-        showToast(msg, R.color.button_text_color_yellow, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showToast(String msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
-        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        snackbar.dismiss();
-                    }
-                })
-                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
-    }
-
-    public void showToast(int msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
-        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        snackbar.dismiss();
-                    }
-                })
-                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
-    }
-
     private void initControls() {
         mActionMenu = (FloatingActionsMenu) findViewById(R.id.fab);
         mCreateFile = (FloatingActionButton) findViewById(R.id.fab_create_file);
@@ -1986,14 +1820,4 @@ public class DocumentsActivity extends ActionBarActivity {
             }
         }
     };
-
-    public boolean isSAFIssue(String docId){
-        boolean isSAFIssue = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT
-                && !TextUtils.isEmpty(docId) && docId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
-
-        if(isSAFIssue){
-            showError(R.string.saf_issue);
-        }
-        return isSAFIssue;
-    }
 }

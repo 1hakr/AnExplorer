@@ -1,36 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.1'
 
     defaultConfig {
         applicationId "dev.dworks.apps.anexplorer"
         versionName "2.9"
         versionCode = 44
         minSdkVersion 14
-        targetSdkVersion 22
+        targetSdkVersion 23
     }
     signingConfigs {
-        try {
-            release {
-                def Properties localProps = new Properties()
-                localProps.load(new FileInputStream(file('../default.properties')))
-                def Properties keyProps = new Properties()
-                if (localProps['keystore.props.file'] != null) {
-                    keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
-                }
-                storeFile keyProps["store"] != null ? file(keyProps["store"]) : null
-                keyAlias keyProps["alias"]
-                storePassword keyProps["storePass"]
-                keyPassword keyProps["pass"]
-            }
-        }
-        catch (java.lang.Exception e){ }
+        release
     }
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources true
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
@@ -78,6 +64,14 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     freeCompile 'com.crashlytics.sdk.android:crashlytics:+'
     freeCompile 'com.google.android.gms:play-services-ads:+'
+    freeCompile 'com.google.android.gms:play-services-analytics:+'
     otherCompile 'com.crashlytics.sdk.android:crashlytics:+'
     otherCompile 'com.google.android.gms:play-services-ads:+'
 }
+
+def props = new Properties()
+props.load(new FileInputStream(rootProject.file("keystore.properties")))
+android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
+android.signingConfigs.release.storePassword props.keyStorePassword
+android.signingConfigs.release.keyAlias props.keyAlias
+android.signingConfigs.release.keyPassword props.keyAliasPassword
