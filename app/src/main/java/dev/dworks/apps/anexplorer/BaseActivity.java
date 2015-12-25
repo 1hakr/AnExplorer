@@ -189,24 +189,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         };
     }
 
-
-    public void showMsg(int msg){
-        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
-    }
-
     public void showError(int msg){
-        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showInfo(int msg){
-        showToast(msg, R.color.button_text_color_yellow, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showMsg(String msg){
-        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showError(String msg){
         showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
     }
 

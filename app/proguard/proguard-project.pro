@@ -73,7 +73,9 @@
 -dontwarn android.support.**
 
 # Crashlytics 1.+
+-keep class io.fabric.** { *; }
 -keep class com.crashlytics.** { *; }
+-keep class com.crashlytics.android.**
 -keepattributes SourceFile,LineNumberTable
 
 # Application classes that will be serialized/deserialized over Gson
