@@ -62,6 +62,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.android.support:design:+'
     compile 'com.google.guava:guava:18.0'
+    compile 'com.jaredrummler:android-processes:+'
     freeCompile 'com.crashlytics.sdk.android:crashlytics:+'
     freeCompile 'com.google.android.gms:play-services-ads:+'
     freeCompile 'com.google.android.gms:play-services-analytics:+'

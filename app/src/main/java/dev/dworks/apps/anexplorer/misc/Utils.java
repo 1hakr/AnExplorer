@@ -140,6 +140,10 @@ public class Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
+    public static boolean hasLollipopMR1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
+    }
+
     public static boolean hasMarshmallow() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
