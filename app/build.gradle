@@ -34,17 +34,17 @@ android {
     flavorDimensions  "release", "default"
     productFlavors {
         free {
-            flavorDimension "default"
+            dimension "default"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
-            flavorDimension "default"
+            dimension "default"
         }
         play {
-            flavorDimension "release"
+            dimension "release"
         }
         other {
-            flavorDimension "release"
+            dimension "release"
         }
     }
     lintOptions {
