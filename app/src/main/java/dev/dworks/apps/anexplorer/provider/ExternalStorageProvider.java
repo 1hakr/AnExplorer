@@ -112,6 +112,8 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_HIDDEN = "hidden";
     public static final String ROOT_ID_BOOKMARK = "bookmark";
 
+    private static final String DIR_ROOT = "/";
+
     private Handler mHandler;
 
     private final Object mRootsLock = new Object();
@@ -220,7 +222,7 @@ public class ExternalStorageProvider extends StorageProvider {
     private void includeOtherRoot() {
     	try {
             final String rootId = ROOT_ID_PHONE;
-            final File path = Environment.getRootDirectory();
+            final File path = new File(DIR_ROOT);
             mIdToPath.put(rootId, path);
 
             final RootInfo root = new RootInfo();
@@ -508,8 +510,11 @@ public class ExternalStorageProvider extends StorageProvider {
                 row.add(Root.COLUMN_DOCUMENT_ID, root.docId);
                 row.add(Root.COLUMN_PATH, root.path);
                 if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId)
-                        || root.rootId.startsWith(ROOT_ID_SECONDARY) || root.rootId.startsWith(ROOT_ID_PHONE)){
-                	row.add(Root.COLUMN_AVAILABLE_BYTES, path.getFreeSpace());
+                        || root.rootId.startsWith(ROOT_ID_SECONDARY)
+                        || root.rootId.startsWith(ROOT_ID_PHONE)) {
+                    long available =  root.rootId.startsWith(ROOT_ID_PHONE)
+                            ? Environment.getRootDirectory().getFreeSpace() : path.getFreeSpace();
+                	row.add(Root.COLUMN_AVAILABLE_BYTES, available);
                     row.add(Root.COLUMN_TOTAL_BYTES, path.getTotalSpace());
                 }
             }
