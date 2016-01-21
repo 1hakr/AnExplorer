@@ -86,6 +86,7 @@ public class FloatingActionButton extends ImageButton {
         updateDrawableSize();
 
         updateBackground();
+        setContentDescription(mTitle);
     }
 
     private void updateDrawableSize() {

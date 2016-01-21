@@ -36,7 +36,8 @@
             android:background="?android:attr/selectableItemBackground"
             android:padding="16dp"
             android:src="@drawable/ic_action_close"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:contentDescription="@android:string/cancel"/>
 
         <EditText
             android:id="@android:id/title"
@@ -63,7 +64,8 @@
                 android:src="@drawable/ic_action_done"
                 android:text="@string/menu_save"
                 android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:contentDescription="@string/menu_save"/>
 
             <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
                 android:id="@android:id/progress"

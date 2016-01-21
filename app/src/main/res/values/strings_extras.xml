@@ -120,5 +120,8 @@
     <string name="rename_error">Failed to rename</string>
     <string name="compress_error">Failed to compress</string>
     <string name="uncompress_error">Failed to uncompress</string>
+    <string name="add">Add</string>
+    <string name="made_with_love">Made with Love</string>
+    <string name="dworks_logo">DWorkS logo</string>
 
 </resources>
