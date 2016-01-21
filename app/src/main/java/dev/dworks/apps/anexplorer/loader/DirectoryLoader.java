@@ -92,6 +92,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
         final DirectoryResult result = new DirectoryResult();
 
         int userMode = State.MODE_UNKNOWN;
+        int userSortOrder = State.SORT_ORDER_UNKNOWN;
 
         // Use default document when searching
         if (mType == DirectoryFragment.TYPE_SEARCH) {
@@ -114,6 +115,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             cursor = resolver.query(stateUri, null, null, null, null);
             if (cursor.moveToFirst()) {
                 userMode = getCursorInt(cursor, StateColumns.MODE);
+                userSortOrder = getCursorInt(cursor, StateColumns.SORT_ORDER);
             }
         } finally {
             IoUtils.closeQuietly(cursor);
@@ -129,8 +131,8 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             }
         }
 
-        if (mUserSortOrder != State.SORT_ORDER_UNKNOWN) {
-            result.sortOrder = mUserSortOrder;
+        if (userSortOrder != State.SORT_ORDER_UNKNOWN) {
+            result.sortOrder = userSortOrder;
         } else {
             if ((mDoc.flags & Document.FLAG_DIR_PREFERS_LAST_MODIFIED) != 0) {
                 result.sortOrder = State.SORT_ORDER_LAST_MODIFIED;
@@ -144,7 +146,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             //result.sortOrder = State.SORT_ORDER_UNKNOWN;
         }
 
-        Log.d(TAG, "userMode=" + userMode + ", userSortOrder=" + mUserSortOrder + " --> mode="
+        Log.d(TAG, "userMode=" + userMode + ", userSortOrder=" + userSortOrder + " --> mode="
                 + result.mode + ", sortOrder=" + result.sortOrder);
 
         ContentProviderClient client = null;

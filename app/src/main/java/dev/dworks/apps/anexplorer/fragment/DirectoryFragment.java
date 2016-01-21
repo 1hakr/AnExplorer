@@ -337,7 +337,9 @@ public class DirectoryFragment extends ListFragment {
 				if (result.mode != MODE_UNKNOWN) {
 					state.derivedMode = result.mode;
 				}
-				state.derivedSortOrder = result.sortOrder;
+                if (result.sortOrder != SORT_ORDER_UNKNOWN) {
+                    state.derivedSortOrder = result.sortOrder;
+                }
 				((BaseActivity) context).onStateChanged();
 
 				updateDisplayState();
@@ -402,45 +404,59 @@ public class DirectoryFragment extends ListFragment {
     }
 
 	public void onUserSortOrderChanged() {
+        updateUserState(StateColumns.SORT_ORDER);
 		// Sort order change always triggers reload; we'll trigger state change
 		// on the flip side.
 		getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
 	}
 
-	public void onUserModeChanged() {
-		final ContentResolver resolver = getActivity().getContentResolver();
-		final State state = getDisplayState(this);
+    public void onUserModeChanged() {
 
-		final RootInfo root = getArguments().getParcelable(EXTRA_ROOT);
-		final DocumentInfo doc = getArguments().getParcelable(EXTRA_DOC);
-
-		if (root != null && doc != null) {
-			final Uri stateUri = RecentsProvider.buildState(root.authority, root.rootId, doc.documentId);
-			final ContentValues values = new ContentValues();
-			values.put(StateColumns.MODE, state.userMode);
-
-			new AsyncTask<Void, Void, Void>() {
-				@Override
-				protected Void doInBackground(Void... params) {
-					resolver.insert(stateUri, values);
-					return null;
-				}
-			}.execute();
-		}
-
+        updateUserState(StateColumns.MODE);
 		// Mode change is just visual change; no need to kick loader, and
 		// deliver change event immediately.
-		state.derivedMode = state.userMode;
 		((BaseActivity) getActivity()).onStateChanged();
 
 		updateDisplayState();
 	}
 
+    private void updateUserState(String column) {
+        final ContentResolver resolver = getActivity().getContentResolver();
+        final State state = getDisplayState(this);
+
+        final RootInfo root = getArguments().getParcelable(EXTRA_ROOT);
+        final DocumentInfo doc = getArguments().getParcelable(EXTRA_DOC);
+
+        if (root != null && doc != null) {
+            final Uri stateUri = RecentsProvider.buildState(root.authority, root.rootId, doc.documentId);
+            final ContentValues values = new ContentValues();
+            if(column.startsWith(StateColumns.MODE)) {
+                values.put(StateColumns.MODE, state.userMode);
+            } else {
+                values.put(StateColumns.SORT_ORDER, state.userSortOrder);
+            }
+
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    resolver.insert(stateUri, values);
+                    return null;
+                }
+            }.execute();
+        }
+        if(column.startsWith(StateColumns.MODE)) {
+            state.derivedMode = state.userMode;
+        } else {
+            state.derivedSortOrder = state.userSortOrder;
+        }
+    }
+
 	private void updateDisplayState() {
 		final State state = getDisplayState(this);
 
         mDefaultColor = SettingsActivity.getActionBarColor(getActivity());
-        if (mLastMode == state.derivedMode && mLastShowSize == state.showSize
+        if (mLastMode == state.derivedMode &&  mLastSortOrder == state.derivedSortOrder
+                && mLastShowSize == state.showSize
                 && mLastShowFolderSize == state.showFolderSize
 				&& mLastShowThumbnail == state.showThumbnail
 				&& mLastShowHiddenFiles == state.showHiddenFiles
@@ -448,6 +464,7 @@ public class DirectoryFragment extends ListFragment {
 			return;
         boolean refreshData = mLastShowHiddenFiles != state.showHiddenFiles;
 		mLastMode = state.derivedMode;
+        mLastSortOrder = state.derivedSortOrder;
 		mLastShowSize = state.showSize;
 		mLastShowFolderSize = state.showFolderSize;
 		mLastShowThumbnail = state.showThumbnail;
