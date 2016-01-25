@@ -3,6 +3,7 @@ package dev.dworks.apps.anexplorer.ui;
 import android.content.Context;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -11,8 +12,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
-import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 
 /**
@@ -41,9 +42,13 @@ public class AdWrapper extends FrameLayout {
 
     private void init(Context context) {
         //Ads
-        mInterstitialAd = new InterstitialAd(context);
-        //LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
-        initInterstitialAd();
+        if(!Utils.isTelevision(context)){
+            LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
+            initAd();
+        } else {
+            mInterstitialAd = new InterstitialAd(context);
+            initInterstitialAd();
+        }
     }
 
     public void initInterstitialAd(){
@@ -73,17 +78,13 @@ public class AdWrapper extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if(BuildConfig.DEBUG){
-            return;
-        }
         showInterstitial();
-
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        //showAd();
+        showAd();
     }
 
     @Override
