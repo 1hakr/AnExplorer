@@ -311,12 +311,12 @@ public class DocumentsActivity extends BaseActivity {
 
     @Override
     public void again() {
-        if(Utils.hasMarshmallow()) {
+/*        if(Utils.hasMarshmallow()) {
             ExternalStorageProvider.updateVolumes(this);
             mRoots = DocumentsApplication.getRootsCache(this);
             mRoots.updateAsync();
             onRootPicked(getCurrentRoot(), true);
-        }
+        }*/
     }
 
     private void lockInfoContainter() {
@@ -1343,15 +1343,15 @@ public class DocumentsActivity extends BaseActivity {
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            if(MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)){
+            view.setDataAndType(doc.derivedUri, doc.mimeType);
+            if(MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
+                    || !Utils.isIntentAvailable(this, view)){
             	try {
                 	File file = new File(doc.path);
     				view.setDataAndType(Uri.fromFile(file), doc.mimeType);
 				} catch (Exception e) {
 					view.setDataAndType(doc.derivedUri, doc.mimeType);
 				}
-            }else{
-            	view.setDataAndType(doc.derivedUri, doc.mimeType);
             }
 
             if(Utils.isIntentAvailable(this, view)){
