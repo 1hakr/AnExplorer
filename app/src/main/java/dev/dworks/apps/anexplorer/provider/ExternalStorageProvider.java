@@ -512,10 +512,10 @@ public class ExternalStorageProvider extends StorageProvider {
                 if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId)
                         || root.rootId.startsWith(ROOT_ID_SECONDARY)
                         || root.rootId.startsWith(ROOT_ID_PHONE)) {
-                    long available =  root.rootId.startsWith(ROOT_ID_PHONE)
-                            ? Environment.getRootDirectory().getFreeSpace() : path.getFreeSpace();
-                	row.add(Root.COLUMN_AVAILABLE_BYTES, available);
-                    row.add(Root.COLUMN_TOTAL_BYTES, path.getTotalSpace());
+                    final File file = root.rootId.startsWith(ROOT_ID_PHONE)
+                            ? Environment.getRootDirectory() : path;
+                	row.add(Root.COLUMN_AVAILABLE_BYTES, file.getFreeSpace());
+                    row.add(Root.COLUMN_TOTAL_BYTES, file.getTotalSpace());
                 }
             }
         }
