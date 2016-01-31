@@ -232,30 +232,16 @@ public class DocumentsActivity extends BaseActivity {
 
         setSupportActionBar(mToolbar);
 
+        mRootsContainer = findViewById(R.id.drawer_roots);
+        mInfoContainer = findViewById(R.id.container_info);
 
-        if (mShowAsDialog) {
-            if(SettingsActivity.getAsDialog(this)){
-                final WindowManager.LayoutParams a = getWindow().getAttributes();
+        // Non-dialog means we have a drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-                final Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-
-                getWindow().setAttributes(a);
-            }
-        } else {
-
-            mRootsContainer = findViewById(R.id.drawer_roots);
-            mInfoContainer = findViewById(R.id.container_info);
-
-            // Non-dialog means we have a drawer
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
-            mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
-            lockInfoContainter();
-        }
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+        mDrawerLayout.setDrawerListener(mDrawerListener);
+        mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
+        lockInfoContainter();
 
         changeActionBarColor();
         initProtection();

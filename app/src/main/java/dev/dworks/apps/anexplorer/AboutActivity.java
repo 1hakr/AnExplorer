@@ -18,28 +18,12 @@ package dev.dworks.apps.anexplorer;
 
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -52,19 +36,6 @@ public class AboutActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_about);
 		
         final Resources res = getResources();
-        boolean mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
-
-        if (mShowAsDialog) {
-        	if(SettingsActivity.getAsDialog(this)){
-                final WindowManager.LayoutParams a = getWindow().getAttributes();
-
-                final Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-
-                getWindow().setAttributes(a);
-        	}
-        }
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
         logo.setTextColor(SettingsActivity.getActionBarColor(this));
