@@ -343,7 +343,14 @@ public class RootsCache {
             return true;
         }
     }
-    
+
+    public RootInfo getOneRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            return root;
+        }
+        return getRecentsRoot();
+    }
+
     public RootInfo getDefaultRoot() {
     	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
     		if (root.isExternalStorage() || root.isSecondaryStorage()) {

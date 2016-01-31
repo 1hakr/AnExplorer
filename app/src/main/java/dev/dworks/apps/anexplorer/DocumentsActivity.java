@@ -35,6 +35,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteFullException;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -301,7 +302,7 @@ public class DocumentsActivity extends BaseActivity {
             ExternalStorageProvider.updateVolumes(this);
             mRoots = DocumentsApplication.getRootsCache(this);
             mRoots.updateAsync();
-            onRootPicked(getCurrentRoot(), true);
+            onRootPicked(mRoots.getOneRoot(), true);
         }
     }
 
