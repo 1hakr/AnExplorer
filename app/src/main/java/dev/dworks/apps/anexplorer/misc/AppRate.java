@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Created by nicolas on 06/03/14.
@@ -174,9 +175,11 @@ public class AppRate {
             mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, null);
         }
 
+        View background = mainView.findViewById(R.id.background);
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
 
+        background.setBackgroundColor(Utils.getLightColor(SettingsActivity.getActionBarColor(activity)));
         textView.setText(text);
 
         close.setOnClickListener(new View.OnClickListener() {
