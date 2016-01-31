@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,7 +25,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -672,7 +670,7 @@ public class FileUtils {
             throws FileNotFoundException {
         String name;
         String ext;
-        if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType)) {
+        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
             name = displayName;
             ext = null;
         } else {
@@ -694,7 +692,8 @@ public class FileUtils {
             }
             final String extFromMimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(
                     mimeType);
-            if (Objects.equals(mimeType, mimeTypeFromExt) || Objects.equals(ext, extFromMimeType)) {
+            if (dev.dworks.apps.anexplorer.libcore.util.Objects.equals(mimeType, mimeTypeFromExt)
+                    || dev.dworks.apps.anexplorer.libcore.util.Objects.equals(ext, extFromMimeType)) {
                 // Extension maps back to requested MIME type; allow it
             } else {
                 // No match; insist that create file matches requested MIME
@@ -713,6 +712,7 @@ public class FileUtils {
         }
         return file;
     }
+
     private static File buildFile(File parent, String name, String ext) {
         if (TextUtils.isEmpty(ext)) {
             return new File(parent, name);
@@ -720,6 +720,7 @@ public class FileUtils {
             return new File(parent, name + "." + ext);
         }
     }
+
     public static @NonNull File[] listFilesOrEmpty(File dir) {
         File[] res = dir.listFiles();
         if (res != null) {
