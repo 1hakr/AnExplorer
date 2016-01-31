@@ -75,7 +75,7 @@
         <item name="*android:windowFixedWidthMinor">@null</item>
         <item name="*android:windowMinWidthMajor">@null</item>
         <item name="*android:windowMinWidthMinor">@null</item>
-        <item name="*android:windowFixedHeightMajor">80%</item>
+<!--        <item name="*android:windowFixedHeightMajor">80%</item>-->
         <item name="*android:windowFixedHeightMinor">90%</item>
 
         <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
