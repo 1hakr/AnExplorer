@@ -45,14 +45,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
     private static final String KEY_FILE_HIDDEN = "fileHidden";
     public static final String KEY_ROOT_MODE = "rootMode";
-    public static final String KEY_TRANSLUCENT_MODE = "translucentMode";
     public static final String KEY_AS_DIALOG = "asDialog";
     public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
     public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
 	
-	public boolean translucentMode = false;
 	private boolean mShowAsDialog;
 	private Resources res;
 	private int actionBarColor;
@@ -87,11 +85,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static boolean getRootMode(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_ROOT_MODE, false);
-    }
-    
-    public static boolean getTranslucentMode(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_TRANSLUCENT_MODE, context.getResources().getBoolean(R.bool.transparent_nav));
     }
     
     public static boolean getAsDialog(Context context) {
@@ -130,7 +123,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
         }
         
-        translucentMode = getTranslucentMode(this);
         actionBarColor = getActionBarColor(this);
     }
 
@@ -205,26 +197,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onResume() {
     	super.onResume();
         changeActionBarColor(0);
-    }
-    
-    @Override
-    public void finish() {
-    	if((getTranslucentMode(this) != translucentMode)){
-    		setResult(RESULT_FIRST_USER);
-    	}
-    	super.finish();
-    }
-    
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-    	super.onSaveInstanceState(outState);
-    	outState.putBoolean("changed", translucentMode);
-    }
-    
-    @Override
-    protected void onRestoreInstanceState(Bundle state) {
-    	super.onRestoreInstanceState(state);
-    	translucentMode = state.getBoolean("changed");
     }
 
 	public void changeActionBarColor(int newColor) {

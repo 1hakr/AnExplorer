@@ -176,13 +176,11 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle icicle) {
 
-        if(SettingsActivity.getTranslucentMode(this)){
-            if(Utils.hasLollipop()){
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            }
-            else if(Utils.hasKitKat()){
-                setTheme(R.style.Theme_Document_Translucent);
-            }
+        if(Utils.hasLollipop()){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+        else if(Utils.hasKitKat()){
+            setTheme(R.style.Theme_Document_Translucent);
         }
         setUpStatusBar();
     	
@@ -223,7 +221,7 @@ public class DocumentsActivity extends BaseActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextAppearance(context, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
-        if(SettingsActivity.getTranslucentMode(this) && Utils.hasKitKat() && !Utils.hasLollipop()) {
+        if(Utils.hasKitKat() && !Utils.hasLollipop()) {
             ((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
             mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
         }
@@ -1669,7 +1667,7 @@ public class DocumentsActivity extends BaseActivity {
 		Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
 		LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
 
-		if (oldBackground == null || SettingsActivity.getTranslucentMode(this)) {
+		if (oldBackground == null) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
 				ld.setCallback(drawableCallback);
 			} else {
@@ -1726,10 +1724,7 @@ public class DocumentsActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpStatusBar() {
-        int color = getResources().getColor(android.R.color.black);
-        if(SettingsActivity.getTranslucentMode(this)){
-            color = Utils.getStatusBarColor(SettingsActivity.getActionBarColor(this));
-        }
+        int color = Utils.getStatusBarColor(SettingsActivity.getActionBarColor(this));
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }
@@ -1742,10 +1737,7 @@ public class DocumentsActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpDefaultStatusBar() {
-        int color = getResources().getColor(android.R.color.black);
-        if(SettingsActivity.getTranslucentMode(this)){
-            color = getResources().getColor(R.color.alertColor);
-        }
+        int color = getResources().getColor(R.color.alertColor);
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }

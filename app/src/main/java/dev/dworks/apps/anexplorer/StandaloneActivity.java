@@ -104,13 +104,11 @@ public class StandaloneActivity extends BaseActivity {
     private State mState;
     @Override
     public void onCreate(Bundle icicle) {
-        if(SettingsActivity.getTranslucentMode(this)){
-            if(Utils.hasLollipop()){
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            }
-            else if(Utils.hasKitKat()){
-                setTheme(R.style.Theme_Document_Translucent);
-            }
+        if(Utils.hasLollipop()){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+        else if(Utils.hasKitKat()){
+            setTheme(R.style.Theme_Document_Translucent);
         }
         setUpStatusBar();
         // Debug.waitForDebugger();
