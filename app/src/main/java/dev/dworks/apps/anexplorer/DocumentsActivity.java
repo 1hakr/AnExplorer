@@ -95,6 +95,7 @@ import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.PermissionUtil;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper.PINDialogFragment;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
@@ -306,17 +307,19 @@ public class DocumentsActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
 
-        requestStoragePermissions();
+        if(!PermissionUtil.hasStoragePermission(this)) {
+            requestStoragePermissions();
+        }
     }
 
     @Override
     public void again() {
-/*        if(Utils.hasMarshmallow()) {
+        if(Utils.hasMarshmallow()) {
             ExternalStorageProvider.updateVolumes(this);
             mRoots = DocumentsApplication.getRootsCache(this);
             mRoots.updateAsync();
             onRootPicked(getCurrentRoot(), true);
-        }*/
+        }
     }
 
     private void lockInfoContainter() {

@@ -19,6 +19,7 @@ package dev.dworks.apps.anexplorer.misc;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
@@ -26,7 +27,7 @@ import android.support.v7.app.AppCompatActivity;
  * Utility class that wraps access to the runtime permissions API in M and provides basic helper
  * methods.
  */
-public abstract class PermissionUtil {
+public class PermissionUtil {
 
     /**
      * Check that all given permissions have been granted by verifying that each entry in the
@@ -61,15 +62,9 @@ public abstract class PermissionUtil {
         return true;
     }
 
-    public static boolean hasFineLocationPermission(Activity activity){
-        return ContextCompat.checkSelfPermission(activity,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasGetAccountsPermission(Activity activity){
-        return ContextCompat.checkSelfPermission(activity,
-                Manifest.permission.GET_ACCOUNTS)
+    public static boolean hasStoragePermission(Activity activity){
+        return ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
     }
 }

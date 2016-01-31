@@ -229,14 +229,14 @@ public abstract class BaseActivity extends ActionBarActivity {
         return isSAFIssue;
     }
 
-    private static String[] storagePermissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static String[] storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     public static final int REQUEST_STORAGE = 47;
 
     protected void requestStoragePermissions() {
-        if(PermissionUtil.hasGetAccountsPermission(this)) {
+        if(PermissionUtil.hasStoragePermission(this)) {
             again();
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 Utils.showRetrySnackBar(this, "Storage permissions are needed for Exploring.", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -257,6 +257,9 @@ public abstract class BaseActivity extends ActionBarActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     again();
+                } else {
+                    Utils.showRetrySnackBar(this, "Permission grating failed", null);
+                    requestStoragePermissions();
                 }
                 return;
             }
