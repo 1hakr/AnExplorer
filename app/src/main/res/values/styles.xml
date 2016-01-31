@@ -23,6 +23,14 @@
          dialog on large tablets
 
     -->
+
+    <style name="Theme.Splash" parent="@style/DocumentsTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+
+    </style>
+
     <style name="Theme.Document" parent="@style/DocumentsTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
