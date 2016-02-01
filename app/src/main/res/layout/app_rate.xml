@@ -4,6 +4,7 @@
     android:layout_height="wrap_content" >
 
     <LinearLayout
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
@@ -19,7 +20,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_close"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@android:string/cancel"/>
 
         <TextView
             android:id="@+id/text"

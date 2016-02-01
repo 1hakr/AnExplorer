@@ -1,14 +1,15 @@
 package dev.dworks.apps.anexplorer.model;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.MODE_UNKNOWN;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_UNKNOWN;
+import android.content.ContentProviderClient;
+import android.database.Cursor;
 
 import java.io.Closeable;
 
-import android.content.ContentProviderClient;
-import android.database.Cursor;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 
 public class DirectoryResult implements Closeable {
 	public ContentProviderClient client;

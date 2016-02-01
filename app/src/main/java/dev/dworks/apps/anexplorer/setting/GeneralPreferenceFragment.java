@@ -1,16 +1,16 @@
 package dev.dworks.apps.anexplorer.setting;
 
-import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_AS_DIALOG;
-import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ROOT_MODE;
-import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACTIONBAR_COLOR;
-import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_TRANSLUCENT_MODE;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceCategory;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Utils;
+
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACTIONBAR_COLOR;
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ROOT_MODE;
 
 public class GeneralPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
 	
@@ -28,21 +28,6 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 		if(!Utils.isRooted()){
 			PreferenceCategory pref = (PreferenceCategory) getPreferenceManager().findPreference("advanced");
 			Preference preference = findPreference(KEY_ROOT_MODE);
-			if(null != preference)
-				pref.removePreference(preference);
-		}
-		
-		if(!Utils.hasKitKat()){
-			PreferenceCategory pref = (PreferenceCategory) getPreferenceManager().findPreference("theme");
-			Preference preference = findPreference(KEY_TRANSLUCENT_MODE);
-			if(null != preference)
-				pref.removePreference(preference);				
-			
-		}
-		
-		if(!Utils.isTablet(getActivity())){
-			PreferenceCategory pref = (PreferenceCategory) getPreferenceManager().findPreference("theme");
-			Preference preference = findPreference(KEY_AS_DIALOG);
 			if(null != preference)
 				pref.removePreference(preference);
 		}

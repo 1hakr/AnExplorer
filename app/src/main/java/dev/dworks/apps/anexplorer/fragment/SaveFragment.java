@@ -32,7 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -144,7 +144,7 @@ public class SaveFragment extends Fragment implements OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		final DocumentsActivity activity = DocumentsActivity.get(SaveFragment.this);
+		final BaseActivity activity = BaseActivity.get(SaveFragment.this);
 		switch (v.getId()) {
 		case android.R.id.button1:
 			if (mReplaceTarget != null) {

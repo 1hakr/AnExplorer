@@ -47,7 +47,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
-import dev.dworks.apps.anexplorer.DocumentsActivity.State;
+import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
@@ -343,10 +343,17 @@ public class RootsCache {
             return true;
         }
     }
-    
+
+    public RootInfo getOneRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            return root;
+        }
+        return getRecentsRoot();
+    }
+
     public RootInfo getDefaultRoot() {
     	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (root.isExternalStorage() || root.isSecondaryStorage()) {
+    		if (root.isInternalStorage() || root.isExternalStorage() || root.isSecondaryStorage()) {
                 return root;
             }
 		}
@@ -361,7 +368,16 @@ public class RootsCache {
 		}
         return getRecentsRoot();
     }
-    
+
+    public RootInfo getSecondaryRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isSecondaryStorage()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
     public RootInfo getRecentsRoot() {
         return mRecentsRoot;
     }

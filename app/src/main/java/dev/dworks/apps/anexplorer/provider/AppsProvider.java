@@ -30,16 +30,22 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import com.jaredrummler.android.processes.ProcessManager;
+import com.jaredrummler.android.processes.models.AndroidAppProcess;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -49,6 +55,7 @@ import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 
 /**
  * Presents a {@link DocumentsContract} view of Apps contents.
@@ -85,7 +92,8 @@ public class AppsProvider extends DocumentsProvider {
 		processTypeCache.put(RunningAppProcessInfo.IMPORTANCE_VISIBLE, "Visible");
 		processTypeCache.put(RunningAppProcessInfo.IMPORTANCE_EMPTY, "Empty");
 	}
-    @Override
+
+	@Override
     public boolean onCreate() {
 		packageManager = getContext().getPackageManager();
 		activityManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -194,8 +202,11 @@ public class AppsProvider extends DocumentsProvider {
 		} catch (Exception e) {
 		}
 
+		final RootInfo root = DocumentsApplication.getRootsCache(getContext()).getDefaultRoot();
+		File rootFile = (null != root) ? new File(root.path) : Environment.getExternalStorageDirectory();
+
     	final File fileFrom = new File(fromFilePath);
-    	final File fileTo = new File(Environment.getExternalStorageDirectory(), "AppBackup");
+    	final File fileTo = new File(rootFile, "AppBackup");
     	if(!fileTo.exists()){
     		fileTo.mkdir();
     	}
@@ -230,7 +241,7 @@ public class AppsProvider extends DocumentsProvider {
         		}	
         	}
         	else{
-    			List<RunningAppProcessInfo> runningProcessesList = activityManager.getRunningAppProcesses();
+    			List<RunningAppProcessInfo> runningProcessesList = getRunningAppProcessInfo(getContext());
     			for (RunningAppProcessInfo processInfo : runningProcessesList) {
     				includeAppFromProcess(result, docId, processInfo, null);
     			}
@@ -401,4 +412,31 @@ public class AppsProvider extends DocumentsProvider {
 		android.os.Debug.MemoryInfo[] memInfos = activityManager.getProcessMemoryInfo(new int[] { pid });
 		return memInfos[0].getTotalPss() * 1024;
 	}
+
+	/**
+	 * Returns a list of application processes that are running on the device.
+	 *
+	 * @return a list of RunningAppProcessInfo records, or null if there are no
+	 * running processes (it will not return an empty list).  This list ordering is not
+	 * specified.
+	 */
+	public static List<ActivityManager.RunningAppProcessInfo> getRunningAppProcessInfo(Context ctx) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+			List<AndroidAppProcess> runningAppProcesses = ProcessManager.getRunningAppProcesses();
+			List<ActivityManager.RunningAppProcessInfo> appProcessInfos = new ArrayList<>();
+			for (AndroidAppProcess process : runningAppProcesses) {
+				ActivityManager.RunningAppProcessInfo info = new ActivityManager.RunningAppProcessInfo(
+						process.name, process.pid, null
+				);
+				info.uid = process.uid;
+                info.importance = process.foreground ? RunningAppProcessInfo.IMPORTANCE_FOREGROUND : RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+				// TODO: Get more information about the process. pkgList, importance, lru, etc.
+				appProcessInfos.add(info);
+			}
+			return appProcessInfos;
+		}
+		ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+		return am.getRunningAppProcesses();
+	}
+
 }

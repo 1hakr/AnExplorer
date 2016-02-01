@@ -21,6 +21,10 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+
     <application
         android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
         android:allowBackup="true"
@@ -32,7 +36,7 @@
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
             android:name="dev.dworks.apps.anexplorer.DocumentsActivity"
-            android:theme="@style/Theme.Document">
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
 
@@ -80,6 +84,12 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="dev.dworks.apps.anexplorer.StandaloneActivity"
+            android:theme="@style/Theme.Document" >
+        </activity>
+
         <activity
             android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
             android:exported="false"

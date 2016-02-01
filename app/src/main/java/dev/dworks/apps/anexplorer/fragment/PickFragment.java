@@ -28,7 +28,7 @@ import android.widget.Button;
 
 import java.util.Locale;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 
@@ -71,7 +71,7 @@ public class PickFragment extends Fragment {
     private View.OnClickListener mPickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final DocumentsActivity activity = DocumentsActivity.get(PickFragment.this);
+            final BaseActivity activity = BaseActivity.get(PickFragment.this);
             activity.onPickRequested(mPickTarget);
         }
     };

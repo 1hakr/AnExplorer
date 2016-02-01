@@ -168,6 +168,7 @@
         android:layout_height="30dp"
         android:layout_gravity="bottom|end"
         android:drawableBottom="@drawable/ic_menu_moreoverflow_white"
-        android:paddingBottom="5dp" />
+        android:paddingBottom="5dp"
+        android:contentDescription="@string/abc_action_menu_overflow_description"/>
 
 </FrameLayout>

@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -28,13 +27,14 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -75,7 +75,7 @@ public class CreateDirectoryFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 final String displayName = text1.getText().toString();
 
-                final DocumentsActivity activity = (DocumentsActivity) getActivity();
+                final BaseActivity activity = (BaseActivity) getActivity();
                 final DocumentInfo cwd = activity.getCurrentDirectory();
 
                 if(TextUtils.isEmpty(displayName)){
@@ -92,12 +92,12 @@ public class CreateDirectoryFragment extends DialogFragment {
     }
     
     private class CreateDirectoryTask extends AsyncTask<Void, Void, DocumentInfo> {
-        private final DocumentsActivity mActivity;
+        private final BaseActivity mActivity;
         private final DocumentInfo mCwd;
 		private final String mDisplayName;
 
         public CreateDirectoryTask(
-                DocumentsActivity activity, DocumentInfo cwd, String displayName) {
+                BaseActivity activity, DocumentInfo cwd, String displayName) {
             mActivity = activity;
             mCwd = cwd;
             mDisplayName = displayName;

@@ -45,15 +45,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
     private static final String KEY_FILE_HIDDEN = "fileHidden";
     public static final String KEY_ROOT_MODE = "rootMode";
-    public static final String KEY_TRANSLUCENT_MODE = "translucentMode";
-    public static final String KEY_AS_DIALOG = "asDialog";
     public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
     public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
 	
-	public boolean translucentMode = false;
-	private boolean mShowAsDialog;
 	private Resources res;
 	private int actionBarColor;
     private final Handler handler = new Handler();
@@ -89,16 +85,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 .getBoolean(KEY_ROOT_MODE, false);
     }
     
-    public static boolean getTranslucentMode(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_TRANSLUCENT_MODE, context.getResources().getBoolean(R.bool.transparent_nav));
-    }
-    
-    public static boolean getAsDialog(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_AS_DIALOG, false);
-    }
-    
     public static int getActionBarColor(Context context) {
     	int newColor = context.getResources().getColor(R.color.defaultColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -116,21 +102,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         res = getResources();
-        mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
         changeActionBarColor(0);
-        if (mShowAsDialog) {
-            if(SettingsActivity.getAsDialog(this)){
-                final WindowManager.LayoutParams a = getWindow().getAttributes();
-
-                final Point size = new Point();
-                getWindowManager().getDefaultDisplay().getSize(size);
-                a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
-
-                getWindow().setAttributes(a);
-            }
-        }
-        
-        translucentMode = getTranslucentMode(this);
         actionBarColor = getActionBarColor(this);
     }
 
@@ -205,26 +177,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onResume() {
     	super.onResume();
         changeActionBarColor(0);
-    }
-    
-    @Override
-    public void finish() {
-    	if((getTranslucentMode(this) != translucentMode)){
-    		setResult(RESULT_FIRST_USER);
-    	}
-    	super.finish();
-    }
-    
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-    	super.onSaveInstanceState(outState);
-    	outState.putBoolean("changed", translucentMode);
-    }
-    
-    @Override
-    protected void onRestoreInstanceState(Bundle state) {
-    	super.onRestoreInstanceState(state);
-    	translucentMode = state.getBoolean("changed");
     }
 
 	public void changeActionBarColor(int newColor) {

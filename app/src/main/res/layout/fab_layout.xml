@@ -8,7 +8,8 @@
     android:layout_gravity="bottom|end"
     android:layout_margin="10dp"
     android:src="@drawable/ic_add_white"
-    tools:showIn="@layout/fragment_directory">
+    tools:showIn="@layout/fragment_directory"
+    android:contentDescription="@string/add">
 
     <dev.dworks.apps.anexplorer.ui.FloatingActionButton
         android:id="@+id/fab_create_file"

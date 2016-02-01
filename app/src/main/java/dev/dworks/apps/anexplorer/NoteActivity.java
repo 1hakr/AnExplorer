@@ -16,11 +16,12 @@ package dev.dworks.apps.anexplorer;
  * limitations under the License.
  */
 
-import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -28,8 +29,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-
-import com.github.mrengineer13.snackbar.SnackBar;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -397,17 +396,18 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         return path;
     }
 
-    public void showError(String msg){
-        showToast(msg, SnackBar.Style.ALERT, SnackBar.SHORT_SNACK);
+    public void showError(String msg) {
+        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
     }
 
-    public void showToast(String msg, SnackBar.Style style, short duration){
-        new SnackBar.Builder(this)
-                .withMessage(msg)
-                .withStyle(style)
-                .withActionMessageId(android.R.string.ok)
-                .withDuration(duration)
-                .show();
+    public void showToast(String msg, int actionColor, int duration){
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        })
+                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
     }
-
 }

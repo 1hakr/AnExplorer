@@ -49,8 +49,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
-import dev.dworks.apps.anexplorer.DocumentsActivity.State;
+import dev.dworks.apps.anexplorer.BaseActivity.State;
+import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
@@ -63,7 +63,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
 
 /**
  * Display directories where recent creates took place.
@@ -109,7 +109,7 @@ public class RecentsCreateFragment extends ListFragment {
         mListView.setAdapter(mAdapter);
 
         final RootsCache roots = DocumentsApplication.getRootsCache(context);
-        final State state = ((DocumentsActivity) getActivity()).getDisplayState();
+        final State state = ((BaseActivity) getActivity()).getDisplayState();
 
         mCallbacks = new LoaderCallbacks<List<DocumentStack>>() {
             @Override
@@ -129,7 +129,7 @@ public class RecentsCreateFragment extends ListFragment {
                 }
                 // When launched into empty recents, show drawer
                 if (mAdapter.isEmpty() && !state.stackTouched) {
-                    ((DocumentsActivity) context).setRootsDrawerOpen(true);
+                    ((BaseActivity) context).setRootsDrawerOpen(true);
                 }
             }
 
@@ -148,7 +148,7 @@ public class RecentsCreateFragment extends ListFragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             final DocumentStack stack = mAdapter.getItem(position);
-            ((DocumentsActivity) getActivity()).onStackPicked(stack);
+            ((BaseActivity) getActivity()).onStackPicked(stack);
         }
     };
 

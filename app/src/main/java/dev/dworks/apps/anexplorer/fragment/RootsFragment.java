@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -31,6 +30,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -52,8 +52,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
-import dev.dworks.apps.anexplorer.DocumentsActivity.State;
+import dev.dworks.apps.anexplorer.BaseActivity;
+import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
@@ -66,7 +66,7 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 
 /**
  * Display list of known storage backend roots.
@@ -114,7 +114,7 @@ public class RootsFragment extends Fragment {
 
         final Context context = getActivity();
         final RootsCache roots = DocumentsApplication.getRootsCache(context);
-        final State state = ((DocumentsActivity) context).getDisplayState();
+        final State state = ((BaseActivity) context).getDisplayState();
 
         mCallbacks = new LoaderCallbacks<Collection<RootInfo>>() {
             @Override
@@ -153,7 +153,7 @@ public class RootsFragment extends Fragment {
         super.onResume();
 
         final Context context = getActivity();
-        final State state = ((DocumentsActivity) context).getDisplayState();
+        final State state = ((BaseActivity) context).getDisplayState();
         state.showAdvanced = state.forceAdvanced
                 | SettingsActivity.getDisplayAdvancedDevices(context);
         state.rootMode = SettingsActivity.getRootMode(getActivity());
@@ -171,7 +171,7 @@ public class RootsFragment extends Fragment {
     public void onCurrentRootChanged() {
         if (mAdapter == null) return;
 
-        final RootInfo root = ((DocumentsActivity) getActivity()).getCurrentRoot();
+        final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
         for (int i = 0; i < mAdapter.getCount(); i++) {
             final Object item = mAdapter.getItem(i);
             if (item instanceof RootItem) {
@@ -187,7 +187,7 @@ public class RootsFragment extends Fragment {
     public void onDownloadRootChanged() {
         if (mAdapter == null) return;
 
-        final RootInfo root = ((DocumentsActivity) getActivity()).getDownloadRoot();
+        final RootInfo root = ((BaseActivity) getActivity()).getDownloadRoot();
         for (int i = 0; i < mAdapter.getCount(); i++) {
             final Object item = mAdapter.getItem(i);
             if (item instanceof RootItem) {
@@ -212,7 +212,7 @@ public class RootsFragment extends Fragment {
     private OnItemClickListener mItemListener = new OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            final DocumentsActivity activity = DocumentsActivity.get(RootsFragment.this);
+            final BaseActivity activity = BaseActivity.get(RootsFragment.this);
             final Item item = mAdapter.getItem(position);
             if (item instanceof RootItem) {
                 activity.onRootPicked(((RootItem) item).root, true);
@@ -253,7 +253,7 @@ public class RootsFragment extends Fragment {
                         new String[]{item.root.path, item.root.title}
                 );
                 if (rows > 0) {
-                    ((DocumentsActivity) getActivity()).showInfo("Bookmark removed");
+                    ((BaseActivity) getActivity()).showInfo("Bookmark removed");
 
                     ExternalStorageProvider.updateVolumes(getActivity());
                 }

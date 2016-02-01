@@ -36,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/made_with_love"  />
+                android:src="@drawable/made_with_love"
+                android:contentDescription="@string/made_with_love"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -83,7 +84,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="10dp"
-                        android:src="@drawable/dworks_dark" />
+                        android:src="@drawable/dworks_dark"
+                        android:contentDescription="@string/dworks_logo"/>
 
                     <TextView
                         android:layout_width="wrap_content"

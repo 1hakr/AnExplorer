@@ -1,6 +1,7 @@
 package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ public class AdWrapper extends FrameLayout {
 
     private AdView mAdView;
     private InterstitialAd mInterstitialAd;
+    private boolean showInterstiatial = true;
 
     public AdWrapper(Context context) {
         super(context);
@@ -39,16 +41,24 @@ public class AdWrapper extends FrameLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
         //Ads
-        if(!Utils.isTelevision(context)) {
-            mAdView = (AdView) findViewById(R.id.adView);
-            mAdView.setAdListener(adListener);
+        if(!Utils.isTelevision(context)){
+            LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
+            initAd();
         } else {
             mInterstitialAd = new InterstitialAd(context);
-            mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/2724050870");
-            requestNewInterstitial();
+            initInterstitialAd();
         }
+    }
+
+    public void initInterstitialAd(){
+        mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/2724050870");
+        requestNewInterstitial();
+    }
+
+    public void initAd(){
+        mAdView = (AdView) findViewById(R.id.adView);
+        mAdView.setAdListener(adListener);
     }
 
     private void requestNewInterstitial() {
@@ -58,7 +68,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     private void showInterstitial() {
-        if(null != mInterstitialAd){
+        if(showInterstiatial && null != mInterstitialAd){
             if(mInterstitialAd.isLoaded()) {
                 mInterstitialAd.show();
             }
@@ -74,6 +84,16 @@ public class AdWrapper extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        showAd();
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        showInterstiatial = false;
+        return super.onSaveInstanceState();
+    }
+
+    private void showAd(){
         if(isInEditMode()){
             return;
         }

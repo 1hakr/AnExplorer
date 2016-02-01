@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.AlbumColumns;
 import android.provider.MediaStore.Audio.Albums;
@@ -420,25 +421,12 @@ public class MediaDocumentsProvider extends StorageProvider {
     @Override
     public ParcelFileDescriptor openDocument(String docId, String mode, CancellationSignal signal)
             throws FileNotFoundException {
-        final Ident ident = getIdentForDocId(docId);
 
         if (!"r".equals(mode)) {
             throw new IllegalArgumentException("Media is read-only");
         }
 
-        final Uri target;
-        if (TYPE_IMAGE.equals(ident.type) && ident.id != -1) {
-            target = ContentUris.withAppendedId(
-                    Images.Media.EXTERNAL_CONTENT_URI, ident.id);
-        } else if (TYPE_VIDEO.equals(ident.type) && ident.id != -1) {
-            target = ContentUris.withAppendedId(
-                    Video.Media.EXTERNAL_CONTENT_URI, ident.id);
-        } else if (TYPE_AUDIO.equals(ident.type) && ident.id != -1) {
-            target = ContentUris.withAppendedId(
-                    Audio.Media.EXTERNAL_CONTENT_URI, ident.id);
-        } else {
-            throw new UnsupportedOperationException("Unsupported document " + docId);
-        }
+        final Uri target = getUriForDocumentId(docId);
 
         // Delegate to real provider
         final long token = Binder.clearCallingIdentity();
@@ -448,32 +436,31 @@ public class MediaDocumentsProvider extends StorageProvider {
             Binder.restoreCallingIdentity(token);
         }
     }
-    
-    @Override
-    public void deleteDocument(String documentId) throws FileNotFoundException {
-    	final Ident ident = getIdentForDocId(documentId);
 
-        final Uri target;
+    private Uri getUriForDocumentId(String docId) {
+        final Ident ident = getIdentForDocId(docId);
         if (TYPE_IMAGE.equals(ident.type) && ident.id != -1) {
-            target = ContentUris.withAppendedId(
+            return ContentUris.withAppendedId(
                     Images.Media.EXTERNAL_CONTENT_URI, ident.id);
         } else if (TYPE_VIDEO.equals(ident.type) && ident.id != -1) {
-            target = ContentUris.withAppendedId(
+            return ContentUris.withAppendedId(
                     Video.Media.EXTERNAL_CONTENT_URI, ident.id);
         } else if (TYPE_AUDIO.equals(ident.type) && ident.id != -1) {
-            target = ContentUris.withAppendedId(
+            return ContentUris.withAppendedId(
                     Audio.Media.EXTERNAL_CONTENT_URI, ident.id);
         } else {
-            throw new UnsupportedOperationException("Unsupported document " + documentId);
+            throw new UnsupportedOperationException("Unsupported document " + docId);
         }
+    }
+
+    @Override
+    public void deleteDocument(String docId) throws FileNotFoundException {
+        final Uri target = getUriForDocumentId(docId);
 
         // Delegate to real provider
         final long token = Binder.clearCallingIdentity();
         try {
-            int rows = getContext().getContentResolver().delete(target, null, null);
-            if (rows != 1) {
-                throw new IllegalStateException("Failed to delete " + documentId);
-            }
+            getContext().getContentResolver().delete(target, null, null);
         } finally {
             Binder.restoreCallingIdentity(token);
         }
@@ -733,7 +720,7 @@ public class MediaDocumentsProvider extends StorageProvider {
 
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
-        row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(ArtistQuery.ARTIST));
+        row.add(Document.COLUMN_DISPLAY_NAME, cleanUpMediaDisplayName(cursor.getString(ArtistQuery.ARTIST)));
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR );
     }
 
@@ -752,7 +739,8 @@ public class MediaDocumentsProvider extends StorageProvider {
 
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);
-        row.add(Document.COLUMN_DISPLAY_NAME, cursor.getString(AlbumQuery.ALBUM));
+        row.add(Document.COLUMN_DISPLAY_NAME,
+                cleanUpMediaDisplayName(cursor.getString(AlbumQuery.ALBUM)));
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
                 | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED | Document.FLAG_SUPPORTS_DELETE);
@@ -788,5 +776,12 @@ public class MediaDocumentsProvider extends StorageProvider {
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(SongQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
+    }
+
+    private String cleanUpMediaDisplayName(String displayName) {
+        if (!MediaStore.UNKNOWN_STRING.equals(displayName)) {
+            return displayName;
+        }
+        return displayName;//getContext().getResources().getString(com.android.internal.R.string.unknownName);
     }
 }

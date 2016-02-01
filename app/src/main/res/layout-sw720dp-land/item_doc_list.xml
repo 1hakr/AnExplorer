@@ -150,6 +150,7 @@
         android:drawableBottom="@drawable/ic_menu_moreoverflow_dark"
         android:paddingRight="10dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="10dp" />
+        android:paddingBottom="10dp"
+        android:contentDescription="@string/abc_action_menu_overflow_description"/>
 
 </FrameLayout>

@@ -15,14 +15,6 @@
             app:itemLayout="@layout/pref_layout_color"
             app:numColumns="5" />
 
-        <CheckBoxPreference
-            android:defaultValue="@bool/transparent_nav"
-            android:key="translucentMode"
-            android:title="@string/pref_translucent_mode" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="asDialog"
-            android:title="@string/pref_as_dialog" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Basic">
         <CheckBoxPreference

@@ -24,9 +24,9 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_DISPLAY_NAME;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_LAST_MODIFIED;
-import static dev.dworks.apps.anexplorer.DocumentsActivity.State.SORT_ORDER_SIZE;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_DISPLAY_NAME;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_LAST_MODIFIED;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_SIZE;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 

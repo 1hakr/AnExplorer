@@ -100,17 +100,26 @@ public final class DocumentsContract {
      * @hide
      */
     public static final String EXTRA_ORIENTATION = "android.content.extra.ORIENTATION";
-
+    /**
+     * Overrides the default prompt text in DocumentsUI when set in an intent.
+     */
+    public static final String EXTRA_PROMPT = "android.provider.extra.PROMPT";
     /** {@hide} */
     public static final String ACTION_MANAGE_ROOT = "android.provider.action.MANAGE_ROOT";
     /** {@hide} */
     public static final String ACTION_MANAGE_DOCUMENT = "android.provider.action.MANAGE_DOCUMENT";
-
+    /** {@hide} */
+    public static final String
+            ACTION_BROWSE_DOCUMENT_ROOT = "android.provider.action.BROWSE_DOCUMENT_ROOT";
+    /** {@hide} */
+    public static final String
+            ACTION_DOCUMENT_ROOT_SETTINGS = "android.provider.action.DOCUMENT_ROOT_SETTINGS";
     /**
      * Buffer is large enough to rewind past any EXIF headers.
      */
-    private static final int THUMBNAIL_BUFFER_SIZE = (int) (128 * Utils.KB_IN_BYTES);
-
+    private static final int THUMBNAIL_BUFFER_SIZE = (int) (128 * 1024);
+    /** {@hide} */
+    public static final String PACKAGE_DOCUMENTS_UI = "com.android.documentsui";
     /**
      * Constants related to a document, including {@link Cursor} column names
      * and flags.

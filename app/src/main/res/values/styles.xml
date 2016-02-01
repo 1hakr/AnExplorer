@@ -23,6 +23,14 @@
          dialog on large tablets
 
     -->
+
+    <style name="Theme.Splash" parent="@style/DocumentsTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+
+    </style>
+
     <style name="Theme.Document" parent="@style/DocumentsTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -67,7 +75,7 @@
         <item name="*android:windowFixedWidthMinor">@null</item>
         <item name="*android:windowMinWidthMajor">@null</item>
         <item name="*android:windowMinWidthMinor">@null</item>
-        <item name="*android:windowFixedHeightMajor">80%</item>
+<!--        <item name="*android:windowFixedHeightMajor">80%</item>-->
         <item name="*android:windowFixedHeightMinor">90%</item>
 
         <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
@@ -76,6 +84,15 @@
         <item name="*android:windowContentTransitions">true</item>
         <item name="*android:windowAllowEnterTransitionOverlap">true</item>
         <item name="*android:windowAllowReturnTransitionOverlap">true</item>
+    </style>
+
+    <style name="StandaloneTheme" parent="@style/DocumentsTheme">
+        <item name="android:actionBarWidgetTheme">@null</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
+        <item name="colorPrimaryDark">@*android:color/material_blue_grey_900</item>
+        <item name="colorPrimary">@*android:color/material_blue_grey_800</item>
+        <item name="colorAccent">@*android:color/material_deep_teal_500</item>
     </style>
 
     <style name="Theme.Document.DailogPIN">

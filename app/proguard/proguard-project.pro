@@ -69,11 +69,13 @@
 -keep public class * extends android.support.v4.view.ActionProvider {
     public <init>(android.content.Context);
 }
--dontwarn android.support.v4.**
--dontwarn android.support.v7.**
+
+-dontwarn android.support.**
 
 # Crashlytics 1.+
+-keep class io.fabric.** { *; }
 -keep class com.crashlytics.** { *; }
+-keep class com.crashlytics.android.**
 -keepattributes SourceFile,LineNumberTable
 
 # Application classes that will be serialized/deserialized over Gson
