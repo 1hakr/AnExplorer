@@ -301,8 +301,14 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             ExternalStorageProvider.updateVolumes(this);
             mRoots = DocumentsApplication.getRootsCache(this);
-            mRoots.updateAsync();
-            onRootPicked(mRoots.getOneRoot(), true);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRoots.updateAsync();
+                    onRootPicked(mRoots.getDefaultRoot(), true);
+                }
+            }, 500);
         }
     }
 
