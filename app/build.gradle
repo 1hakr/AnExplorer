@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId "dev.dworks.apps.anexplorer"
-        versionName "3.0"
-        versionCode = 45
+        versionName "3.1"
+        versionCode = 46
         minSdkVersion 14
         targetSdkVersion 23
     }
@@ -31,7 +31,7 @@ android {
                     'proguard/proguard-google-play-services.pro'
         }
     }
-    flavorDimensions  "release", "default"
+    flavorDimensions "release", "default"
     productFlavors {
         free {
             dimension "default"
