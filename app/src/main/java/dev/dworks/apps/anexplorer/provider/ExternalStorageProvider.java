@@ -163,10 +163,17 @@ public class ExternalStorageProvider extends StorageProvider {
             if (!mounted) continue;
 
             final String rootId;
+            final String title;
             if (volume.isPrimary && volume.isEmulated) {
                 rootId = ROOT_ID_PRIMARY_EMULATED;
+                title = getContext().getString(R.string.root_internal_storage);
             } else if (volume.getUuid() != null) {
                 rootId = ROOT_ID_SECONDARY + volume.getLabel();
+                String label = volume.getLabel();
+                title = !TextUtils.isEmpty(label) ? label
+                        : getContext().getString(R.string.root_external_storage)
+                        + (count > 0 ? " " + count : "");
+                count++;
             } else {
                 Log.d(TAG, "Missing UUID for " + volume.getPath() + "; skipping");
                 continue;
@@ -187,18 +194,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 root.rootId = rootId;
                 root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                         | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
-                if (ROOT_ID_PRIMARY_EMULATED.equals(rootId)) {
-                    root.title = getContext().getString(R.string.root_internal_storage);
-                } else {
-                    String label = volume.getLabel();
-                    if(TextUtils.isEmpty(label)) {
-                        root.title = getContext().getString(R.string.root_external_storage) + (count > 0 ? " " + count : "");
-                    }
-                    else{
-                        root.title = label;
-                    }
-                    count++;
-                }
+                root.title = title;
                 root.docId = getDocIdForFile(path);
                 root.path = path.getPath();
                 mRoots.add(root);
