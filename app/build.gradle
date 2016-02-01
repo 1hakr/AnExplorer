@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "dev.dworks.apps.anexplorer"
         versionName "3.1"
-        versionCode = 46
+        versionCode = 47
         minSdkVersion 14
         targetSdkVersion 23
     }

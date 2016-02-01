@@ -235,13 +235,15 @@ public class DocumentsActivity extends BaseActivity {
         mRootsContainer = findViewById(R.id.drawer_roots);
         mInfoContainer = findViewById(R.id.container_info);
 
-        // Non-dialog means we have a drawer
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (!mShowAsDialog) {
+            // Non-dialog means we have a drawer
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
-        mDrawerLayout.setDrawerListener(mDrawerListener);
-        mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
-        lockInfoContainter();
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+            mDrawerLayout.setDrawerListener(mDrawerListener);
+            mDrawerLayout.setDrawerShadow(R.drawable.ic_drawer_shadow, GravityCompat.START);
+            lockInfoContainter();
+        }
 
         changeActionBarColor();
         initProtection();
