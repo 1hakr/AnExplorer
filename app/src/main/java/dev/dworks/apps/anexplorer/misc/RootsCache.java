@@ -353,7 +353,7 @@ public class RootsCache {
 
     public RootInfo getDefaultRoot() {
     	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (root.isExternalStorage() || root.isSecondaryStorage()) {
+    		if (root.isInternalStorage() || root.isExternalStorage() || root.isSecondaryStorage()) {
                 return root;
             }
 		}
@@ -368,7 +368,16 @@ public class RootsCache {
 		}
         return getRecentsRoot();
     }
-    
+
+    public RootInfo getSecondaryRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isSecondaryStorage()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
     public RootInfo getRecentsRoot() {
         return mRecentsRoot;
     }

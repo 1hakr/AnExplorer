@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -54,6 +55,7 @@ import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 
 /**
  * Presents a {@link DocumentsContract} view of Apps contents.
@@ -90,7 +92,8 @@ public class AppsProvider extends DocumentsProvider {
 		processTypeCache.put(RunningAppProcessInfo.IMPORTANCE_VISIBLE, "Visible");
 		processTypeCache.put(RunningAppProcessInfo.IMPORTANCE_EMPTY, "Empty");
 	}
-    @Override
+
+	@Override
     public boolean onCreate() {
 		packageManager = getContext().getPackageManager();
 		activityManager = (ActivityManager) getContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -199,8 +202,11 @@ public class AppsProvider extends DocumentsProvider {
 		} catch (Exception e) {
 		}
 
+		final RootInfo root = DocumentsApplication.getRootsCache(getContext()).getDefaultRoot();
+		File rootFile = (null != root) ? new File(root.path) : Environment.getExternalStorageDirectory();
+
     	final File fileFrom = new File(fromFilePath);
-    	final File fileTo = new File(Environment.getExternalStorageDirectory(), "AppBackup");
+    	final File fileTo = new File(rootFile, "AppBackup");
     	if(!fileTo.exists()){
     		fileTo.mkdir();
     	}
