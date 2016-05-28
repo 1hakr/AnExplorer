@@ -68,12 +68,12 @@ dependencies {
     compile 'com.android.support:design:+'
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
+    freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
-    freeCompile "com.google.android.gms:play-services-analytics:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+    otherCompile "com.google.firebase:firebase-core:${gmsVersion}"
     otherCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     otherCompile "com.google.firebase:firebase-ads:${gmsVersion}"
-    compile "com.google.firebase:firebase-core:${gmsVersion}"
 }
 
 def props = new Properties()

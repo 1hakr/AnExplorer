@@ -8,7 +8,7 @@ public class DocumentsApplicationFree extends DocumentsApplication {
     public void onCreate() {
         super.onCreate();
         if(!BuildConfig.DEBUG) {
-            AnalyticsManager.initializeAnalyticsTracker(getApplicationContext());
+            AnalyticsManager.intialize(getApplicationContext());
         }
     }
 }
