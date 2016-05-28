@@ -18,11 +18,12 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 
@@ -31,6 +32,7 @@ import static dev.dworks.apps.anexplorer.misc.LogUtils.LOGD;
 public class AnalyticsManager {
     private static Context sAppContext = null;
 
+    private static FirebaseAnalytics mFirebaseAnalytics;
     private static GoogleAnalytics mGoogleAnalytics;
     private static Tracker mTracker;
     private final static String TAG = LogUtils.makeLogTag(AnalyticsManager.class);
@@ -107,8 +109,10 @@ public class AnalyticsManager {
         return mTracker;
     }
 
-    public static synchronized Tracker initializeAnalyticsTracker(Context context) {
+    public static synchronized void initializeAnalyticsTracker(Context context) {
         sAppContext = context;
+
+        //GA
         if (mTracker == null) {
             int useProfile;
             useProfile = R.xml.analytics;
@@ -116,6 +120,8 @@ public class AnalyticsManager {
             mTracker = mGoogleAnalytics.newTracker(useProfile);
             mTracker.enableAdvertisingIdCollection(true);
         }
-        return mTracker;
+
+        //FBA
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
     }
 }

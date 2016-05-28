@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "dev.dworks.apps.anexplorer"
         versionName "3.1"
         versionCode = 47
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 23
         vectorDrawables.useSupportLibrary = true
     }
@@ -17,7 +17,7 @@ android {
     }
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources true
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
@@ -51,10 +51,14 @@ android {
     lintOptions {
         abortOnError false
     }
-
     aaptOptions {
         noCompress 'apk'
     }
+}
+
+ext {
+    supportLibVersion = '24.0.0'
+    gmsVersion = '9.0.1'
 }
 
 dependencies {
@@ -64,11 +68,12 @@ dependencies {
     compile 'com.android.support:design:+'
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
-    freeCompile 'com.crashlytics.sdk.android:crashlytics:+'
-    freeCompile 'com.google.android.gms:play-services-ads:+'
-    freeCompile 'com.google.android.gms:play-services-analytics:+'
-    otherCompile 'com.crashlytics.sdk.android:crashlytics:+'
-    otherCompile 'com.google.android.gms:play-services-ads:+'
+    freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
+    freeCompile "com.google.android.gms:play-services-analytics:${gmsVersion}"
+    freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+    otherCompile "com.google.firebase:firebase-crash:${gmsVersion}"
+    otherCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+    compile "com.google.firebase:firebase-core:${gmsVersion}"
 }
 
 def props = new Properties()
@@ -77,3 +82,5 @@ android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
 android.signingConfigs.release.storePassword props.keyStorePassword
 android.signingConfigs.release.keyAlias props.keyAlias
 android.signingConfigs.release.keyPassword props.keyAliasPassword
+
+apply plugin: 'com.google.gms.google-services'
