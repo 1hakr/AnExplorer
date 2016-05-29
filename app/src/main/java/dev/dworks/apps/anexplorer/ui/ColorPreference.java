@@ -23,17 +23,16 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridLayout;
@@ -278,8 +277,9 @@ public class ColorPreference extends Preference {
 
             Drawable drawable = colorChoiceDrawable;
             if (selected) {
-                BitmapDrawable checkmark = (BitmapDrawable) res.getDrawable(R.drawable.checkmark_white);
-                checkmark.setGravity(Gravity.CENTER);
+
+                VectorDrawableCompat checkmark = VectorDrawableCompat.create(view.getResources(),
+                        R.drawable.checkmark_white_inset, null);
                 drawable = new LayerDrawable(new Drawable[]{
                         colorChoiceDrawable,
                         checkmark});
