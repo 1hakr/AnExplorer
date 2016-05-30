@@ -14,16 +14,16 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class LoginPreferenceFragment extends PreferenceFragment {
+public class SecurityPreferenceFragment extends PreferenceFragment {
     private Preference pin_set_preference;
     
-    public LoginPreferenceFragment() {
+    public SecurityPreferenceFragment() {
 	}
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.pref_login);
+        addPreferencesFromResource(R.xml.pref_security);
         
 		pin_set_preference = findPreference("pin_set");
 		pin_set_preference.setOnPreferenceClickListener(new OnPreferenceClickListener() {

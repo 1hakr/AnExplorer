@@ -82,7 +82,9 @@
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
-    <string name="pref_header_login">Login</string>
+    <string name="pref_header_security">Security</string>
+    <string name="pref_header_theme">Theme</string>
+    <string name="pref_header_advanced">Advanced</string>
     <string name="pref_title_pin_enable">Enable PIN Protection</string>
     <string name="pref_description_pin_enable">Gives security to your files</string>
     <string name="pref_title_pin_set">Set PIN</string>

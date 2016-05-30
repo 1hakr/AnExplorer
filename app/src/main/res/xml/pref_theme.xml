@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <dev.dworks.apps.anexplorer.ui.ColorPreference
+        android:defaultValue="@color/defaultColor"
+        android:dialogTitle="@string/pref_foreground_color_title"
+        android:key="actionBarColor"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:summary="@string/pref_foreground_color_description"
+        android:title="@string/pref_foreground_color_title"
+        app:itemLayout="@layout/pref_layout_color"
+        app:numColumns="5" />
+
+</PreferenceScreen>
