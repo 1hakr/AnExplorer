@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="item_doc_grid_background">@color/material_blue_grey_800</color>
+
+</resources>

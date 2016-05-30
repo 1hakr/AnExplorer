@@ -279,7 +279,7 @@ public class IconUtils {
 
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
             // TODO: return a mipmap, since this is used for grid
-            return res.getDrawable(R.drawable.ic_root_folder);
+            return res.getDrawable(R.drawable.ic_doc_folder);
         }
 
         // Look for exact match first

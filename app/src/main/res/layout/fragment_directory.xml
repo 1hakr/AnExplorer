@@ -15,10 +15,9 @@
 -->
 
 <dev.dworks.apps.anexplorer.ui.DirectoryView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/material_grey_50">
+    android:background="?android:attr/windowBackground">
 
     <LinearLayout
         android:id="@+id/progressContainer"
@@ -68,7 +67,6 @@
                 android:id="@+id/grid"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#e5e5e5"
                 android:clipToPadding="false"
                 android:drawSelectorOnTop="true"
                 android:horizontalSpacing="@dimen/grid_item_padding"

@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.Uri;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -40,6 +41,10 @@ public class DocumentsApplication extends Application {
     private RootsCache mRoots;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
+
+    static {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+    }
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
