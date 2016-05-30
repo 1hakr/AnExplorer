@@ -208,7 +208,7 @@ public class IconUtils {
         add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
 
         //folder
-        icon = R.drawable.ic_root_folder;
+        icon = R.drawable.ic_doc_folder;
         add(Document.MIME_TYPE_HIDDEN, icon);
     }
 

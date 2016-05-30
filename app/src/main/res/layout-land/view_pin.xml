@@ -1,16 +1,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/list_item_padding"
         android:layout_marginLeft="@dimen/list_item_padding"
         android:layout_marginRight="@dimen/list_item_padding"
         android:layout_marginStart="@dimen/list_item_padding"
-        android:layout_marginEnd="@dimen/list_item_padding"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -18,7 +18,7 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:minWidth="200dp"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/logo"
@@ -33,14 +33,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp" >
+                android:layout_marginTop="16dp">
 
                 <LinearLayout
                     android:id="@+id/pinBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <View
                         android:id="@+id/pinBox0"
@@ -84,6 +84,7 @@
                         android:layout_width="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:minWidth="60dp"
+                        android:padding="15dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_delete" />
                 </LinearLayout>
@@ -127,25 +128,25 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             android:background="@android:color/darker_gray" />
 
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:minWidth="250dp" >
+            android:minWidth="250dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content">
 
                     <Button
                         android:id="@+id/p1"
@@ -162,7 +163,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content">
 
                     <Button
                         android:id="@+id/p4"
@@ -179,7 +180,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content">
 
                     <Button
                         android:id="@+id/p7"
@@ -196,7 +197,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content">
 
                     <Button
                         android:id="@+id/cancel"

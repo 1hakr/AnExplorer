@@ -37,7 +37,7 @@
     </style>
 
     <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_menu_overflow</item>
+        <item name="android:src">@drawable/abc_ic_menu_overflow_material</item>
     </style>
 
     <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">

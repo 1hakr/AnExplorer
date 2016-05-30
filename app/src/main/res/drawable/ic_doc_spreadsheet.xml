@@ -1,22 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-/*
- * Copyright 2013, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
--->
-
-<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-        android:src="@drawable/ic_doc_spreadsheet" >
-</bitmap>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="18dp"
+    android:height="18dp"
+    android:viewportHeight="18.0"
+    android:viewportWidth="18.0">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M16,0L2,0C0.9,0 0,0.9 0,2L0,5L0,16C0,17.1 0.9,18 2,18L16,18C17.1,18 18,17.1 18,16L18,2C18,0.9 17.1,0 16,0L16,0ZM16,8L8,8L8,16L6,16L6,8L2,8L2,6L6,6L6,2L8,2L8,6L16,6L16,8L16,8Z"
+        android:strokeColor="#00000000"
+        android:strokeWidth="1" />
+</vector>
