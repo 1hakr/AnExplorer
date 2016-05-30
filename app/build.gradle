@@ -5,7 +5,6 @@ android {
     buildToolsVersion '23.0.3'
 
     defaultConfig {
-        applicationId "dev.dworks.apps.anexplorer"
         versionName "3.1"
         versionCode = 47
         minSdkVersion 16
@@ -35,6 +34,7 @@ android {
     flavorDimensions "release", "default"
     productFlavors {
         free {
+            applicationId "dev.dworks.apps.anexplorer"
             dimension "default"
         }
         pro {
@@ -83,4 +83,6 @@ android.signingConfigs.release.storePassword props.keyStorePassword
 android.signingConfigs.release.keyAlias props.keyAlias
 android.signingConfigs.release.keyPassword props.keyAliasPassword
 
-apply plugin: 'com.google.gms.google-services'
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Free")) {
+    apply plugin: 'com.google.gms.google-services'
+}
