@@ -37,14 +37,15 @@ import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 
 public class DocumentsApplication extends Application {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
+    private static DocumentsApplication sInstance;
+
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     private RootsCache mRoots;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
-
-    static {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
-    }
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
@@ -73,7 +74,8 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-		
+
+        sInstance = this;
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
 
@@ -93,6 +95,10 @@ public class DocumentsApplication extends Application {
         final IntentFilter localeFilter = new IntentFilter();
         localeFilter.addAction(Intent.ACTION_LOCALE_CHANGED);
         registerReceiver(mCacheReceiver, localeFilter);
+    }
+
+    public static synchronized DocumentsApplication getInstance() {
+        return sInstance;
     }
 
     @Override

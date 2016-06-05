@@ -12,4 +12,13 @@
         app:itemLayout="@layout/pref_layout_color"
         app:numColumns="5" />
 
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/theme_style_names"
+        android:entryValues="@array/theme_style_values"
+        android:key="themeStyle"
+        android:persistent="true"
+        android:summary="@string/pref_theme_style_description"
+        android:title="@string/pref_theme_style_title" />
+
 </PreferenceScreen>

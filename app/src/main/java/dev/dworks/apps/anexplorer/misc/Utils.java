@@ -32,6 +32,7 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -385,4 +386,11 @@ public class Utils {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
+
+    public static void changeThemeStyle(AppCompatDelegate delegate) {
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        AppCompatDelegate.setDefaultNightMode(nightMode);
+        delegate.setLocalNightMode(nightMode);
+    }
+
 }
