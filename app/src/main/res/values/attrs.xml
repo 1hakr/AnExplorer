@@ -44,4 +44,13 @@
     <declare-styleable name="Themes">
         <attr name="numberProgressBarStyle" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="CompatTextView">
+        <attr name="compoundDrawableWidth" format="dimension"/>
+        <attr name="compoundDrawableHeight" format="dimension"/>
+        <attr name="drawableStart" format="reference"/>
+        <attr name="drawableTop" format="reference"/>
+        <attr name="drawableEnd" format="reference"/>
+        <attr name="drawableBottom" format="reference"/>
+    </declare-styleable>
 </resources>

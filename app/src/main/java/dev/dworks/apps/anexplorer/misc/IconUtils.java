@@ -24,6 +24,7 @@ import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
 
 import com.google.common.collect.Maps;
@@ -427,9 +428,7 @@ public class IconUtils {
     public static Drawable applyTintColor(Context context, int drawableId, int tintColorId) {
         final Drawable icon = context.getResources().getDrawable(drawableId);
         icon.mutate();
-        if(Utils.hasLollipop()) {
-            icon.setTintList(context.getResources().getColorStateList(tintColorId));
-        }
+        DrawableCompat.setTintList(DrawableCompat.wrap(icon), context.getResources().getColorStateList(tintColorId));
         return icon;
     }
 

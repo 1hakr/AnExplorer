@@ -23,7 +23,7 @@
 
     <item
         android:id="@+id/menu_create_file"
-        android:icon="@drawable/ic_add_white"
+        android:icon="@drawable/ic_menu_new_file"
         support:showAsAction="always"
         android:title="@string/menu_create_file"
         android:visible="false"/>

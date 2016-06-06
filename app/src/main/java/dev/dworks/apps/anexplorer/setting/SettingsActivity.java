@@ -113,6 +113,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        changeActionBarColor(0);
         res = getResources();
         actionBarColor = getActionBarColor(this);
     }
