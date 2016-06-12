@@ -135,6 +135,7 @@ public class DocumentsActivity extends BaseActivity {
     private static final String EXTRA_STATE = "state";
     private static final String EXTRA_AUTHENTICATED = "authenticated";
     private static final String EXTRA_ACTIONMODE = "actionmode";
+    private static final String EXTRA_SEARCH_STATE = "searchsate";
 
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
@@ -158,6 +159,7 @@ public class DocumentsActivity extends BaseActivity {
     private boolean mIgnoreNextCollapse;
 
     private boolean mSearchExpanded;
+    private boolean mSearchResultShown;
 
     private RootsCache mRoots;
     private State mState;
@@ -708,7 +710,7 @@ public class DocumentsActivity extends BaseActivity {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mSearchExpanded = true;
+                mSearchExpanded = mSearchResultShown = true;
                 mState.currentSearch = query;
                 mSearchView.clearFocus();
                 onCurrentDirectoryChanged(ANIM_NONE);
@@ -731,7 +733,7 @@ public class DocumentsActivity extends BaseActivity {
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                mSearchExpanded = false;
+                mSearchExpanded = mSearchResultShown = false;
                 if (mIgnoreNextCollapse) {
                     mIgnoreNextCollapse = false;
                     updateActionBar();
@@ -747,7 +749,7 @@ public class DocumentsActivity extends BaseActivity {
         mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                mSearchExpanded = false;
+                mSearchExpanded = mSearchResultShown = false;
                 if (mIgnoreNextClose) {
                     mIgnoreNextClose = false;
                     updateActionBar();
@@ -985,6 +987,7 @@ public class DocumentsActivity extends BaseActivity {
         state.putParcelable(EXTRA_STATE, mState);
         state.putBoolean(EXTRA_AUTHENTICATED, mAuthenticated);
         state.putBoolean(EXTRA_ACTIONMODE, mActionMode);
+        state.putBoolean(EXTRA_SEARCH_STATE, mSearchResultShown);
     }
 
     @Override
@@ -1168,9 +1171,10 @@ public class DocumentsActivity extends BaseActivity {
                 mState.derivedMode = mState.userMode;
             }
         } else {
-            if (mState.currentSearch != null) {
+            if (mState.currentSearch != null && mSearchResultShown) {
                 // Ongoing search
                 DirectoryFragment.showSearch(fm, root, cwd, mState.currentSearch, anim);
+                mSearchResultShown = false;
             } else {
                 // Normal boring directory
                 DirectoryFragment.showNormal(fm, root, cwd, anim);

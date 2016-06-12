@@ -65,6 +65,7 @@
         <item name="colorPrimary">@color/material_blue_grey_800</item>
         <item name="colorAccent">@color/accentColor</item>
         <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
+        <item name="colorControlActivated">@color/primary_text_default_material_dark</item>
 
         <!--<item name="android:listDivider">@drawable/list_divider_material</item>-->
 
@@ -100,7 +101,8 @@
     </style>
 
     <style name="Theme.Setting" parent="@style/DocumentsTheme">
-        <item name="colorControlNormal">@color/material_blue_grey_800</item>
+        <item name="colorControlNormal">?android:attr/textColorPrimary</item>
+        <item name="colorControlActivated">?android:attr/textColorPrimary</item>
         <item name="windowActionBar">true</item>
     </style>
 
@@ -162,4 +164,5 @@
     <style name="PopupTheme" parent="@android:style/Widget.Holo.Spinner">
         <item name="android:background">@drawable/abc_spinner_mtrl_am_alpha</item>
     </style>
+
 </resources>

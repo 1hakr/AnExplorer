@@ -53,12 +53,13 @@ android {
     }
     aaptOptions {
         noCompress 'apk'
+        cruncherEnabled = false
     }
 }
 
 ext {
     supportLibVersion = '24.0.0'
-    gmsVersion = '9.0.1'
+    gmsVersion = '9.0.2'
 }
 
 dependencies {
