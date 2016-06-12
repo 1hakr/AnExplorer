@@ -35,4 +35,5 @@
 
     <dimen name="first_keyline">24dp</dimen>
     <dimen name="second_keyline">80dp</dimen>
+    <dimen name="toolbar_h_padding">12dp</dimen>
 </resources>

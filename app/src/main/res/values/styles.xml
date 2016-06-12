@@ -85,6 +85,9 @@
         <item name="*android:windowContentTransitions">true</item>
         <item name="*android:windowAllowEnterTransitionOverlap">true</item>
         <item name="*android:windowAllowReturnTransitionOverlap">true</item>
+
+        <item name="actionModeStyle">@style/Custom.Widget.ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/Custom.Widget.ActionButton.CloseMode</item>
     </style>
 
     <style name="StandaloneTheme" parent="@style/DocumentsTheme">
@@ -163,6 +166,16 @@
 
     <style name="PopupTheme" parent="@android:style/Widget.Holo.Spinner">
         <item name="android:background">@drawable/abc_spinner_mtrl_am_alpha</item>
+    </style>
+
+    <style name="Custom.Widget.ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="android:paddingLeft">@dimen/toolbar_h_padding</item>
+        <item name="android:paddingRight">@dimen/toolbar_h_padding</item>
+    </style>
+
+    <style name="Custom.Widget.ActionButton.CloseMode" parent="Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:minWidth">48dp</item>
     </style>
 
 </resources>

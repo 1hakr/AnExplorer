@@ -72,5 +72,5 @@
     <dimen name="first_keyline">16dp</dimen>
     <dimen name="second_keyline">72dp</dimen>
     <dimen name="second_keyline_default">72dp</dimen>
-
+    <dimen name="toolbar_h_padding">4dp</dimen>
 </resources>
