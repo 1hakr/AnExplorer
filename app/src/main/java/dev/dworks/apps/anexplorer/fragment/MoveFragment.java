@@ -35,6 +35,7 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Display document title editor and save button.
@@ -91,6 +92,7 @@ public class MoveFragment extends Fragment implements OnClickListener{
 		//final Context context = inflater.getContext();
 
 		final View view = inflater.inflate(R.layout.fragment_move, container, false);
+		view.findViewById(R.id.background).setBackgroundColor(SettingsActivity.getActionBarColor(getActivity()));
 
 		mCancel = (ImageButton) view.findViewById(android.R.id.button2);
 		mCancel.setOnClickListener(this);

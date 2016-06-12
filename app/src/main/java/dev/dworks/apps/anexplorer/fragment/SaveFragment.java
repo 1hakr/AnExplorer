@@ -36,6 +36,7 @@ import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 /**
  * Display document title editor and save button.
@@ -80,6 +81,8 @@ public class SaveFragment extends Fragment implements OnClickListener{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_save, container, false);
+
+		view.findViewById(R.id.background).setBackgroundColor(SettingsActivity.getActionBarColor(getActivity()));
 
 		mCancel = (ImageButton) view.findViewById(android.R.id.button2);
 		mCancel.setOnClickListener(this);
