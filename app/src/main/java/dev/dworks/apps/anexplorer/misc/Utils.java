@@ -28,11 +28,12 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -41,6 +42,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.Button;
 
 import java.io.File;
 import java.util.List;
@@ -49,6 +51,8 @@ import java.util.Locale;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+import static dev.dworks.apps.anexplorer.R.color.defaultColor;
 
 public class Utils {
 
@@ -393,4 +397,17 @@ public class Utils {
         delegate.setLocalNightMode(nightMode);
     }
 
+    public static void tintWidget(View view) {
+        tintWidget(view, SettingsActivity.getActionBarColor(view.getContext()));
+    }
+
+    public static void tintButton(Button view) {
+        view.setTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+    }
+
+    public static void tintWidget(View view, int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(view.getBackground());
+        DrawableCompat.setTint(wrappedDrawable.mutate(), color);
+        view.setBackgroundDrawable(wrappedDrawable);
+    }
 }

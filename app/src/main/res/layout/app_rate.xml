@@ -24,14 +24,12 @@
             android:contentDescription="@android:string/cancel"
             app:srcCompat="@drawable/ic_action_close" />
 
-        <TextView
+        <dev.dworks.apps.anexplorer.ui.CompatTextView
             android:id="@+id/text"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawableEnd="@drawable/ic_menu_rate"
             android:drawablePadding="10dp"
-            android:drawableRight="@drawable/ic_menu_rate"
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
@@ -39,7 +37,8 @@
             android:text="Like AnExplore! Spread the word"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            app:drawableEnd="@drawable/ic_menu_rate" />
 
     </LinearLayout>
 

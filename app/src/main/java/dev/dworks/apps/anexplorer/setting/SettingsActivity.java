@@ -20,10 +20,9 @@ package dev.dworks.apps.anexplorer.setting;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,13 +30,11 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.WindowManager;
 
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -96,6 +93,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     	int newColor = context.getResources().getColor(R.color.defaultColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_ACTIONBAR_COLOR, newColor);
+    }
+
+    public static int getActionBarColor() {
+        return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
+                .getInt(KEY_ACTIONBAR_COLOR, Color.BLUE);
     }
 
     public static String getThemeStyle() {

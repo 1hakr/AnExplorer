@@ -870,11 +870,11 @@ public class DocumentsActivity extends BaseActivity {
             onBackPressed();
             return true;
         }  else if (id == R.id.menu_create_dir) {
-            CreateDirectoryFragment.show(getFragmentManager());
+            CreateDirectoryFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.menu_create_file) {
             onStateChanged();
-            CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
+            CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
             return true;
         } else if (id == R.id.menu_search) {
             return false;
@@ -1807,12 +1807,12 @@ public class DocumentsActivity extends BaseActivity {
             switch (view.getId()){
                 case R.id.fab_create_file:
                     onStateChanged();
-                    CreateFileFragment.show(getFragmentManager(), "text/plain", "File");
+                    CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
                     mActionMenu.collapse();
                     break;
 
                 case R.id.fab_create_folder:
-                    CreateDirectoryFragment.show(getFragmentManager());
+                    CreateDirectoryFragment.show(getSupportFragmentManager());
                     mActionMenu.collapse();
                     break;
 
