@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:background="#323232"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:orientation="horizontal"
+        android:paddingEnd="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp">
+        android:paddingStart="10dp">
 
         <ImageView
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_close"
             android:layout_gravity="center_vertical"
-            android:contentDescription="@android:string/cancel"/>
+            android:contentDescription="@android:string/cancel"
+            app:srcCompat="@drawable/ic_action_close" />
 
         <TextView
             android:id="@+id/text"
@@ -29,15 +30,15 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableEnd="@drawable/ic_menu_rate"
-            android:drawableRight="@drawable/ic_menu_rate"
             android:drawablePadding="10dp"
+            android:drawableRight="@drawable/ic_menu_rate"
+            android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:textAlignment="center"
-            android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@android:color/white"
             android:text="Like AnExplore! Spread the word"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
 
     </LinearLayout>

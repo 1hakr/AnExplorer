@@ -17,6 +17,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
     android:paddingLeft="?attr/listPreferredItemPaddingLeft"
     android:paddingRight="?attr/listPreferredItemPaddingRight"
@@ -34,7 +35,7 @@
         android:paddingEnd="8dp"
         android:scaleType="centerInside"
         android:visibility="gone"
-        android:src="@drawable/ic_subdirectory_arrow"
+        app:srcCompat="@drawable/ic_subdirectory_arrow"
         android:contentDescription="@null"
         android:layout_gravity="center_vertical" />
 
