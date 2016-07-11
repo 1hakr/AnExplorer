@@ -35,25 +35,22 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteFullException;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.util.LruCache;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -114,8 +111,8 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
-import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
+import dev.dworks.apps.anexplorer.ui.fabs.SimpleMenuListenerAdapter;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
@@ -165,14 +162,10 @@ public class DocumentsActivity extends BaseActivity {
     private State mState;
 	private boolean mAuthenticated;
 	private FrameLayout mSaveContainer;
-    private FrameLayout mAlertContainer;
     private FrameLayout mRateContainer;
     private boolean mActionMode;
     private LruCache<String, Long> mFileSizeCache;
     private FloatingActionsMenu mActionMenu;
-    private FloatingActionButton mCreateFile;
-    private FloatingActionButton mCreateFolder;
-    private FloatingActionButton mPaste;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -208,7 +201,6 @@ public class DocumentsActivity extends BaseActivity {
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
-        mAlertContainer = (FrameLayout) findViewById(R.id.container_alert);
         mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
 
         initControls();
@@ -1753,26 +1745,9 @@ public class DocumentsActivity extends BaseActivity {
         return result;
     }
 
-    public static int getActionBarHeight(Context context) {
-        int result = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            TypedValue tv = new TypedValue();
-            context.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
-            result = context.getResources().getDimensionPixelSize(tv.resourceId);
-        }
-        return result;
-    }
-
     private void initControls() {
-        mActionMenu = (FloatingActionsMenu) findViewById(R.id.fab);
-        mCreateFile = (FloatingActionButton) findViewById(R.id.fab_create_file);
-        mCreateFile.setOnClickListener(mOnClickListener);
-
-        mCreateFolder = (FloatingActionButton) findViewById(R.id.fab_create_folder);
-        mCreateFolder.setOnClickListener(mOnClickListener);
-
-        mPaste = (FloatingActionButton) findViewById(R.id.fab_paste);
-        mPaste.setOnClickListener(mOnClickListener);
+        mActionMenu = (FloatingActionsMenu) findViewById(R.id.fabs);
+        mActionMenu.setMenuListener(mMenuListener);
     }
 
     public void upadateActionItems(AbsListView currentView) {
@@ -1781,46 +1756,35 @@ public class DocumentsActivity extends BaseActivity {
 
         int defaultColor = SettingsActivity.getActionBarColor(this);
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
-
+        ViewCompat.setNestedScrollingEnabled(currentView, true);
         mActionMenu.show();
         mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
-        mActionMenu.setColorNormal(complimentaryColor);
-        mActionMenu.setColorPressed(Utils.getActionButtonColor(complimentaryColor));
-
-        mCreateFile.setColorNormal(defaultColor);
-        mCreateFile.setColorPressed(Utils.getLightColor(complimentaryColor));
-
-        mCreateFolder.setColorNormal(defaultColor);
-        mCreateFolder.setColorPressed(Utils.getLightColor(complimentaryColor));
-
-        mPaste.setColorNormal(defaultColor);
-        mPaste.setColorPressed(Utils.getLightColor(complimentaryColor));
+        mActionMenu.setBackgroundTintList(complimentaryColor);
+        mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
     }
 
     private boolean showActionMenu() {
         return isCreateSupported() && mState.currentSearch == null;
     }
 
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+    private SimpleMenuListenerAdapter mMenuListener = new SimpleMenuListenerAdapter() {
+
         @Override
-        public void onClick(View view) {
-            switch (view.getId()){
+        public boolean onMenuItemSelected(MenuItem menuItem) {
+            switch (menuItem.getItemId()){
                 case R.id.fab_create_file:
                     onStateChanged();
                     CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
-                    mActionMenu.collapse();
+                    mActionMenu.closeMenu();
                     break;
 
                 case R.id.fab_create_folder:
                     CreateDirectoryFragment.show(getSupportFragmentManager());
-                    mActionMenu.collapse();
-                    break;
-
-                case R.id.fab_paste:
-                    mActionMenu.collapse();
+                    mActionMenu.closeMenu();
                     break;
 
             }
+            return false;
         }
     };
 }

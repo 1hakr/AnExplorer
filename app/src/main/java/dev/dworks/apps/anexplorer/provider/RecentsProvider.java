@@ -193,7 +193,8 @@ public class RecentsProvider extends ContentProvider {
                 return db.query(TABLE_RESUME, projection, ResumeColumns.PACKAGE_NAME + "=?",
                         new String[] { packageName }, null, null, sortOrder);
             default:
-                throw new UnsupportedOperationException("Unsupported Uri " + uri);
+                return null;
+                //throw new UnsupportedOperationException("Unsupported Uri " + uri);
         }
     }
 

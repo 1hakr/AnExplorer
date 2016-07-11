@@ -122,24 +122,24 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
         }
     }
     public void showMsg(int msg){
-        showToast(msg, R.color.button_text_color_default, Snackbar.LENGTH_SHORT);
+        showToast(msg, getResources().getColor(R.color.button_text_color_default), Snackbar.LENGTH_SHORT);
     }
 
     public void showError(int msg){
-        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
+        showToast(msg, getResources().getColor(R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
     }
 
     public void showToast(int msg, int actionColor, int duration){
         if(!Utils.isActivityAlive(getActivity())){
             return;
         }
-        final Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        final Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), msg, duration);
         snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackbar.dismiss();
             }
         })
-                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
+                .setActionTextColor(actionColor).show();
     }
 }

@@ -1,6 +1,7 @@
 package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -11,13 +12,11 @@ import android.view.animation.Interpolator;
 import android.widget.AbsListView;
 
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.fab.AbsListViewScrollDetector;
-import dev.dworks.apps.anexplorer.fab.AddFloatingActionButton;
-import dev.dworks.apps.anexplorer.fab.ScrollDirectionListener;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 
 
-public class FloatingActionsMenu extends dev.dworks.apps.anexplorer.fab.FloatingActionsMenu {
+public class FloatingActionsMenu extends FabSpeedDial {
     private static final int TRANSLATE_DURATION_MILLIS = 200;
     private boolean mVisible;
     private int mScrollThreshold;
@@ -37,31 +36,8 @@ public class FloatingActionsMenu extends dev.dworks.apps.anexplorer.fab.Floating
         mScrollThreshold = getResources().getDimensionPixelOffset(R.dimen.scroll_threshold);
     }
 
-    public void setColorNormalResId(@ColorRes int colorNormal) {
-        setColorNormal(getColor(colorNormal));
-    }
-
-    public void setColorNormal(int color) {
-        getAddButton().setColorNormal(color);
-    }
-
-    public void setColorPressedResId(@ColorRes int colorPressed) {
-        setColorPressed(getColor(colorPressed));
-    }
-
-    public void setColorPressed(int color) {
-        getAddButton().setColorPressed(color);
-    }
-
     int getColor(@ColorRes int id) {
         return getResources().getColor(id);
-    }
-
-    public AddFloatingActionButton getAddButton() {
-        return mAddButton;
-    }
-    public boolean isVisible() {
-        return mVisible;
     }
 
     public void show() {
@@ -115,9 +91,32 @@ public class FloatingActionsMenu extends dev.dworks.apps.anexplorer.fab.Floating
             }
         }
 
-        if(isExpanded()) {
-            collapse();
+        if(isMenuOpen()) {
+            closeMenu();
         }
+    }
+
+    public void setBackgroundTintList(int color) {
+        setBackgroundTintList(ColorStateList.valueOf(color));
+    }
+
+    public void setSecondaryBackgroundTintList(int color) {
+        setSecondaryBackgroundTintList(ColorStateList.valueOf(color));
+    }
+
+    private ColorStateList getColorStateList(int primaryColor) {
+        int[][] states = {
+                {android.R.attr.state_enabled},
+                {android.R.attr.state_pressed},
+        };
+
+        int[] colors = {
+                primaryColor,
+                primaryColor,
+        };
+
+        ColorStateList colorStateList = new ColorStateList(states, colors);
+        return  colorStateList;
     }
 
     private int getMarginBottom() {

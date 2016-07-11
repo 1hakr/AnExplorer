@@ -49,10 +49,9 @@ import java.util.List;
 import java.util.Locale;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-
-import static dev.dworks.apps.anexplorer.R.color.defaultColor;
 
 public class Utils {
 
@@ -368,7 +367,7 @@ public class Utils {
     }
 
     public static void showRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), text, Snackbar.LENGTH_INDEFINITE);
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
             snackbar.setAction("RETRY", listener)
                     .setActionTextColor(SettingsActivity.getActionBarColor(activity));

@@ -74,12 +74,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1">
 
-                <dev.dworks.apps.anexplorer.ui.DirectoryContainerView
-                    android:id="@+id/container_directory"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <include layout="@layout/fab_layout" />
+                <include layout="@layout/directory_layout" />
             </FrameLayout>
 
             <FrameLayout
@@ -87,12 +82,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/material_grey_50"
-                android:elevation="8dp" />
-
-            <FrameLayout
-                android:id="@+id/container_alert"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:elevation="8dp" />
         </LinearLayout>
     </LinearLayout>

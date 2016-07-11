@@ -200,7 +200,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     public void showToast(String msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, duration);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
         snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,7 +211,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     public void showToast(int msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, duration);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
         snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
