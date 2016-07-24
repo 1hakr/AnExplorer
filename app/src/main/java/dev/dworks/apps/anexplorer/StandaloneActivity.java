@@ -369,7 +369,7 @@ public class StandaloneActivity extends BaseActivity {
             onBackPressed();
             return true;
         } else if (id == R.id.menu_create_dir) {
-            CreateDirectoryFragment.show(getFragmentManager());
+            CreateDirectoryFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.menu_search) {
             return false;

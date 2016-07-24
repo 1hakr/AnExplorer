@@ -1,22 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
 
     defaultConfig {
-        applicationId "dev.dworks.apps.anexplorer"
-        versionName "3.1"
-        versionCode = 47
-        minSdkVersion 14
-        targetSdkVersion 23
+        versionName "3.2"
+        versionCode = 48
+        minSdkVersion 16
+        targetSdkVersion 24
+        vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
         release
     }
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources true
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
@@ -34,6 +34,7 @@ android {
     flavorDimensions "release", "default"
     productFlavors {
         free {
+            applicationId "dev.dworks.apps.anexplorer"
             dimension "default"
         }
         pro {
@@ -50,24 +51,29 @@ android {
     lintOptions {
         abortOnError false
     }
-
     aaptOptions {
         noCompress 'apk'
     }
 }
 
+ext {
+    supportLibVersion = '24.1.1'
+    gmsVersion = '9.2.1'
+}
+
 dependencies {
     compile files('libs/RootTools.jar')
-    compile 'com.android.support:support-v4:+'
-    compile 'com.android.support:appcompat-v7:+'
-    compile 'com.android.support:design:+'
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
-    freeCompile 'com.crashlytics.sdk.android:crashlytics:+'
-    freeCompile 'com.google.android.gms:play-services-ads:+'
-    freeCompile 'com.google.android.gms:play-services-analytics:+'
-    otherCompile 'com.crashlytics.sdk.android:crashlytics:+'
-    otherCompile 'com.google.android.gms:play-services-ads:+'
+    compile "com.android.support:support-v4:${supportLibVersion}"
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
+    freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
+    freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
+    freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+    otherCompile "com.google.firebase:firebase-core:${gmsVersion}"
+    otherCompile "com.google.firebase:firebase-crash:${gmsVersion}"
+    otherCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }
 
 def props = new Properties()
@@ -76,3 +82,7 @@ android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
 android.signingConfigs.release.storePassword props.keyStorePassword
 android.signingConfigs.release.keyAlias props.keyAlias
 android.signingConfigs.release.keyPassword props.keyAliasPassword
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Free")) {
+    apply plugin: 'com.google.gms.google-services'
+}

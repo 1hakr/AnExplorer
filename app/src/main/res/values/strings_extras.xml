@@ -82,7 +82,9 @@
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
-    <string name="pref_header_login">Login</string>
+    <string name="pref_header_security">Security</string>
+    <string name="pref_header_theme">Theme</string>
+    <string name="pref_header_advanced">Advanced</string>
     <string name="pref_title_pin_enable">Enable PIN Protection</string>
     <string name="pref_description_pin_enable">Gives security to your files</string>
     <string name="pref_title_pin_set">Set PIN</string>
@@ -96,8 +98,11 @@
     <string name="pin_disabled">PIN protection disabled</string>
     <string name="pin_protection">PIN Protection</string>
     <string name="loading">Loading...</string>
-    <string name="pref_foreground_color_title">ActionBar Color</string>
-    <string name="pref_foreground_color_description">The color of action bar</string>
+    <string name="pref_foreground_color_title">Theme Color</string>
+    <string name="pref_foreground_color_description">The color of theme</string>
+
+    <string name="pref_theme_style_title">Theme Style</string>
+    <string name="pref_theme_style_description">The style of theme</string>
 
     <!-- Size unit, displayed in a button next to an attachment [CHAR LIMIT=5] -->
     <string name="bytes"><xliff:g id="count">%s</xliff:g> B</string>
@@ -123,5 +128,17 @@
     <string name="add">Add</string>
     <string name="made_with_love">Made with Love</string>
     <string name="dworks_logo">DWorkS logo</string>
+
+    <string-array name="theme_style_names">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Auto</item>
+    </string-array>
+
+    <string-array name="theme_style_values">
+        <item>1</item>
+        <item>2</item>
+        <item>0</item>
+    </string-array>
 
 </resources>

@@ -17,9 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.DialogFragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -29,6 +26,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -41,6 +40,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
+import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -59,7 +59,7 @@ import dev.dworks.apps.anexplorer.ui.CircleImage;
 /**
  * Display document title editor and save button.
  */
-public class DetailFragment extends DialogFragment{
+public class DetailFragment extends DialogFragment {
 	public static final String TAG_DETAIL = "DetailFragment";
 	private static final String EXTRA_DOC = "document";
 	private static final String EXTRA_IS_DIALOG = "is_dialog";

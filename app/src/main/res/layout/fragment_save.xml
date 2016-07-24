@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,56 +15,58 @@
 -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="false"
         android:layout_gravity="center_vertical"
-        android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:background="#323232"
-        android:orientation="horizontal" >
+        android:baselineAligned="false"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@android:id/button2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@android:string/cancel"
             android:padding="16dp"
-            android:src="@drawable/ic_action_close"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:contentDescription="@android:string/cancel"/>
+            app:srcCompat="@drawable/ic_action_close" />
 
         <EditText
             android:id="@android:id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
             android:layout_weight="1"
             android:selectAllOnFocus="true"
-            android:textSize="16sp"
-            android:layout_gravity="start"
+            android:singleLine="true"
             android:textAlignment="viewStart"
             android:textColor="@android:color/white"
-            android:singleLine="true" />
+            android:textSize="16sp" />
 
         <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent">
 
             <ImageButton
                 android:id="@android:id/button1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/menu_save"
                 android:padding="16dp"
-                android:src="@drawable/ic_action_done"
                 android:text="@string/menu_save"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:contentDescription="@string/menu_save"/>
+                app:srcCompat="@drawable/ic_action_done" />
 
             <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
                 android:id="@android:id/progress"

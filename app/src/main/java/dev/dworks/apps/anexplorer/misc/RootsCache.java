@@ -119,6 +119,7 @@ public class RootsCache {
                 | Root.FLAG_SUPPORTS_IS_CHILD;
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
         mRecentsRoot.availableBytes = -1;
+        mRecentsRoot.deriveFields();
 
         new UpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

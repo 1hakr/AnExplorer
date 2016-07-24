@@ -18,11 +18,11 @@
 package dev.dworks.apps.anexplorer.setting;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,30 +30,34 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.WindowManager;
 
 import java.util.List;
 
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
-	
+
+    private static final int FRAGMENT_OPEN = 99;
+
+    private static final String EXTRA_RECREATE = "recreate";
     private static final String KEY_ADVANCED_DEVICES = "advancedDevices";
     private static final String KEY_FILE_SIZE = "fileSize";
     private static final String KEY_FOLDER_SIZE = "folderSize";
     private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
     private static final String KEY_FILE_HIDDEN = "fileHidden";
-    public static final String KEY_ROOT_MODE = "rootMode";
-    public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
-    public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
     private static final String KEY_PIN = "pin";
     private static final String PIN_ENABLED = "pin_enable";
+    public static final String KEY_ROOT_MODE = "rootMode";
+    public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
+    public static final String KEY_THEME_STYLE = "themeStyle";
+    public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
 	
 	private Resources res;
 	private int actionBarColor;
     private final Handler handler = new Handler();
     private Drawable oldBackground;
+    private boolean mRecreate = false;
 
     public static boolean getDisplayAdvancedDevices(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -90,6 +94,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_ACTIONBAR_COLOR, newColor);
     }
+
+    public static int getActionBarColor() {
+        return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
+                .getInt(KEY_ACTIONBAR_COLOR, Color.BLUE);
+    }
+
+    public static String getThemeStyle() {
+        return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
+                .getString(KEY_THEME_STYLE, "1");
+    }
     
     public static boolean getFolderAnimation(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -101,12 +115,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        res = getResources();
         changeActionBarColor(0);
+        res = getResources();
         actionBarColor = getActionBarColor(this);
     }
 
-    /** {@inheritDoc} */
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.pref_headers, target);
@@ -123,7 +136,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     
     @Override
     protected boolean isValidFragment(String fragmentName) {
-    	recreate();
     	return true;
     }
     
@@ -179,22 +191,56 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         changeActionBarColor(0);
     }
 
-	public void changeActionBarColor(int newColor) {
+
+    @Override
+    public void startActivity(Intent intent) {
+        super.startActivityForResult(intent, FRAGMENT_OPEN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == FRAGMENT_OPEN){
+            if(resultCode == RESULT_FIRST_USER){
+                recreate();
+            }
+        }
+    }
+
+    @Override
+    public void recreate() {
+        mRecreate = true;
+        super.recreate();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(EXTRA_RECREATE, true);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        if(state.getBoolean(EXTRA_RECREATE)){
+            setResult(RESULT_FIRST_USER);
+        }
+    }
+
+    public void changeActionBarColor(int newColor) {
 
 		int color = newColor != 0 ? newColor : SettingsActivity.getActionBarColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
-		Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
-		LayerDrawable ld = new LayerDrawable(new Drawable[] { colorDrawable, bottomDrawable });
 
 		if (oldBackground == null) {
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				ld.setCallback(drawableCallback);
+                colorDrawable.setCallback(drawableCallback);
 			} else {
-				getSupportActionBar().setBackgroundDrawable(ld);
+				getSupportActionBar().setBackgroundDrawable(colorDrawable);
 			}
 
 		} else {
-			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
+			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, colorDrawable });
 			// workaround for broken ActionBarContainer drawable handling on
 			// pre-API 17 builds
 			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
@@ -206,14 +252,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 			td.startTransition(200);
 		}
 
-		oldBackground = ld;
+		oldBackground = colorDrawable;
 		
 		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 	}
-	
-	private Drawable.Callback drawableCallback = new Drawable.Callback() {
+
+
+    private Drawable.Callback drawableCallback = new Drawable.Callback() {
 		@Override
 		public void invalidateDrawable(Drawable who) {
             getSupportActionBar().setBackgroundDrawable(who);

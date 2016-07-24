@@ -18,8 +18,6 @@
 package dev.dworks.apps.anexplorer.fragment;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -27,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,11 +34,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
+import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
@@ -66,6 +67,7 @@ public class CreateDirectoryFragment extends DialogFragment {
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
+        Utils.tintWidget(text1);
 
         builder.setTitle(R.string.menu_create_dir);
         builder.setView(view);

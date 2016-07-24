@@ -37,7 +37,7 @@
         android:visible="false"/>
     <item
         android:id="@+id/menu_edit"
-        android:icon="@drawable/ic_menu_rename"
+        android:icon="@drawable/ic_menu_edit"
         support:showAsAction="always"
         android:title="Edit">
         <menu>

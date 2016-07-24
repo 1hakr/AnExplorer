@@ -109,7 +109,8 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                             finish();
                         }
                     });
-            builder.create().show();
+            DialogFragment.showThemedDialog(builder);
+
         } else {
             finish();
         }

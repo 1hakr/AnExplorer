@@ -25,22 +25,31 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
+import android.util.DisplayMetrics;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.Button;
 
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -358,11 +367,46 @@ public class Utils {
     }
 
     public static void showRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(android.R.id.content), text, Snackbar.LENGTH_INDEFINITE);
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
             snackbar.setAction("RETRY", listener)
                     .setActionTextColor(SettingsActivity.getActionBarColor(activity));
         }
         snackbar.show();
+    }
+
+    public static Bitmap getVector2Bitmap(Context context, int id) {
+        VectorDrawableCompat vectorDrawable = VectorDrawableCompat.create(context.getResources(), id, context.getTheme());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+        return bitmap;
+    }
+
+    public static int dpToPx(Context context, int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public static void changeThemeStyle(AppCompatDelegate delegate) {
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        AppCompatDelegate.setDefaultNightMode(nightMode);
+        delegate.setLocalNightMode(nightMode);
+    }
+
+    public static void tintWidget(View view) {
+        tintWidget(view, SettingsActivity.getActionBarColor(view.getContext()));
+    }
+
+    public static void tintButton(Button view) {
+        view.setTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+    }
+
+    public static void tintWidget(View view, int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(view.getBackground());
+        DrawableCompat.setTint(wrappedDrawable.mutate(), color);
+        view.setBackgroundDrawable(wrappedDrawable);
     }
 }

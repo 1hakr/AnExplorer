@@ -74,6 +74,7 @@ import java.util.ArrayList;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
+import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
@@ -676,15 +677,15 @@ public class DirectoryFragment extends ListFragment {
 				final BaseActivity activity = (BaseActivity) getActivity();
 				activity.setInfoDrawerOpen(true);
 				if (activity.isShowAsDialog()) {
-					DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
+					DetailFragment.showAsDialog(activity.getSupportFragmentManager(), docs.get(0));
 				} else {
-					DetailFragment.show(getFragmentManager(), docs.get(0));
+					DetailFragment.show(activity.getSupportFragmentManager(), docs.get(0));
 				}
 				mode.finish();
 				return true;
 
 			case R.id.menu_rename:
-				RenameFragment.show(getFragmentManager(), docs.get(0));
+				RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), docs.get(0));
 				mode.finish();
 				return true;
 
@@ -989,7 +990,7 @@ public class DirectoryFragment extends ListFragment {
 				dialog.dismiss();
 			}
 		});
-		builder.create().show();
+		DialogFragment.showThemedDialog(builder);
 	}
 
 	private static State getDisplayState(Fragment fragment) {
@@ -1806,14 +1807,14 @@ public class DirectoryFragment extends ListFragment {
 			final BaseActivity activity = (BaseActivity) getActivity();
 			activity.setInfoDrawerOpen(true);
 			if (activity.isShowAsDialog()) {
-				DetailFragment.showAsDialog(getFragmentManager(), docs.get(0));
+				DetailFragment.showAsDialog(activity.getSupportFragmentManager(), docs.get(0));
 			} else {
-				DetailFragment.show(getFragmentManager(), docs.get(0));
+				DetailFragment.show(activity.getSupportFragmentManager(), docs.get(0));
 			}
 			return true;
 
 		case R.id.menu_rename:
-			RenameFragment.show(getFragmentManager(), docs.get(0));
+			RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), docs.get(0));
 			return true;
 
         case R.id.menu_bookmark:

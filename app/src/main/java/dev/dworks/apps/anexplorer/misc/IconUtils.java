@@ -24,6 +24,7 @@ import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
 
 import com.google.common.collect.Maps;
@@ -208,7 +209,7 @@ public class IconUtils {
         add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
 
         //folder
-        icon = R.drawable.ic_root_folder;
+        icon = R.drawable.ic_doc_folder;
         add(Document.MIME_TYPE_HIDDEN, icon);
     }
 
@@ -279,7 +280,7 @@ public class IconUtils {
 
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
             // TODO: return a mipmap, since this is used for grid
-            return res.getDrawable(R.drawable.ic_root_folder);
+            return res.getDrawable(R.drawable.ic_doc_folder);
         }
 
         // Look for exact match first
@@ -427,9 +428,7 @@ public class IconUtils {
     public static Drawable applyTintColor(Context context, int drawableId, int tintColorId) {
         final Drawable icon = context.getResources().getDrawable(drawableId);
         icon.mutate();
-        if(Utils.hasLollipop()) {
-            icon.setTintList(context.getResources().getColorStateList(tintColorId));
-        }
+        DrawableCompat.setTintList(DrawableCompat.wrap(icon), context.getResources().getColorStateList(tintColorId));
         return icon;
     }
 

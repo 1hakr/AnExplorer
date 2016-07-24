@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2014 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2014 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,7 +14,7 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true" android:state_activated="true" android:color="@color/primary_text_default_material_dark" />
-    <item android:state_focused="false" android:state_activated="true" android:color="@color/primary_text_default_material_dark" />
+    <item android:color="@color/primary_text_default_material_dark" android:state_activated="true" android:state_focused="true" />
+    <item android:color="@color/primary_text_default_material_dark" android:state_activated="true" android:state_focused="false" />
     <item android:color="@color/secondary_text_material_light" />
 </selector>

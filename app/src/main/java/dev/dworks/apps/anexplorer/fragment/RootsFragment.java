@@ -54,6 +54,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
+import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
@@ -263,7 +264,7 @@ public class RootsFragment extends Fragment {
                 dialog.dismiss();
             }
         });
-        builder.create().show();
+        DialogFragment.showThemedDialog(builder);
     }
 
     private static abstract class Item {
@@ -303,7 +304,7 @@ public class RootsFragment extends Fragment {
             final NumberProgressBar progress = (NumberProgressBar) convertView.findViewById(android.R.id.progress);
 
             final Context context = convertView.getContext();
-            icon.setImageDrawable(root.loadIcon(context));
+            icon.setImageDrawable(root.loadDrawerIcon(context));
             title.setText(root.title);
 
             // Show available space if no summary

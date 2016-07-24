@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="item_doc_grid_background">@color/material_blue_grey_800</color>
+    <color name="item_doc_grid_overlay_activated">#88ffffff</color>
+    <color name="item_doc_grid_overlay_disabled">#88000000</color>
+
+    <color name="item_doc_list_background_activated">#1acbf1ed</color>
+
+</resources>

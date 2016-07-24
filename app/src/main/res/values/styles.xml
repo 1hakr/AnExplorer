@@ -37,7 +37,7 @@
     </style>
 
     <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_menu_overflow</item>
+        <item name="android:src">@drawable/abc_ic_menu_overflow_material</item>
     </style>
 
     <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
@@ -53,7 +53,7 @@
     </style>
 
 
-    <style name="DialogWhenReallyLarge" parent="@style/Theme.AppCompat.Light.DarkActionBar"/>
+    <style name="DialogWhenReallyLarge" parent="@style/Theme.AppCompat.DayNight"/>
 
     <style name="DocumentsTheme" parent="@style/DialogWhenReallyLarge">
         <item name="actionBarWidgetTheme">@null</item>
@@ -65,6 +65,7 @@
         <item name="colorPrimary">@color/material_blue_grey_800</item>
         <item name="colorAccent">@color/accentColor</item>
         <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
+        <item name="colorControlActivated">@color/primary_text_default_material_dark</item>
 
         <!--<item name="android:listDivider">@drawable/list_divider_material</item>-->
 
@@ -76,7 +77,7 @@
         <item name="*android:windowMinWidthMajor">@null</item>
         <item name="*android:windowMinWidthMinor">@null</item>
 <!--        <item name="*android:windowFixedHeightMajor">80%</item>-->
-        <item name="*android:windowFixedHeightMinor">90%</item>
+<!--        <item name="*android:windowFixedHeightMinor">90%</item>-->
 
         <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
 
@@ -84,6 +85,9 @@
         <item name="*android:windowContentTransitions">true</item>
         <item name="*android:windowAllowEnterTransitionOverlap">true</item>
         <item name="*android:windowAllowReturnTransitionOverlap">true</item>
+
+        <item name="actionModeStyle">@style/Custom.Widget.ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/Custom.Widget.ActionButton.CloseMode</item>
     </style>
 
     <style name="StandaloneTheme" parent="@style/DocumentsTheme">
@@ -100,7 +104,8 @@
     </style>
 
     <style name="Theme.Setting" parent="@style/DocumentsTheme">
-        <item name="colorControlNormal">@color/material_blue_grey_800</item>
+        <item name="colorControlNormal">?android:attr/textColorPrimary</item>
+        <item name="colorControlActivated">?android:attr/textColorPrimary</item>
         <item name="windowActionBar">true</item>
     </style>
 
@@ -143,7 +148,7 @@
         <item name="android:layout_weight">1</item>
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">#666666</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="*android:fontFamily">sans-serif-condensed</item>
     </style>
 
@@ -162,4 +167,15 @@
     <style name="PopupTheme" parent="@android:style/Widget.Holo.Spinner">
         <item name="android:background">@drawable/abc_spinner_mtrl_am_alpha</item>
     </style>
+
+    <style name="Custom.Widget.ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="android:paddingLeft">@dimen/toolbar_h_padding</item>
+        <item name="android:paddingRight">@dimen/toolbar_h_padding</item>
+    </style>
+
+    <style name="Custom.Widget.ActionButton.CloseMode" parent="Widget.AppCompat.ActionButton.CloseMode">
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:minWidth">48dp</item>
+    </style>
+
 </resources>

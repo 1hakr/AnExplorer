@@ -41,6 +41,7 @@ import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public abstract class BaseActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
@@ -190,33 +191,34 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     public void showError(int msg){
-        showToast(msg, R.color.button_text_color_red, Snackbar.LENGTH_SHORT);
+        showToast(msg, getResources().getColor(R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
     }
 
     public void showInfo(String msg){
-        showToast(msg, R.color.button_text_color_yellow, Snackbar.LENGTH_SHORT);
+        int color = SettingsActivity.getActionBarColor();
+        showToast(msg, color, Snackbar.LENGTH_SHORT);
     }
 
     public void showToast(String msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
         snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackbar.dismiss();
             }
         })
-                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
+                .setActionTextColor(actionColor).show();
     }
 
     public void showToast(int msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
         snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 snackbar.dismiss();
             }
         })
-                .setActionTextColor(getResources().getColor(R.color.button_text_color_yellow)).show();
+                .setActionTextColor(actionColor).show();
     }
 
     public boolean isSAFIssue(String docId){

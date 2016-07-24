@@ -23,7 +23,7 @@
 
     <item
         android:id="@+id/menu_create_file"
-        android:icon="@drawable/ic_add_white"
+        android:icon="@drawable/ic_menu_new_file"
         support:showAsAction="always"
         android:title="@string/menu_create_file"
         android:visible="false"/>
@@ -36,7 +36,7 @@
     <item
         android:id="@+id/menu_search"
         support:actionViewClass="android.support.v7.widget.SearchView"
-        android:icon="@drawable/ic_menu_search"
+        android:icon="@drawable/abc_ic_search_api_material"
         support:showAsAction="ifRoom|collapseActionView"
         android:title="@string/menu_search"
         android:visible="false"/>

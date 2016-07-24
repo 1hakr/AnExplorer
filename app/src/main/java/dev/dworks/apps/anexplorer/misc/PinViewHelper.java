@@ -18,6 +18,8 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class PinViewHelper {
     private TextView passwordInstruction;
@@ -35,6 +38,11 @@ public class PinViewHelper {
         final TextView password = (TextView)ret.findViewById(R.id.password);
         passwordInstruction = (TextView)ret.findViewById(R.id.passwordInstruction);
         passwordInstruction.setText(R.string.enter_pin);
+        int color = SettingsActivity.getActionBarColor(inflater.getContext());
+        password.setTextColor(color);
+        passwordInstruction.setTextColor(color);
+        final ShapeDrawable pinEntered = new ShapeDrawable(new OvalShape());
+        pinEntered.getPaint().setColor(color);
         //passwordInstruction.setText(confirm ? R.string.confirm_pin : R.string.enter_pin);
         int[] ids = new int[] { R.id.p0, R.id.p1, R.id.p2, R.id.p3, R.id.p4, R.id.p5, R.id.p6, R.id.p7, R.id.p8, R.id.p9, };
         final int[] pinBoxIds = new int[]{R.id.pinBox0, R.id.pinBox1, R.id.pinBox2, R.id.pinBox3};
@@ -47,7 +55,7 @@ public class PinViewHelper {
                 @Override
                 public void onClick(View v) {
                     password.setText(password.getText().toString() + text);
-                    ret.findViewById(pinBoxIds[password.getText().length()-1]).setBackgroundResource(R.drawable.pin_entered);
+                    ret.findViewById(pinBoxIds[password.getText().length()-1]).setBackgroundDrawable(pinEntered);
                 }
             });
         }

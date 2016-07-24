@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.Uri;
+import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -36,6 +37,11 @@ import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 
 public class DocumentsApplication extends Application {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
+    private static DocumentsApplication sInstance;
+
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
     private RootsCache mRoots;
     private Point mThumbnailsSize;
@@ -68,7 +74,8 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-		
+
+        sInstance = this;
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
 
@@ -88,6 +95,10 @@ public class DocumentsApplication extends Application {
         final IntentFilter localeFilter = new IntentFilter();
         localeFilter.addAction(Intent.ACTION_LOCALE_CHANGED);
         registerReceiver(mCacheReceiver, localeFilter);
+    }
+
+    public static synchronized DocumentsApplication getInstance() {
+        return sInstance;
     }
 
     @Override
