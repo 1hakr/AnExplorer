@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '24.0.0'
 
     defaultConfig {
-        versionName "3.1"
-        versionCode = 47
+        versionName "3.2"
+        versionCode = 48
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 24
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
@@ -57,17 +57,17 @@ android {
 }
 
 ext {
-    supportLibVersion = '24.0.0'
-    gmsVersion = '9.2.0'
+    supportLibVersion = '24.1.1'
+    gmsVersion = '9.2.1'
 }
 
 dependencies {
     compile files('libs/RootTools.jar')
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.jaredrummler:android-processes:+'
     compile "com.android.support:support-v4:${supportLibVersion}"
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.jaredrummler:android-processes:+'
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
