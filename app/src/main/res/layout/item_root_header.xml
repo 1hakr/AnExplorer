@@ -17,11 +17,17 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="12dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@android:id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="36dp"
+        android:paddingLeft="@dimen/list_item_padding"
+        android:gravity="center_vertical"
         android:textColor="?android:attr/textColorTertiary"
-        style="?android:attr/listSeparatorTextViewStyle" />
+        android:textAllCaps="true"
+        tools:text="Media" />
 
 </FrameLayout>

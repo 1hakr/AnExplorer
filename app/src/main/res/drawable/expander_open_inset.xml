@@ -1,0 +1,6 @@
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/expander_open"
+    android:insetBottom="@dimen/expander_inset"
+    android:insetLeft="@dimen/expander_inset"
+    android:insetRight="@dimen/expander_inset"
+    android:insetTop="@dimen/expander_inset" />

@@ -78,5 +78,5 @@
     <color name="item_doc_event">#1E88E5</color>
     <color name="item_doc_font">#455A64</color>
 
-
+    <color name="defaultThemeColor">#808080</color>
 </resources>

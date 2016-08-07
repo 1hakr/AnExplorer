@@ -1,0 +1,3 @@
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/expander_open"
+    android:inset="@dimen/expander_inset" />

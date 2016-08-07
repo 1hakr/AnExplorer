@@ -97,7 +97,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static int getActionBarColor() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
-                .getInt(KEY_ACTIONBAR_COLOR, Color.BLUE);
+                .getInt(KEY_ACTIONBAR_COLOR, Color.parseColor("#0288D1"));
     }
 
     public static String getThemeStyle() {

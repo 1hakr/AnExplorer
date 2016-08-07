@@ -401,4 +401,21 @@ public class RootInfo implements Durable, Parcelable {
         }
         return false;
     }
+
+    public static boolean isStorage(RootInfo root){
+        return root.isPhoneStorage() || root.isStorage() || root.isRootedStorage();
+    }
+
+    public static boolean isLibrary(RootInfo root){
+        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio();
+    }
+
+    public static boolean isFolder(RootInfo root){
+        return root.isBluetoothFolder() || root.isDownloadsFolder()
+                || root.isAppBackupFolder() || root.isDownloads();
+    }
+
+    public static boolean isBookmark(RootInfo root){
+        return root.isBookmarkFolder();
+    }
 }
