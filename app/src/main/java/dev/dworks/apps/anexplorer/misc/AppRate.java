@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v4.app.ShareCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -180,7 +178,6 @@ public class AppRate implements View.OnClickListener{
         View background = mainView.findViewById(R.id.background);
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         ImageView rate = (ImageView) mainView.findViewById(R.id.rate);
-        ImageView share = (ImageView) mainView.findViewById(R.id.share);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
 
         background.setBackgroundColor(Utils.getLightColor(
@@ -189,7 +186,6 @@ public class AppRate implements View.OnClickListener{
 
         close.setOnClickListener(this);
         rate.setOnClickListener(this);
-        share.setOnClickListener(this);
 
         if (delay > 0) {
             activity.getWindow().getDecorView().postDelayed(new Runnable() {
@@ -260,18 +256,6 @@ public class AppRate implements View.OnClickListener{
                 if(Utils.isIntentAvailable(activity, intent)) {
                     activity.startActivity(intent);
                 }
-                if (onShowListener != null)onShowListener.onRateAppClicked();
-                hideAllViews(mainView);
-                editor.putBoolean(KEY_CLICKED, true);
-                editor.apply();
-                break;
-            case R.id.share:
-                ShareCompat.IntentBuilder
-                        .from(activity)
-                        .setText(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID).toString())
-                        .setType("text/plain")
-                        .setChooserTitle("Share AnExplorer")
-                        .startChooser();
                 if (onShowListener != null)onShowListener.onRateAppClicked();
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);

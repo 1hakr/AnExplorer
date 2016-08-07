@@ -103,8 +103,7 @@
         <activity
             android:name="dev.dworks.apps.anexplorer.AboutActivity"
             android:label="About"
-            android:theme="@style/Theme.About"
-            android:uiOptions="splitActionBarWhenNarrow" />
+            android:theme="@style/Theme.Document" />
 
         <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver">
             <intent-filter>

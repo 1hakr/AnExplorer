@@ -79,4 +79,6 @@
     <color name="item_doc_font">#455A64</color>
 
     <color name="defaultThemeColor">#808080</color>
+
+    <color name="divider_light">#97dddddd</color>
 </resources>

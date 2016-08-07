@@ -9,7 +9,7 @@
         android:title="Feedback"/>
     <item
         android:id="@+id/action_rate"
-        android:icon="@drawable/ic_menu_rate"
+        android:icon="@drawable/ic_rate"
         android:orderInCategory="102"
         support:showAsAction="always"
         android:title="Rate"/>

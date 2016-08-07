@@ -44,16 +44,7 @@
             android:layout_gravity="center_vertical"
             android:minWidth="48dp"
             android:contentDescription="Rate"
-            app:srcCompat="@drawable/ic_menu_rate" />
-
-        <ImageView
-            android:id="@+id/share"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:minWidth="48dp"
-            android:contentDescription="@string/menu_share"
-            app:srcCompat="@drawable/ic_menu_share" />
+            app:srcCompat="@drawable/ic_rate" />
     </LinearLayout>
 
 </FrameLayout>
