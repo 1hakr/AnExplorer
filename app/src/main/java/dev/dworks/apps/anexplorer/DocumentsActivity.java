@@ -538,26 +538,6 @@ public class DocumentsActivity extends BaseActivity {
         if(BuildConfig.FLAVOR.contains("other") || Utils.isTelevision(this)){
             return;
         }
-        AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
-            @Override
-            public void onRateAppShowing() {
-                // View is shown
-            }
-
-            @Override
-            public void onRateAppDismissed() {
-                // User has dismissed it
-            }
-
-            @Override
-            public void onRateAppClicked() {
-    			Intent intentMarket = new Intent("android.intent.action.VIEW");
-    			intentMarket.setData(Uri.parse("market://details?id="+ BuildConfig.APPLICATION_ID));
-                if(Utils.isIntentAvailable(DocumentsActivity.this, intentMarket)){
-                    startActivity(intentMarket);
-                }
-            }
-        }).checkAndShow();
     }
 
     private DrawerListener mDrawerListener = new DrawerListener() {
@@ -1203,6 +1183,21 @@ public class DocumentsActivity extends BaseActivity {
         updateActionBar();
         invalidateMenu();
         dumpStack();
+        AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
+            @Override
+            public void onRateAppShowing() {
+                // View is shown
+            }
+
+            @Override
+            public void onRateAppDismissed() {
+                // User has dismissed it
+            }
+
+            @Override
+            public void onRateAppClicked() {
+            }
+        }).checkAndShow();
     }
 
     public void onStackPicked(DocumentStack stack) {

@@ -11,9 +11,7 @@
         android:background="#323232"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:orientation="horizontal"
-        android:paddingEnd="10dp"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"
         android:paddingStart="10dp">
 
         <ImageView
@@ -29,17 +27,33 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawablePadding="10dp"
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="Like AnExplore! Spread the word"
-            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:maxLines="1"
+            android:text="Like the app? Spread the word!"
             android:textColor="@android:color/white"
-            android:textSize="18sp"
-            app:drawableEnd="@drawable/ic_menu_rate" />
+            android:textSize="16sp" />
 
+        <ImageView
+            android:id="@+id/rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:minWidth="48dp"
+            android:contentDescription="Rate"
+            app:srcCompat="@drawable/ic_menu_rate" />
+
+        <ImageView
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:minWidth="48dp"
+            android:contentDescription="@string/menu_share"
+            app:srcCompat="@drawable/ic_menu_share" />
     </LinearLayout>
 
 </FrameLayout>

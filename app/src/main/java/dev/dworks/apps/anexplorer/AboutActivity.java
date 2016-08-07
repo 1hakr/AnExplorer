@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -34,7 +35,7 @@ public class AboutActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_about);
-		
+
         final Resources res = getResources();
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		TextView logo = (TextView)findViewById(R.id.logo);
@@ -77,11 +78,13 @@ public class AboutActivity extends ActionBarActivity {
 					Uri.parse("https://twitter.com/1HaKr")));
 			break;
 		case R.id.action_feedback:
-			Intent intentFeedback = new Intent("android.intent.action.SEND");
-			intentFeedback.setType("text/email");
-			intentFeedback.putExtra("android.intent.extra.EMAIL", new String[]{"hakr@dworks.in"});
-			intentFeedback.putExtra("android.intent.extra.SUBJECT", "AnExplorer Feedback" + getSuffix());
-			startActivity(Intent.createChooser(intentFeedback, "Send Feedback"));
+			ShareCompat.IntentBuilder
+					.from(this)
+					.setEmailTo(new String[]{"hakr@dworks.in"})
+					.setSubject("AnExplorer Feedback" + getSuffix())
+					.setType("text/email")
+					.setChooserTitle("Send Feedback")
+					.startChooser();
 			break;
 		case R.id.action_rate:
 			Intent intentMarket = new Intent("android.intent.action.VIEW");
