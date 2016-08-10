@@ -25,5 +25,5 @@
     <dimen name="list_item_padding">16dp</dimen>
 
     <dimen name="list_divider_inset">72dp</dimen>
-    <dimen name="side_navigation_width">256dp</dimen>
+    <dimen name="side_navigation_width">288dp</dimen>
 </resources>
