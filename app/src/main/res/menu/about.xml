@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/action_feedback"
-        android:icon="@drawable/ic_menu_feedback"
+        android:icon="@drawable/ic_feedback"
         android:orderInCategory="101"
         support:showAsAction="always"
         android:title="Feedback"/>
@@ -15,7 +15,7 @@
         android:title="Rate"/>
     <item
         android:id="@+id/action_support"
-        android:icon="@drawable/ic_menu_support"
+        android:icon="@drawable/ic_support"
         android:orderInCategory="103"
         support:showAsAction="always"
         android:title="Support"/>
