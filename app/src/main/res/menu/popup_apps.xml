@@ -22,22 +22,21 @@
         support:showAsAction="ifRoom"
         android:title="@string/menu_open"
         android:visible="false"/>
-
-    <item
-        android:id="@+id/menu_details"
-        android:icon="@drawable/ic_menu_info"
-        support:showAsAction="always"
-        android:title="Details"/>
     <item
         android:id="@+id/menu_save"
         android:icon="@drawable/ic_menu_save"
         support:showAsAction="always"
-        android:title="Save"
+        android:title="Backup"
         android:visible="false"/>
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_menu_stop"
         support:showAsAction="always"
         android:title="@string/menu_delete"/>
+    <item
+        android:id="@+id/menu_details"
+        android:icon="@drawable/ic_menu_info"
+        support:showAsAction="always"
+        android:title="Properties"/>
 
 </menu>

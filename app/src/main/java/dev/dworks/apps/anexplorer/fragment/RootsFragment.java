@@ -193,7 +193,7 @@ public class RootsFragment extends Fragment {
         final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
         for (int i = 0; i < mAdapter.getGroupCount(); i++) {
             for (int j = 0; i < mAdapter.getChildrenCount(i); i++) {
-                final Object item = mAdapter.getChild(1,j);
+                final Object item = mAdapter.getChild(i,j);
                 if (item instanceof RootItem) {
                     final RootInfo testRoot = ((RootItem) item).root;
                     if (Objects.equal(testRoot, root)) {
@@ -211,7 +211,7 @@ public class RootsFragment extends Fragment {
         final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
         for (int i = 0; i < mAdapter.getGroupCount(); i++) {
             for (int j = 0; i < mAdapter.getChildrenCount(i); i++) {
-                final Object item = mAdapter.getChild(1,j);
+                final Object item = mAdapter.getChild(i,j);
                 if (item instanceof RootItem) {
                     final RootInfo testRoot = ((RootItem) item).root;
                     if (Objects.equal(testRoot, root)) {

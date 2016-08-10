@@ -199,6 +199,11 @@ public abstract class BaseActivity extends ActionBarActivity {
         showToast(msg, color, Snackbar.LENGTH_SHORT);
     }
 
+    public void showInfo(int msg){
+        int color = SettingsActivity.getActionBarColor();
+        showToast(msg, color, Snackbar.LENGTH_LONG);
+    }
+
     public void showToast(String msg, int actionColor, int duration){
         final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
         snackbar.setAction(android.R.string.ok, new View.OnClickListener() {

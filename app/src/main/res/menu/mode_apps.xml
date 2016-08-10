@@ -31,7 +31,7 @@
         android:id="@+id/menu_save"
         android:icon="@drawable/ic_menu_save"
         support:showAsAction="always"
-        android:title="Save"
+        android:title="Backup"
         android:visible="false"/>
     <item
         android:id="@+id/menu_delete"

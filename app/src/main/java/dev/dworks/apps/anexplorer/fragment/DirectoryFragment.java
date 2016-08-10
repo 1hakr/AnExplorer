@@ -962,6 +962,10 @@ public class DirectoryFragment extends ListFragment {
                     }
                     break;
 				}
+			} else{
+				if(id == R.id.menu_save) {
+					((BaseActivity) getActivity()).showInfo("App(s) Backed up to 'AppBackup' folder");
+				}
 			}
 
             if(mType == TYPE_RECENT_OPEN){
