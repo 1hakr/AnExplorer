@@ -58,14 +58,13 @@
                 app:divider="@drawable/line_divider"
                 app:showDividers="middle|end">
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_rate"
-                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_star"
+                    app:drawableStart="@drawable/ic_star"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -74,16 +73,16 @@
                     android:text="Rate us on Play store"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
+                    style="@style/ButtonAppTheme"
                     android:visibility="visible" />
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_support"
-                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_support"
+                    app:drawableStart="@drawable/ic_support"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -92,16 +91,16 @@
                     android:text="Show us more love"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    style="@style/ButtonAppTheme"/>
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_share"
-                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_menu_share"
+                    app:drawableStart="@drawable/ic_share"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -110,16 +109,16 @@
                     android:text="Spread the word"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    style="@style/ButtonAppTheme"/>
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_feedback"
-                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_feedback"
+                    app:drawableStart="@drawable/ic_feedback"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -128,7 +127,8 @@
                     android:text="Feed us back"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    style="@style/ButtonAppTheme"/>
 
             </android.support.v7.widget.LinearLayoutCompat>
 

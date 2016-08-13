@@ -53,13 +53,13 @@
                 app:divider="@drawable/line_divider"
                 app:showDividers="middle|end">
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_rate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_star"
+                    app:drawableStart="@drawable/ic_star"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -71,13 +71,13 @@
                     style="@style/ButtonAppTheme"
                     android:visibility="visible" />
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_support"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_support"
+                    app:drawableStart="@drawable/ic_support"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -89,13 +89,13 @@
                     android:visibility="visible"
                     style="@style/ButtonAppTheme"/>
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_share"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_share"
+                    app:drawableStart="@drawable/ic_share"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -107,13 +107,13 @@
                     android:visibility="visible"
                     style="@style/ButtonAppTheme"/>
 
-                <TextView
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_feedback"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    android:drawableLeft="@drawable/ic_feedback"
+                    app:drawableStart="@drawable/ic_feedback"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
