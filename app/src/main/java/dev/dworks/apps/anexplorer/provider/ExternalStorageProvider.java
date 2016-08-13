@@ -581,7 +581,7 @@ public class ExternalStorageProvider extends StorageProvider {
     
     @Override
     public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
-
+        boolean editExtension = true;
         // Since this provider treats renames as generating a completely new
         // docId, we're okay with letting the MIME type change.
         displayName = FileUtils.buildValidFatFilename(displayName);
@@ -590,11 +590,15 @@ public class ExternalStorageProvider extends StorageProvider {
         File file;
     	
 		if(parent.isDirectory()){
-			file = new File(parent.getParentFile(), FileUtils.removeExtension(mimeType, displayName));
+			file = new File(parent.getParentFile(), displayName);
 		}
 		else{
-			displayName = FileUtils.removeExtension(mimeType, displayName);
-            file = new File(parent.getParentFile(), FileUtils.addExtension(mimeType, displayName));
+            if(editExtension){
+                file = new File(parent.getParentFile(), displayName);
+            } else {
+                displayName = FileUtils.removeExtension(mimeType, displayName);
+                file = new File(parent.getParentFile(), FileUtils.addExtension(mimeType, displayName));
+            }
 		}
 		
 		if(parent.canWrite()){

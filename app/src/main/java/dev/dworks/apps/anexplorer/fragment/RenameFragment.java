@@ -51,7 +51,7 @@ import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 public class RenameFragment extends DialogFragment {
     private static final String TAG_RENAME = "rename";
 	private static final String EXTRA_DOC = "document";
-	
+	private boolean editExtension = true;
 	private DocumentInfo doc;
 	
     public static void show(FragmentManager fm, DocumentInfo doc) {
@@ -85,7 +85,7 @@ public class RenameFragment extends DialogFragment {
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
         Utils.tintWidget(text1);
 
-        String nameOnly = FileUtils.removeExtension(doc.mimeType, doc.displayName);
+        String nameOnly = editExtension ? doc.displayName : FileUtils.removeExtension(doc.mimeType, doc.displayName);
         text1.setText(nameOnly);
         text1.setSelection(text1.getText().length());
         
@@ -96,7 +96,7 @@ public class RenameFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 final String displayName = text1.getText().toString();
-                final String fileName = FileUtils.addExtension(doc.mimeType, displayName);
+                final String fileName = editExtension ? displayName : FileUtils.addExtension(doc.mimeType, displayName);
                 		
                 new RenameTask(activity, doc, fileName).executeOnExecutor(
                         ProviderExecutor.forAuthority(doc.authority));
