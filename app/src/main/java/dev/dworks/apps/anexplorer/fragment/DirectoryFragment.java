@@ -85,6 +85,7 @@ import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
@@ -1295,7 +1296,7 @@ public class DirectoryFragment extends ListFragment {
 				} else {
 					iconThumb.setImageDrawable(null);
 					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, iconMimeBackground, mThumbSize,
-                            Utils.isAPK(docMimeType) ? docPath : null, iconAlpha);
+                            docPath, docMimeType, iconAlpha);
 					iconThumb.setTag(task);
 					ProviderExecutor.forAuthority(docAuthority).execute(task);
 				}
@@ -1519,9 +1520,10 @@ public class DirectoryFragment extends ListFragment {
         private final float mTargetAlpha;
 		private final CancellationSignal mSignal;
 		private final String mPath;
+		private final String mMimeType;
 
         public ThumbnailAsyncTask(Uri uri, ImageView iconMime, ImageView iconThumb, View iconMimeBackground, Point thumbSize,
-                String path, float targetAlpha) {
+                String path, String mimeType, float targetAlpha) {
 			mUri = uri;
 			mIconMime = iconMime;
 			mIconThumb = iconThumb;
@@ -1530,6 +1532,7 @@ public class DirectoryFragment extends ListFragment {
             mTargetAlpha = targetAlpha;
 			mSignal = new CancellationSignal();
 			mPath = path;
+			mMimeType = mimeType;
 		}
 
 		@Override
@@ -1549,11 +1552,14 @@ public class DirectoryFragment extends ListFragment {
 			ContentProviderClient client = null;
 			Bitmap result = null;
 			try {
-				if (!TextUtils.isEmpty(mPath)) {
+				if (Utils.isAPK(mMimeType)) {
 					result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, mPath, Document.MIME_TYPE_APK)).getBitmap();
 				} else {
 					client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mUri.getAuthority());
 					result = DocumentsContract.getDocumentThumbnail(resolver, mUri, mThumbSize, mSignal);
+				}
+				if (null == result){
+					result = ImageUtils.getThumbnail(mPath, mMimeType, mThumbSize.x, mThumbSize.y);
 				}
 				if (result != null) {
 					final ThumbnailCache thumbs = DocumentsApplication.getThumbnailsCache(context, mThumbSize);
@@ -1575,7 +1581,7 @@ public class DirectoryFragment extends ListFragment {
                 result = null;
             }
             if (mIconThumb.getTag() == this && result != null) {
-				mIconThumb.setScaleType(!TextUtils.isEmpty(mPath) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
+				mIconThumb.setScaleType(Utils.isAPK(mMimeType) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
 				mIconThumb.setTag(null);
 				mIconThumb.setImageBitmap(result);
                 mIconMimeBackground.setVisibility(View.INVISIBLE);
