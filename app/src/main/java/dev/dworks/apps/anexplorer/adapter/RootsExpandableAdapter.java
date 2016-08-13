@@ -38,7 +38,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 bookmarks.add(new BookmarkItem(root));
             } else if (RootInfo.isStorage(root)) {
                 storage.add(new RootItem(root));
-            } else {
+            } else if (RootInfo.isTools(root)) {
                 tools.add(new RootItem(root));
             }
         }

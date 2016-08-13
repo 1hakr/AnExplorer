@@ -403,7 +403,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isStorage(RootInfo root){
-        return root.isPhoneStorage() || root.isStorage() || root.isRootedStorage();
+        return root.isPhoneStorage() || root.isStorage();
     }
 
     public static boolean isLibrary(RootInfo root){
@@ -418,4 +418,9 @@ public class RootInfo implements Durable, Parcelable {
     public static boolean isBookmark(RootInfo root){
         return root.isBookmarkFolder();
     }
+
+    public static boolean isTools(RootInfo root){
+        return root.isAppPackage() || root.isAppProcess() || root.isRootedStorage();
+    }
+
 }

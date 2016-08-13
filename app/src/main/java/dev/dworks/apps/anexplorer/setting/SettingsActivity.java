@@ -35,6 +35,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -85,7 +86,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     public static boolean getRootMode(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+        return Utils.isRooted() && PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_ROOT_MODE, false);
     }
     
