@@ -35,6 +35,8 @@ import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.text.TextUtilsCompat;
+import android.support.v4.view.*;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -411,4 +413,10 @@ public class Utils {
         DrawableCompat.setTint(wrappedDrawable.mutate(), color);
         view.setBackgroundDrawable(wrappedDrawable);
     }
+
+    public static boolean isRTL() {
+        return TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
+                == android.support.v4.view.ViewCompat.LAYOUT_DIRECTION_RTL;
+    }
+
 }

@@ -10,15 +10,15 @@
         android:layout_height="wrap_content"
         android:background="#323232"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:minWidth="48dp"
             android:contentDescription="@android:string/cancel"
+            android:minWidth="48dp"
             app:srcCompat="@drawable/ic_action_close" />
 
         <dev.dworks.apps.anexplorer.ui.CompatTextView
@@ -29,9 +29,11 @@
             android:ellipsize="end"
             android:fontFamily="sans-serif"
             android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingEnd="5dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:maxLines="1"
+            android:paddingStart="5dp"
             android:text="Enjoying the app? Spread the word!"
             android:textColor="@android:color/white"
             android:textSize="16sp" />
@@ -41,8 +43,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:minWidth="48dp"
             android:contentDescription="Rate"
+            android:minWidth="48dp"
             app:srcCompat="@drawable/ic_app_rate" />
     </LinearLayout>
 

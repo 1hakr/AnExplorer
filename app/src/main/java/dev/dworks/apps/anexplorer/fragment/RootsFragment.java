@@ -108,8 +108,12 @@ public class RootsFragment extends Fragment {
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         int width = Utils.dpToPx(302);
-        int leftWidth = width - Utils.dpToPx(50);
-        int rightWidth = width - Utils.dpToPx(10);
+
+        boolean rtl = Utils.isRTL();
+        int leftPadding = rtl ? 10 : 50;
+        int rightPadding = rtl ? 50 : 10;
+        int leftWidth = width - Utils.dpToPx(leftPadding);
+        int rightWidth = width - Utils.dpToPx(rightPadding);
 
         if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mList.setIndicatorBounds(leftWidth, rightWidth);
@@ -142,13 +146,6 @@ public class RootsFragment extends Fragment {
 
                 mAdapter = new RootsExpandableAdapter(context, result, includeApps);
                 mList.setAdapter(mAdapter);
-
-                if(ExternalStorageProvider.isDownloadAuthority(includeApps)){
-                    onDownloadRootChanged();
-                }
-                else{
-                    onCurrentRootChanged();	
-                }
 
                 int groupCount = mList.getAdapter().getCount();
                 if(groupCount >= 2){
@@ -197,25 +194,8 @@ public class RootsFragment extends Fragment {
                 if (item instanceof RootItem) {
                     final RootInfo testRoot = ((RootItem) item).root;
                     if (Objects.equal(testRoot, root)) {
-                        mList.setItemChecked(i, true);
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    
-    public void onDownloadRootChanged() {
-        if (mAdapter == null) return;
-
-        final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
-        for (int i = 0; i < mAdapter.getGroupCount(); i++) {
-            for (int j = 0; i < mAdapter.getChildrenCount(i); i++) {
-                final Object item = mAdapter.getChild(i,j);
-                if (item instanceof RootItem) {
-                    final RootInfo testRoot = ((RootItem) item).root;
-                    if (Objects.equal(testRoot, root)) {
-                        mList.setItemChecked(i, true);
+                        int index = mList.getFlatListPosition(ExpandableListView.getPackedPositionForChild(i, j));
+                        mList.setItemChecked(index, true);
                         return;
                     }
                 }
@@ -239,6 +219,8 @@ public class RootsFragment extends Fragment {
             final BaseActivity activity = BaseActivity.get(RootsFragment.this);
             final Item item = (Item) mAdapter.getChild(groupPosition, childPosition);
             if (item instanceof RootItem) {
+                int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
+                parent.setItemChecked(index, true);
                 activity.onRootPicked(((RootItem) item).root, true);
             } else if (item instanceof AppItem) {
                 activity.onAppPicked(((AppItem) item).info);

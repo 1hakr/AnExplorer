@@ -34,96 +34,102 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false" >
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
-            android:paddingTop="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="10dp">
 
             <android.support.v7.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingEnd="16dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
+                android:paddingStart="16dp"
                 app:divider="@drawable/line_divider"
                 app:showDividers="middle|end">
 
                 <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_rate"
+                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    app:drawableStart="@drawable/ic_star"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
-                    android:gravity="center_vertical"
+                    android:gravity="start|center_vertical"
                     android:minHeight="?attr/actionBarSize"
-                    android:paddingLeft="16dp"
+                    android:padding="16dp"
                     android:text="Rate us on Play store"
+                    android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
-                    style="@style/ButtonAppTheme"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    app:drawableStart="@drawable/ic_star" />
 
                 <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_support"
+                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    app:drawableStart="@drawable/ic_support"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
-                    android:gravity="center_vertical"
+                    android:gravity="start|center_vertical"
                     android:minHeight="?attr/actionBarSize"
                     android:padding="16dp"
                     android:text="Show us more love"
+                    android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
                     android:visibility="visible"
-                    style="@style/ButtonAppTheme"/>
+                    app:drawableStart="@drawable/ic_support" />
 
                 <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_share"
+                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    app:drawableStart="@drawable/ic_share"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
-                    android:gravity="center_vertical"
+                    android:gravity="start|center_vertical"
                     android:minHeight="?attr/actionBarSize"
                     android:padding="16dp"
                     android:text="Spread the word"
+                    android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
                     android:visibility="visible"
-                    style="@style/ButtonAppTheme"/>
+                    app:drawableStart="@drawable/ic_share" />
 
                 <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_feedback"
+                    style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:adjustViewBounds="true"
-                    app:drawableStart="@drawable/ic_feedback"
                     android:drawablePadding="16dp"
                     android:ellipsize="end"
-                    android:gravity="center_vertical"
+                    android:gravity="start|center_vertical"
                     android:minHeight="?attr/actionBarSize"
-                    android:paddingLeft="16dp"
+                    android:padding="16dp"
                     android:text="Feed us back"
+                    android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="?android:attr/textColorPrimary"
                     android:visibility="visible"
-                    style="@style/ButtonAppTheme"/>
+                    app:drawableStart="@drawable/ic_feedback" />
 
             </android.support.v7.widget.LinearLayoutCompat>
 

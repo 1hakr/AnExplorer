@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,19 +14,22 @@
 -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@android:id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:gravity="start|center_vertical"
         android:minHeight="36dp"
         android:paddingLeft="@dimen/list_item_padding"
-        android:gravity="center_vertical"
-        android:textColor="?android:attr/textColorTertiary"
+        android:paddingStart="@dimen/list_item_padding"
+        android:textAlignment="viewStart"
         android:textAllCaps="true"
+        android:textColor="?android:attr/textColorTertiary"
         tools:text="Media" />
 
 </FrameLayout>
