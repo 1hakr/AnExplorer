@@ -926,7 +926,7 @@ public class DocumentsActivity extends BaseActivity {
         }
 
         final RootInfo root = getCurrentRoot();
-        if(root != null && root.isRootedStorage()){
+        if(root != null && (root.isRootedStorage() || root.isUsbStorage())){
             refreshData();
         }
     }

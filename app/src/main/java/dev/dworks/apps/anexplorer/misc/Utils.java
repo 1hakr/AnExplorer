@@ -160,6 +160,10 @@ public class Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
+    public static boolean hasNoughat() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
     public static boolean hasMoreHeap(){
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }

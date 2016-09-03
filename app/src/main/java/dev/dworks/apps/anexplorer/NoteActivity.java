@@ -16,6 +16,7 @@ package dev.dworks.apps.anexplorer;
  * limitations under the License.
  */
 
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.net.Uri;
@@ -30,6 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.github.mjdev.libaums.fs.UsbFile;
+import com.github.mjdev.libaums.fs.UsbFileOutputStream;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,9 +46,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.root.RootCommands;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
@@ -269,20 +276,38 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     errorMsg = "Unable to save file";
                 }
                 return null;
-            }
-            OutputStream os = getOutStream(uri);
-            if(null == os){
-                errorMsg = "Unable to save file";
+            } else if(authority.equalsIgnoreCase(UsbStorageProvider.AUTHORITY)){
+                final ContentProviderClient usbclient = ContentProviderClientCompat
+                        .acquireUnstableContentProviderClient(
+                                NoteActivity.this.getContentResolver(),
+                                UsbStorageProvider.AUTHORITY);
+                String docId = DocumentsContract.getDocumentId(uri);
+                try {
+                    UsbFile file = ((UsbStorageProvider) usbclient.getLocalContentProvider())
+                            .getFileForDocId(docId);
+                    UsbFileOutputStream ufos = new UsbFileOutputStream(file);
+                    ufos.write(mInput.getText().toString().getBytes("UTF-8"));
+                    ufos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errorMsg = e.getLocalizedMessage();
+                }
+                return null;
+            } else {
+                OutputStream os = getOutStream(uri);
+                if (null == os) {
+                    errorMsg = "Unable to save file";
+                    return null;
+                }
+                try {
+                    os.write(mInput.getText().toString().getBytes("UTF-8"));
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    errorMsg = e.getLocalizedMessage();
+                }
                 return null;
             }
-            try {
-                os.write(mInput.getText().toString().getBytes("UTF-8"));
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                errorMsg = e.getLocalizedMessage();
-            }
-            return null;
         }
 
         @Override

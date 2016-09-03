@@ -71,10 +71,28 @@
             </intent-filter>
         </provider>
         -->
-        <!--
-             <provider
+<!--
+        <provider
             android:name="dev.dworks.apps.anexplorer.provider.DownloadStorageProvider"
             android:authorities="dev.dworks.apps.anexplorer.downloads.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+-->
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.ExplorerProvider"
+            android:authorities="dev.dworks.apps.anexplorer.explorer"
+            android:enabled="true"
+            android:exported="false" />
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.UsbStorageProvider"
+            android:authorities="dev.dworks.apps.anexplorer.usbstorage.documents"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS" >
@@ -82,13 +100,6 @@
                 <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-        -->
-
-        <provider
-            android:name="dev.dworks.apps.anexplorer.provider.ExplorerProvider"
-            android:authorities="dev.dworks.apps.anexplorer.explorer"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- AdMob -->
         <activity

@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.provider;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
@@ -25,19 +24,13 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.stericson.RootTools.RootTools;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,13 +43,12 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
-import dev.dworks.apps.anexplorer.root.ParcelFileDescriptorUtil;
-import dev.dworks.apps.anexplorer.root.RootCommands;
-import dev.dworks.apps.anexplorer.root.RootFile;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
+import dev.dworks.apps.anexplorer.root.RootCommands;
+import dev.dworks.apps.anexplorer.root.RootFile;
 
 public class RootedStorageProvider extends StorageProvider {
     private static final String TAG = "RootedStorage";

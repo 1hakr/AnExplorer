@@ -173,7 +173,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
-    private boolean isRootedStorage;
+    private boolean isOperationSupported;
     private boolean hasLeanback;
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
@@ -285,7 +285,7 @@ public class DirectoryFragment extends ListFragment {
 		doc = getArguments().getParcelable(EXTRA_DOC);
         hasLeanback = Utils.isTelevision(getActivity());
 		isApp = root != null && root.isApp();
-        isRootedStorage = root != null && root.isRootedStorage();
+        isOperationSupported = root != null && (root.isRootedStorage() || root.isUsbStorage());
 
 		mAdapter = new DocumentsAdapter();
 		mType = getArguments().getInt(EXTRA_TYPE);
@@ -544,9 +544,7 @@ public class DirectoryFragment extends ListFragment {
 			if (null != root && root.isApp()) {
 				menuId = R.menu.mode_apps;
 			} else {
-				if (editMode) {
-					menuId = R.menu.mode_directory;
-				}
+				menuId = R.menu.mode_directory;
 			}
 
 			mode.getMenuInflater().inflate(menuId, menu);
@@ -572,12 +570,16 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem open = menu.findItem(R.id.menu_open);
 			final MenuItem share = menu.findItem(R.id.menu_share);
 			final MenuItem delete = menu.findItem(R.id.menu_delete);
+			final MenuItem rename = menu.findItem(R.id.menu_rename);
 
 			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
+			final boolean canRename = doc != null && doc.isRenameSupported();
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
+			rename.setVisible(manageMode && canRename && count == 1);
+
             if (mType == TYPE_RECENT_OPEN) {
                 delete.setVisible(true);
             }
@@ -588,26 +590,22 @@ public class DirectoryFragment extends ListFragment {
 				delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
 				delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
 			} else {
-				if (editMode) {
-					final MenuItem edit = menu.findItem(R.id.menu_edit);
-					if (edit != null) {
-						edit.setVisible(manageMode);
-					}
-					final MenuItem info = menu.findItem(R.id.menu_info);
-					final MenuItem bookmark = menu.findItem(R.id.menu_bookmark);
-					final MenuItem rename = menu.findItem(R.id.menu_rename);
-
-					final MenuItem copy = menu.findItem(R.id.menu_copy);
-					final MenuItem cut = menu.findItem(R.id.menu_cut);
-					final MenuItem compress = menu.findItem(R.id.menu_compress);
-					copy.setVisible(editMode);
-					cut.setVisible(editMode);
-                    compress.setVisible(editMode && !isRootedStorage);
-
-					info.setVisible(count == 1);
-                    bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
-					rename.setVisible(count == 1);
+				final MenuItem edit = menu.findItem(R.id.menu_edit);
+				if (edit != null) {
+					edit.setVisible(manageMode);
 				}
+				final MenuItem info = menu.findItem(R.id.menu_info);
+				final MenuItem bookmark = menu.findItem(R.id.menu_bookmark);
+
+				final MenuItem copy = menu.findItem(R.id.menu_copy);
+				final MenuItem cut = menu.findItem(R.id.menu_cut);
+				final MenuItem compress = menu.findItem(R.id.menu_compress);
+				copy.setVisible(editMode);
+				cut.setVisible(editMode);
+				compress.setVisible(editMode && !isOperationSupported);
+
+				info.setVisible(count == 1);
+				bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
 			}
 			return true;
 		}
@@ -977,7 +975,7 @@ public class DirectoryFragment extends ListFragment {
                 AppsProvider.notifyRootsChanged(getActivity());
             }
 
-            if(id == R.id.menu_delete && isRootedStorage){
+            if(id == R.id.menu_delete && isOperationSupported){
                 onUserSortOrderChanged();
             }
 		}
@@ -1709,11 +1707,10 @@ public class DirectoryFragment extends ListFragment {
 	private void showPopupMenu(View view, final int position) {
 		PopupMenu popup = new PopupMenu(getActivity(), view);
 
-		boolean editMode = root != null && root.isEditSupported();
 		int menuId = R.menu.popup_simple_directory;
 		if (isApp) {
 			menuId = R.menu.popup_apps;
-		} else if(editMode){
+		} else {
 			menuId = R.menu.popup_directory;
 		}
 
@@ -1738,6 +1735,9 @@ public class DirectoryFragment extends ListFragment {
 			final State state = getDisplayState(DirectoryFragment.this);
 			final MenuItem share = popup.getMenu().findItem(R.id.menu_share);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
+			final MenuItem rename = popup.getMenu().findItem(R.id.menu_rename);
+			final MenuItem copy = popup.getMenu().findItem(R.id.menu_copy);
+			final MenuItem cut = popup.getMenu().findItem(R.id.menu_cut);
             final MenuItem compress = popup.getMenu().findItem(R.id.menu_compress);
             final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
             final MenuItem bookmark = popup.getMenu().findItem(R.id.menu_bookmark);
@@ -1745,17 +1745,22 @@ public class DirectoryFragment extends ListFragment {
             final Cursor cursor = mAdapter.getItem(position);
             final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 			final boolean manageMode = state.action == ACTION_BROWSE;
+			final boolean canEdit = doc != null && doc.isEditSupported();
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
+			final boolean canRename = doc != null && doc.isRenameSupported();
             final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
             if(null != compress)
-                compress.setVisible(!isCompressed && !isRootedStorage);
+                compress.setVisible(manageMode && canEdit && !isCompressed && !isOperationSupported);
             if(null != uncompress)
-                uncompress.setVisible(isCompressed && !isRootedStorage);
+                uncompress.setVisible(manageMode && canEdit && isCompressed && !isOperationSupported);
             if(null != bookmark) {
-                bookmark.setVisible(Utils.isDir(doc.mimeType) && !isRootedStorage);
+                bookmark.setVisible(manageMode && canEdit && Utils.isDir(doc.mimeType) && !isOperationSupported);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
+			rename.setVisible(manageMode && canRename);
+			copy.setVisible(manageMode && canEdit);
+			cut.setVisible(manageMode && canEdit);
 		}
 
 		popup.show();

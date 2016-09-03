@@ -13,29 +13,32 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
-
-    <uses-permission android:name="android.permission.WAKE_LOCK" tools:node="remove"/>
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" tools:node="remove" />
-    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" tools:node="remove" />
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="22" />
+    <uses-permission
+        android:name="android.permission.WAKE_LOCK"
+        tools:node="remove" />
+    <uses-permission
+        android:name="com.google.android.c2dm.permission.RECEIVE"
+        tools:node="remove" />
+    <uses-permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        tools:node="remove" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-
     <uses-feature
         android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.usb.host"
         android:required="false" />
 
     <application
         android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
         android:allowBackup="true"
+        android:banner="@drawable/banner"
         android:icon="@drawable/ic_launcher"
         android:label="AnExplorer"
-        android:banner="@drawable/banner"
         android:supportsRtl="true">
 
         <!-- TODO: allow rotation when state saving is in better shape -->
@@ -68,33 +71,38 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.provider.action.MANAGE_ROOT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="vnd.android.document/root" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!--For Phones and tablets-->
+            <!-- For Phones and tablets -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!--For TV-->
+            <!-- For TV -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
 
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
         <activity
             android:name="dev.dworks.apps.anexplorer.StandaloneActivity"
-            android:theme="@style/Theme.Document" >
-        </activity>
-
+            android:theme="@style/Theme.Document"></activity>
         <activity
             android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
             android:exported="false"
@@ -120,8 +128,10 @@
 
                 <data android:scheme="file" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
+            </intent-filter>
         </receiver>
-
         <activity
             android:name="dev.dworks.apps.anexplorer.NoteActivity"
             android:configChanges="keyboardHidden|orientation"
@@ -135,7 +145,6 @@
                 <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
