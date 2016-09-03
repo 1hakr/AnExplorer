@@ -132,10 +132,10 @@ public class HeatMapProvider extends StorageProvider {
 	            if (!mounted) continue;
             }
             final String rootId;
-            if (volume.isPrimary && volume.isEmulated) {
+            if (volume.isPrimary() && volume.isEmulated()) {
                 rootId = ROOT_ID_PRIMARY_EMULATED;
             } else if (volume.getUuid() != null) {
-                rootId = ROOT_ID_SECONDARY + volume.getLabel();
+                rootId = ROOT_ID_SECONDARY + volume.getUserLabel();
             } else {
                 Log.d(TAG, "Missing UUID for " + volume.getPath() + "; skipping");
                 continue;

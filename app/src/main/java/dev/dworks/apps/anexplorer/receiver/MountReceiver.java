@@ -22,16 +22,20 @@ import android.content.Context;
 import android.content.Intent;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 public class MountReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-    	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(), 
+    	final ContentProviderClient esclient = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(),
     			ExternalStorageProvider.AUTHORITY);
+		final ContentProviderClient usbclient = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(),
+				UsbStorageProvider.AUTHORITY);
 		try {
-			((ExternalStorageProvider) client.getLocalContentProvider()).updateVolumes();
+			((ExternalStorageProvider) esclient.getLocalContentProvider()).updateVolumes();
+			((UsbStorageProvider) usbclient.getLocalContentProvider()).discoverDevices();
 		} finally {
-			ContentProviderClientCompat.releaseQuietly(client);
+			ContentProviderClientCompat.releaseQuietly(esclient);
 		}
 	}
 }

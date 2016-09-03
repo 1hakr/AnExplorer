@@ -141,4 +141,25 @@
         <item>0</item>
     </string-array>
 
+    <string name="root_usb">USB Storage</string>
+    <string name="root_documents">Documents</string>
+
+    <string name="ext_media_status_removed" msgid="6576172423185918739">"Removed"</string>
+    <string name="ext_media_status_unmounted" msgid="2551560878416417752">"Ejected"</string>
+    <string name="ext_media_status_checking" msgid="6193921557423194949">"Checking…"</string>
+    <string name="ext_media_status_mounted" msgid="7253821726503179202">"Ready"</string>
+    <string name="ext_media_status_mounted_ro" msgid="8020978752406021015">"Read-only"</string>
+    <string name="ext_media_status_bad_removal" msgid="8395398567890329422">"Removed unsafely"</string>
+    <string name="ext_media_status_unmountable" msgid="805594039236667894">"Corrupted"</string>
+    <string name="ext_media_status_unsupported" msgid="4691436711745681828">"Unsupported"</string>
+    <string name="ext_media_status_ejecting" msgid="5463887263101234174">"Ejecting…"</string>
+    <string name="ext_media_status_formatting" msgid="1085079556538644861">"Formatting…"</string>
+    <string name="ext_media_status_missing" msgid="5638633895221670766">"Not inserted"</string>
+
+    <string name="storage_internal" msgid="4891916833657929263">"Internal storage"</string>
+    <string name="storage_sd_card" msgid="3282948861378286745">"SD card"</string>
+    <string name="storage_sd_card_label" msgid="6347111320774379257">"<xliff:g id="MANUFACTURER">%s</xliff:g> SD card"</string>
+    <string name="storage_usb_drive" msgid="6261899683292244209">"USB drive"</string>
+    <string name="storage_usb_drive_label" msgid="4501418548927759953">"<xliff:g id="MANUFACTURER">%s</xliff:g> USB drive"</string>
+    <string name="storage_usb" msgid="3017954059538517278">"USB storage"</string>
 </resources>

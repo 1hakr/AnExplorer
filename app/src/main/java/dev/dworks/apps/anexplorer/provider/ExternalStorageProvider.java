@@ -57,12 +57,15 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.DiskInfo;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
+import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.misc.VolumeInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -97,9 +100,12 @@ public class ExternalStorageProvider extends StorageProvider {
         public int flags;
         public String title;
         public String docId;
-        public String path;
+        public File path;
+        public File visiblePath;
+        public boolean reportAvailableBytes;
     }
 
+    public static final String ROOT_ID_HOME = "home";
     public static final String ROOT_ID_PRIMARY_EMULATED = "primary";
     public static final String ROOT_ID_SECONDARY = "secondary";
     public static final String ROOT_ID_PHONE = "phone";
@@ -117,6 +123,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     @GuardedBy("mRootsLock")
     private ArrayList<RootInfo> mRoots;
+    //private ArrayMap<String, RootInfo> mRoots = new ArrayMap<>();
     @GuardedBy("mRootsLock")
     private HashMap<String, RootInfo> mIdToRoot;
     @GuardedBy("mRootsLock")
@@ -155,8 +162,8 @@ public class ExternalStorageProvider extends StorageProvider {
         
         int count = 0;
         StorageUtils storageUtils = new StorageUtils(getContext());
-        for (StorageVolume volume : storageUtils.getStorageMounts()) {
-            final File path = volume.getPathFile();
+        for (StorageVolume storageVolume : storageUtils.getStorageMounts()) {
+            final File path = storageVolume.getPathFile();
             String state = EnvironmentCompat.getStorageState(path);
             final boolean mounted = Environment.MEDIA_MOUNTED.equals(state)
                     || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
@@ -164,18 +171,18 @@ public class ExternalStorageProvider extends StorageProvider {
 
             final String rootId;
             final String title;
-            if (volume.isPrimary && volume.isEmulated) {
+            if (storageVolume.isPrimary() && storageVolume.isEmulated()) {
                 rootId = ROOT_ID_PRIMARY_EMULATED;
                 title = getContext().getString(R.string.root_internal_storage);
-            } else if (volume.getUuid() != null) {
-                rootId = ROOT_ID_SECONDARY + volume.getLabel();
-                String label = volume.getLabel();
+            } else if (storageVolume.getUuid() != null) {
+                rootId = ROOT_ID_SECONDARY + storageVolume.getUserLabel();
+                String label = storageVolume.getUserLabel();
                 title = !TextUtils.isEmpty(label) ? label
                         : getContext().getString(R.string.root_external_storage)
                         + (count > 0 ? " " + count : "");
                 count++;
             } else {
-                Log.d(TAG, "Missing UUID for " + volume.getPath() + "; skipping");
+                Log.d(TAG, "Missing UUID for " + storageVolume.getPath() + "; skipping");
                 continue;
             }
 
@@ -196,7 +203,7 @@ public class ExternalStorageProvider extends StorageProvider {
                         | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
                 root.title = title;
                 root.docId = getDocIdForFile(path);
-                root.path = path.getPath();
+                root.path = path;
                 mRoots.add(root);
                 mIdToRoot.put(rootId, root);
             } catch (FileNotFoundException e) {
@@ -209,7 +216,124 @@ public class ExternalStorageProvider extends StorageProvider {
         getContext().getContentResolver()
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
-    
+
+    private void updateVolumesLocked2() {
+        mRoots.clear();
+        mIdToPath.clear();
+        mIdToRoot.clear();
+        VolumeInfo primaryVolume = null;
+        final int userId = 0;//UserHandle.myUserId();
+        StorageUtils storageUtils = new StorageUtils(getContext());
+        for (VolumeInfo volume : storageUtils.getVolumes()) {
+            if (!volume.isMountedReadable()) continue;
+            final String rootId;
+            final String title;
+            if (volume.getType() == VolumeInfo.TYPE_EMULATED) {
+                // We currently only support a single emulated volume mounted at
+                // a time, and it's always considered the primary
+                rootId = ROOT_ID_PRIMARY_EMULATED;
+                if (VolumeInfo.ID_EMULATED_INTERNAL.equals(volume.getId())) {
+                    title =  getContext().getString(R.string.root_internal_storage);
+                } else {
+                    // This should cover all other storage devices, like an SD card
+                    // or USB OTG drive plugged in. Using getBestVolumeDescription()
+                    // will give us a nice string like "Samsung SD card" or "SanDisk USB drive"
+                    final VolumeInfo privateVol = storageUtils.findPrivateForEmulated(volume);
+                    title = StorageUtils.getBestVolumeDescription(privateVol);
+                }
+            } else if (volume.getType() == VolumeInfo.TYPE_PUBLIC) {
+                rootId = ROOT_ID_SECONDARY + volume.getFsUuid();
+                title = StorageUtils.getBestVolumeDescription(volume);
+            } else {
+                // Unsupported volume; ignore
+                continue;
+            }
+            if (TextUtils.isEmpty(rootId)) {
+                Log.d(TAG, "Missing UUID for " + volume.getId() + "; skipping");
+                continue;
+            }
+            if (mIdToPath.containsKey(rootId)) {
+                Log.w(TAG, "Duplicate UUID " + rootId + " for " + volume.getId() + "; skipping");
+                continue;
+            }
+            final RootInfo root = new RootInfo();
+            mRoots.add(root);
+            root.rootId = rootId;
+            root.flags = Root.FLAG_LOCAL_ONLY
+                    | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
+            final DiskInfo disk = volume.getDisk();
+
+            Log.d(TAG, "Disk for root " + rootId + " is " + disk);
+            if (disk != null && disk.isSd()) {
+                root.flags |= Root.FLAG_REMOVABLE_SD;
+            } else if (disk != null && disk.isUsb()) {
+                root.flags |= Root.FLAG_REMOVABLE_USB;
+            }
+            if (volume.isPrimary()) {
+                // save off the primary volume for subsequent "Home" dir initialization.
+                primaryVolume = volume;
+                root.flags |= Root.FLAG_ADVANCED;
+            }
+            // Dunno when this would NOT be the case, but never hurts to be correct.
+            if (volume.isMountedWritable()) {
+                root.flags |= Root.FLAG_SUPPORTS_CREATE;
+            }
+            root.title = title;
+            if (volume.getType() == VolumeInfo.TYPE_PUBLIC) {
+                root.flags |= Root.FLAG_HAS_SETTINGS;
+            }
+            if (volume.isVisibleForRead(userId)) {
+                root.visiblePath = volume.getPathForUser(userId);
+            } else {
+                root.visiblePath = null;
+            }
+            root.path = volume.getInternalPathForUser(userId);
+            mIdToPath.put(rootId, root.path);
+            mIdToRoot.put(rootId, root);
+            try {
+                root.docId = getDocIdForFile(root.path);
+            } catch (FileNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        // Finally, if primary storage is available we add the "Documents" directory.
+        // If I recall correctly the actual directory is created on demand
+        // by calling either getPathForUser, or getInternalPathForUser.
+        if (primaryVolume != null && primaryVolume.isVisible()) {
+            final RootInfo root = new RootInfo();
+            root.rootId = ROOT_ID_HOME;
+            mRoots.add(root);
+            root.title = getContext().getString(R.string.root_documents);
+            // Only report bytes on *volumes*...as a matter of policy.
+            root.reportAvailableBytes = false;
+            root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_SEARCH
+                    | Root.FLAG_SUPPORTS_IS_CHILD;
+            // Dunno when this would NOT be the case, but never hurts to be correct.
+            if (primaryVolume.isMountedWritable()) {
+                root.flags |= Root.FLAG_SUPPORTS_CREATE;
+            }
+            // Create the "Documents" directory on disk (don't use the localized title).
+            root.visiblePath = new File(
+                    primaryVolume.getPathForUser(userId), Environment.DIRECTORY_DOCUMENTS);
+            root.path = new File(
+                    primaryVolume.getInternalPathForUser(userId), Environment.DIRECTORY_DOCUMENTS);
+            root.path = new File(
+                    primaryVolume.getInternalPathForUser(userId), Environment.DIRECTORY_DOCUMENTS);
+            try {
+                root.docId = getDocIdForFile(root.path);
+            } catch (FileNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        Log.d(TAG, "After updating volumes, found " + mRoots.size() + " active roots");
+        // Note this affects content://com.android.externalstorage.documents/root/39BD-07C5
+        // as well as content://com.android.externalstorage.documents/document/*/children,
+        // so just notify on content://com.android.externalstorage.documents/.
+
+        getContext().getContentResolver()
+                .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+    }
+
     private void includeOtherRoot() {
     	try {
             final String rootId = ROOT_ID_PHONE;
@@ -222,7 +346,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH ;
             root.title = getContext().getString(R.string.root_phone_storage);
             root.docId = getDocIdForFile(path);
-            root.path = path.getPath();
+            root.path = path;
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
@@ -240,7 +364,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_downloads);
             root.docId = getDocIdForFile(path);
-            root.path = path.getPath();
+            root.path = path;
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
@@ -258,7 +382,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     | Root.FLAG_SUPPORTS_SEARCH;
             root.title = getContext().getString(R.string.root_app_backup);
             root.docId = getDocIdForFile(path);
-            root.path = path.getPath();
+            root.path = path;
             mRoots.add(root);
             mIdToRoot.put(rootId, root);
         } catch (FileNotFoundException e) {
@@ -280,7 +404,7 @@ public class ExternalStorageProvider extends StorageProvider {
                         | Root.FLAG_SUPPORTS_SEARCH;
                 root.title = getContext().getString(R.string.root_bluetooth);
                 root.docId = getDocIdForFile(path);
-                root.path = path.getPath();
+                root.path = path;
                 mRoots.add(root);
                 mIdToRoot.put(rootId, root);	
             }
@@ -305,7 +429,7 @@ public class ExternalStorageProvider extends StorageProvider {
                             | Root.FLAG_SUPPORTS_SEARCH;
                     root.title = getCursorString(cursor, ExplorerProvider.BookmarkColumns.TITLE);
                     root.docId = getDocIdForFile(path);
-                    root.path = path.getPath();
+                    root.path = path;
                     mRoots.add(root);
                     mIdToRoot.put(rootId, root);
                 } catch (FileNotFoundException e) {
@@ -733,7 +857,7 @@ public class ExternalStorageProvider extends StorageProvider {
             }
         }
         else{
-            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);//ParcelFileDescriptor.parseMode(mode));
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptorUtil.parseMode(mode));
         }
     }
 
@@ -766,6 +890,8 @@ public class ExternalStorageProvider extends StorageProvider {
             } else {
             	return DocumentsContract.openImageThumbnail(file);
             }
+        } catch (Exception e){
+            return DocumentsContract.openImageThumbnail(file);
         } finally {
             Binder.restoreCallingIdentity(token);
         }

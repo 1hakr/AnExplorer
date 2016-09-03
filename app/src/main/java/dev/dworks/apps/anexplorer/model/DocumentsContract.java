@@ -54,9 +54,12 @@ import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.ExifInterfaceCompat;
+import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
+import dev.dworks.apps.anexplorer.misc.OsCompat;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 /**
  * Defines the contract between a documents provider and the platform.
@@ -317,6 +320,71 @@ public final class DocumentsContract {
         public static final int FLAG_SUPPORTS_RENAME = 1 << 6;
 
         /**
+         * Flag indicating that a document can be copied to another location
+         * within the same document provider.
+         *
+         * @see #COLUMN_FLAGS
+         * @see DocumentsContract#copyDocument(ContentProviderClient, Uri, Uri)
+         * @see DocumentsProvider#copyDocument(String, String)
+         */
+        public static final int FLAG_SUPPORTS_COPY = 1 << 7;
+
+        /**
+         * Flag indicating that a document can be moved to another location
+         * within the same document provider.
+         *
+         * @see #COLUMN_FLAGS
+         * @see DocumentsContract#moveDocument(ContentProviderClient, Uri, Uri, Uri)
+         * @see DocumentsProvider#moveDocument(String, String, String)
+         */
+        public static final int FLAG_SUPPORTS_MOVE = 1 << 8;
+
+        /**
+         * Flag indicating that a document is virtual, and doesn't have byte
+         * representation in the MIME type specified as {@link #COLUMN_MIME_TYPE}.
+         *
+         * @see #COLUMN_FLAGS
+         * @see #COLUMN_MIME_TYPE
+         * @see DocumentsProvider#openTypedDocument(String, String, Bundle,
+         *      android.os.CancellationSignal)
+         * @see DocumentsProvider#getDocumentStreamTypes(String, String)
+         */
+        public static final int FLAG_VIRTUAL_DOCUMENT = 1 << 9;
+
+        /**
+         * Flag indicating that a document can be removed from a parent.
+         *
+         * @see #COLUMN_FLAGS
+         * @see DocumentsContract#removeDocument(ContentProviderClient, Uri, Uri)
+         * @see DocumentsProvider#removeDocument(String, String)
+         */
+        public static final int FLAG_SUPPORTS_REMOVE = 1 << 10;
+
+        /**
+         * Flag indicating that a document is an archive, and it's contents can be
+         * obtained via {@link DocumentsProvider#queryChildDocuments}.
+         * <p>
+         * The <em>provider</em> support library offers utility classes to add common
+         * archive support.
+         *
+         * @see #COLUMN_FLAGS
+         * @see DocumentsProvider#queryChildDocuments(String, String[], String)
+         * @hide
+         */
+        public static final int FLAG_ARCHIVE = 1 << 15;
+
+        /**
+         * Flag indicating that a document is not complete, likely its
+         * contents are being downloaded. Partial files cannot be opened,
+         * copied, moved in the UI. But they can be deleted and retried
+         * if they represent a failed download.
+         *
+         * @see #COLUMN_FLAGS
+         * @hide
+         */
+        public static final int FLAG_PARTIAL = 1 << 16;
+
+        /**
          * Flag indicating that document titles should be hidden when viewing
          * this directory in a larger format grid. For example, a directory
          * containing only images may want the image thumbnails to speak for
@@ -327,9 +395,9 @@ public final class DocumentsContract {
          * @see #FLAG_DIR_PREFERS_GRID
          * @hide
          */
-        public static final int FLAG_DIR_HIDE_GRID_TITLES = 1 << 16;
+        public static final int FLAG_DIR_HIDE_GRID_TITLES = 1 << 17;
         
-        public static final int FLAG_SUPPORTS_EDIT = 1 << 17;
+        public static final int FLAG_SUPPORTS_EDIT = 1 << 18;
     }
 
     /**
@@ -487,7 +555,6 @@ public final class DocumentsContract {
          * @hide
          */
         public static final int FLAG_EMPTY = 1 << 16;
-
         /**
          * Flag indicating that this root should only be visible to advanced
          * users.
@@ -496,10 +563,33 @@ public final class DocumentsContract {
          * @hide
          */
         public static final int FLAG_ADVANCED = 1 << 17;
-        
-        public static final int FLAG_SUPPORTS_EDIT = 1 << 18;
-        
-        public static final int FLAG_SUPER_ADVANCED = 1 << 19;
+        /**
+         * Flag indicating that this root has settings.
+         *
+         * @see #COLUMN_FLAGS
+         * @see DocumentsContract#ACTION_DOCUMENT_ROOT_SETTINGS
+         * @hide
+         */
+        public static final int FLAG_HAS_SETTINGS = 1 << 18;
+        /**
+         * Flag indicating that this root is on removable SD card storage.
+         *
+         * @see #COLUMN_FLAGS
+         * @hide
+         */
+        public static final int FLAG_REMOVABLE_SD = 1 << 19;
+        /**
+         * Flag indicating that this root is on removable USB storage.
+         *
+         * @see #COLUMN_FLAGS
+         * @hide
+         */
+        public static final int FLAG_REMOVABLE_USB = 1 << 20;
+
+
+        public static final int FLAG_SUPPORTS_EDIT = 1 << 90;
+
+        public static final int FLAG_SUPER_ADVANCED = 1 << 91;
     }
 
     /**
@@ -841,6 +931,9 @@ public final class DocumentsContract {
     	final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver, 
     			documentUri.getAuthority());
         try {
+            if(UsbStorageProvider.AUTHORITY.equals(documentUri.getAuthority())) {
+                return ImageUtils.getThumbnail(resolver, documentUri, size.x, size.y);
+            }
             return getDocumentThumbnails(client, documentUri, size, signal);
         } catch (Exception e) {
             if (!(e instanceof OperationCanceledException)) {
@@ -852,8 +945,6 @@ public final class DocumentsContract {
         }
     }
 
-    /** {@hide} */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static Bitmap getDocumentThumbnails(
             ContentProviderClient client, Uri documentUri, Point size, CancellationSignal signal)
             throws RemoteException, IOException {
@@ -871,17 +962,17 @@ public final class DocumentsContract {
             afd = client.openTypedAssetFileDescriptor(documentUri, "image/*", openOpts);
 
             final FileDescriptor fd = afd.getFileDescriptor();
-            //final long offset = afd.getStartOffset();
+            final long offset = afd.getStartOffset();
 
             // Try seeking on the returned FD, since it gives us the most
             // optimal decode path; otherwise fall back to buffering.
             BufferedInputStream is = null;
-/*            try {
-                Libcore.os.lseek(fd, offset, OsConstants.SEEK_SET);
-            } catch (ErrnoException e) {*/
+            try {
+                OsCompat.lseek(fd, offset, OsCompat.SEEK_SET);
+            } catch (Exception e) {
                 is = new BufferedInputStream(new FileInputStream(fd), THUMBNAIL_BUFFER_SIZE);
                 is.mark(THUMBNAIL_BUFFER_SIZE);
-            //}
+            }
 
             // We requested a rough thumbnail size, but the remote size may have
             // returned something giant, so defensively scale down as needed.
@@ -889,9 +980,9 @@ public final class DocumentsContract {
             opts.inJustDecodeBounds = true;
             if (is != null) {
                 BitmapFactory.decodeStream(is, null, opts);
-            }/* else {
+            } else {
                 BitmapFactory.decodeFileDescriptor(fd, null, opts);
-            }*/
+            }
 
             final int widthSample = opts.outWidth / size.x;
             final int heightSample = opts.outHeight / size.y;
@@ -901,15 +992,14 @@ public final class DocumentsContract {
             if (is != null) {
                 is.reset();
                 bitmap = BitmapFactory.decodeStream(is, null, opts);
-            } /*else {
-               	try {
-                    Libcore.os.lseek(fd, offset, SEEK_SET);
-                } catch (ErrnoException e) {
-                    e.rethrowAsIOException();
+            } else {
+                try {
+                    OsCompat.lseek(fd, offset, OsCompat.SEEK_SET);
+                } catch (OsCompat.ExecutionFailedException e) {
+                    throw new IOException(e);
                 }
                 bitmap = BitmapFactory.decodeFileDescriptor(fd, null, opts);
-            }*/
-
+            }
             // Transform the bitmap if requested. We use a side-channel to
             // communicate the orientation, since EXIF thumbnails don't contain
             // the rotation flags of the original image.
@@ -925,7 +1015,6 @@ public final class DocumentsContract {
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
                 }
             }
-
         } finally {
             IoUtils.closeQuietly(afd);
         }

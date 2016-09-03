@@ -248,6 +248,31 @@ public class DocumentInfo implements Durable, Parcelable {
         return (flags & Document.FLAG_SUPPORTS_EDIT) != 0;
     }
 
+
+    public boolean isRemoveSupported() {
+        return (flags & Document.FLAG_SUPPORTS_REMOVE) != 0;
+    }
+
+    public boolean isRenameSupported() {
+        return (flags & Document.FLAG_SUPPORTS_RENAME) != 0;
+    }
+
+    public boolean isArchive() {
+        return (flags & Document.FLAG_ARCHIVE) != 0;
+    }
+
+    public boolean isPartial() {
+        return (flags & Document.FLAG_PARTIAL) != 0;
+    }
+
+    public boolean isContainer() {
+        return isDirectory() || isArchive();
+    }
+
+    public boolean isVirtualDocument() {
+        return (flags & Document.FLAG_VIRTUAL_DOCUMENT) != 0;
+    }
+
     public boolean isGridTitlesHidden() {
         return (flags & Document.FLAG_DIR_HIDE_GRID_TITLES) != 0;
     }

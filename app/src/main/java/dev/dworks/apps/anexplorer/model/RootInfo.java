@@ -20,12 +20,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ProtocolException;
 
@@ -38,6 +40,7 @@ import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -63,6 +66,7 @@ public class RootInfo implements Durable, Parcelable {
     public long totalBytes;
     public String mimeTypes;
     public String path;
+    public File visiblePath;
 
     /** Derived fields that aren't persisted */
     public String derivedPackageName;
@@ -321,14 +325,62 @@ public class RootInfo implements Durable, Parcelable {
         return AppsProvider.AUTHORITY.equals(authority)
                 && AppsProvider.ROOT_ID_PROCESS.equals(rootId);
     }
+
+    public boolean isUsbStorage() {
+        return UsbStorageProvider.AUTHORITY.equals(authority);
+    }
     
     public boolean isEditSupported() {
         return (flags & Root.FLAG_SUPPORTS_EDIT) != 0;
     }
-    
-    @Override
-    public String toString() {
-        return "Root{authority=" + authority + ", rootId=" + rootId + ", title=" + title + "}";
+
+    public Uri getUri() {
+        return DocumentsContract.buildRootUri(authority, rootId);
+    }
+
+    public boolean isHome() {
+        // Note that "home" is the expected root id for the auto-created
+        // user home directory on external storage. The "home" value should
+        // match ExternalStorageProvider.ROOT_ID_HOME.
+        return isExternalStorage() && "home".equals(rootId);
+    }
+
+    public boolean isMtp() {
+        return "com.android.mtp.documents".equals(authority);
+    }
+
+    public boolean hasSettings() {
+        return (flags & Root.FLAG_HAS_SETTINGS) != 0;
+    }
+    public boolean supportsChildren() {
+        return (flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;
+    }
+    public boolean supportsCreate() {
+        return (flags & Root.FLAG_SUPPORTS_CREATE) != 0;
+    }
+    public boolean supportsRecents() {
+        return (flags & Root.FLAG_SUPPORTS_RECENTS) != 0;
+    }
+    public boolean supportsSearch() {
+        return (flags & Root.FLAG_SUPPORTS_SEARCH) != 0;
+    }
+    public boolean isAdvanced() {
+        return (flags & Root.FLAG_ADVANCED) != 0;
+    }
+    public boolean isLocalOnly() {
+        return (flags & Root.FLAG_LOCAL_ONLY) != 0;
+    }
+
+    public boolean isEmpty() {
+        return (flags & Root.FLAG_EMPTY) != 0;
+    }
+
+    public boolean isSd() {
+        return (flags & Root.FLAG_REMOVABLE_SD) != 0;
+    }
+
+    public boolean isUsb() {
+        return (flags & Root.FLAG_REMOVABLE_USB) != 0;
     }
 
     public Drawable loadIcon(Context context) {
@@ -402,8 +454,22 @@ public class RootInfo implements Durable, Parcelable {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "Root{"
+                + "authority=" + authority
+                + ", rootId=" + rootId
+                + ", documentId=" + documentId
+                + ", path=" + path
+                + ", title=" + title
+                + ", isUsb=" + isUsb()
+                + ", isSd=" + isSd()
+                + ", isMtp=" + isMtp()
+                + "}";
+    }
+
     public static boolean isStorage(RootInfo root){
-        return root.isPhoneStorage() || root.isStorage();
+        return root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
     }
 
     public static boolean isLibrary(RootInfo root){
