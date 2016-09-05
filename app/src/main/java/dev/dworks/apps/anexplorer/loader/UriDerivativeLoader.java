@@ -21,12 +21,12 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Build;
+import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 
 import java.io.Closeable;
 
 import dev.dworks.apps.anexplorer.misc.AsyncTaskLoader;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
-import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 
 /**
  * Loader that derives its data from a Uri. Watches for {@link ContentObserver}

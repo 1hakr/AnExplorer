@@ -38,6 +38,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v4.util.ArrayMap;
@@ -81,14 +83,12 @@ import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.loader.DirectoryLoader;
 import dev.dworks.apps.anexplorer.loader.RecentLoader;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
-import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
@@ -116,6 +116,7 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -175,8 +176,9 @@ public class DirectoryFragment extends ListFragment {
     private MaterialProgressBar mProgressBar;
     private boolean isOperationSupported;
     private boolean hasLeanback;
+	private ContentProviderClient mExternalStorageClient;
 
-    public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
+	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
 	}
 
@@ -1010,14 +1012,16 @@ public class DirectoryFragment extends ListFragment {
 
 		boolean hadTrouble = false;
 		for (DocumentInfo doc : docs) {
-			if (!doc.isEditSupported()) {
+			if (!doc.isCopySupported()) {
 				Log.w(TAG, "Skipping " + doc);
 				hadTrouble = true;
 				continue;
 			}
 
 			try {
-                hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, null, false);
+				Uri appBackupUri = DocumentsContract.buildDocumentUri(
+						ExternalStorageProvider.AUTHORITY, DIRECTORY_APPBACKUP);
+                hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri, appBackupUri) == null;
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
 				hadTrouble = true;
@@ -1847,5 +1851,13 @@ public class DirectoryFragment extends ListFragment {
 		default:
 			return false;
 		}
+	}
+
+	private synchronized ContentProviderClient getExternalStorageClient() {
+		if (mExternalStorageClient == null) {
+			mExternalStorageClient = getActivity().
+					getContentResolver().acquireContentProviderClient(ExternalStorageProvider.AUTHORITY);
+		}
+		return mExternalStorageClient;
 	}
 }

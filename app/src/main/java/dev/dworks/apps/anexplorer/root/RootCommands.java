@@ -211,6 +211,30 @@ public class RootCommands {
         return false;
     }
 
+    // path = currentDir
+    // oldName = currentDir + "/" + selected Item
+    // name = new name
+    public static boolean renameRootTarget(RootFile before, RootFile after) {
+        File file = new File(before.getParent() + File.separator + before.getName());
+        File newf = new File(after.getParent() + File.separator + after.getName());
+
+        if (after.getName().length() < 1)
+            return false;
+
+        try {
+            if (!readReadWriteFile())
+                RootTools.remount(before.getPath(), "rw");
+
+            execute("mv " + getCommandLineString(file.getAbsolutePath()) + " "
+                    + getCommandLineString(newf.getAbsolutePath()));
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
     // Delete file with root
     public static boolean deleteFileRoot(String path) {
         try {

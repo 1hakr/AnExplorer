@@ -62,13 +62,13 @@
 
     <color name="item_doc_apk">#8BC34A</color>
 
-    <color name="item_doc_pdf">#C62828</color>
-    <color name="item_doc_doc">#4285f4</color>
-    <color name="item_doc_sheet">#0f9d58</color>
-    <color name="item_doc_slide">#f4b400</color>
-    <color name="item_doc_word">#2B5796</color>
-    <color name="item_doc_excel">#1E7145</color>
-    <color name="item_doc_powerpoint">#D04525</color>
+    <color name="item_doc_pdf">#FFDB4437</color>
+    <color name="item_doc_doc">#FF4883F3</color>
+    <color name="item_doc_sheet">#FF16A765</color>
+    <color name="item_doc_slide">#FFF4B400</color>
+    <color name="item_doc_word">#FF4883F3</color>
+    <color name="item_doc_excel">#FF16A765</color>
+    <color name="item_doc_powerpoint">#FFFF7537</color>
 
     <color name="item_doc_compressed">#795548</color>
     <color name="item_doc_code">#607D8B</color>

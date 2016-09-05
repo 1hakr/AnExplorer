@@ -24,6 +24,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -191,7 +192,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     public void showError(int msg){
-        showToast(msg, getResources().getColor(R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
+        showToast(msg, ContextCompat.getColor(this, R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
     }
 
     public void showInfo(String msg){

@@ -27,11 +27,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
-import dev.dworks.apps.anexplorer.misc.RemoteException;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 

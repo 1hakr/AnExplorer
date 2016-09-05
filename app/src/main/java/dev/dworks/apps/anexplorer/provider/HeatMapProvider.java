@@ -26,6 +26,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
@@ -45,7 +46,6 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
@@ -67,7 +67,7 @@ public class HeatMapProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -296,7 +296,7 @@ public class HeatMapProvider extends StorageProvider {
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_heat_map));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_HEAT_MAP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, -1);
-        row.add(Root.COLUMN_TOTAL_BYTES, -1);
+        row.add(Root.COLUMN_CAPACITY_BYTES, -1);
 
         return result;
     }

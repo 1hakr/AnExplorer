@@ -23,7 +23,9 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -40,7 +42,6 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -59,7 +60,7 @@ public class RootedStorageProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES, Root.COLUMN_PATH,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -168,7 +169,7 @@ public class RootedStorageProvider extends StorageProvider {
             throw new FileNotFoundException("No root for " + tag);
         }
 
-        target = new RootFile(target.getAbsolutePath(), path);
+        target = new RootFile(target.getAbsolutePath() + path);
         return target;
     }
 
@@ -192,14 +193,13 @@ public class RootedStorageProvider extends StorageProvider {
         if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
-                flags |= Document.FLAG_SUPPORTS_DELETE;
-                flags |= Document.FLAG_SUPPORTS_RENAME;
             } else {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
-                flags |= Document.FLAG_SUPPORTS_DELETE;
-                flags |= Document.FLAG_SUPPORTS_RENAME;
             }
-            flags |= Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_EDIT ;
+            flags |= Document.FLAG_SUPPORTS_DELETE;
+            flags |= Document.FLAG_SUPPORTS_RENAME;
+            flags |= Document.FLAG_SUPPORTS_MOVE;
+            flags |= Document.FLAG_SUPPORTS_EDIT;
         }
 
         final String displayName = file.getName();
@@ -281,50 +281,58 @@ public class RootedStorageProvider extends StorageProvider {
     }
 
     @Override
+    public String renameDocument(String documentId, String displayName) throws FileNotFoundException {
+        // Since this provider treats renames as generating a completely new
+        // docId, we're okay with letting the MIME type change.
+        displayName = FileUtils.buildValidFatFilename(displayName);
+
+        final RootFile before = getRootFileForDocId(documentId);
+        final RootFile after = new RootFile(before.getParent(), displayName);
+
+        if(!RootCommands.renameRootTarget(before, after)){
+            throw new IllegalStateException("Failed to rename " + before);
+        }
+        final String afterDocId = getDocIdForRootFile(new RootFile(after.getParent(), displayName));
+        if (!TextUtils.equals(documentId, afterDocId)) {
+            return afterDocId;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String copyDocument(String sourceDocumentId, String targetParentDocumentId) throws FileNotFoundException {
+        final RootFile before = getRootFileForDocId(sourceDocumentId);
+        final RootFile after = getRootFileForDocId(targetParentDocumentId);
+        if (!RootCommands.moveCopyRoot(before.getPath(), after.getPath())) {
+            throw new IllegalStateException("Failed to copy " + before);
+        }
+        return getDocIdForRootFile(after);
+    }
+
+    @Override
+    public String moveDocument(String sourceDocumentId, String sourceParentDocumentId, String targetParentDocumentId) throws FileNotFoundException {
+
+        final RootFile before = getRootFileForDocId(sourceDocumentId);
+        final RootFile after = new RootFile(getRootFileForDocId(targetParentDocumentId).getPath(), before.getName());
+
+        if(!RootCommands.renameRootTarget(before, after)){
+            throw new IllegalStateException("Failed to rename " + before);
+        }
+        final String afterDocId = getDocIdForRootFile(after);
+        if (!TextUtils.equals(sourceDocumentId, afterDocId)) {
+            return afterDocId;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
         final RootFile file = getRootFileForDocId(docId);
         if (!RootCommands.deleteFileRoot(file.getPath())) {
             throw new IllegalStateException("Failed to delete " + file);
         }
-    }
-    
-    @Override
-    public void moveDocument(String documentIdFrom, String documentIdTo, boolean deleteAfter) throws FileNotFoundException {
-    	final RootFile fileFrom = getRootFileForDocId(documentIdFrom);
-    	final RootFile fileTo = getRootFileForDocId(documentIdTo);
-        if (!RootCommands.moveCopyRoot(fileFrom.getPath(), fileTo.getPath())) {
-            throw new IllegalStateException("Failed to copy " + fileFrom);
-        }
-        else{
-        	if (deleteAfter) {
-                if (!RootCommands.deleteFileRoot(fileFrom.getPath())) {
-                    throw new IllegalStateException("Failed to delete " + fileFrom);
-                }
-			}
-        }
-    }
-
-    @Override
-    public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
-        final RootFile file = getRootFileForDocId(parentDocumentId);
-        File newFile;
-        String path = file.getPath();
-        String parentPath = FileUtils.getPathFromFilepath(path);
-        String newName = displayName;
-
-
-        if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            newFile = new File(parentPath, FileUtils.removeExtension(mimeType, displayName));
-        }
-        else{
-            displayName = FileUtils.removeExtension(mimeType, displayName);
-            newFile = new File(parentPath, FileUtils.addExtension(mimeType, displayName));
-        }
-
-        if(!RootCommands.renameRootTarget(parentPath, FileUtils.getName(path), newName)){
-            throw new IllegalStateException("Failed to rename " + file);
-        }
-        return getDocIdForRootFile(new RootFile(newFile.getParent(), displayName));
     }
 
     @Override
