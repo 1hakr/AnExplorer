@@ -189,7 +189,7 @@ public class RootsFragment extends Fragment {
 
         final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
         for (int i = 0; i < mAdapter.getGroupCount(); i++) {
-            for (int j = 0; i < mAdapter.getChildrenCount(i); i++) {
+            for (int j = 0; j < mAdapter.getChildrenCount(i); j++) {
                 final Object item = mAdapter.getChild(i,j);
                 if (item instanceof RootItem) {
                     final RootInfo testRoot = ((RootItem) item).root;

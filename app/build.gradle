@@ -68,6 +68,7 @@ dependencies {
     compile 'com.github.mjdev:libaums:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
+    compile 'org.apache.ftpserver:ftpserver-core:+'
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"

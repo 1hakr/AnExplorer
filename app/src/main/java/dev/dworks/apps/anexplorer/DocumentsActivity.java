@@ -88,6 +88,7 @@ import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
+import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -767,7 +768,7 @@ public class DocumentsActivity extends BaseActivity {
         }
 
         sort.setVisible(cwd != null);
-        grid.setVisible(!getCurrentRoot().isHome() && mState.derivedMode != MODE_GRID);
+        grid.setVisible(!RootInfo.isOtherRoot(getCurrentRoot()) && mState.derivedMode != MODE_GRID);
         list.setVisible(mState.derivedMode != MODE_LIST);
 
         if (mState.currentSearch != null) {
@@ -1132,6 +1133,9 @@ public class DocumentsActivity extends BaseActivity {
             } else {
                 if(root.isHome()){
                     HomeFragment.show(fm);
+                }
+                else if(root.isConnections()){
+                    ConnectionsFragment.show(fm);
                 } else {
                     DirectoryFragment.showRecentsOpen(fm, anim);
 
@@ -1219,7 +1223,7 @@ public class DocumentsActivity extends BaseActivity {
         mState.stack.clear();
         mState.stackTouched = true;
 
-        if (mRoots.isHomeRoot(root) || mRoots.isRecentsRoot(root)) {
+        if (RootInfo.isOtherRoot(root) || mRoots.isRecentsRoot(root)) {
             onCurrentDirectoryChanged(ANIM_SIDE);
         } else {
             new PickRootTask(root).executeOnExecutor(getCurrentExecutor());
@@ -1766,7 +1770,7 @@ public class DocumentsActivity extends BaseActivity {
 
     private boolean showActionMenu() {
         final RootInfo root = getCurrentRoot();
-        return !root.isHome() &&
+        return !RootInfo.isOtherRoot(root) &&
                 isCreateSupported()
                 && mState.currentSearch == null;
     }

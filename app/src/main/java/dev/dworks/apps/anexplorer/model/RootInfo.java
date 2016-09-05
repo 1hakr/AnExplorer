@@ -225,6 +225,8 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_recent;
         } else if (isHome()) {
             derivedIcon = R.drawable.ic_root_home;
+        } else if (isConnections()) {
+            derivedIcon = R.drawable.ic_root_connections;
         }
     }
 
@@ -237,6 +239,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isHome() {
         return authority == null && "home".equals(rootId);
+    }
+
+    public boolean isConnections() {
+        return authority == null && "connections".equals(rootId);
     }
 
     public boolean isRecents() {
@@ -494,7 +500,11 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isTools(RootInfo root){
-        return root.isAppPackage() || root.isAppProcess() || root.isRootedStorage();
+        return root.isConnections() || root.isRootedStorage() || root.isAppPackage() || root.isAppProcess();
+    }
+
+    public static boolean isOtherRoot(RootInfo root){
+        return root.isHome() || root.isConnections();
     }
 
 }

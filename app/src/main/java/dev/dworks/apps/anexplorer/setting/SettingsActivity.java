@@ -87,8 +87,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     public static boolean getRootMode(Context context) {
-        return Utils.isRooted() && PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_ROOT_MODE, false);
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_ROOT_MODE, true);
     }
     
     public static int getActionBarColor(Context context) {
