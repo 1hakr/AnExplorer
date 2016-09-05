@@ -31,6 +31,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -52,13 +53,16 @@ import java.util.List;
 import java.util.Locale;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class Utils {
 
     public static final long KB_IN_BYTES = 1024;
+    public static final String DIRECTORY_APPBACKUP = "AppBackup";
 
     static final String[] BinaryPlaces = { "/data/bin/", "/system/bin/", "/system/xbin/", "/sbin/",
         "/data/local/xbin/", "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/",
@@ -423,4 +427,9 @@ public class Utils {
                 == android.support.v4.view.ViewCompat.LAYOUT_DIRECTION_RTL;
     }
 
+    public static File getAppsBackupFile(Context context){
+        final RootInfo root = DocumentsApplication.getRootsCache(context).getDefaultRoot();
+        File rootFile = (null != root) ? new File(root.path) : Environment.getExternalStorageDirectory();
+        return new File(rootFile, DIRECTORY_APPBACKUP);
+    }
 }

@@ -29,10 +29,12 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.support.v4.os.EnvironmentCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -55,13 +57,11 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.DiskInfo;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
-import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -71,6 +71,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
@@ -86,7 +87,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES, Root.COLUMN_PATH,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -545,14 +546,13 @@ public class ExternalStorageProvider extends StorageProvider {
         if (file.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
-                flags |= Document.FLAG_SUPPORTS_DELETE;
-                flags |= Document.FLAG_SUPPORTS_RENAME;
             } else {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
-                flags |= Document.FLAG_SUPPORTS_DELETE;
-                flags |= Document.FLAG_SUPPORTS_RENAME;
             }
-            flags |= Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_EDIT ;
+            flags |= Document.FLAG_SUPPORTS_DELETE;
+            flags |= Document.FLAG_SUPPORTS_RENAME;
+            flags |= Document.FLAG_SUPPORTS_MOVE;
+            flags |= Document.FLAG_SUPPORTS_EDIT;
         }
 
         final String displayName = file.getName();
@@ -630,7 +630,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     final File file = root.rootId.startsWith(ROOT_ID_PHONE)
                             ? Environment.getRootDirectory() : path;
                 	row.add(Root.COLUMN_AVAILABLE_BYTES, file.getFreeSpace());
-                    row.add(Root.COLUMN_TOTAL_BYTES, file.getTotalSpace());
+                    row.add(Root.COLUMN_CAPACITY_BYTES, file.getTotalSpace());
                 }
             }
         }
@@ -679,57 +679,82 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
         final File file = getFileForDocId(docId);
-        if (!FileUtils.deleteFile(file)) {
+        final boolean isDirectory = file.isDirectory();
+        if (isDirectory) {
+            FileUtils.deleteContents(file);
+        }
+        if (!file.delete()) {
             throw new IllegalStateException("Failed to delete " + file);
         }
-    }
-    
-    @Override
-    public void moveDocument(String documentIdFrom, String documentIdTo, boolean deleteAfter) throws FileNotFoundException {
-    	final File fileFrom = getFileForDocId(documentIdFrom);
-    	final File fileTo = getFileForDocId(documentIdTo);
-        if (!FileUtils.moveFile(fileFrom, fileTo, null)) {
-            throw new IllegalStateException("Failed to copy " + fileFrom);
+
+        final ContentResolver resolver = getContext().getContentResolver();
+        final Uri externalUri = MediaStore.Files.getContentUri("external");
+
+        // Remove media store entries for any files inside this directory, using
+        // path prefix match. Logic borrowed from MtpDatabase.
+        if (isDirectory) {
+            final String path = file.getAbsolutePath() + "/";
+            resolver.delete(externalUri,
+                    "_data LIKE ?1 AND lower(substr(_data,1,?2))=lower(?3)",
+                    new String[] { path + "%", Integer.toString(path.length()), path });
         }
-        else{
-        	if (deleteAfter) {
-                if (!FileUtils.deleteFile(fileFrom)) {
-                    throw new IllegalStateException("Failed to delete " + fileFrom);
-                }
-                else{
-                    FileUtils.updateMedia(getContext(), fileFrom.getPath());
-                }
-			}
-        }
+
+        // Remove media store entry for this exact file.
+        final String path = file.getAbsolutePath();
+        resolver.delete(externalUri,
+                "_data LIKE ?1 AND lower(_data)=lower(?2)",
+                new String[] { path, path });
     }
-    
+
     @Override
-    public String renameDocument(String parentDocumentId, String mimeType, String displayName) throws FileNotFoundException {
-        boolean editExtension = true;
+    public String renameDocument(String docId, String displayName) throws FileNotFoundException {
         // Since this provider treats renames as generating a completely new
         // docId, we're okay with letting the MIME type change.
         displayName = FileUtils.buildValidFatFilename(displayName);
 
-        final File parent = getFileForDocId(parentDocumentId);
-        File file;
-    	
-		if(parent.isDirectory()){
-			file = new File(parent.getParentFile(), displayName);
-		}
-		else{
-            if(editExtension){
-                file = new File(parent.getParentFile(), displayName);
-            } else {
-                displayName = FileUtils.removeExtension(mimeType, displayName);
-                file = new File(parent.getParentFile(), FileUtils.addExtension(mimeType, displayName));
-            }
-		}
-		
-		if(parent.canWrite()){
-			parent.renameTo(file);
-		}
-		
-		return getDocIdForFile(file);
+        final File before = getFileForDocId(docId);
+        final File after = new File(before.getParentFile(), displayName);
+        if (after.exists()) {
+            throw new IllegalStateException("Already exists " + after);
+        }
+        if (!before.renameTo(after)) {
+            throw new IllegalStateException("Failed to rename to " + after);
+        }
+        final String afterDocId = getDocIdForFile(after);
+        if (!TextUtils.equals(docId, afterDocId)) {
+            return afterDocId;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String copyDocument(String sourceDocumentId, String targetParentDocumentId) throws FileNotFoundException {
+        final File before = getFileForDocId(sourceDocumentId);
+        final File after = getFileForDocId(targetParentDocumentId);
+
+        if (!FileUtils.moveFile(before, after, null)) {
+            throw new IllegalStateException("Failed to copy " + before);
+        }
+        return getDocIdForFile(after);
+    }
+
+    @Override
+    public String moveDocument(String sourceDocumentId, String sourceParentDocumentId,
+                               String targetParentDocumentId)
+            throws FileNotFoundException {
+        final File before = getFileForDocId(sourceDocumentId);
+        final File after = new File(getFileForDocId(targetParentDocumentId), before.getName());
+
+        if (after.exists()) {
+            throw new IllegalStateException("Already exists " + after);
+        }
+        if (!before.renameTo(after)) {
+            throw new IllegalStateException("Failed to move to " + after);
+        } else {
+            FileUtils.updateMedia(getContext(), before.getPath());
+        }
+        return getDocIdForFile(after);
     }
 
     @Override

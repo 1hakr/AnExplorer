@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
@@ -91,7 +92,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
     
     public static int getActionBarColor(Context context) {
-    	int newColor = context.getResources().getColor(R.color.defaultColor);
+    	int newColor = ContextCompat.getColor(context, R.color.defaultColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_ACTIONBAR_COLOR, newColor);
     }

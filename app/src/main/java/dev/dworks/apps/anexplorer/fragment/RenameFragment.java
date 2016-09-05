@@ -130,7 +130,7 @@ public class RenameFragment extends DialogFragment {
             ContentProviderClient client = null;
             try {
                 final Uri childUri = DocumentsContract.renameDocument(
-                		resolver, mDoc.derivedUri, mDoc.mimeType, mFileName);
+                		resolver, mDoc.derivedUri, mFileName);
                 return DocumentInfo.fromUri(resolver, childUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to rename directory", e);

@@ -243,11 +243,18 @@ public class DocumentInfo implements Durable, Parcelable {
     public boolean isDeleteSupported() {
         return (flags & Document.FLAG_SUPPORTS_DELETE) != 0;
     }
-    
+
+    public boolean isMoveSupported() {
+        return (flags & Document.FLAG_SUPPORTS_MOVE) != 0;
+    }
+
+    public boolean isCopySupported() {
+        return (flags & Document.FLAG_SUPPORTS_COPY) != 0;
+    }
+
     public boolean isEditSupported() {
         return (flags & Document.FLAG_SUPPORTS_EDIT) != 0;
     }
-
 
     public boolean isRemoveSupported() {
         return (flags & Document.FLAG_SUPPORTS_REMOVE) != 0;

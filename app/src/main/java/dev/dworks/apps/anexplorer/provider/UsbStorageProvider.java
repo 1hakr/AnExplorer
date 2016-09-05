@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
+import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,16 +48,15 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
-import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
-import dev.dworks.apps.anexplorer.usb.UsbUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
+import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 public class UsbStorageProvider extends DocumentsProvider {
 
@@ -74,7 +74,7 @@ public class UsbStorageProvider extends DocumentsProvider {
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
-            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES, Root.COLUMN_PATH,
+            Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES, Root.COLUMN_PATH,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -172,7 +172,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             // These columns are optional
             row.add(Root.COLUMN_SUMMARY, volumeLabel);
             row.add(Root.COLUMN_AVAILABLE_BYTES, fileSystem.getFreeSpace());
-            row.add(Root.COLUMN_TOTAL_BYTES, fileSystem.getCapacity());
+            row.add(Root.COLUMN_CAPACITY_BYTES, fileSystem.getCapacity());
             row.add(Root.COLUMN_PATH, UsbUtils.getPath(usbDevice));
             // Root.COLUMN_MIME_TYPE is another optional column and useful if you have multiple roots with different
             // types of mime types (roots that don't match the requested mime type are automatically hidden)
@@ -253,8 +253,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     }
 
     @Override
-    public String renameDocument(String documentId, String mimeType, String displayName)
-            throws FileNotFoundException {
+    public String renameDocument(String documentId, String displayName) throws FileNotFoundException {
         try {
             UsbFile file = getFileForDocId(documentId);
             file.setName(getFileName(getMimeType(file), displayName));
@@ -344,8 +343,6 @@ public class UsbStorageProvider extends DocumentsProvider {
         if (file.isDirectory()) {
             flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
         }
-
-        flags |= Document.FLAG_SUPPORTS_DELETE ;
 
         final String mimeType = getMimeType(file);
         if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){

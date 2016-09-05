@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import java.io.DataInputStream;
@@ -167,7 +168,7 @@ public class RootInfo implements Durable, Parcelable {
         root.summary = getCursorString(cursor, Root.COLUMN_SUMMARY);
         root.documentId = getCursorString(cursor, Root.COLUMN_DOCUMENT_ID);
         root.availableBytes = getCursorLong(cursor, Root.COLUMN_AVAILABLE_BYTES);
-        root.totalBytes = getCursorLong(cursor, Root.COLUMN_TOTAL_BYTES);
+        root.totalBytes = getCursorLong(cursor, Root.COLUMN_CAPACITY_BYTES);
         root.mimeTypes = getCursorString(cursor, Root.COLUMN_MIME_TYPES);
         root.path = getCursorString(cursor, Root.COLUMN_PATH);
         root.deriveFields();
@@ -385,7 +386,7 @@ public class RootInfo implements Durable, Parcelable {
 
     public Drawable loadIcon(Context context) {
         if (derivedIcon != 0) {
-            return context.getResources().getDrawable(derivedIcon);
+            return ContextCompat.getDrawable(context, derivedIcon);
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }

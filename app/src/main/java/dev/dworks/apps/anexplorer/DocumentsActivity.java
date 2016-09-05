@@ -42,6 +42,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LruCache;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
@@ -817,7 +818,7 @@ public class DocumentsActivity extends BaseActivity {
                 SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
 
             if(null != MoveFragment.get(fm))
-                MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isEditSupported());
+                MoveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isMoveSupported());
         }
 
         // TODO: close any search in-progress when hiding
@@ -1589,14 +1590,20 @@ public class DocumentsActivity extends BaseActivity {
 			boolean hadTrouble = false;
     		for (DocumentInfo doc : docs) {
 
-				if (!doc.isEditSupported()) {
+				if (!doc.isMoveSupported()) {
     				Log.w(TAG, "Skipping " + doc);
     				hadTrouble = true;
     				continue;
     			}
 
     			try {
-                    hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, cwd.derivedUri, deleteAfter);
+                    if(deleteAfter) {
+                        hadTrouble = DocumentsContract.moveDocument(resolver, doc.derivedUri, null,
+                                cwd.derivedUri) == null;
+                    } else {
+                        hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri,
+                                cwd.derivedUri) == null;
+                    }
     			} catch (Exception e) {
     				Log.w(TAG, "Failed to move " + doc);
     				hadTrouble = true;
@@ -1612,9 +1619,9 @@ public class DocumentsActivity extends BaseActivity {
                 return;
             }
             if (result){
-                if(!isSAFIssue(toDoc.documentId)){
+                //if(!isSAFIssue(toDoc.documentId)){
                     showError(R.string.save_error);
-                }
+                //}
             }
             MoveFragment.hide(getFragmentManager());
             setMovePending(false);
@@ -1720,7 +1727,7 @@ public class DocumentsActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpDefaultStatusBar() {
-        int color = getResources().getColor(R.color.alertColor);
+        int color = ContextCompat.getColor(this, R.color.alertColor);
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }
