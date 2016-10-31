@@ -16,7 +16,7 @@ android {
     }
     buildTypes {
         debug {
-            minifyEnabled false
+            minifyEnabled true
             shrinkResources true
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
@@ -54,6 +54,10 @@ android {
     aaptOptions {
         noCompress 'apk'
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
 }
 
 ext {
@@ -62,12 +66,16 @@ ext {
 }
 
 dependencies {
-    compile files('libs/RootTools.jar')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
+    compile 'org.apache.ftpserver:ftplet-api:+'
+    compile 'org.apache.ftpserver:ftpserver-core:+'
+    compile 'org.apache.mina:mina-core:2.0.15'
+    compile 'org.slf4j:slf4j-api:+'
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"

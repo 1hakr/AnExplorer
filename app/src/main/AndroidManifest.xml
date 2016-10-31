@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission
         android:name="android.permission.WAKE_LOCK"
         tools:node="remove" />
@@ -34,7 +35,7 @@
         android:required="false" />
 
     <application
-        android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
+        android:name=".DocumentsApplication"
         android:allowBackup="true"
         android:banner="@drawable/banner"
         android:icon="@drawable/ic_launcher"
@@ -43,7 +44,7 @@
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
-            android:name="dev.dworks.apps.anexplorer.DocumentsActivity"
+            android:name=".DocumentsActivity"
             android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
@@ -101,19 +102,19 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="dev.dworks.apps.anexplorer.StandaloneActivity"
-            android:theme="@style/Theme.Document"></activity>
+            android:name=".StandaloneActivity"
+            android:theme="@style/Theme.Document" />
         <activity
-            android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
+            android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
             android:theme="@style/Theme.Setting" />
         <activity
-            android:name="dev.dworks.apps.anexplorer.AboutActivity"
+            android:name=".AboutActivity"
             android:label="About"
             android:theme="@style/Theme.Document" />
 
-        <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver">
+        <receiver android:name=".receiver.PackageReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
@@ -121,7 +122,7 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name="dev.dworks.apps.anexplorer.receiver.MountReceiver">
+        <receiver android:name=".receiver.MountReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
@@ -132,8 +133,9 @@
                 <action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
             </intent-filter>
         </receiver>
+
         <activity
-            android:name="dev.dworks.apps.anexplorer.NoteActivity"
+            android:name=".NoteActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="sensor"
             android:theme="@style/Theme.Note">
@@ -145,6 +147,23 @@
                 <data android:mimeType="text/*" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".receiver.ConnectionsReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.START_FTPSERVER" />
+                <action android:name="dev.dworks.apps.anexplorer.action.STOP_FTPSERVER" />
+                <action android:name="dev.dworks.apps.anexplorer.action.FTPSERVER_STARTED" />
+                <action android:name="dev.dworks.apps.anexplorer.action.FTPSERVER_STOPPED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".service.ConnectionsService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

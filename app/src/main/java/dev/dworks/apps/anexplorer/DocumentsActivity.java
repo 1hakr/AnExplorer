@@ -82,11 +82,13 @@ import java.util.concurrent.Executor;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
+import dev.dworks.apps.anexplorer.fragment.HomeFragment;
 import dev.dworks.apps.anexplorer.fragment.MoveFragment;
 import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
+import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -298,14 +300,7 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             ExternalStorageProvider.updateVolumes(this);
             mRoots = DocumentsApplication.getRootsCache(this);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mRoots.updateAsync();
-                    onRootPicked(mRoots.getDefaultRoot(), true);
-                }
-            }, 500);
+            mRoots.updateAsync();
         }
     }
 
@@ -773,7 +768,7 @@ public class DocumentsActivity extends BaseActivity {
         }
 
         sort.setVisible(cwd != null);
-        grid.setVisible(mState.derivedMode != MODE_GRID);
+        grid.setVisible(!RootInfo.isOtherRoot(getCurrentRoot()) && mState.derivedMode != MODE_GRID);
         list.setVisible(mState.derivedMode != MODE_LIST);
 
         if (mState.currentSearch != null) {
@@ -1136,12 +1131,19 @@ public class DocumentsActivity extends BaseActivity {
         	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
                 RecentsCreateFragment.show(fm);
             } else {
-                DirectoryFragment.showRecentsOpen(fm, anim);
+                if(root.isHome()){
+                    HomeFragment.show(fm);
+                }
+                else if(root.isConnections()){
+                    ConnectionsFragment.show(fm);
+                } else {
+                    DirectoryFragment.showRecentsOpen(fm, anim);
 
-                // Start recents in grid when requesting visual things
-                final boolean visualMimes = true;//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
-                mState.userMode = visualMimes ? MODE_GRID : MODE_LIST;
-                mState.derivedMode = mState.userMode;
+                    // Start recents in grid when requesting visual things
+                    final boolean visualMimes = true;//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
+                    mState.userMode = visualMimes ? MODE_GRID : MODE_LIST;
+                    mState.derivedMode = mState.userMode;
+                }
             }
         } else {
             if (mState.currentSearch != null && mSearchResultShown) {
@@ -1221,10 +1223,10 @@ public class DocumentsActivity extends BaseActivity {
         mState.stack.clear();
         mState.stackTouched = true;
 
-        if (!mRoots.isRecentsRoot(root)) {
-            new PickRootTask(root).executeOnExecutor(getCurrentExecutor());
-        } else {
+        if (RootInfo.isOtherRoot(root) || mRoots.isRecentsRoot(root)) {
             onCurrentDirectoryChanged(ANIM_SIDE);
+        } else {
+            new PickRootTask(root).executeOnExecutor(getCurrentExecutor());
         }
 
         if (closeDrawer) {
@@ -1710,6 +1712,7 @@ public class DocumentsActivity extends BaseActivity {
 
     public void invalidateMenu(){
         supportInvalidateOptionsMenu();
+        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -1766,7 +1769,10 @@ public class DocumentsActivity extends BaseActivity {
     }
 
     private boolean showActionMenu() {
-        return isCreateSupported() && mState.currentSearch == null;
+        final RootInfo root = getCurrentRoot();
+        return !RootInfo.isOtherRoot(root) &&
+                isCreateSupported()
+                && mState.currentSearch == null;
     }
 
     private SimpleMenuListenerAdapter mMenuListener = new SimpleMenuListenerAdapter() {

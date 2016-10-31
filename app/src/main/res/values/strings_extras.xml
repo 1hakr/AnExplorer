@@ -38,6 +38,8 @@
     <string name="root_apps">Apps</string>
     <string name="root_heat_map">Heat map</string>
     <string name="root_processes">Processes</string>
+    <string name="root_home">Home</string>
+    <string name="root_web_host">Connections</string>
 
     <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
     <string name="pref_advanced_devices">Display advanced</string>
@@ -162,4 +164,16 @@
     <string name="storage_usb_drive" msgid="6261899683292244209">"USB drive"</string>
     <string name="storage_usb_drive_label" msgid="4501418548927759953">"<xliff:g id="MANUFACTURER">%s</xliff:g> USB drive"</string>
     <string name="storage_usb" msgid="3017954059538517278">"USB storage"</string>
+
+    <string name="storage_stats"><xliff:g id="size" example="3GB">%1$s</xliff:g> /<xliff:g id="size" example="3GB">%2$s</xliff:g></string>
+
+    <string name="start_ftp">Start</string>
+    <string name="stop_ftp">Stop</string>
+    <string name="ftp_status_running">Running</string>
+    <string name="ftp_status_not_running">Not Running</string>
+    <string name="ftp_no_wifi">Make sure you\'re connected to WiFi</string>
+    <string name="ftp_notif_starting">FTP Web Server is starting</string>
+    <string name="ftp_notif_title">FTP Web Server started</string>
+    <string name="ftp_notif_text">at %s</string>
+    <string name="ftp_notif_stop_server">STOP</string>
 </resources>

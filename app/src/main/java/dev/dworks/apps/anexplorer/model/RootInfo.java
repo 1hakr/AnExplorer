@@ -40,6 +40,7 @@ import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
@@ -222,11 +223,30 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_process;
         } else if (isRecents()) {
             derivedIcon = R.drawable.ic_root_recent;
+        } else if (isHome()) {
+            derivedIcon = R.drawable.ic_root_home;
+        } else if (isConnections()) {
+            derivedIcon = R.drawable.ic_root_connections;
         }
     }
 
+/*    public boolean isHome() {
+        // Note that "home" is the expected root id for the auto-created
+        // user home directory on external storage. The "home" value should
+        // match ExternalStorageProvider.ROOT_ID_HOME.
+        return isExternalStorage() && "home".equals(rootId);
+    }*/
+
+    public boolean isHome() {
+        return authority == null && "home".equals(rootId);
+    }
+
+    public boolean isConnections() {
+        return authority == null && "connections".equals(rootId);
+    }
+
     public boolean isRecents() {
-        return authority == null && rootId == null;
+        return RecentsProvider.AUTHORITY.equals(authority) && rootId == null;
     }
 
     public boolean isStorage() {
@@ -337,13 +357,6 @@ public class RootInfo implements Durable, Parcelable {
 
     public Uri getUri() {
         return DocumentsContract.buildRootUri(authority, rootId);
-    }
-
-    public boolean isHome() {
-        // Note that "home" is the expected root id for the auto-created
-        // user home directory on external storage. The "home" value should
-        // match ExternalStorageProvider.ROOT_ID_HOME.
-        return isExternalStorage() && "home".equals(rootId);
     }
 
     public boolean isMtp() {
@@ -470,7 +483,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isStorage(RootInfo root){
-        return root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
+        return root.isHome() || root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
     }
 
     public static boolean isLibrary(RootInfo root){
@@ -487,7 +500,11 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isTools(RootInfo root){
-        return root.isAppPackage() || root.isAppProcess() || root.isRootedStorage();
+        return root.isConnections() || root.isRootedStorage() || root.isAppPackage() || root.isAppProcess();
+    }
+
+    public static boolean isOtherRoot(RootInfo root){
+        return root.isHome() || root.isConnections();
     }
 
 }
