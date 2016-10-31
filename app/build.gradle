@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.0'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         versionName "3.2"
         versionCode = 48
         minSdkVersion 17
-        targetSdkVersion 24
+        targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
@@ -29,6 +29,9 @@ android {
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
+            jackOptions {
+                enabled true
+            }
         }
     }
     flavorDimensions "release", "default"
@@ -48,21 +51,21 @@ android {
             dimension "release"
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
     lintOptions {
         abortOnError false
     }
     aaptOptions {
         noCompress 'apk'
     }
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-    }
 }
 
 ext {
-    supportLibVersion = '24.2.0'
-    gmsVersion = '9.4.0'
+    supportLibVersion = '25.0.0'
+    gmsVersion = '9.8.0'
 }
 
 dependencies {
@@ -70,12 +73,12 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
-    compile "com.android.support:appcompat-v7:${supportLibVersion}"
-    compile "com.android.support:design:${supportLibVersion}"
     compile 'org.apache.ftpserver:ftplet-api:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
     compile 'org.apache.mina:mina-core:2.0.15'
     compile 'org.slf4j:slf4j-api:+'
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
