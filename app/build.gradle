@@ -29,9 +29,6 @@ android {
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
-            jackOptions {
-                enabled true
-            }
         }
     }
     flavorDimensions "release", "default"
