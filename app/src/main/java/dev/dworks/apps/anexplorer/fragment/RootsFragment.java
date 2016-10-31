@@ -185,7 +185,7 @@ public class RootsFragment extends Fragment {
     }
 
     public void onCurrentRootChanged() {
-        if (mAdapter == null) return;
+        if (mAdapter == null || mList == null) return;
 
         final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
         for (int i = 0; i < mAdapter.getGroupCount(); i++) {
