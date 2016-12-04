@@ -23,6 +23,9 @@
     <string name="menu_rename">Rename</string>
     <string name="menu_paste">Paste</string>
     <string name="menu_create_file">Create file</string>
+    <string name="menu_uninstall">Uninstall</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_properties">Properties</string>
 
     <string name="root_images">Images</string>
     <string name="root_audio">Audio</string>

@@ -29,14 +29,19 @@
         android:title="Backup"
         android:visible="false"/>
     <item
-        android:id="@+id/menu_delete"
+        android:id="@+id/menu_stop"
         android:icon="@drawable/ic_menu_stop"
         support:showAsAction="always"
-        android:title="@string/menu_delete"/>
+        android:title="@string/menu_stop"/>
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@drawable/ic_menu_delete"
+        support:showAsAction="always"
+        android:title="@string/menu_uninstall"/>
     <item
         android:id="@+id/menu_details"
         android:icon="@drawable/ic_menu_info"
         support:showAsAction="always"
-        android:title="Properties"/>
+        android:title="@string/menu_properties"/>
 
 </menu>

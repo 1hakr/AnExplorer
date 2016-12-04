@@ -21,7 +21,6 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -49,6 +48,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
+import dev.dworks.apps.anexplorer.misc.PackageManagerUtils;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -169,14 +169,7 @@ public class AppsProvider extends DocumentsProvider {
         final long token = Binder.clearCallingIdentity();
         try {
         	if (ROOT_ID_APP.equals(rootId)) {
-    			try {
-    				Uri packageUri = Uri.fromParts("package", packageName,null);
-    				if(packageUri != null){
-    					Intent intentUninstall = new Intent(Intent.ACTION_DELETE, packageUri);
-    					intentUninstall.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    					getContext().startActivity(intentUninstall);
-    				}	
-    			} catch (Exception e) { }
+				PackageManagerUtils.uninstallApp(getContext(), packageName);
         	}
         	else{
         		activityManager.killBackgroundProcesses(getPackageForDocId(docId));

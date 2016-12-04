@@ -16,7 +16,7 @@ android {
     }
     buildTypes {
         debug {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources true
             proguardFiles 'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',

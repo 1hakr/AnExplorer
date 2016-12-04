@@ -116,6 +116,8 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_REQUEST;
+import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_NAMES;
 import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -580,7 +582,9 @@ public class DirectoryFragment extends ListFragment {
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
-			rename.setVisible(manageMode && canRename && count == 1);
+			if(null != rename) {
+				rename.setVisible(manageMode && canRename && count == 1);
+			}
 
             if (mType == TYPE_RECENT_OPEN) {
                 delete.setVisible(true);
@@ -589,8 +593,8 @@ public class DirectoryFragment extends ListFragment {
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
 				save.setVisible(root.isAppPackage());
-				delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
-				delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
+				delete.setVisible(root.isAppPackage());
+
 			} else {
 				final MenuItem edit = menu.findItem(R.id.menu_edit);
 				if (edit != null) {
@@ -656,11 +660,19 @@ public class DirectoryFragment extends ListFragment {
 					docsAppUninstall = docs;
 					onUninstall();
 				} else {
-					deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
+					deleteFiles(docs, id, "Delete files ?");
 				}
 				mode.finish();
 				return true;
 
+			case R.id.menu_stop:
+				if (isApp && root.isAppPackage()) {
+					forceStopApps(docs);
+				} else {
+					deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
+				}
+				mode.finish();
+				return true;
 			case R.id.menu_save:
             case R.id.menu_compress:
 				new OperationTask(docs, id).execute();
@@ -837,6 +849,17 @@ public class DirectoryFragment extends ListFragment {
                 AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
             }
         }
+	}
+
+	private void forceStopApps(ArrayList<DocumentInfo> docs) {
+		ArrayList<String> packageList = new ArrayList<>();
+		for (DocumentInfo documentInfo : docs){
+			packageList.add(AppsProvider.getPackageForDocId(documentInfo.documentId));
+		}
+
+		Intent intent = new Intent(ACTION_FORCE_STOP_REQUEST);
+		intent.putExtra(EXTRA_PACKAGE_NAMES, packageList);
+		getActivity().sendBroadcast(intent);
 	}
 
 	private boolean onUninstallApp(DocumentInfo doc) {
@@ -1732,8 +1755,7 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
             open.setVisible(root.isAppPackage());
 			save.setVisible(root.isAppPackage());
-			delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
-			delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
+			delete.setVisible(root.isAppPackage());
 		}
 		else{
 			final State state = getDisplayState(DirectoryFragment.this);
@@ -1795,7 +1817,15 @@ public class DirectoryFragment extends ListFragment {
 				docsAppUninstall = docs;
 				onUninstall();
 			} else {
-				deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
+				deleteFiles(docs, id, "Delete files ?");
+			}
+			return true;
+
+		case R.id.menu_stop:
+			if (isApp && root.isAppPackage()) {
+				forceStopApps(docs);
+			} else {
+				deleteFiles(docs, id, "Stop processes ?");
 			}
 			return true;
 
