@@ -107,6 +107,7 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
@@ -121,6 +122,7 @@ import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_REQUEST;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_NAMES;
 import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
+import static dev.dworks.apps.anexplorer.misc.Utils.isRooted;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -130,7 +132,7 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
  */
 public class DirectoryFragment extends ListFragment {
 
-	private View mEmptyView;
+	private CompatTextView mEmptyView;
 	private ListView mListView;
 	private GridView mGridView;
 
@@ -238,7 +240,7 @@ public class DirectoryFragment extends ListFragment {
 
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
 
-		mEmptyView = view.findViewById(android.R.id.empty);
+		mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
 
 		mListView = (ListView) view.findViewById(R.id.list);
 		mListView.setOnItemClickListener(mItemListener);
@@ -1216,11 +1218,7 @@ public class DirectoryFragment extends ListFragment {
 				mFooters.add(new MessageFooter(3, R.drawable.ic_dialog_alert, getString(R.string.query_error)));
 			}
 
-			if (isEmpty()) {
-				mEmptyView.setVisibility(View.VISIBLE);
-			} else {
-				mEmptyView.setVisibility(View.GONE);
-			}
+			setEmptyState();
 
 			notifyDataSetChanged();
 		}
@@ -1543,6 +1541,17 @@ public class DirectoryFragment extends ListFragment {
 				}
 			}
 
+		}
+	}
+
+	private void setEmptyState() {
+		if (mAdapter.isEmpty()) {
+			mEmptyView.setVisibility(View.VISIBLE);
+			if(root.isRootedStorage() && !isRooted()){
+				mEmptyView.setText("Your phone is not rooted!");
+			}
+		} else {
+			mEmptyView.setVisibility(View.GONE);
 		}
 	}
 

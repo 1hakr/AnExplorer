@@ -69,6 +69,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.stericson.RootTools.RootTools;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,6 +81,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
+import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
@@ -88,7 +91,6 @@ import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
-import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -1780,7 +1782,8 @@ public class DocumentsActivity extends BaseActivity {
     private boolean showActionMenu() {
         final RootInfo root = getCurrentRoot();
         return !RootInfo.isOtherRoot(root) &&
-                isCreateSupported()
+                isCreateSupported() &&
+                (root.isRootedStorage() && Utils.isRooted())
                 && mState.currentSearch == null;
     }
 
