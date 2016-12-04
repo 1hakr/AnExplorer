@@ -43,6 +43,9 @@
     <string name="root_processes">Processes</string>
     <string name="root_home">Home</string>
     <string name="root_web_host">Connections</string>
+    <string name="root_document">Documents</string>
+    <string name="root_archive">Archives</string>
+    <string name="root_apk">APK</string>
 
     <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
     <string name="pref_advanced_devices">Display advanced</string>

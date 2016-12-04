@@ -47,7 +47,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             group.add(new GroupInfo("Storage", storage));
         }
         if(!library.isEmpty()){
-            group.add(new GroupInfo("Media", library));
+            group.add(new GroupInfo("Library", library));
         }
         if(!folders.isEmpty()){
             group.add(new GroupInfo("Folders", folders));

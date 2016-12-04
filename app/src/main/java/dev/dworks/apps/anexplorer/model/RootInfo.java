@@ -40,6 +40,7 @@ import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
@@ -217,6 +218,12 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_video;
         } else if (isAudio()) {
             derivedIcon = R.drawable.ic_root_audio;
+        } else if (isDocument()) {
+            derivedIcon = R.drawable.ic_doc_document;
+        } else if (isArchive()) {
+            derivedIcon = R.drawable.ic_doc_compressed;
+        } else if (isApk()) {
+            derivedIcon = R.drawable.ic_doc_apk;
         } else if (isAppPackage()) {
             derivedIcon = R.drawable.ic_root_apps;
         } else if (isAppProcess()) {
@@ -331,6 +338,21 @@ public class RootInfo implements Durable, Parcelable {
     public boolean isAudio() {
         return MediaDocumentsProvider.AUTHORITY.equals(authority)
                 && MediaDocumentsProvider.TYPE_AUDIO_ROOT.equals(rootId);
+    }
+
+    public boolean isDocument() {
+        return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
+                && NonMediaDocumentsProvider.TYPE_DOCUMENT_ROOT.equals(rootId);
+    }
+
+    public boolean isArchive() {
+        return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
+                && NonMediaDocumentsProvider.TYPE_ARCHIVE_ROOT.equals(rootId);
+    }
+
+    public boolean isApk() {
+        return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
+                && NonMediaDocumentsProvider.TYPE_APK_ROOT.equals(rootId);
     }
 
     public boolean isApp() {
@@ -487,7 +509,8 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isLibrary(RootInfo root){
-        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio();
+        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio()
+                || root.isDocument() || root.isArchive() || root.isApk();
     }
 
     public static boolean isFolder(RootInfo root){
