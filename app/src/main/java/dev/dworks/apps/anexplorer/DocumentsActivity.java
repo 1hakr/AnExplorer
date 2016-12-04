@@ -273,8 +273,13 @@ public class DocumentsActivity extends BaseActivity {
 
         if (!mState.restored) {
             if (mState.action == ACTION_MANAGE) {
-                final Uri rootUri = getIntent().getData();
-                new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
+                if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
+                    onRootPicked(getDownloadRoot(), true);
+                }
+                else {
+                    final Uri rootUri = getIntent().getData();
+                    new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
+                }
             } else {
             	if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
             		onRootPicked(getDownloadRoot(), true);
@@ -1056,6 +1061,10 @@ public class DocumentsActivity extends BaseActivity {
     
     public RootInfo getDownloadRoot() {
     	return mRoots.getDownloadRoot();
+    }
+
+    public RootInfo getAppsBackupRoot() {
+        return mRoots.getAppsBackupRoot();
     }
 
     public DocumentInfo getCurrentDirectory() {

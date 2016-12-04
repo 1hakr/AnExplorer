@@ -415,6 +415,15 @@ public class RootsCache {
         return null;
     }
 
+    public RootInfo getAppsBackupRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isAppBackupFolder()) {
+                return root;
+            }
+        }
+        return getPrimaryRoot();
+    }
+
     public RootInfo getHomeRoot() {
         return mHomeRoot;
     }

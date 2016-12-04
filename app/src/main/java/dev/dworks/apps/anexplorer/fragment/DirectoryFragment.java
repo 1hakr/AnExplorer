@@ -42,6 +42,7 @@ import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -77,6 +78,7 @@ import java.util.ArrayList;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
@@ -988,7 +990,15 @@ public class DirectoryFragment extends ListFragment {
 				}
 			} else{
 				if(id == R.id.menu_save) {
-					((BaseActivity) getActivity()).showInfo("App(s) Backed up to 'AppBackup' folder");
+					((BaseActivity) getActivity()).
+							showSnackBar("App(s) Backed up to 'AppBackup' folder",
+									Snackbar.LENGTH_LONG, "View", new OnClickListener() {
+										@Override
+										public void onClick(View view) {
+											DocumentsActivity activity = ((DocumentsActivity)getActivity());
+											activity.onRootPicked(activity.getAppsBackupRoot(), true);
+										}
+									});
 				}
 			}
 

@@ -29,6 +29,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -39,13 +40,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.common.collect.Lists;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
@@ -79,7 +85,11 @@ public class RootsFragment extends Fragment {
     private LoaderCallbacks<Collection<RootInfo>> mCallbacks;
 
     private static final String EXTRA_INCLUDE_APPS = "includeApps";
-    
+    private static final String GROUP_SIZE = "group_size";
+    private static final String GROUP_IDS = "group_ids";
+    private int group_size = 0;
+    private ArrayList<Long> expandedIds = Lists.newArrayList();
+
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();
         args.putParcelable(EXTRA_INCLUDE_APPS, includeApps);
@@ -126,6 +136,10 @@ public class RootsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if(null != savedInstanceState) {
+            group_size = savedInstanceState.getInt(GROUP_SIZE, 0);
+            expandedIds = (ArrayList<Long>) savedInstanceState.getSerializable(GROUP_IDS);
+        }
 
         final Context context = getActivity();
         final RootsCache roots = DocumentsApplication.getRootsCache(context);
@@ -145,14 +159,25 @@ public class RootsFragment extends Fragment {
                 final Intent includeApps = getArguments().getParcelable(EXTRA_INCLUDE_APPS);
 
                 mAdapter = new RootsExpandableAdapter(context, result, includeApps);
+                Parcelable state = mList.onSaveInstanceState();
                 mList.setAdapter(mAdapter);
+                mList.onRestoreInstanceState(state);
 
                 int groupCount = mList.getAdapter().getCount();
-                if(groupCount >= 2){
-                    mList.expandGroup(0, true);
-                    mList.expandGroup(1, true);
-                } else if(groupCount == 1){
-                    mList.expandGroup(0, true);
+                if(group_size != 0 && group_size == groupCount){
+                    if (expandedIds != null) {
+                        restoreExpandedState(expandedIds);
+                    }
+                } else {
+                    group_size = groupCount;
+                    if (groupCount >= 2) {
+                        mList.expandGroup(0, true);
+                        mList.expandGroup(1, true);
+                    } else if (groupCount == 1) {
+                        mList.expandGroup(0, true);
+                    }
+                    expandedIds = getExpandedIds();
+                    mList.setOnGroupExpandListener(mOnGroupExpandListener);
                 }
             }
 
@@ -194,8 +219,12 @@ public class RootsFragment extends Fragment {
                 if (item instanceof RootItem) {
                     final RootInfo testRoot = ((RootItem) item).root;
                     if (Objects.equal(testRoot, root)) {
-                        int index = mList.getFlatListPosition(ExpandableListView.getPackedPositionForChild(i, j));
-                        mList.setItemChecked(index, true);
+                        try {
+                            long id = ExpandableListView.getPackedPositionForChild(i, j);
+                            int index = mList.getFlatListPosition(id);
+                            mList.setItemChecked(index, true);
+                        } catch (Exception e){}
+
                         return;
                     }
                 }
@@ -219,7 +248,7 @@ public class RootsFragment extends Fragment {
             final BaseActivity activity = BaseActivity.get(RootsFragment.this);
             final Item item = (Item) mAdapter.getChild(groupPosition, childPosition);
             if (item instanceof RootItem) {
-                int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
+                    int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
                 parent.setItemChecked(index, true);
                 activity.onRootPicked(((RootItem) item).root, true);
             } else if (item instanceof AppItem) {
@@ -259,6 +288,13 @@ public class RootsFragment extends Fragment {
             } else {
                 return false;
             }
+        }
+    };
+
+    private ExpandableListView.OnGroupExpandListener mOnGroupExpandListener = new ExpandableListView.OnGroupExpandListener() {
+        @Override
+        public void onGroupExpand(int i) {
+            expandedIds.add(mAdapter.getGroupId(i));
         }
     };
 
@@ -434,5 +470,75 @@ public class RootsFragment extends Fragment {
                 return DocumentInfo.compareToIgnoreCaseNullable(lhs.summary, rhs.summary);
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (this.expandedIds != null) {
+            restoreExpandedState(expandedIds);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        expandedIds = getExpandedIds();
+    }
+
+    private ArrayList<Long> getExpandedIds() {
+        ExpandableListView list = mList;
+        ExpandableListAdapter adapter = mAdapter;
+        if (adapter != null) {
+            int length = adapter.getGroupCount();
+            ArrayList<Long> expandedIds = new ArrayList<Long>();
+            for(int i=0; i < length; i++) {
+                if(list.isGroupExpanded(i)) {
+                    expandedIds.add(adapter.getGroupId(i));
+                }
+            }
+            return expandedIds;
+        } else {
+            return null;
+        }
+    }
+
+    private void restoreExpandedState(ArrayList<Long> expandedIds) {
+        this.expandedIds = expandedIds;
+        if (expandedIds != null) {
+            ExpandableListView list = mList;
+            ExpandableListAdapter adapter = mAdapter;
+            if (adapter != null) {
+                for (int i=0; i<adapter.getGroupCount(); i++) {
+                    long id = adapter.getGroupId(i);
+                    if (expandedIds.contains(id)) list.expandGroup(i);
+                }
+            }
+        }
+    }
+
+    private static boolean inArray(Long[] array, long element) {
+        for (long l : array) {
+            if (l == element) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Long[] toLongArray(List<Long> list)  {
+        Long[] ret = new Long[list.size()];
+        int i = 0;
+        for (Long e : list)
+            ret[i++] = e.longValue();
+        return ret;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(GROUP_SIZE, group_size);
+        this.expandedIds = getExpandedIds();
+        outState.putSerializable(GROUP_IDS, this.expandedIds);
+        super.onSaveInstanceState(outState);
     }
 }

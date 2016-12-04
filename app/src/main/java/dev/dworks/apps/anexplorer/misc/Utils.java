@@ -428,7 +428,7 @@ public class Utils {
     }
 
     public static File getAppsBackupFile(Context context){
-        final RootInfo root = DocumentsApplication.getRootsCache(context).getDefaultRoot();
+        final RootInfo root = DocumentsApplication.getRootsCache(context).getPrimaryRoot();
         File rootFile = (null != root) ? new File(root.path) : Environment.getExternalStorageDirectory();
         return new File(rootFile, DIRECTORY_APPBACKUP);
     }
