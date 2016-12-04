@@ -219,11 +219,11 @@ public class RootInfo implements Durable, Parcelable {
         } else if (isAudio()) {
             derivedIcon = R.drawable.ic_root_audio;
         } else if (isDocument()) {
-            derivedIcon = R.drawable.ic_doc_document;
+            derivedIcon = R.drawable.ic_root_document;
         } else if (isArchive()) {
-            derivedIcon = R.drawable.ic_doc_compressed;
+            derivedIcon = R.drawable.ic_root_archive;
         } else if (isApk()) {
-            derivedIcon = R.drawable.ic_doc_apk;
+            derivedIcon = R.drawable.ic_root_apk;
         } else if (isAppPackage()) {
             derivedIcon = R.drawable.ic_root_apps;
         } else if (isAppProcess()) {

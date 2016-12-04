@@ -38,7 +38,8 @@
     <string name="root_downloads">Downloads</string>
     <string name="root_app_backup">App Backup</string>
     <string name="root_hidden">Hidden</string>
-    <string name="root_apps">Apps</string>
+    <string name="root_apps">User Apps</string>
+    <string name="root_system_apps">System Apps</string>
     <string name="root_heat_map">Heat map</string>
     <string name="root_processes">Processes</string>
     <string name="root_home">Home</string>
