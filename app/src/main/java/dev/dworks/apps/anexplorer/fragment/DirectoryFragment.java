@@ -1547,7 +1547,7 @@ public class DirectoryFragment extends ListFragment {
 	private void setEmptyState() {
 		if (mAdapter.isEmpty()) {
 			mEmptyView.setVisibility(View.VISIBLE);
-			if(root.isRootedStorage() && !isRooted()){
+			if(null != root && root.isRootedStorage() && !isRooted()){
 				mEmptyView.setText("Your phone is not rooted!");
 			}
 		} else {

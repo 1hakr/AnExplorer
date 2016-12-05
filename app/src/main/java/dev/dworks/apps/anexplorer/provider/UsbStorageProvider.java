@@ -374,9 +374,11 @@ public class UsbStorageProvider extends DocumentsProvider {
     }
 
     public void discoverDevices(){
-        for (UsbDevice device : usbManager.getDeviceList().values()) {
-            discoverDevice(device);
-        }
+        try{
+            for (UsbDevice device : usbManager.getDeviceList().values()) {
+                discoverDevice(device);
+            }
+        } catch (Exception e){}
     }
 
     private void discoverDevice(UsbDevice device) {
