@@ -220,7 +220,7 @@ public class RootsCache {
                 waitForFirstLoad();
             }
 
-            mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
+            //mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
             mTaskRoots.put(mConnectionsRoot.authority, mConnectionsRoot);
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
@@ -372,11 +372,11 @@ public class RootsCache {
         for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
             return root;
         }
-        return getHomeRoot();
+        return getDefaultRoot();
     }
 
     public RootInfo getDefaultRoot() {
-        return getHomeRoot();
+        return getPrimaryRoot();
     }
 
     public RootInfo getDownloadRoot() {
@@ -385,7 +385,7 @@ public class RootsCache {
                 return root;
             }
         }
-        return getHomeRoot();
+        return getDefaultRoot();
     }
 
     public RootInfo getPrimaryRoot() {
