@@ -1783,7 +1783,7 @@ public class DocumentsActivity extends BaseActivity {
         final RootInfo root = getCurrentRoot();
         return !RootInfo.isOtherRoot(root) &&
                 isCreateSupported() &&
-                (root.isRootedStorage() && Utils.isRooted())
+                (root.isRootedStorage() ? Utils.isRooted() : true)
                 && mState.currentSearch == null;
     }
 

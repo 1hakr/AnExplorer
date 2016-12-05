@@ -168,7 +168,6 @@ public class UsbStorageProvider extends DocumentsProvider {
             row.add(Root.COLUMN_DOCUMENT_ID, documentId);
             row.add(Root.COLUMN_TITLE, title);
             row.add(Root.COLUMN_FLAGS, flags);
-            row.add(Root.COLUMN_ICON, R.drawable.ic_root_usb);
             // These columns are optional
             row.add(Root.COLUMN_SUMMARY, volumeLabel);
             row.add(Root.COLUMN_AVAILABLE_BYTES, fileSystem.getFreeSpace());

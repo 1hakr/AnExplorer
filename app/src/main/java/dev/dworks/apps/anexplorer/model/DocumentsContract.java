@@ -1327,7 +1327,7 @@ public final class DocumentsContract {
             in.putString(Document.COLUMN_DOCUMENT_ID, getDocumentId(fromDocumentUri));
             in.putParcelable(DocumentsContract.EXTRA_URI, fromDocumentUri);
             in.putStringArrayList(DocumentsContract.EXTRA_DOCUMENTS_COMPRESS, fromDocumentIds);
-            resolver.call(fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            resolver.call(fromDocumentUri, METHOD_COMPRESS_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
             Log.w(TAG, "Failed to compress document", e);

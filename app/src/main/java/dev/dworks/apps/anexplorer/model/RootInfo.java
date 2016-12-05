@@ -200,6 +200,8 @@ public class RootInfo implements Durable, Parcelable {
             else {
                 derivedIcon = R.drawable.ic_root_sdcard;
             }
+        } else if (isUsbStorage()) {
+            derivedIcon = R.drawable.ic_root_usb;
         } else if (isDownloadsFolder()) {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {

@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
+import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
 
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_FAILEDTOSTART;
@@ -61,7 +62,7 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         ftpBtn.setOnClickListener(this);
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        icon.setImageResource(R.drawable.ic_root_connections);
+        setTintedImage(icon, R.drawable.ic_root_connections);
     }
 
     @Override
@@ -113,11 +114,11 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
             ftpAddrText.setText(ConnectionUtils.getFTPAddress(getActivity()));
             ftpAddrText.setTextColor(ContextCompat.getColor(getActivity(), R.color.material_blue_grey_800));
             statusText.setText(getString(R.string.ftp_status_running));
-            ftpBtn.setImageResource(R.drawable.ic_stop);
+            setTintedImage(ftpBtn, R.drawable.ic_stop);
         } else {
             ftpAddrText.setText("");
             statusText.setText(getString(R.string.ftp_status_not_running));
-            ftpBtn.setImageResource(R.drawable.ic_start);
+            setTintedImage(ftpBtn, R.drawable.ic_start);
         }
     }
     @Override
@@ -173,4 +174,9 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
         }
         }
     };
+
+    private void setTintedImage(ImageView imageview, int resourceId){
+        imageview.setImageDrawable(IconUtils.applyTintAttr(getActivity(), resourceId,
+                android.R.attr.textColorPrimary));
+    }
 }
