@@ -904,6 +904,7 @@ public class DirectoryFragment extends ListFragment {
 
 			switch (id) {
 			case R.id.menu_delete:
+			case R.id.menu_stop:
 				if (null != root && root.isApp()) {
 					progressDialog.setMessage("Stopping processes...");
 				} else {
@@ -939,6 +940,7 @@ public class DirectoryFragment extends ListFragment {
 			boolean result = false;
 			switch (id) {
 			case R.id.menu_delete:
+			case R.id.menu_stop:
 				result = onDeleteDocuments(docs);
 				break;
 

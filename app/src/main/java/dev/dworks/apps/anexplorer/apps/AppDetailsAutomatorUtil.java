@@ -6,7 +6,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.IGNORE_PROCESSES_LIST;
@@ -33,10 +32,10 @@ public class AppDetailsAutomatorUtil {
 			AccessibilityNodeInfo compareNode = source.getChild(i);
 			if (compareNode != null && compareNode.getText() != null) {
 
-				LogUtils.LOGD(TAG, "(findAccessibilityNodeInfo) completeNode : " + compareNode.getClassName() + ", " + compareNode.getText());
+				//LogUtils.LOGD(TAG, "(findAccessibilityNodeInfo) completeNode : " + compareNode.getClassName() + ", " + compareNode.getText());
 
 				if (text.equals(compareNode.getText())) {
-					LogUtils.LOGD(TAG, "(findAccessibilityNodeInfo) Find node : " + compareNode.getClassName() + ", " + compareNode.getText());
+					//LogUtils.LOGD(TAG, "(findAccessibilityNodeInfo) Find node : " + compareNode.getClassName() + ", " + compareNode.getText());
 					accessibilityNodeInfo = compareNode;
 				}
 				if (accessibilityNodeInfo == null) {
@@ -67,7 +66,7 @@ public class AppDetailsAutomatorUtil {
 			if ((foundNodeInfos != null) && (!foundNodeInfos.isEmpty())) {
 				foundNodeInfo = (AccessibilityNodeInfo)foundNodeInfos.get(0);
 			} else {
-				LogUtils.LOGD(TAG, "(getAccessibilityNodeInfo) Not found : " + stringResName);
+				//LogUtils.LOGD(TAG, "(getAccessibilityNodeInfo) Not found : " + stringResName);
 			}
 			while (foundNodeInfos.size() > 1) {
 				((AccessibilityNodeInfo)foundNodeInfos.remove(-1 + foundNodeInfos.size())).recycle();
@@ -99,11 +98,11 @@ public class AppDetailsAutomatorUtil {
     	}
     	CharSequence nodeInfoText = accessibilityNodeInfo.getText();
     	if (!accessibilityNodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK)) {
-			LogUtils.LOGD(TAG, "(performAction) Failed to click " + nodeInfoText);
+			//LogUtils.LOGD(TAG, "(performAction) Failed to click " + nodeInfoText);
     		return false;
     	}
 
-		LogUtils.LOGD(TAG, "(performAction) Clicked " + nodeInfoText);
+		//LogUtils.LOGD(TAG, "(performAction) Clicked " + nodeInfoText);
     	return true;
     }
     

@@ -13,7 +13,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.misc.PackageManagerUtils;
 
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_FINISHED;
@@ -97,8 +96,8 @@ public class AppDetailsAutomatorManager {
 			return;
 		}
 		
-		LogUtils.LOGD(TAG, "source : " + source.getClassName() + ", " + source.getText());
-		
+		//LogUtils.LOGD(TAG, "source : " + source.getClassName() + ", " + source.getText());
+
 		try {
 			if (isAppDetail(event)) {
 				handleAppDetail(source);

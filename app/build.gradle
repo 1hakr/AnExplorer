@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.1'
 
     defaultConfig {
-        versionName "3.2"
-        versionCode = 48
+        versionName "3.3"
+        versionCode = 49
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -18,7 +18,8 @@ android {
         debug {
             minifyEnabled false
             shrinkResources true
-            proguardFiles 'proguard/proguard-project.pro',
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
@@ -26,7 +27,10 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            proguardFiles 'proguard/proguard-project.pro',
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
@@ -61,8 +65,8 @@ android {
 }
 
 ext {
-    supportLibVersion = '25.0.0'
-    gmsVersion = '9.8.0'
+    supportLibVersion = '25.0.1'
+    gmsVersion = '10.0.1'
 }
 
 dependencies {
@@ -70,10 +74,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
-    compile 'org.apache.ftpserver:ftplet-api:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
-    compile 'org.apache.mina:mina-core:2.0.15'
-    compile 'org.slf4j:slf4j-api:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
