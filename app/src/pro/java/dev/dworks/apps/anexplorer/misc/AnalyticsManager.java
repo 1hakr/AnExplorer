@@ -16,9 +16,9 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.app.Activity;
 import android.content.Context;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
+import android.os.Bundle;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 
@@ -26,6 +26,10 @@ public class AnalyticsManager {
     private static Context sAppContext = null;
 
     private final static String TAG = LogUtils.makeLogTag(AnalyticsManager.class);
+
+    public static String FILE_TYPE = "file_type";
+    public static String FILE_COUNT = "file_count";
+    public static String FILE_MOVE = "file_move";
 
     private static boolean canSend() {
         return sAppContext != null
@@ -37,6 +41,10 @@ public class AnalyticsManager {
     }
 
     public static void setProperty(String propertyName, String propertyValue){
+
+    }
+
+    public static void logEvent(String eventName){
 
     }
 

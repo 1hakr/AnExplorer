@@ -84,6 +84,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.loader.DirectoryLoader;
 import dev.dworks.apps.anexplorer.loader.RecentLoader;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
@@ -119,6 +120,9 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_REQUEST;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_NAMES;
 import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
@@ -535,6 +539,9 @@ public class DirectoryFragment extends ListFragment {
 				} else if (isDocumentEnabled(docMimeType, docFlags)) {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 					((BaseActivity) getActivity()).onDocumentPicked(doc);
+					Bundle params = new Bundle();
+					params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+					AnalyticsManager.logEvent(doc.isDirectory() ? "browse" : "open", params);
 				}
 			}
 		}
@@ -650,31 +657,22 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 
 			case R.id.menu_copy:
-				MoveFragment.show(getFragmentManager(), docs, false);
+				moveDocument(docs, false);
 				mode.finish();
 				return true;
 
 			case R.id.menu_cut:
-				MoveFragment.show(getFragmentManager(), docs, true);
+				moveDocument(docs, true);
 				mode.finish();
 				return true;
 
 			case R.id.menu_delete:
-				if (isApp && root.isAppPackage()) {
-					docsAppUninstall = docs;
-					onUninstall();
-				} else {
-					deleteFiles(docs, id, "Delete files ?");
-				}
+				deleteDocument(docs, id);
 				mode.finish();
 				return true;
 
 			case R.id.menu_stop:
-				if (isApp && root.isAppPackage()) {
-					forceStopApps(docs);
-				} else {
-					deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
-				}
+				stopDocument(docs, id);
 				mode.finish();
 				return true;
 			case R.id.menu_save:
@@ -684,25 +682,23 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 
 			case R.id.menu_select_all:
-				for (int i = 0; i < mAdapter.getCount(); i++) {
+				int count = mAdapter.getCount();
+				for (int i = 0; i < count; i++) {
 					mCurrentView.setItemChecked(i, selectAll);
 				}
 				selectAll = !selectAll;
+				Bundle params = new Bundle();
+				params.putInt(FILE_COUNT, count);
+				AnalyticsManager.logEvent("detail", params);
 				return true;
 
 			case R.id.menu_info:
-				final BaseActivity activity = (BaseActivity) getActivity();
-				activity.setInfoDrawerOpen(true);
-				if (activity.isShowAsDialog()) {
-					DetailFragment.showAsDialog(activity.getSupportFragmentManager(), docs.get(0));
-				} else {
-					DetailFragment.show(activity.getSupportFragmentManager(), docs.get(0));
-				}
+				infoDocument(docs.get(0));
 				mode.finish();
 				return true;
 
 			case R.id.menu_rename:
-				RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), docs.get(0));
+				renameDocument(docs.get(0));
 				mode.finish();
 				return true;
 
@@ -788,6 +784,11 @@ public class DirectoryFragment extends ListFragment {
             }
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
+			Bundle params = new Bundle();
+			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+			params.putInt(FILE_COUNT, docs.size());
+			AnalyticsManager.logEvent("share", params);
+
 		} else if (docs.size() > 1) {
 			intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -808,6 +809,10 @@ public class DirectoryFragment extends ListFragment {
                 intent.setType(MimeTypes.ALL_MIME_TYPES);
             }
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+			Bundle params = new Bundle();
+			params.putInt(FILE_COUNT, docs.size());
+			AnalyticsManager.logEvent("share", params);
 
 		} else {
 			return;
@@ -937,6 +942,7 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
+			Bundle params2 = new Bundle();
 			boolean result = false;
 			switch (id) {
 			case R.id.menu_delete:
@@ -946,13 +952,21 @@ public class DirectoryFragment extends ListFragment {
 
 			case R.id.menu_save:
 				result = onSaveDocuments(docs);
+				params2 = new Bundle();
+				params2.putInt(FILE_COUNT, docs.size());
+				AnalyticsManager.logEvent("backup", params2);
 				break;
 
             case R.id.menu_uncompress:
                 result = onUncompressDocuments(docs);
+				params2 = new Bundle();
+				AnalyticsManager.logEvent("uncompress", params2);
                 break;
             case R.id.menu_compress:
                 result = onCompressDocuments(doc, docs);
+				params2 = new Bundle();
+				params2.putInt(FILE_COUNT, docs.size());
+				AnalyticsManager.logEvent("compress", params2);
                 break;
 			}
 
@@ -1826,28 +1840,19 @@ public class DirectoryFragment extends ListFragment {
 			return true;
 
 		case R.id.menu_copy:
-			MoveFragment.show(getFragmentManager(), docs, false);
+			moveDocument(docs, false);
 			return true;
 
 		case R.id.menu_cut:
-			MoveFragment.show(getFragmentManager(), docs, true);
+			moveDocument(docs, true);
 			return true;
 
 		case R.id.menu_delete:
-			if (isApp && root.isAppPackage()) {
-				docsAppUninstall = docs;
-				onUninstall();
-			} else {
-				deleteFiles(docs, id, "Delete files ?");
-			}
+			deleteDocument(docs, id);
 			return true;
 
 		case R.id.menu_stop:
-			if (isApp && root.isAppPackage()) {
-				forceStopApps(docs);
-			} else {
-				deleteFiles(docs, id, "Stop processes ?");
-			}
+			stopDocument(docs, id);
 			return true;
 
 		case R.id.menu_save:
@@ -1856,15 +1861,7 @@ public class DirectoryFragment extends ListFragment {
 			new OperationTask(docs, id).execute();
 			return true;
         case R.id.menu_open:
-            Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(docs.get(0).documentId));
-            if (intent!= null) {
-                if(Utils.isIntentAvailable(getActivity(), intent)) {
-                    getActivity().startActivity(intent);
-                }
-            }
-            else{
-                ((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
-            }
+			openDocument(docs.get(0));
             return true;
         case R.id.menu_details:
             Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
@@ -1872,36 +1869,107 @@ public class DirectoryFragment extends ListFragment {
             if(Utils.isIntentAvailable(getActivity(), intent2)) {
                 getActivity().startActivity(intent2);
             }
+            Bundle params = new Bundle();
+			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType));
+			AnalyticsManager.logEvent("details", params);
             return true;
 		case R.id.menu_info:
-			final BaseActivity activity = (BaseActivity) getActivity();
-			activity.setInfoDrawerOpen(true);
-			if (activity.isShowAsDialog()) {
-				DetailFragment.showAsDialog(activity.getSupportFragmentManager(), docs.get(0));
-			} else {
-				DetailFragment.show(activity.getSupportFragmentManager(), docs.get(0));
-			}
+			infoDocument(docs.get(0));
 			return true;
 
 		case R.id.menu_rename:
-			RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), docs.get(0));
+			renameDocument(docs.get(0));
 			return true;
 
         case R.id.menu_bookmark:
-            DocumentInfo document = docs.get(0);
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(ExplorerProvider.BookmarkColumns.PATH, document.path);
-            contentValues.put(ExplorerProvider.BookmarkColumns.TITLE, document.displayName);
-            contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
-            Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
-            if(null != uri) {
-                ((BaseActivity) getActivity()).showInfo("Bookmark added");
-                ExternalStorageProvider.updateVolumes(getActivity());
-            }
+			bookmarkDocument(docs.get(0));
             return true;
 		default:
 			return false;
 		}
+	}
+
+	private void bookmarkDocument(DocumentInfo doc) {
+		DocumentInfo document = doc;
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(ExplorerProvider.BookmarkColumns.PATH, document.path);
+		contentValues.put(ExplorerProvider.BookmarkColumns.TITLE, document.displayName);
+		contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
+		Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
+		if(null != uri) {
+			((BaseActivity) getActivity()).showInfo("Bookmark added");
+			ExternalStorageProvider.updateVolumes(getActivity());
+		}
+		Bundle params = new Bundle();
+		AnalyticsManager.logEvent("bookmark", params);
+	}
+
+	private void stopDocument(ArrayList<DocumentInfo> docs, int type) {
+		Bundle params = new Bundle();
+		params.putInt(FILE_COUNT, docs.size());
+		if (isApp && root.isAppPackage()) {
+			forceStopApps(docs);
+			AnalyticsManager.logEvent("stop", params);
+		} else {
+			deleteFiles(docs, type, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
+			AnalyticsManager.logEvent("delete", params);
+		}
+	}
+
+	private void deleteDocument(ArrayList<DocumentInfo> docs, int type) {
+		Bundle params = new Bundle();
+		params.putInt(FILE_COUNT, docs.size());
+		if (isApp && root.isAppPackage()) {
+			docsAppUninstall = docs;
+			onUninstall();
+			AnalyticsManager.logEvent("uninstall", params);
+		} else {
+			deleteFiles(docs, type, "Delete files ?");
+			AnalyticsManager.logEvent("delete", params);
+		}
+	}
+
+	private void openDocument(DocumentInfo doc) {
+		Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(doc.documentId));
+		if (intent!= null) {
+			if(Utils.isIntentAvailable(getActivity(), intent)) {
+				getActivity().startActivity(intent);
+			}
+		}
+		else{
+			((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
+		}
+		Bundle params = new Bundle();
+		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		AnalyticsManager.logEvent("open", params);
+	}
+
+	private void moveDocument(ArrayList<DocumentInfo> docs, boolean move) {
+		MoveFragment.show(getFragmentManager(), docs, move);
+		Bundle params = new Bundle();
+		params.putBoolean(FILE_MOVE, move);
+		params.putInt(FILE_COUNT, docs.size());
+		AnalyticsManager.logEvent("move", params);
+	}
+
+	private void renameDocument(DocumentInfo doc){
+		RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), doc);
+		Bundle params = new Bundle();
+		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		AnalyticsManager.logEvent("rename", params);
+	}
+
+	private void infoDocument(DocumentInfo doc) {
+		final BaseActivity activity = (BaseActivity) getActivity();
+		activity.setInfoDrawerOpen(true);
+		if (activity.isShowAsDialog()) {
+			DetailFragment.showAsDialog(activity.getSupportFragmentManager(), doc);
+		} else {
+			DetailFragment.show(activity.getSupportFragmentManager(), doc);
+		}
+		Bundle params = new Bundle();
+		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		AnalyticsManager.logEvent("details", params);
 	}
 
 	private synchronized ContentProviderClient getExternalStorageClient() {

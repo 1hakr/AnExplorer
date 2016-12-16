@@ -164,7 +164,7 @@ public class DetailFragment extends DialogFragment {
             path_layout.setVisibility(View.GONE);
         }
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
-		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
+		type.setText(IconUtils.getTypeNameFromMimeType(doc.mimeType));
 		
 		if(!TextUtils.isEmpty(doc.summary)){
 			contents.setText(doc.summary);

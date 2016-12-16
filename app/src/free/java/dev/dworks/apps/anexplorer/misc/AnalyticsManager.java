@@ -30,6 +30,10 @@ public class AnalyticsManager {
     private static FirebaseAnalytics mFirebaseAnalytics;
     private final static String TAG = LogUtils.makeLogTag(AnalyticsManager.class);
 
+    public static String FILE_TYPE = "file_type";
+    public static String FILE_COUNT = "file_count";
+    public static String FILE_MOVE = "file_move";
+
     private static boolean canSend() {
         return sAppContext != null && mFirebaseAnalytics != null
                 && !BuildConfig.DEBUG ;
@@ -38,6 +42,8 @@ public class AnalyticsManager {
     public static synchronized void intialize(Context context) {
         sAppContext = context;
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+
+        setProperty("DeviceType", Utils.getDeviceType(context));
     }
 
     public static void setProperty(String propertyName, String propertyValue){
@@ -45,6 +51,13 @@ public class AnalyticsManager {
             return;
         }
         mFirebaseAnalytics.setUserProperty(propertyName, propertyValue);
+    }
+
+    public static void logEvent(String eventName){
+        if (!canSend()) {
+            return;
+        }
+        mFirebaseAnalytics.logEvent(eventName, new Bundle());
     }
 
     public static void logEvent(String eventName, Bundle params){

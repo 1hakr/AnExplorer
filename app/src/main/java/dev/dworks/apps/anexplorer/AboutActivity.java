@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -133,16 +134,19 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						.setType("text/email")
 						.setChooserTitle("Send Feedback")
 						.startChooser();
+				AnalyticsManager.logEvent("feedback");
 				break;
 			case R.id.action_rate:
 				Intent intentMarket = new Intent("android.intent.action.VIEW");
 				intentMarket.setData(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
 				startActivity(intentMarket);
+				AnalyticsManager.logEvent("rate_app");
 				break;
 			case R.id.action_support:
 				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
 				intentMarketAll.setData(Uri.parse("market://search?q=pub:DWorkS"));
 				startActivity(intentMarketAll);
+				AnalyticsManager.logEvent("love_app");
 				break;
 			case R.id.action_share:
 				ShareCompat.IntentBuilder
@@ -151,6 +155,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						.setType("text/plain")
 						.setChooserTitle("Share AnExplorer")
 						.startChooser();
+				AnalyticsManager.logEvent("share_app");
 				break;
 		}
 	}

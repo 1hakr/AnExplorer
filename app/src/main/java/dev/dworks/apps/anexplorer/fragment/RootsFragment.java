@@ -61,6 +61,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -251,6 +252,9 @@ public class RootsFragment extends Fragment {
                     int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
                 parent.setItemChecked(index, true);
                 activity.onRootPicked(((RootItem) item).root, true);
+                Bundle params = new Bundle();
+                params.putString("type", ((RootItem) item).root.title);
+                AnalyticsManager.logEvent("navigate", params);
             } else if (item instanceof AppItem) {
                 activity.onAppPicked(((AppItem) item).info);
             } else {

@@ -69,8 +69,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.stericson.RootTools.RootTools;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -96,6 +94,7 @@ import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
@@ -132,6 +131,9 @@ import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 
 public class DocumentsActivity extends BaseActivity {
 
@@ -696,6 +698,9 @@ public class DocumentsActivity extends BaseActivity {
                 mState.currentSearch = query;
                 mSearchView.clearFocus();
                 onCurrentDirectoryChanged(ANIM_NONE);
+                Bundle params = new Bundle();
+                params.putString("query", query);
+                AnalyticsManager.logEvent("search", params);
                 return true;
             }
 
@@ -852,41 +857,74 @@ public class DocumentsActivity extends BaseActivity {
             onBackPressed();
             return true;
         }  else if (id == R.id.menu_create_dir) {
-            CreateDirectoryFragment.show(getSupportFragmentManager());
+            createFolder();
             return true;
         } else if (id == R.id.menu_create_file) {
             onStateChanged();
-            CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
+            createFile();
             return true;
         } else if (id == R.id.menu_search) {
             return false;
         } else if (id == R.id.menu_sort_name) {
             setUserSortOrder(State.SORT_ORDER_DISPLAY_NAME);
+            Bundle params = new Bundle();
+            params.putString("type", "name");
+            AnalyticsManager.logEvent("sort", params);
             return true;
         } else if (id == R.id.menu_sort_date) {
             setUserSortOrder(State.SORT_ORDER_LAST_MODIFIED);
+            Bundle params = new Bundle();
+            params.putString("type", "modified");
+            AnalyticsManager.logEvent("sort", params);
             return true;
         } else if (id == R.id.menu_sort_size) {
             setUserSortOrder(State.SORT_ORDER_SIZE);
+            Bundle params = new Bundle();
+            params.putString("type", "size");
+            AnalyticsManager.logEvent("sort", params);
             return true;
         } else if (id == R.id.menu_grid) {
             setUserMode(State.MODE_GRID);
+            Bundle params = new Bundle();
+            params.putString("type", "grid");
+            AnalyticsManager.logEvent("display", params);
             return true;
         } else if (id == R.id.menu_list) {
             setUserMode(State.MODE_LIST);
+            Bundle params = new Bundle();
+            params.putString("type", "list");
+            AnalyticsManager.logEvent("display", params);
             return true;
         } else if (id == R.id.menu_settings) {
             startActivityForResult(new Intent(this, SettingsActivity.class), CODE_SETTINGS);
+            AnalyticsManager.logEvent("open_setting");
             return true;
         } else if (id == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
+            AnalyticsManager.logEvent("open_about");
             return true;
         } else if (id == R.id.menu_exit) {
+            Bundle params = new Bundle();
+            AnalyticsManager.logEvent("exit_app");
             android.os.Process.killProcess(android.os.Process.myPid());
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void createFolder() {
+        CreateDirectoryFragment.show(getSupportFragmentManager());
+        Bundle params = new Bundle();
+        params.putString(FILE_TYPE, "folder");
+        AnalyticsManager.logEvent("create", params);
+    }
+
+    private void createFile() {
+        CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
+        Bundle params = new Bundle();
+        params.putString(FILE_TYPE, "file");
+        AnalyticsManager.logEvent("create", params);
     }
 
     /**
@@ -1629,7 +1667,12 @@ public class DocumentsActivity extends BaseActivity {
     				hadTrouble = true;
     			}
     		}
-    		
+
+            Bundle params2 = new Bundle();
+            params2.putBoolean(FILE_MOVE, deleteAfter);
+            params2.putInt(FILE_COUNT, docs.size());
+            AnalyticsManager.logEvent("moved", params2);
+
             return hadTrouble;
         }
 
@@ -1798,15 +1841,16 @@ public class DocumentsActivity extends BaseActivity {
 
         @Override
         public boolean onMenuItemSelected(MenuItem menuItem) {
+            Bundle params = new Bundle();
             switch (menuItem.getItemId()){
                 case R.id.fab_create_file:
                     onStateChanged();
-                    CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
+                    createFile();
                     mActionMenu.closeMenu();
                     break;
 
                 case R.id.fab_create_folder:
-                    CreateDirectoryFragment.show(getSupportFragmentManager());
+                    createFolder();
                     mActionMenu.closeMenu();
                     break;
 

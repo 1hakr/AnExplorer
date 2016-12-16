@@ -46,6 +46,7 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
@@ -146,6 +147,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 break;
             case R.id.menu_save:
                 save(false);
+                AnalyticsManager.logEvent("save_text");
                 break;
             case R.id.menu_revert:
                 setSaveProgress(true);
@@ -155,6 +157,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     showError("Unable to Load file");
                 }
                 setSaveProgress(false);
+                AnalyticsManager.logEvent("revert_text");
                 break;
         }
         return super.onOptionsItemSelected(item);

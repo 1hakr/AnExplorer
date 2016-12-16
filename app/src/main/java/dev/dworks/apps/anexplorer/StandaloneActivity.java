@@ -148,6 +148,12 @@ public class StandaloneActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
     }
+
+    @Override
+    public String getTag() {
+        return null;
+    }
+
     private void buildDefaultState() {
         mState = new State();
         final Intent intent = getIntent();

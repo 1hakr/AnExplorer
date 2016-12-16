@@ -307,7 +307,7 @@ public class IconUtils {
         }
     }
     
-    public static String getTypeNameFromMimeType(Context context, String mimeType) {
+    public static String getTypeNameFromMimeType(String mimeType) {
         int resource = 0;
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
             return "folder";
