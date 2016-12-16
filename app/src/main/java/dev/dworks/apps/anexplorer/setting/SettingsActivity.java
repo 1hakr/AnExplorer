@@ -36,9 +36,10 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    public static final String TAG = "Settings";
 
     private static final int FRAGMENT_OPEN = 99;
 
@@ -213,6 +214,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public void recreate() {
         mRecreate = true;
         super.recreate();
+    }
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
     @Override

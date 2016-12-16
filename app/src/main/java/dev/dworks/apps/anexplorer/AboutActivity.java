@@ -33,6 +33,7 @@ import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
 
 public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
 
+	public static final String TAG = "About";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,11 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		getSupportActionBar().setTitle(null);
 
 		initControls();
+	}
+
+	@Override
+	public String getTag() {
+		return TAG;
 	}
 
 	private void initControls() {

@@ -92,6 +92,7 @@ import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -300,6 +301,11 @@ public class DocumentsActivity extends BaseActivity {
         if(!PermissionUtil.hasStoragePermission(this)) {
             requestStoragePermissions();
         }
+    }
+
+    @Override
+    public String getTag() {
+        return null;
     }
 
     @Override
@@ -664,6 +670,7 @@ public class DocumentsActivity extends BaseActivity {
                     mToolbar.setTitle(root.title);
                     mToolbarStack.setVisibility(View.GONE);
                     mToolbarStack.setAdapter(null);
+                    AnalyticsManager.setCurrentScreen(this, root.title);
                 } else {
                     mToolbar.setTitle(null);
                     mToolbarStack.setVisibility(View.VISIBLE);

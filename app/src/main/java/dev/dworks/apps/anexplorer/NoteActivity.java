@@ -57,6 +57,8 @@ import dev.dworks.apps.anexplorer.root.RootCommands;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
+    public static final String TAG = "TextEditor";
+
     private EditText mInput;
     private String mOriginal;
     private Timer mTimer;
@@ -72,6 +74,11 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getName();
+    }
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
     @Override
