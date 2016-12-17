@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.zip.ZipFile;
 
 public final class IoUtils {
 
@@ -101,6 +102,20 @@ public final class IoUtils {
         if (socket != null) {
             try {
                 socket.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * Closes 'zipfile', ignoring any checked exceptions. Does nothing if 'closeable' is null.
+     */
+    public static void closeQuietly(ZipFile closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (RuntimeException rethrown) {
+                throw rethrown;
             } catch (Exception ignored) {
             }
         }

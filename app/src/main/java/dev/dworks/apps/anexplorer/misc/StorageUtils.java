@@ -393,7 +393,7 @@ public final class StorageUtils {
     }
 
     public VolumeInfo findVolumeById(String id) {
-        Utils.Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(id);
         // TODO; go directly to service to make this faster
         for (VolumeInfo vol : getVolumes()) {
             if (Objects.equals(vol.id, id)) {

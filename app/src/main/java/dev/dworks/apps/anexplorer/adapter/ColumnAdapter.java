@@ -25,7 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import dev.dworks.apps.anexplorer.misc.Utils.Preconditions;
+import dev.dworks.apps.anexplorer.misc.Preconditions;
+
 
 /**
  * Adapter that wraps an existing adapter, presenting its contents in multiple

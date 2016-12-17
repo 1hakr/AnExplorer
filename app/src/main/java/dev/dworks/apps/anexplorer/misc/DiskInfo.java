@@ -34,7 +34,7 @@ public class DiskInfo {
     public String sysPath;
 
     public DiskInfo(String id, int flags) {
-        this.id = Utils.Preconditions.checkNotNull(id);
+        this.id = Preconditions.checkNotNull(id);
         this.flags = flags;
     }
 

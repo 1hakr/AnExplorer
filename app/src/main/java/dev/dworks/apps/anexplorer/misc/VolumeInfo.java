@@ -119,7 +119,7 @@ public class VolumeInfo {
     public String internalPath; //needed
 
     public VolumeInfo(String id, int type, DiskInfo disk, String partGuid) {
-        this.id = Utils.Preconditions.checkNotNull(id);
+        this.id = Preconditions.checkNotNull(id);
         this.type = type;
         this.disk = disk;
         this.partGuid = partGuid;
