@@ -80,9 +80,6 @@ dependencies {
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
-    otherCompile "com.google.firebase:firebase-core:${gmsVersion}"
-    otherCompile "com.google.firebase:firebase-crash:${gmsVersion}"
-    otherCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }
 
 def props = new Properties()
