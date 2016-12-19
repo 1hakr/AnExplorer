@@ -2,21 +2,27 @@ AnExplorer
 ==========
 ![AnExplorer](https://github.com/DWorkS/AnExplorer/raw/master/header.png)
 
-AnExplorer is fully Open Source Minimalist Holo Designed File Manager built for Phones and Tablets with Android 4.0+. With AnExplorer File Manager you can easily find, browse, move, compress, and otherwise manage your apps easily!
+AnExplorer File Manager (File Explorer) is an Another File Manager which helps you manage your files easily.
+AnExplorer File Manager (File Explorer) is designed for all android devices including Phones, Phablets, Tablets and Google TV. It's a fully designed with Material guidelines by Google. It supports all Android versions from Jellybean, Kitkat, Marshmallow to Nougat.
 
-Features present :
-* All types of storage like emmc, internal SD card, external SD cards USB OTG On-The-Go
-* Different theme of colors
-* Intuitive left/right swiping to browse folders and files
-* App Manager and Process Manager for your installed Android apps and games
-* Built-in Text Viewer
-* Perform all the file operations like Cut / Copy / Paste / Rename / Delete / Compress to zip easily
-* Acts as a Standalone File Picker
-* Only app to Show Folder sizes
-* Thumbnails for Images / Videos / Audio / Application files
-* Tablet optimized and has Root support
+With AnExplorer File Manager (File Explorer) you can easily find, browse, move, compress, and otherwise manage your apps easily. You can Explore and manager File and Folders on Internal storage / External Storage / USB Storage and Free RAM on the device. File Manager helps you to backup your apps (apk) of Tools and Games so you can restore them again without downloading. File Manager makes it easy to share files over bluetooth or other social networking apps.
 
-A File Explorer which serves all your needs all the time. Compatible with Android 4.4 KitKat and latest Nexus tablets. It supports Immersive full-screen mode for better experience.
+AnExplorer doesnt take any unnecessary permissions.
+
+Features present : 
+* View all types of storage like emmc, internal SD card, external SD cards USB OTG On-The-Go (Non Nexus Devices)
+* Basic features like cut, copy, delete, compress, extract etc. easily accessible
+* Choose the color that suits you from a wide range of material colours
+* Acts as a Standalone File Picker from other applications
+* The only app to Show Folder sizes across storages
+* Has full thumbnail support for Images / Videos / Audio / Application files
+* Built-in Text Editor for editing text files on your device
+* Full RTL support for languages like Arabic, Hebrew etc
+* Bookmark folders of you choice for quick access at any point of time
+* App Manager to save your favorite apps on to memory and install them back again when needed
+* Process manager to free up RAM and uninstall apps in bulk
+
+Feedback is greatly appreciated. Any issues please report through mail only to hakr@dworks.in
 
 
 Developed By
