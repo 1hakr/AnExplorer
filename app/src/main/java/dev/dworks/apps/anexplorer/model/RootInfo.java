@@ -20,12 +20,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ProtocolException;
 
@@ -37,7 +40,10 @@ import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -63,6 +69,7 @@ public class RootInfo implements Durable, Parcelable {
     public long totalBytes;
     public String mimeTypes;
     public String path;
+    public File visiblePath;
 
     /** Derived fields that aren't persisted */
     public String derivedPackageName;
@@ -163,7 +170,7 @@ public class RootInfo implements Durable, Parcelable {
         root.summary = getCursorString(cursor, Root.COLUMN_SUMMARY);
         root.documentId = getCursorString(cursor, Root.COLUMN_DOCUMENT_ID);
         root.availableBytes = getCursorLong(cursor, Root.COLUMN_AVAILABLE_BYTES);
-        root.totalBytes = getCursorLong(cursor, Root.COLUMN_TOTAL_BYTES);
+        root.totalBytes = getCursorLong(cursor, Root.COLUMN_CAPACITY_BYTES);
         root.mimeTypes = getCursorString(cursor, Root.COLUMN_MIME_TYPES);
         root.path = getCursorString(cursor, Root.COLUMN_PATH);
         root.deriveFields();
@@ -193,6 +200,8 @@ public class RootInfo implements Durable, Parcelable {
             else {
                 derivedIcon = R.drawable.ic_root_sdcard;
             }
+        } else if (isUsbStorage()) {
+            derivedIcon = R.drawable.ic_root_usb;
         } else if (isDownloadsFolder()) {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
@@ -211,17 +220,42 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_video;
         } else if (isAudio()) {
             derivedIcon = R.drawable.ic_root_audio;
+        } else if (isDocument()) {
+            derivedIcon = R.drawable.ic_root_document;
+        } else if (isArchive()) {
+            derivedIcon = R.drawable.ic_root_archive;
+        } else if (isApk()) {
+            derivedIcon = R.drawable.ic_root_apk;
         } else if (isAppPackage()) {
             derivedIcon = R.drawable.ic_root_apps;
         } else if (isAppProcess()) {
             derivedIcon = R.drawable.ic_root_process;
         } else if (isRecents()) {
             derivedIcon = R.drawable.ic_root_recent;
+        } else if (isHome()) {
+            derivedIcon = R.drawable.ic_root_home;
+        } else if (isConnections()) {
+            derivedIcon = R.drawable.ic_root_connections;
         }
     }
 
+/*    public boolean isHome() {
+        // Note that "home" is the expected root id for the auto-created
+        // user home directory on external storage. The "home" value should
+        // match ExternalStorageProvider.ROOT_ID_HOME.
+        return isExternalStorage() && "home".equals(rootId);
+    }*/
+
+    public boolean isHome() {
+        return authority == null && "home".equals(rootId);
+    }
+
+    public boolean isConnections() {
+        return authority == null && "connections".equals(rootId);
+    }
+
     public boolean isRecents() {
-        return authority == null && rootId == null;
+        return RecentsProvider.AUTHORITY.equals(authority) && rootId == null;
     }
 
     public boolean isStorage() {
@@ -308,6 +342,21 @@ public class RootInfo implements Durable, Parcelable {
                 && MediaDocumentsProvider.TYPE_AUDIO_ROOT.equals(rootId);
     }
 
+    public boolean isDocument() {
+        return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
+                && NonMediaDocumentsProvider.TYPE_DOCUMENT_ROOT.equals(rootId);
+    }
+
+    public boolean isArchive() {
+        return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
+                && NonMediaDocumentsProvider.TYPE_ARCHIVE_ROOT.equals(rootId);
+    }
+
+    public boolean isApk() {
+        return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
+                && NonMediaDocumentsProvider.TYPE_APK_ROOT.equals(rootId);
+    }
+
     public boolean isApp() {
         return AppsProvider.AUTHORITY.equals(authority);
     }
@@ -321,19 +370,60 @@ public class RootInfo implements Durable, Parcelable {
         return AppsProvider.AUTHORITY.equals(authority)
                 && AppsProvider.ROOT_ID_PROCESS.equals(rootId);
     }
+
+    public boolean isUsbStorage() {
+        return UsbStorageProvider.AUTHORITY.equals(authority);
+    }
     
     public boolean isEditSupported() {
         return (flags & Root.FLAG_SUPPORTS_EDIT) != 0;
     }
-    
-    @Override
-    public String toString() {
-        return "Root{authority=" + authority + ", rootId=" + rootId + ", title=" + title + "}";
+
+    public Uri getUri() {
+        return DocumentsContract.buildRootUri(authority, rootId);
+    }
+
+    public boolean isMtp() {
+        return "com.android.mtp.documents".equals(authority);
+    }
+
+    public boolean hasSettings() {
+        return (flags & Root.FLAG_HAS_SETTINGS) != 0;
+    }
+    public boolean supportsChildren() {
+        return (flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;
+    }
+    public boolean supportsCreate() {
+        return (flags & Root.FLAG_SUPPORTS_CREATE) != 0;
+    }
+    public boolean supportsRecents() {
+        return (flags & Root.FLAG_SUPPORTS_RECENTS) != 0;
+    }
+    public boolean supportsSearch() {
+        return (flags & Root.FLAG_SUPPORTS_SEARCH) != 0;
+    }
+    public boolean isAdvanced() {
+        return (flags & Root.FLAG_ADVANCED) != 0;
+    }
+    public boolean isLocalOnly() {
+        return (flags & Root.FLAG_LOCAL_ONLY) != 0;
+    }
+
+    public boolean isEmpty() {
+        return (flags & Root.FLAG_EMPTY) != 0;
+    }
+
+    public boolean isSd() {
+        return (flags & Root.FLAG_REMOVABLE_SD) != 0;
+    }
+
+    public boolean isUsb() {
+        return (flags & Root.FLAG_REMOVABLE_USB) != 0;
     }
 
     public Drawable loadIcon(Context context) {
         if (derivedIcon != 0) {
-            return context.getResources().getDrawable(derivedIcon);
+            return ContextCompat.getDrawable(context, derivedIcon);
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }
@@ -401,4 +491,45 @@ public class RootInfo implements Durable, Parcelable {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Root{"
+                + "authority=" + authority
+                + ", rootId=" + rootId
+                + ", documentId=" + documentId
+                + ", path=" + path
+                + ", title=" + title
+                + ", isUsb=" + isUsb()
+                + ", isSd=" + isSd()
+                + ", isMtp=" + isMtp()
+                + "}";
+    }
+
+    public static boolean isStorage(RootInfo root){
+        return root.isHome() || root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
+    }
+
+    public static boolean isLibrary(RootInfo root){
+        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio()
+                || root.isDocument() || root.isArchive() || root.isApk();
+    }
+
+    public static boolean isFolder(RootInfo root){
+        return root.isBluetoothFolder() || root.isDownloadsFolder()
+                || root.isAppBackupFolder() || root.isDownloads();
+    }
+
+    public static boolean isBookmark(RootInfo root){
+        return root.isBookmarkFolder();
+    }
+
+    public static boolean isTools(RootInfo root){
+        return root.isConnections() || root.isRootedStorage() || root.isAppPackage() || root.isAppProcess();
+    }
+
+    public static boolean isOtherRoot(RootInfo root){
+        return root.isHome() || root.isConnections();
+    }
+
 }

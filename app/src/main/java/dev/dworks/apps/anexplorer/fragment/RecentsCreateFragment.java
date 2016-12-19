@@ -27,6 +27,8 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils.TruncateAt;
@@ -49,13 +51,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.BaseActivity;
+import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.loader.UriDerivativeLoader;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
@@ -230,8 +231,7 @@ public class RecentsCreateFragment extends ListFragment {
             final DocumentStack stack = getItem(position);
             iconMime.setImageDrawable(stack.root.loadIcon(context));
 
-            final Drawable crumb = context.getResources()
-                    .getDrawable(R.drawable.ic_breadcrumb_arrow);
+            final Drawable crumb = ContextCompat.getDrawable(context, R.drawable.ic_breadcrumb_arrow);
             crumb.setBounds(0, 0, crumb.getIntrinsicWidth(), crumb.getIntrinsicHeight());
 
             final SpannableStringBuilder builder = new SpannableStringBuilder();

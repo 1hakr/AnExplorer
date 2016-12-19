@@ -26,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.OperationCanceledException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -48,7 +49,6 @@ import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
-import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -164,7 +164,7 @@ public class DetailFragment extends DialogFragment {
             path_layout.setVisibility(View.GONE);
         }
 		modified.setText(Utils.formatTime(getActivity(), doc.lastModified));
-		type.setText(IconUtils.getTypeNameFromMimeType(getActivity(), doc.mimeType));
+		type.setText(IconUtils.getTypeNameFromMimeType(doc.mimeType));
 		
 		if(!TextUtils.isEmpty(doc.summary)){
 			contents.setText(doc.summary);

@@ -20,7 +20,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 /**
  * Created by nicolas on 06/03/14.
  */
-public class AppRate {
+public class AppRate implements View.OnClickListener{
 
     private static final String PREFS_NAME = "app_rate_prefs";
     private final String KEY_COUNT = "count";
@@ -28,7 +28,7 @@ public class AppRate {
     private Activity activity;
     private ViewGroup viewGroup;
     private String text;
-    private int initialLaunchCount = 5;
+    private int initialLaunchCount = 10;
     private RetryPolicy policy = RetryPolicy.EXPONENTIAL;
     private OnShowListener onShowListener;
     private SharedPreferences settings;
@@ -47,7 +47,7 @@ public class AppRate {
 
     public static AppRate with(Activity activity) {
         AppRate instance = new AppRate(activity);
-        instance.text = "Like AnExplorer? Spread the word!";//activity.getString(R.string.dra_rate_app);
+        instance.text = "Enjoying the app? Spread the word!";//activity.getString(R.string.dra_rate_app);
         instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
         instance.editor = instance.settings.edit();
         return instance;
@@ -55,7 +55,7 @@ public class AppRate {
 
     public static AppRate with(Activity activity, ViewGroup viewGroup) {
         AppRate instance = new AppRate(activity, viewGroup);
-        instance.text = "Like AnExplorer? Rate It!";//activity.getString(R.string.dra_rate_app);
+        instance.text = "Enjoying the app? Spread the word!";//activity.getString(R.string.dra_rate_app);
         instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
         instance.editor = instance.settings.edit();
         return instance;
@@ -177,34 +177,15 @@ public class AppRate {
 
         View background = mainView.findViewById(R.id.background);
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
+        ImageView rate = (ImageView) mainView.findViewById(R.id.rate);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
 
-        background.setBackgroundColor(Utils.getLightColor(SettingsActivity.getActionBarColor(activity)));
+        background.setBackgroundColor(Utils.getLightColor(
+                Utils.getComplementaryColor(SettingsActivity.getActionBarColor(activity))));
         textView.setText(text);
 
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideAllViews(mainView);
-                if (onShowListener != null)onShowListener.onRateAppDismissed();
-            }
-        });
-
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName()));
-                if(Utils.isIntentAvailable(activity, intent)) {
-                    activity.startActivity(intent);
-                }
-                if (onShowListener != null)onShowListener.onRateAppClicked();
-                hideAllViews(mainView);
-                editor.putBoolean(KEY_CLICKED, true);
-                editor.apply();
-
-            }
-        });
-
+        close.setOnClickListener(this);
+        rate.setOnClickListener(this);
 
         if (delay > 0) {
             activity.getWindow().getDecorView().postDelayed(new Runnable() {
@@ -261,6 +242,26 @@ public class AppRate {
         mainView.startAnimation(fadeInAnimation);
 
         if (onShowListener != null) onShowListener.onRateAppShowing();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.close:
+                hideAllViews(mainView);
+                if (onShowListener != null)onShowListener.onRateAppDismissed();
+                break;
+            case R.id.rate:
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName()));
+                if(Utils.isIntentAvailable(activity, intent)) {
+                    activity.startActivity(intent);
+                }
+                if (onShowListener != null)onShowListener.onRateAppClicked();
+                hideAllViews(mainView);
+                editor.putBoolean(KEY_CLICKED, true);
+                editor.apply();
+                break;
+        }
     }
 
     public interface OnShowListener {

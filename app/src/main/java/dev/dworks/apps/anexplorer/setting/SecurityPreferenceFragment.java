@@ -7,6 +7,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -122,11 +123,11 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
         }
     }
     public void showMsg(int msg){
-        showToast(msg, getResources().getColor(R.color.button_text_color_default), Snackbar.LENGTH_SHORT);
+        showToast(msg, ContextCompat.getColor(getActivity(), R.color.button_text_color_default), Snackbar.LENGTH_SHORT);
     }
 
     public void showError(int msg){
-        showToast(msg, getResources().getColor(R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
+        showToast(msg, ContextCompat.getColor(getActivity(), R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
     }
 
     public void showToast(int msg, int actionColor, int duration){

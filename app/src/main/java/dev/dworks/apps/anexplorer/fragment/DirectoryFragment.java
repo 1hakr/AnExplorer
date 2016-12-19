@@ -38,8 +38,11 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -75,19 +78,20 @@ import java.util.ArrayList;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.loader.DirectoryLoader;
 import dev.dworks.apps.anexplorer.loader.RecentLoader;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
-import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
@@ -104,6 +108,7 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
@@ -115,6 +120,13 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_REQUEST;
+import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_NAMES;
+import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
+import static dev.dworks.apps.anexplorer.misc.Utils.isRooted;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -124,7 +136,7 @@ import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
  */
 public class DirectoryFragment extends ListFragment {
 
-	private View mEmptyView;
+	private CompatTextView mEmptyView;
 	private ListView mListView;
 	private GridView mGridView;
 
@@ -172,10 +184,11 @@ public class DirectoryFragment extends ListFragment {
 	private boolean isApp;
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
-    private boolean isRootedStorage;
+    private boolean isOperationSupported;
     private boolean hasLeanback;
+	private ContentProviderClient mExternalStorageClient;
 
-    public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
+	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
 	}
 
@@ -231,7 +244,7 @@ public class DirectoryFragment extends ListFragment {
 
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
 
-		mEmptyView = view.findViewById(android.R.id.empty);
+		mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
 
 		mListView = (ListView) view.findViewById(R.id.list);
 		mListView.setOnItemClickListener(mItemListener);
@@ -284,7 +297,7 @@ public class DirectoryFragment extends ListFragment {
 		doc = getArguments().getParcelable(EXTRA_DOC);
         hasLeanback = Utils.isTelevision(getActivity());
 		isApp = root != null && root.isApp();
-        isRootedStorage = root != null && root.isRootedStorage();
+        isOperationSupported = root != null && (root.isRootedStorage() || root.isUsbStorage());
 
 		mAdapter = new DocumentsAdapter();
 		mType = getArguments().getInt(EXTRA_TYPE);
@@ -526,6 +539,9 @@ public class DirectoryFragment extends ListFragment {
 				} else if (isDocumentEnabled(docMimeType, docFlags)) {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 					((BaseActivity) getActivity()).onDocumentPicked(doc);
+					Bundle params = new Bundle();
+					params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+					AnalyticsManager.logEvent(doc.isDirectory() ? "browse" : "open", params);
 				}
 			}
 		}
@@ -543,9 +559,7 @@ public class DirectoryFragment extends ListFragment {
 			if (null != root && root.isApp()) {
 				menuId = R.menu.mode_apps;
 			} else {
-				if (editMode) {
-					menuId = R.menu.mode_directory;
-				}
+				menuId = R.menu.mode_directory;
 			}
 
 			mode.getMenuInflater().inflate(menuId, menu);
@@ -571,12 +585,18 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem open = menu.findItem(R.id.menu_open);
 			final MenuItem share = menu.findItem(R.id.menu_share);
 			final MenuItem delete = menu.findItem(R.id.menu_delete);
+			final MenuItem rename = menu.findItem(R.id.menu_rename);
 
 			final boolean manageMode = state.action == ACTION_BROWSE;
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
+			final boolean canRename = doc != null && doc.isRenameSupported();
 			open.setVisible(!manageMode);
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
+			if(null != rename) {
+				rename.setVisible(manageMode && canRename && count == 1);
+			}
+
             if (mType == TYPE_RECENT_OPEN) {
                 delete.setVisible(true);
             }
@@ -584,29 +604,25 @@ public class DirectoryFragment extends ListFragment {
 				share.setVisible(false);
 				final MenuItem save = menu.findItem(R.id.menu_save);
 				save.setVisible(root.isAppPackage());
-				delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
-				delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
+				delete.setVisible(root.isAppPackage());
+
 			} else {
-				if (editMode) {
-					final MenuItem edit = menu.findItem(R.id.menu_edit);
-					if (edit != null) {
-						edit.setVisible(manageMode);
-					}
-					final MenuItem info = menu.findItem(R.id.menu_info);
-					final MenuItem bookmark = menu.findItem(R.id.menu_bookmark);
-					final MenuItem rename = menu.findItem(R.id.menu_rename);
-
-					final MenuItem copy = menu.findItem(R.id.menu_copy);
-					final MenuItem cut = menu.findItem(R.id.menu_cut);
-					final MenuItem compress = menu.findItem(R.id.menu_compress);
-					copy.setVisible(editMode);
-					cut.setVisible(editMode);
-                    compress.setVisible(editMode && !isRootedStorage);
-
-					info.setVisible(count == 1);
-                    bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
-					rename.setVisible(count == 1);
+				final MenuItem edit = menu.findItem(R.id.menu_edit);
+				if (edit != null) {
+					edit.setVisible(manageMode);
 				}
+				final MenuItem info = menu.findItem(R.id.menu_info);
+				final MenuItem bookmark = menu.findItem(R.id.menu_bookmark);
+
+				final MenuItem copy = menu.findItem(R.id.menu_copy);
+				final MenuItem cut = menu.findItem(R.id.menu_cut);
+				final MenuItem compress = menu.findItem(R.id.menu_compress);
+				copy.setVisible(editMode);
+				cut.setVisible(editMode);
+				compress.setVisible(editMode && !isOperationSupported);
+
+				info.setVisible(count == 1);
+				bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
 			}
 			return true;
 		}
@@ -641,25 +657,24 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 
 			case R.id.menu_copy:
-				MoveFragment.show(getFragmentManager(), docs, false);
+				moveDocument(docs, false);
 				mode.finish();
 				return true;
 
 			case R.id.menu_cut:
-				MoveFragment.show(getFragmentManager(), docs, true);
+				moveDocument(docs, true);
 				mode.finish();
 				return true;
 
 			case R.id.menu_delete:
-				if (isApp && root.isAppPackage()) {
-					docsAppUninstall = docs;
-					onUninstall();
-				} else {
-					deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
-				}
+				deleteDocument(docs, id);
 				mode.finish();
 				return true;
 
+			case R.id.menu_stop:
+				stopDocument(docs, id);
+				mode.finish();
+				return true;
 			case R.id.menu_save:
             case R.id.menu_compress:
 				new OperationTask(docs, id).execute();
@@ -667,25 +682,23 @@ public class DirectoryFragment extends ListFragment {
 				return true;
 
 			case R.id.menu_select_all:
-				for (int i = 0; i < mAdapter.getCount(); i++) {
+				int count = mAdapter.getCount();
+				for (int i = 0; i < count; i++) {
 					mCurrentView.setItemChecked(i, selectAll);
 				}
 				selectAll = !selectAll;
+				Bundle params = new Bundle();
+				params.putInt(FILE_COUNT, count);
+				AnalyticsManager.logEvent("detail", params);
 				return true;
 
 			case R.id.menu_info:
-				final BaseActivity activity = (BaseActivity) getActivity();
-				activity.setInfoDrawerOpen(true);
-				if (activity.isShowAsDialog()) {
-					DetailFragment.showAsDialog(activity.getSupportFragmentManager(), docs.get(0));
-				} else {
-					DetailFragment.show(activity.getSupportFragmentManager(), docs.get(0));
-				}
+				infoDocument(docs.get(0));
 				mode.finish();
 				return true;
 
 			case R.id.menu_rename:
-				RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), docs.get(0));
+				renameDocument(docs.get(0));
 				mode.finish();
 				return true;
 
@@ -771,6 +784,11 @@ public class DirectoryFragment extends ListFragment {
             }
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
+			Bundle params = new Bundle();
+			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+			params.putInt(FILE_COUNT, docs.size());
+			AnalyticsManager.logEvent("share", params);
+
 		} else if (docs.size() > 1) {
 			intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -791,6 +809,10 @@ public class DirectoryFragment extends ListFragment {
                 intent.setType(MimeTypes.ALL_MIME_TYPES);
             }
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+			Bundle params = new Bundle();
+			params.putInt(FILE_COUNT, docs.size());
+			AnalyticsManager.logEvent("share", params);
 
 		} else {
 			return;
@@ -838,6 +860,17 @@ public class DirectoryFragment extends ListFragment {
         }
 	}
 
+	private void forceStopApps(ArrayList<DocumentInfo> docs) {
+		ArrayList<String> packageList = new ArrayList<>();
+		for (DocumentInfo documentInfo : docs){
+			packageList.add(AppsProvider.getPackageForDocId(documentInfo.documentId));
+		}
+
+		Intent intent = new Intent(ACTION_FORCE_STOP_REQUEST);
+		intent.putExtra(EXTRA_PACKAGE_NAMES, packageList);
+		getActivity().sendBroadcast(intent);
+	}
+
 	private boolean onUninstallApp(DocumentInfo doc) {
 		final Context context = getActivity();
 		final ContentResolver resolver = context.getContentResolver();
@@ -876,6 +909,7 @@ public class DirectoryFragment extends ListFragment {
 
 			switch (id) {
 			case R.id.menu_delete:
+			case R.id.menu_stop:
 				if (null != root && root.isApp()) {
 					progressDialog.setMessage("Stopping processes...");
 				} else {
@@ -908,21 +942,31 @@ public class DirectoryFragment extends ListFragment {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
+			Bundle params2 = new Bundle();
 			boolean result = false;
 			switch (id) {
 			case R.id.menu_delete:
+			case R.id.menu_stop:
 				result = onDeleteDocuments(docs);
 				break;
 
 			case R.id.menu_save:
 				result = onSaveDocuments(docs);
+				params2 = new Bundle();
+				params2.putInt(FILE_COUNT, docs.size());
+				AnalyticsManager.logEvent("backup", params2);
 				break;
 
             case R.id.menu_uncompress:
                 result = onUncompressDocuments(docs);
+				params2 = new Bundle();
+				AnalyticsManager.logEvent("uncompress", params2);
                 break;
             case R.id.menu_compress:
                 result = onCompressDocuments(doc, docs);
+				params2 = new Bundle();
+				params2.putInt(FILE_COUNT, docs.size());
+				AnalyticsManager.logEvent("compress", params2);
                 break;
 			}
 
@@ -962,6 +1006,18 @@ public class DirectoryFragment extends ListFragment {
                     }
                     break;
 				}
+			} else{
+				if(id == R.id.menu_save) {
+					((BaseActivity) getActivity()).
+							showSnackBar("App(s) Backed up to 'AppBackup' folder",
+									Snackbar.LENGTH_LONG, "View", new OnClickListener() {
+										@Override
+										public void onClick(View view) {
+											DocumentsActivity activity = ((DocumentsActivity)getActivity());
+											activity.onRootPicked(activity.getAppsBackupRoot(), true);
+										}
+									});
+				}
 			}
 
             if(mType == TYPE_RECENT_OPEN){
@@ -972,7 +1028,7 @@ public class DirectoryFragment extends ListFragment {
                 AppsProvider.notifyRootsChanged(getActivity());
             }
 
-            if(id == R.id.menu_delete && isRootedStorage){
+            if(id == R.id.menu_delete && isOperationSupported){
                 onUserSortOrderChanged();
             }
 		}
@@ -1007,14 +1063,16 @@ public class DirectoryFragment extends ListFragment {
 
 		boolean hadTrouble = false;
 		for (DocumentInfo doc : docs) {
-			if (!doc.isEditSupported()) {
+			if (!doc.isCopySupported()) {
 				Log.w(TAG, "Skipping " + doc);
 				hadTrouble = true;
 				continue;
 			}
 
 			try {
-                hadTrouble = ! DocumentsContract.moveDocument(resolver, doc.derivedUri, null, false);
+				Uri appBackupUri = DocumentsContract.buildDocumentUri(
+						ExternalStorageProvider.AUTHORITY, DIRECTORY_APPBACKUP);
+                hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri, appBackupUri) == null;
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
 				hadTrouble = true;
@@ -1176,11 +1234,7 @@ public class DirectoryFragment extends ListFragment {
 				mFooters.add(new MessageFooter(3, R.drawable.ic_dialog_alert, getString(R.string.query_error)));
 			}
 
-			if (isEmpty()) {
-				mEmptyView.setVisibility(View.VISIBLE);
-			} else {
-				mEmptyView.setVisibility(View.GONE);
-			}
+			setEmptyState();
 
 			notifyDataSetChanged();
 		}
@@ -1291,7 +1345,7 @@ public class DirectoryFragment extends ListFragment {
 				} else {
 					iconThumb.setImageDrawable(null);
 					final ThumbnailAsyncTask task = new ThumbnailAsyncTask(uri, iconMime, iconThumb, iconMimeBackground, mThumbSize,
-                            Utils.isAPK(docMimeType) ? docPath : null, iconAlpha);
+                            docPath, docMimeType, iconAlpha);
 					iconThumb.setTag(task);
 					ProviderExecutor.forAuthority(docAuthority).execute(task);
 				}
@@ -1506,6 +1560,17 @@ public class DirectoryFragment extends ListFragment {
 		}
 	}
 
+	private void setEmptyState() {
+		if (mAdapter.isEmpty()) {
+			mEmptyView.setVisibility(View.VISIBLE);
+			if(null != root && root.isRootedStorage() && !isRooted()){
+				mEmptyView.setText("Your phone is not rooted!");
+			}
+		} else {
+			mEmptyView.setVisibility(View.GONE);
+		}
+	}
+
 	private static class ThumbnailAsyncTask extends AsyncTask<Uri, Void, Bitmap> implements Preemptable {
 		private final Uri mUri;
 		private final ImageView mIconMime;
@@ -1515,9 +1580,10 @@ public class DirectoryFragment extends ListFragment {
         private final float mTargetAlpha;
 		private final CancellationSignal mSignal;
 		private final String mPath;
+		private final String mMimeType;
 
         public ThumbnailAsyncTask(Uri uri, ImageView iconMime, ImageView iconThumb, View iconMimeBackground, Point thumbSize,
-                String path, float targetAlpha) {
+                String path, String mimeType, float targetAlpha) {
 			mUri = uri;
 			mIconMime = iconMime;
 			mIconThumb = iconThumb;
@@ -1526,6 +1592,7 @@ public class DirectoryFragment extends ListFragment {
             mTargetAlpha = targetAlpha;
 			mSignal = new CancellationSignal();
 			mPath = path;
+			mMimeType = mimeType;
 		}
 
 		@Override
@@ -1545,11 +1612,14 @@ public class DirectoryFragment extends ListFragment {
 			ContentProviderClient client = null;
 			Bitmap result = null;
 			try {
-				if (!TextUtils.isEmpty(mPath)) {
+				if (Utils.isAPK(mMimeType)) {
 					result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, mPath, Document.MIME_TYPE_APK)).getBitmap();
 				} else {
 					client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mUri.getAuthority());
 					result = DocumentsContract.getDocumentThumbnail(resolver, mUri, mThumbSize, mSignal);
+				}
+				if (null == result){
+					result = ImageUtils.getThumbnail(mPath, mMimeType, mThumbSize.x, mThumbSize.y);
 				}
 				if (result != null) {
 					final ThumbnailCache thumbs = DocumentsApplication.getThumbnailsCache(context, mThumbSize);
@@ -1571,7 +1641,7 @@ public class DirectoryFragment extends ListFragment {
                 result = null;
             }
             if (mIconThumb.getTag() == this && result != null) {
-				mIconThumb.setScaleType(!TextUtils.isEmpty(mPath) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
+				mIconThumb.setScaleType(Utils.isAPK(mMimeType) ? ImageView.ScaleType.CENTER_INSIDE : ImageView.ScaleType.CENTER_CROP);
 				mIconThumb.setTag(null);
 				mIconThumb.setImageBitmap(result);
                 mIconMimeBackground.setVisibility(View.INVISIBLE);
@@ -1699,11 +1769,10 @@ public class DirectoryFragment extends ListFragment {
 	private void showPopupMenu(View view, final int position) {
 		PopupMenu popup = new PopupMenu(getActivity(), view);
 
-		boolean editMode = root != null && root.isEditSupported();
 		int menuId = R.menu.popup_simple_directory;
 		if (isApp) {
 			menuId = R.menu.popup_apps;
-		} else if(editMode){
+		} else {
 			menuId = R.menu.popup_directory;
 		}
 
@@ -1721,13 +1790,15 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
             open.setVisible(root.isAppPackage());
 			save.setVisible(root.isAppPackage());
-			delete.setIcon(root.isAppProcess() ? R.drawable.ic_menu_stop : R.drawable.ic_menu_delete);
-			delete.setTitle(root.isAppProcess() ? "Stop" : "Uninstall");
+			delete.setVisible(root.isAppPackage());
 		}
 		else{
 			final State state = getDisplayState(DirectoryFragment.this);
 			final MenuItem share = popup.getMenu().findItem(R.id.menu_share);
 			final MenuItem delete = popup.getMenu().findItem(R.id.menu_delete);
+			final MenuItem rename = popup.getMenu().findItem(R.id.menu_rename);
+			final MenuItem copy = popup.getMenu().findItem(R.id.menu_copy);
+			final MenuItem cut = popup.getMenu().findItem(R.id.menu_cut);
             final MenuItem compress = popup.getMenu().findItem(R.id.menu_compress);
             final MenuItem uncompress = popup.getMenu().findItem(R.id.menu_uncompress);
             final MenuItem bookmark = popup.getMenu().findItem(R.id.menu_bookmark);
@@ -1735,17 +1806,22 @@ public class DirectoryFragment extends ListFragment {
             final Cursor cursor = mAdapter.getItem(position);
             final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 			final boolean manageMode = state.action == ACTION_BROWSE;
+			final boolean canEdit = doc != null && doc.isEditSupported();
 			final boolean canDelete = doc != null && doc.isDeleteSupported();
+			final boolean canRename = doc != null && doc.isRenameSupported();
             final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
             if(null != compress)
-                compress.setVisible(!isCompressed && !isRootedStorage);
+                compress.setVisible(manageMode && canEdit && !isCompressed && !isOperationSupported);
             if(null != uncompress)
-                uncompress.setVisible(isCompressed && !isRootedStorage);
+                uncompress.setVisible(manageMode && canEdit && isCompressed && !isOperationSupported);
             if(null != bookmark) {
-                bookmark.setVisible(Utils.isDir(doc.mimeType) && !isRootedStorage);
+                bookmark.setVisible(manageMode && canEdit && Utils.isDir(doc.mimeType) && !isOperationSupported);
             }
 			share.setVisible(manageMode);
 			delete.setVisible(manageMode && canDelete);
+			rename.setVisible(manageMode && canRename);
+			copy.setVisible(manageMode && canEdit);
+			cut.setVisible(manageMode && canEdit);
 		}
 
 		popup.show();
@@ -1764,20 +1840,19 @@ public class DirectoryFragment extends ListFragment {
 			return true;
 
 		case R.id.menu_copy:
-			MoveFragment.show(getFragmentManager(), docs, false);
+			moveDocument(docs, false);
 			return true;
 
 		case R.id.menu_cut:
-			MoveFragment.show(getFragmentManager(), docs, true);
+			moveDocument(docs, true);
 			return true;
 
 		case R.id.menu_delete:
-			if (isApp && root.isAppPackage()) {
-				docsAppUninstall = docs;
-				onUninstall();
-			} else {
-				deleteFiles(docs, id, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
-			}
+			deleteDocument(docs, id);
+			return true;
+
+		case R.id.menu_stop:
+			stopDocument(docs, id);
 			return true;
 
 		case R.id.menu_save:
@@ -1786,15 +1861,7 @@ public class DirectoryFragment extends ListFragment {
 			new OperationTask(docs, id).execute();
 			return true;
         case R.id.menu_open:
-            Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(docs.get(0).documentId));
-            if (intent!= null) {
-                if(Utils.isIntentAvailable(getActivity(), intent)) {
-                    getActivity().startActivity(intent);
-                }
-            }
-            else{
-                ((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
-            }
+			openDocument(docs.get(0));
             return true;
         case R.id.menu_details:
             Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
@@ -1802,35 +1869,114 @@ public class DirectoryFragment extends ListFragment {
             if(Utils.isIntentAvailable(getActivity(), intent2)) {
                 getActivity().startActivity(intent2);
             }
+            Bundle params = new Bundle();
+			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType));
+			AnalyticsManager.logEvent("details", params);
             return true;
 		case R.id.menu_info:
-			final BaseActivity activity = (BaseActivity) getActivity();
-			activity.setInfoDrawerOpen(true);
-			if (activity.isShowAsDialog()) {
-				DetailFragment.showAsDialog(activity.getSupportFragmentManager(), docs.get(0));
-			} else {
-				DetailFragment.show(activity.getSupportFragmentManager(), docs.get(0));
-			}
+			infoDocument(docs.get(0));
 			return true;
 
 		case R.id.menu_rename:
-			RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), docs.get(0));
+			renameDocument(docs.get(0));
 			return true;
 
         case R.id.menu_bookmark:
-            DocumentInfo document = docs.get(0);
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(ExplorerProvider.BookmarkColumns.PATH, document.path);
-            contentValues.put(ExplorerProvider.BookmarkColumns.TITLE, document.displayName);
-            contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
-            Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
-            if(null != uri) {
-                ((BaseActivity) getActivity()).showInfo("Bookmark added");
-                ExternalStorageProvider.updateVolumes(getActivity());
-            }
+			bookmarkDocument(docs.get(0));
             return true;
 		default:
 			return false;
 		}
+	}
+
+	private void bookmarkDocument(DocumentInfo doc) {
+		DocumentInfo document = doc;
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(ExplorerProvider.BookmarkColumns.PATH, document.path);
+		contentValues.put(ExplorerProvider.BookmarkColumns.TITLE, document.displayName);
+		contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
+		Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
+		if(null != uri) {
+			((BaseActivity) getActivity()).showInfo("Bookmark added");
+			ExternalStorageProvider.updateVolumes(getActivity());
+		}
+		Bundle params = new Bundle();
+		AnalyticsManager.logEvent("bookmark", params);
+	}
+
+	private void stopDocument(ArrayList<DocumentInfo> docs, int type) {
+		Bundle params = new Bundle();
+		params.putInt(FILE_COUNT, docs.size());
+		if (isApp && root.isAppPackage()) {
+			forceStopApps(docs);
+			AnalyticsManager.logEvent("stop", params);
+		} else {
+			deleteFiles(docs, type, isApp && root.isAppProcess() ? "Stop processes ?" : "Delete files ?");
+			AnalyticsManager.logEvent("delete", params);
+		}
+	}
+
+	private void deleteDocument(ArrayList<DocumentInfo> docs, int type) {
+		Bundle params = new Bundle();
+		params.putInt(FILE_COUNT, docs.size());
+		if (isApp && root.isAppPackage()) {
+			docsAppUninstall = docs;
+			onUninstall();
+			AnalyticsManager.logEvent("uninstall", params);
+		} else {
+			deleteFiles(docs, type, "Delete files ?");
+			AnalyticsManager.logEvent("delete", params);
+		}
+	}
+
+	private void openDocument(DocumentInfo doc) {
+		Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage(AppsProvider.getPackageForDocId(doc.documentId));
+		if (intent!= null) {
+			if(Utils.isIntentAvailable(getActivity(), intent)) {
+				getActivity().startActivity(intent);
+			}
+		}
+		else{
+			((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
+		}
+		Bundle params = new Bundle();
+		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		AnalyticsManager.logEvent("open", params);
+	}
+
+	private void moveDocument(ArrayList<DocumentInfo> docs, boolean move) {
+		MoveFragment.show(getFragmentManager(), docs, move);
+		Bundle params = new Bundle();
+		params.putBoolean(FILE_MOVE, move);
+		params.putInt(FILE_COUNT, docs.size());
+		AnalyticsManager.logEvent("move", params);
+	}
+
+	private void renameDocument(DocumentInfo doc){
+		RenameFragment.show(((BaseActivity) getActivity()).getSupportFragmentManager(), doc);
+		Bundle params = new Bundle();
+		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		AnalyticsManager.logEvent("rename", params);
+	}
+
+	private void infoDocument(DocumentInfo doc) {
+		final BaseActivity activity = (BaseActivity) getActivity();
+		activity.setInfoDrawerOpen(true);
+		if (activity.isShowAsDialog()) {
+			DetailFragment.showAsDialog(activity.getSupportFragmentManager(), doc);
+		} else {
+			DetailFragment.show(activity.getSupportFragmentManager(), doc);
+		}
+		Bundle params = new Bundle();
+		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		AnalyticsManager.logEvent("details", params);
+	}
+
+	private synchronized ContentProviderClient getExternalStorageClient() {
+		if (mExternalStorageClient == null) {
+			mExternalStorageClient = getActivity().
+					getContentResolver().acquireContentProviderClient(ExternalStorageProvider.AUTHORITY);
+		}
+		return mExternalStorageClient;
 	}
 }

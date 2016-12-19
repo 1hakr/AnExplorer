@@ -54,7 +54,7 @@ public class RecentsProvider extends ContentProvider {
 
     private static final long MAX_HISTORY_IN_MILLIS = 45 * DateUtils.DAY_IN_MILLIS;
 
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".recents";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".recents";
 
     private static final UriMatcher sMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 

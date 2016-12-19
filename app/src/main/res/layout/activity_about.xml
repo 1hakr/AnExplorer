@@ -1,107 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:clipToPadding="false"
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp"
-    tools:context=".AboutActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="8dp"
+        app:contentInsetLeft="@dimen/second_keyline_default"
+        app:contentInsetStart="@dimen/second_keyline_default"
+        app:popupTheme="?attr/actionBarPopupTheme"
+        app:theme="?attr/actionBarTheme">
+
+        <TextView
+            android:id="@+id/logo"
+            style="@style/MyTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:drawableTop="@drawable/logo_big"
+            android:gravity="center_horizontal"
+            android:maxLines="1"
+            android:text="@string/app_ver" />
+
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
 
         <LinearLayout
-            android:layout_width="400dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:paddingTop="10dp">
 
-            <TextView
-                android:id="@+id/logo"
-                style="@style/MyTitleText"
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:drawableTop="@drawable/logo_big"
-                android:gravity="center_horizontal"
-                android:singleLine="true"
-                android:text="@string/app_ver" />
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                app:divider="@drawable/line_divider"
+                app:showDividers="middle|end">
+
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
+                    android:id="@+id/action_rate"
+                    style="@style/ButtonAppTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:drawablePadding="16dp"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="?attr/actionBarSize"
+                    android:padding="16dp"
+                    android:text="Rate us on Play store"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:visibility="visible"
+                    app:drawableStart="@drawable/ic_star" />
+
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
+                    android:id="@+id/action_support"
+                    style="@style/ButtonAppTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:drawablePadding="16dp"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="?attr/actionBarSize"
+                    android:padding="16dp"
+                    android:text="Show us more love"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:visibility="visible"
+                    app:drawableStart="@drawable/ic_support" />
+
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
+                    android:id="@+id/action_share"
+                    style="@style/ButtonAppTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:drawablePadding="16dp"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="?attr/actionBarSize"
+                    android:padding="16dp"
+                    android:text="Spread the word"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:visibility="visible"
+                    app:drawableStart="@drawable/ic_share" />
+
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
+                    android:id="@+id/action_feedback"
+                    style="@style/ButtonAppTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:drawablePadding="16dp"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="?attr/actionBarSize"
+                    android:padding="16dp"
+                    android:text="Feed us back"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:visibility="visible"
+                    app:drawableStart="@drawable/ic_feedback" />
+
+            </android.support.v7.widget.LinearLayoutCompat>
 
             <ImageView
-                android:layout_width="200dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/made_with_love"
-                android:contentDescription="@string/made_with_love"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="16dp"
-                android:layout_margin="16dp"
-                android:background="@drawable/card_bg"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_margin="10dp"
-                    android:text="@string/app_about"
-                    android:fontFamily="sans-serif"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="10dp"
-                    android:gravity="center"
-                    android:text="@string/app_contrib"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="@android:color/black" />
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="0.5dp"
-                    android:background="@color/primary_material_light" />
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical" >
-
-                    <ImageView
-                        android:layout_width="200dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:src="@drawable/dworks_dark"
-                        android:contentDescription="@string/dworks_logo"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="10dp"
-                        android:gravity="center"
-                        android:text="@string/app_about_info"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@android:color/black"
-                        android:fontFamily="sans-serif-condensed"/>
-                </LinearLayout>
-
-            </LinearLayout>
+                android:contentDescription="@string/made_with_love"
+                android:src="@drawable/made_with_love" />
 
         </LinearLayout>
-    </RelativeLayout>
-
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

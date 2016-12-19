@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
@@ -37,6 +38,8 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    public static final String TAG = "Settings";
 
     private static final int FRAGMENT_OPEN = 99;
 
@@ -86,18 +89,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static boolean getRootMode(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_ROOT_MODE, false);
+                .getBoolean(KEY_ROOT_MODE, true);
     }
     
     public static int getActionBarColor(Context context) {
-    	int newColor = context.getResources().getColor(R.color.defaultColor);
+    	int newColor = ContextCompat.getColor(context, R.color.defaultColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_ACTIONBAR_COLOR, newColor);
     }
 
     public static int getActionBarColor() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
-                .getInt(KEY_ACTIONBAR_COLOR, Color.BLUE);
+                .getInt(KEY_ACTIONBAR_COLOR, Color.parseColor("#0288D1"));
     }
 
     public static String getThemeStyle() {
@@ -211,6 +214,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public void recreate() {
         mRecreate = true;
         super.recreate();
+    }
+
+    @Override
+    public String getTag() {
+        return TAG;
     }
 
     @Override

@@ -78,6 +78,15 @@
 -keep class com.crashlytics.android.**
 -keepattributes SourceFile,LineNumberTable
 
+-keep class org.slf4j.** { *; }
+-keepclassmembers class * implements org.apache.mina.core.service.IoProcessor {
+    public <init>(java.util.concurrent.ExecutorService);
+    public <init>(java.util.concurrent.Executor);
+    public <init>();
+}
+-dontwarn org.apache.**
+-dontwarn org.slf4j.**
+
 # Application classes that will be serialized/deserialized over Gson
 # or have been blown up by ProGuard in the past
 

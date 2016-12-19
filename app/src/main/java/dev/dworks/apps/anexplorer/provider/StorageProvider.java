@@ -1,8 +1,5 @@
 package dev.dworks.apps.anexplorer.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.res.AssetFileDescriptor;
@@ -10,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.AudioColumns;
@@ -18,8 +16,11 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Video;
 import android.provider.MediaStore.Video.VideoColumns;
 import android.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 
 public abstract class StorageProvider extends DocumentsProvider{

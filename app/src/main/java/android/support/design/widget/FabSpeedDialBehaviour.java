@@ -19,6 +19,7 @@ package android.support.design.widget;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.view.View;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class FabSpeedDialBehaviour extends CoordinatorLayout.Behavior<FabSpeedDi
     // because we can use view translation properties which greatly simplifies the code.
     private static final boolean SNACKBAR_BEHAVIOR_ENABLED = Build.VERSION.SDK_INT >= 11;
 
-    private ValueAnimatorCompat mFabTranslationYAnimator;
+    private ViewPropertyAnimatorCompat mFabTranslationYAnimator;
     private float mFabTranslationY;
     private Rect mTmpRect;
 
@@ -104,6 +105,11 @@ public class FabSpeedDialBehaviour extends CoordinatorLayout.Behavior<FabSpeedDi
 
     private void updateFabTranslationForSnackbar(CoordinatorLayout parent,
                                                  final FabSpeedDial fab, boolean animationAllowed) {
+
+        if (fab.getVisibility() != View.VISIBLE) {
+            return;
+        }
+
         final float targetTransY = getFabTranslationYForSnackbar(parent, fab);
         if (mFabTranslationY == targetTransY) {
             // We're already at (or currently animating to) the target value, return...
@@ -113,31 +119,16 @@ public class FabSpeedDialBehaviour extends CoordinatorLayout.Behavior<FabSpeedDi
         final float currentTransY = ViewCompat.getTranslationY(fab);
 
         // Make sure that any current animation is cancelled
-        if (mFabTranslationYAnimator != null && mFabTranslationYAnimator.isRunning()) {
+        if (mFabTranslationYAnimator != null) {
             mFabTranslationYAnimator.cancel();
         }
 
-        if (animationAllowed && fab.isShown()
-                && Math.abs(currentTransY - targetTransY) > (fab.getHeight() * 0.667f)) {
-            // If the FAB will be travelling by more than 2/3 of its height, let's animate
-            // it instead
-            if (mFabTranslationYAnimator == null) {
-                mFabTranslationYAnimator = ViewUtils.createAnimator();
-                mFabTranslationYAnimator.setInterpolator(
-                        AnimationUtils.FAST_OUT_SLOW_IN_INTERPOLATOR);
-                mFabTranslationYAnimator.setUpdateListener(
-                        new ValueAnimatorCompat.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimatorCompat animator) {
-                                ViewCompat.setTranslationY(fab,
-                                        animator.getAnimatedFloatValue());
-                            }
-                        });
-            }
-            mFabTranslationYAnimator.setFloatValues(currentTransY, targetTransY);
+        if (Math.abs(currentTransY - targetTransY) > (fab.getHeight() * 0.667f)) {
+            mFabTranslationYAnimator = ViewCompat.animate(fab)
+                    .setInterpolator(FabSpeedDial.FAST_OUT_SLOW_IN_INTERPOLATOR)
+                    .translationY(targetTransY);
             mFabTranslationYAnimator.start();
         } else {
-            // Now update the translation Y
             ViewCompat.setTranslationY(fab, targetTransY);
         }
 

@@ -282,7 +282,7 @@ public class ColorPreference extends Preference {
 
                 VectorDrawableCompat checkmark = VectorDrawableCompat.create(view.getResources(),
                         R.drawable.checkmark_white, null);
-                InsetDrawable checkmarkInset = new InsetDrawable(checkmark, Utils.dpToPx(view.getContext(), 5));
+                InsetDrawable checkmarkInset = new InsetDrawable(checkmark, Utils.dpToPx(5));
                 drawable = new LayerDrawable(new Drawable[]{
                         colorChoiceDrawable,
                         checkmarkInset});

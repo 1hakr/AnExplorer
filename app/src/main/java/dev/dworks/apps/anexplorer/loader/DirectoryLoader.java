@@ -22,6 +22,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
@@ -34,9 +36,7 @@ import dev.dworks.apps.anexplorer.cursor.SortingCursorWrapper;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AsyncTaskLoader;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
-import dev.dworks.apps.anexplorer.misc.OperationCanceledException;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.model.DirectoryResult;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;

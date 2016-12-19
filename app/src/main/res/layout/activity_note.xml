@@ -37,8 +37,10 @@
                     android:inputType="textCapSentences|textMultiLine"
                     android:maxLength="@integer/editor_max_file_size"
                     android:minHeight="120dp"
+                    android:paddingEnd="16dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
+                    android:paddingStart="16dp"
                     android:textAlignment="viewStart"
                     android:textColorLink="@color/accentColor"
                     android:textSize="18sp" />

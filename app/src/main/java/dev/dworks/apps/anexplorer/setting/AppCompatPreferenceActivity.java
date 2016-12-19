@@ -29,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 /**
@@ -60,6 +61,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
             }
         }
         super.onCreate(savedInstanceState);
+        AnalyticsManager.setCurrentScreen(this, getTag());
     }
 
     @Override
@@ -154,4 +156,6 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
         Utils.changeThemeStyle(getDelegate());
         super.recreate();
     }
+
+    public abstract String getTag();
 }

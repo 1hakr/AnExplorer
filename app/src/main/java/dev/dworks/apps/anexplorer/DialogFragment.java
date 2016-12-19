@@ -24,7 +24,9 @@ public class DialogFragment extends AppCompatDialogFragment {
         getDialog().setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
-                tintButtons(getDialog());
+                try{
+                    tintButtons(getDialog());
+                } catch (Exception e){}
             }
         });
     }

@@ -5,12 +5,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 /**
  * Created by HaKr on 18-Oct-14.
  */
-public class ActionBarActivity extends AppCompatActivity{
+public abstract class ActionBarActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,4 +29,12 @@ public class ActionBarActivity extends AppCompatActivity{
         Utils.changeThemeStyle(getDelegate());
         super.recreate();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AnalyticsManager.setCurrentScreen(this, getTag());
+    }
+
+    public abstract String getTag();
 }

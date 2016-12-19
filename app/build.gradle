@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.0'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.1'
 
     defaultConfig {
-        versionName "3.2"
-        versionCode = 48
-        minSdkVersion 16
-        targetSdkVersion 24
+        versionName "3.3"
+        versionCode = 49
+        minSdkVersion 17
+        targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
@@ -18,7 +18,8 @@ android {
         debug {
             minifyEnabled false
             shrinkResources true
-            proguardFiles 'proguard/proguard-project.pro',
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
@@ -26,7 +27,10 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            proguardFiles 'proguard/proguard-project.pro',
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard/proguard-project.pro',
                     'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
@@ -48,6 +52,10 @@ android {
             dimension "release"
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
     lintOptions {
         abortOnError false
     }
@@ -57,23 +65,21 @@ android {
 }
 
 ext {
-    supportLibVersion = '24.1.1'
-    gmsVersion = '9.2.1'
+    supportLibVersion = '25.0.1'
+    gmsVersion = '10.0.1'
 }
 
 dependencies {
-    compile files('libs/RootTools.jar')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
-    compile "com.android.support:support-v4:${supportLibVersion}"
+    compile 'com.github.mjdev:libaums:+'
+    compile 'org.apache.ftpserver:ftpserver-core:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
-    otherCompile "com.google.firebase:firebase-core:${gmsVersion}"
-    otherCompile "com.google.firebase:firebase-crash:${gmsVersion}"
-    otherCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }
 
 def props = new Properties()

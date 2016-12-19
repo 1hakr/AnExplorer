@@ -73,4 +73,7 @@
     <dimen name="second_keyline">72dp</dimen>
     <dimen name="second_keyline_default">72dp</dimen>
     <dimen name="toolbar_h_padding">4dp</dimen>
+    <dimen name="side_navigation_width">304dp</dimen>
+
+    <dimen name="expander_inset">8dp</dimen>
 </resources>

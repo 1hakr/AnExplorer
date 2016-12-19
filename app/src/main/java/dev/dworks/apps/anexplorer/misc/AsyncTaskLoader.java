@@ -23,6 +23,7 @@ import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.os.OperationCanceledException;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -359,7 +360,6 @@ public abstract class AsyncTaskLoader<D> extends Loader<D> {
      * <p>
      * Use for testing only.  <b>Never</b> call this from a UI thread.
      *
-     * @hide
      */
     public void waitForLoader() {
         LoadTask task = mTask;
