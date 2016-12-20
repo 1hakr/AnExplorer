@@ -51,7 +51,6 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
@@ -164,21 +163,19 @@ public class RootsFragment extends Fragment {
                 mList.setAdapter(mAdapter);
                 mList.onRestoreInstanceState(state);
 
-                int groupCount = mList.getAdapter().getCount();
+                int groupCount = mAdapter.getGroupCount();
                 if(group_size != 0 && group_size == groupCount){
                     if (expandedIds != null) {
                         restoreExpandedState(expandedIds);
                     }
                 } else {
                     group_size = groupCount;
-                    if (groupCount >= 2) {
-                        mList.expandGroup(0, true);
-                        mList.expandGroup(1, true);
-                    } else if (groupCount == 1) {
-                        mList.expandGroup(0, true);
+                    for (int i = 0; i < group_size; i++) {
+                        mList.expandGroup(i);
                     }
                     expandedIds = getExpandedIds();
                     mList.setOnGroupExpandListener(mOnGroupExpandListener);
+                    mList.setOnGroupCollapseListener(mOnGroupCollapseListener);
                 }
             }
 
@@ -223,6 +220,7 @@ public class RootsFragment extends Fragment {
                         try {
                             long id = ExpandableListView.getPackedPositionForChild(i, j);
                             int index = mList.getFlatListPosition(id);
+                            mList.setSelection(index);
                             mList.setItemChecked(index, true);
                         } catch (Exception e){}
 
@@ -299,6 +297,13 @@ public class RootsFragment extends Fragment {
         @Override
         public void onGroupExpand(int i) {
             expandedIds.add(mAdapter.getGroupId(i));
+        }
+    };
+
+    private ExpandableListView.OnGroupCollapseListener mOnGroupCollapseListener = new ExpandableListView.OnGroupCollapseListener() {
+        @Override
+        public void onGroupCollapse(int i) {
+            expandedIds.remove(mAdapter.getGroupId(i));
         }
     };
 
@@ -519,23 +524,6 @@ public class RootsFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private static boolean inArray(Long[] array, long element) {
-        for (long l : array) {
-            if (l == element) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static Long[] toLongArray(List<Long> list)  {
-        Long[] ret = new Long[list.size()];
-        int i = 0;
-        for (Long e : list)
-            ret[i++] = e.longValue();
-        return ret;
     }
 
     @Override

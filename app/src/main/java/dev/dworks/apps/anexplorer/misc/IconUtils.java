@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -284,12 +285,11 @@ public class IconUtils {
         // Look for exact match first
         Integer resId = sMimeIcons.get(mimeType);
         if (resId != null) {
-            return ContextCompat.getDrawable(context, resId);
+            return getDrawable(context, resId);
         }
 
         if (mimeType == null) {
-            // TODO: generic icon?
-            return null;
+            return ContextCompat.getDrawable(context, R.drawable.ic_doc_generic);
         }
 
         // Otherwise look for partial match
@@ -372,7 +372,7 @@ public class IconUtils {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Drawable applyTintColor(Context context, int drawableId, int tintColorId) {
-        final Drawable icon = ContextCompat.getDrawable(context, drawableId);
+        final Drawable icon = getDrawable(context, drawableId);
         icon.mutate();
         DrawableCompat.setTintList(DrawableCompat.wrap(icon), ContextCompat.getColorStateList(context, tintColorId));
         return icon;
@@ -382,5 +382,13 @@ public class IconUtils {
         final TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(tintAttrId, outValue, true);
         return applyTintColor(context, drawableId, outValue.resourceId);
+    }
+
+    private static Drawable getDrawable(Context context, int drawableId){
+        try {
+            return ContextCompat.getDrawable(context, drawableId);
+        } catch (Resources.NotFoundException e){
+            return ContextCompat.getDrawable(context, R.drawable.ic_doc_generic);
+        }
     }
 }

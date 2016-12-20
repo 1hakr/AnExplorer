@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import java.io.DataInputStream;
@@ -423,7 +422,8 @@ public class RootInfo implements Durable, Parcelable {
 
     public Drawable loadIcon(Context context) {
         if (derivedIcon != 0) {
-            return ContextCompat.getDrawable(context, derivedIcon);
+            return IconUtils.applyTintAttr(context, derivedIcon,
+                    android.R.attr.textColorPrimary);
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }
