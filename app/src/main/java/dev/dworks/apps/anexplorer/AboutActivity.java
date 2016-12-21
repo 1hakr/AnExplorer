@@ -144,14 +144,17 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 				break;
 			case R.id.action_support:
 				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-				intentMarketAll.setData(Uri.parse("market://search?q=pub:DWorkS"));
+				intentMarketAll.setData(Uri.parse("https://play.google.com/store/apps/dev?id=8683545855643814241"));
 				startActivity(intentMarketAll);
 				AnalyticsManager.logEvent("love_app");
 				break;
 			case R.id.action_share:
+
+				String shareText = "I found this file mananger very useful. Give it a try. "
+						+ Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID).toString();
 				ShareCompat.IntentBuilder
 						.from(this)
-						.setText(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID).toString())
+						.setText(shareText)
 						.setType("text/plain")
 						.setChooserTitle("Share AnExplorer")
 						.startChooser();
