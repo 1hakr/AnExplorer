@@ -258,7 +258,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isStorage() {
-        return ExternalStorageProvider.AUTHORITY.equals(authority);
+        return isInternalStorage() || isExternalStorage() || isSecondaryStorage();
     }
 
     public boolean isRootedStorage() {

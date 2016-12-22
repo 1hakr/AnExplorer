@@ -158,10 +158,14 @@ public class RootsFragment extends Fragment {
 
                 final Intent includeApps = getArguments().getParcelable(EXTRA_INCLUDE_APPS);
 
-                mAdapter = new RootsExpandableAdapter(context, result, includeApps);
-                Parcelable state = mList.onSaveInstanceState();
-                mList.setAdapter(mAdapter);
-                mList.onRestoreInstanceState(state);
+                if (mAdapter == null) {
+                    mAdapter = new RootsExpandableAdapter(context, result, includeApps);
+                    Parcelable state = mList.onSaveInstanceState();
+                    mList.setAdapter(mAdapter);
+                    mList.onRestoreInstanceState(state);
+                } else {
+                    mAdapter.setData(result);
+                }
 
                 int groupCount = mAdapter.getGroupCount();
                 if(group_size != 0 && group_size == groupCount){

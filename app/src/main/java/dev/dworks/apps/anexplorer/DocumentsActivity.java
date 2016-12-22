@@ -315,7 +315,17 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             ExternalStorageProvider.updateVolumes(this);
             mRoots = DocumentsApplication.getRootsCache(this);
-            mRoots.updateAsync();
+
+            //TODO refactor once home is added
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRoots.updateAsync();
+                    onRootPicked(mRoots.getDefaultRoot(), true);
+                }
+            }, 500);
+            //mRoots.updateAsync();
         }
     }
 
@@ -1255,6 +1265,7 @@ public class DocumentsActivity extends BaseActivity {
 
             @Override
             public void onRateAppClicked() {
+                AnalyticsManager.logEvent("rate_app");
             }
         }).checkAndShow();
     }

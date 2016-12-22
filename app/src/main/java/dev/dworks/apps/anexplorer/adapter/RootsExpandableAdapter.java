@@ -22,15 +22,26 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
 
     final List<GroupInfo> group = Lists.newArrayList();
 
-    final List<Item> storage = Lists.newArrayList();
-    final List<Item> library = Lists.newArrayList();
-    final List<Item> folders = Lists.newArrayList();
-    final List<Item> tools = Lists.newArrayList();
-    final List<Item> bookmarks = Lists.newArrayList();
-
     public RootsExpandableAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
+        processRoots(roots);
+    }
+
+    private void processRoots(Collection<RootInfo> roots) {
+        List<GroupInfo> groupRoots = Lists.newArrayList();
+        final List<Item> phone = Lists.newArrayList();
+        final List<Item> recent = Lists.newArrayList();
+        final List<Item> storage = Lists.newArrayList();
+        final List<Item> library = Lists.newArrayList();
+        final List<Item> folders = Lists.newArrayList();
+        final List<Item> tools = Lists.newArrayList();
+        final List<Item> bookmarks = Lists.newArrayList();
+
         for (RootInfo root : roots) {
-            if (RootInfo.isLibrary(root)) {
+            if (root.isRecents()) {
+                recent.add(new RootItem(root));
+            } else if (root.isPhoneStorage()) {
+                phone.add(new RootItem(root));
+            } else if (RootInfo.isLibrary(root)) {
                 library.add(new RootItem(root));
             } else if (RootInfo.isFolder(root)) {
                 folders.add(new RootItem(root));
@@ -42,22 +53,28 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 tools.add(new RootItem(root));
             }
         }
-
         if(!storage.isEmpty()){
-            group.add(new GroupInfo("Storage", storage));
+            storage.addAll(phone);
+            groupRoots.add(new GroupInfo("Storage", storage));
+        } else if(!phone.isEmpty()){
+            groupRoots.add(new GroupInfo("Storage", phone));
         }
         if(!library.isEmpty()){
-            group.add(new GroupInfo("Library", library));
+            recent.addAll(library);
+            groupRoots.add(new GroupInfo("Library", recent));
         }
         if(!folders.isEmpty()){
-            group.add(new GroupInfo("Folders", folders));
+            groupRoots.add(new GroupInfo("Folders", folders));
         }
         if(!bookmarks.isEmpty()){
-            group.add(new GroupInfo("Bookmarks", bookmarks));
+            groupRoots.add(new GroupInfo("Bookmarks", bookmarks));
         }
         if(!tools.isEmpty()){
-            group.add(new GroupInfo("Tools", tools));
+            groupRoots.add(new GroupInfo("Tools", tools));
         }
+
+        group.clear();
+        group.addAll(groupRoots);
     }
 
     @Override
@@ -117,5 +134,10 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean areAllItemsEnabled() {
         return false;
+    }
+
+    public void setData(Collection<RootInfo> roots){
+        processRoots(roots);
+        notifyDataSetChanged();
     }
 }

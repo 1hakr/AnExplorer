@@ -394,7 +394,7 @@ public class RootsCache {
                 return root;
             }
         }
-        return null;
+        return getHomeRoot();
     }
 
     public RootInfo getSecondaryRoot() {
@@ -425,11 +425,11 @@ public class RootsCache {
     }
 
     public RootInfo getHomeRoot() {
-        return mHomeRoot;
+        return mRecentsRoot;
     }
 
     public RootInfo getRecentsRoot() {
-        return mHomeRoot;
+        return mRecentsRoot;
     }
 
     public boolean isHomeRoot(RootInfo root) {
