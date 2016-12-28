@@ -45,6 +45,10 @@ android {
             applicationId "dev.dworks.apps.anexplorer.pro"
             dimension "default"
         }
+        underground {
+            applicationId "dev.dworks.apps.anexplorer.underground"
+            dimension "default"
+        }
         google {
             dimension "release"
         }
@@ -53,6 +57,13 @@ android {
         }
         other {
             dimension "release"
+        }
+    }
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+
+        if (names.contains("underground") && (names.contains("google") || names.contains("other"))) {
+            variant.ignore = true
         }
     }
     packagingOptions {
