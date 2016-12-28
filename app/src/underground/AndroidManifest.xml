@@ -58,6 +58,17 @@
             android:authorities="dev.dworks.apps.anexplorer.underground.explorer"
             android:enabled="true"
             android:exported="false"/>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.UsbStorageProvider"
+            android:authorities="dev.dworks.apps.anexplorer.underground.usbstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" >
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
     </application>
 
 </manifest>
