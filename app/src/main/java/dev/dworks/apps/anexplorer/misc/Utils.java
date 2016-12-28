@@ -30,6 +30,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
@@ -37,7 +38,6 @@ import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.text.TextUtilsCompat;
-import android.support.v4.view.*;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -318,6 +318,41 @@ public class Utils {
 
     public static boolean isProVersion(){
         return BuildConfig.FLAVOR.contains("Pro");
+    }
+
+    public static boolean isOtherBuild(){
+        return BuildConfig.FLAVOR.contains("other");
+    }
+
+    public static boolean isGoogleBuild(){
+        return BuildConfig.FLAVOR.contains("google");
+    }
+
+    public static boolean isAmazonBuild(){
+        return BuildConfig.FLAVOR.contains("amazon");
+    }
+
+    public static Uri getAppUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("amzn://apps/android?p=" + BuildConfig.APPLICATION_ID);
+        }
+
+        return Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID);
+    }
+
+    public static Uri getAppShareUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("https://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID);
+        }
+
+        return Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID);
+    }
+
+    public static Uri getAppStoreUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID + "&showAll=1");
+        }
+        return Uri.parse("https://play.google.com/store/apps/dev?id=8683545855643814241");
     }
 
     public static boolean hasFeature(Context context, String feature) {

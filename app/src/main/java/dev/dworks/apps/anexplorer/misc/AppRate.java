@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -252,7 +251,7 @@ public class AppRate implements View.OnClickListener{
                 if (onShowListener != null)onShowListener.onRateAppDismissed();
                 break;
             case R.id.rate:
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName()));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Utils.getAppUri());
                 if(Utils.isIntentAvailable(activity, intent)) {
                     activity.startActivity(intent);
                 }

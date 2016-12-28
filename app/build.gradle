@@ -45,7 +45,10 @@ android {
             applicationId "dev.dworks.apps.anexplorer.pro"
             dimension "default"
         }
-        play {
+        google {
+            dimension "release"
+        }
+        amazon {
             dimension "release"
         }
         other {

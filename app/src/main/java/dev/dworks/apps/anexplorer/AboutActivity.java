@@ -64,7 +64,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setTextColor(Utils.getComplementaryColor(SettingsActivity.getActionBarColor(this)));
-		String header = logo.getText() + getSuffix() + (Utils.isTelevision(this)? " for Android TV" : "") + " v" + BuildConfig.VERSION_NAME;
+		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 
 		TextView action_rate = (TextView)findViewById(R.id.action_rate);
@@ -77,7 +77,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		action_share.setOnClickListener(this);
 		action_feedback.setOnClickListener(this);
 
-		if(isNonPlay()){
+		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
 			action_support.setVisibility(View.GONE);
 		} else if(Utils.isTelevision(this)){
@@ -104,11 +104,8 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
     }
 
     private String getSuffix(){
-        return Utils.isProVersion() ? " Pro" : "";
-    }
-
-    private boolean isNonPlay(){
-        return BuildConfig.FLAVOR.contains("other");
+        return Utils.isProVersion() ? " Pro" : ""
+				+ (Utils.isTelevision(this)? " for Android TV" : "");
     }
 
 	@Override
@@ -138,20 +135,20 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 				break;
 			case R.id.action_rate:
 				Intent intentMarket = new Intent("android.intent.action.VIEW");
-				intentMarket.setData(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
+				intentMarket.setData(Utils.getAppUri());
 				startActivity(intentMarket);
 				AnalyticsManager.logEvent("rate_app");
 				break;
 			case R.id.action_support:
 				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-				intentMarketAll.setData(Uri.parse("https://play.google.com/store/apps/dev?id=8683545855643814241"));
+				intentMarketAll.setData(Utils.getAppStoreUri());
 				startActivity(intentMarketAll);
 				AnalyticsManager.logEvent("love_app");
 				break;
 			case R.id.action_share:
 
 				String shareText = "I found this file mananger very useful. Give it a try. "
-						+ Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID).toString();
+						+ Utils.getAppShareUri().toString();
 				ShareCompat.IntentBuilder
 						.from(this)
 						.setText(shareText)

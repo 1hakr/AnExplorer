@@ -556,9 +556,6 @@ public class DocumentsActivity extends BaseActivity {
             mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
         }
-        if(BuildConfig.FLAVOR.contains("other") || Utils.isTelevision(this)){
-            return;
-        }
     }
 
     private DrawerListener mDrawerListener = new DrawerListener() {
@@ -1252,23 +1249,28 @@ public class DocumentsActivity extends BaseActivity {
         updateActionBar();
         invalidateMenu();
         dumpStack();
-        AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
-            @Override
-            public void onRateAppShowing() {
-                // View is shown
-            }
 
-            @Override
-            public void onRateAppDismissed() {
-                // User has dismissed it
-            }
-
-            @Override
-            public void onRateAppClicked() {
-                AnalyticsManager.logEvent("rate_app");
-            }
-        }).checkAndShow();
+        if(!Utils.isOtherBuild() && !Utils.isTelevision(this)){
+            AppRate.with(this, mRateContainer).listener(mOnShowListener).checkAndShow();
+        }
     }
+
+    private AppRate.OnShowListener mOnShowListener = new AppRate.OnShowListener() {
+        @Override
+        public void onRateAppShowing() {
+            // View is shown
+        }
+
+        @Override
+        public void onRateAppDismissed() {
+            // User has dismissed it
+        }
+
+        @Override
+        public void onRateAppClicked() {
+            AnalyticsManager.logEvent("rate_app");
+        }
+    };
 
     public void onStackPicked(DocumentStack stack) {
         try {
