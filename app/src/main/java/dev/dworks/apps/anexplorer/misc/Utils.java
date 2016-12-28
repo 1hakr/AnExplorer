@@ -317,7 +317,7 @@ public class Utils {
     }
 
     public static boolean isProVersion(){
-        return BuildConfig.FLAVOR.contains("Underground");
+        return BuildConfig.FLAVOR.contains("Pro") || BuildConfig.FLAVOR.contains("Underground");
     }
 
     public static boolean isOtherBuild(){
