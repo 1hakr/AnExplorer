@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.0'
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         versionName "3.2"
@@ -46,6 +46,10 @@ android {
         }
         other {
             dimension "release"
+        }
+        underground {
+            applicationId "dev.dworks.apps.anexplorer.underground"
+            dimension "default"
         }
     }
     lintOptions {

@@ -341,7 +341,7 @@ public class Utils {
     }
 
     public static boolean isProVersion(){
-        return BuildConfig.FLAVOR.contains("Pro");
+        return BuildConfig.FLAVOR.contains("Underground");
     }
 
     public static boolean hasFeature(Context context, String feature) {
