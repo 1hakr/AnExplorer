@@ -49,6 +49,6 @@
         android:layout_gravity="center_vertical|start"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@android:color/white"/>
+        android:textColor="?android:attr/textColorPrimary" />
 
 </LinearLayout>

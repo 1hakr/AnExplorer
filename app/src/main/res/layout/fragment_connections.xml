@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:baselineAligned="false"
+    android:minHeight="@dimen/list_item_height"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/list_item_padding"
+    android:paddingEnd="@dimen/list_item_padding"
+    android:paddingLeft="@dimen/list_item_padding"
+    android:paddingRight="@dimen/list_item_padding"
+    android:paddingStart="@dimen/list_item_padding">
+
+    <FrameLayout
+        android:id="@android:id/icon"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_root_connections"
+            android:scaleType="centerInside" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:baselineAligned="false"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@android:id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:text="FTP Web Server"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    tools:text="Not Running"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="?android:attr/textColorSecondary" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/startStopButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_start"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:text="@string/start_ftp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ftpAddressText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAlignment="viewStart"
+                tools:text="ftp://192.168.1.101:2211"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="?android:attr/textColorSecondary" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/warningText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/startStopButton"
+            android:layout_centerHorizontal="true"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/button_text_color_red" />
+
+    </LinearLayout>
+
+</LinearLayout>

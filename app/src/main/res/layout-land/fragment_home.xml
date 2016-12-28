@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    tools:context=".AboutActivity">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.75"
+        android:clipToPadding="false"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:id="@+id/stats_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@color/accentColor"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <RelativeLayout
+                android:id="@+id/arc_left"
+                android:layout_width="wrap_content"
+                android:layout_height="160dip"
+                android:layout_centerVertical="true">
+
+                <dev.dworks.apps.anexplorer.ui.ArcProgress
+                    android:id="@+id/storage_stats"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:padding="10dp"
+                    custom:arc_bottom_text="STORAGE"
+                    custom:arc_bottom_text_size="16dp"
+                    custom:arc_progress="10"
+                    custom:arc_stroke_width="8dip"
+                    custom:arc_text_color="#ffffff"
+                    custom:arc_text_size="32dip"
+                    custom:arc_unfinished_color="#89000000" />
+
+                <TextView
+                    android:id="@+id/storage_summary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="55dip"
+                    android:text=""
+                    android:textColor="@android:color/white"
+                    android:textSize="12dp" />
+            </RelativeLayout>
+
+            <dev.dworks.apps.anexplorer.ui.ArcProgress
+                android:id="@+id/memory_stats"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:padding="10dp"
+                custom:arc_bottom_text="RAM"
+                custom:arc_bottom_text_size="14dp"
+                custom:arc_progress="10"
+                custom:arc_stroke_width="6dp"
+                custom:arc_text_color="#ffffff"
+                custom:arc_text_size="26dip"
+                custom:arc_unfinished_color="#89000000" />
+        </LinearLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:minWidth="300dp"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                app:divider="@drawable/line_divider"
+                app:showDividers="middle|end">
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

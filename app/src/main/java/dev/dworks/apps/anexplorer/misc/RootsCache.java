@@ -46,8 +46,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
+import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
@@ -55,7 +55,9 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
@@ -72,6 +74,8 @@ public class RootsCache {
     private final Context mContext;
     private final ContentObserver mObserver;
 
+    private final RootInfo mHomeRoot = new RootInfo();
+    private final RootInfo mConnectionsRoot = new RootInfo();
     private final RootInfo mRecentsRoot = new RootInfo();
 
     private final Object mLock = new Object();
@@ -111,12 +115,29 @@ public class RootsCache {
      * Gather roots from all known storage providers.
      */
     public void updateAsync() {
+        // Special root for home
+        mHomeRoot.authority = null;
+        mHomeRoot.rootId = "home";
+        mHomeRoot.icon = R.drawable.ic_root_home;
+        mHomeRoot.flags = Root.FLAG_LOCAL_ONLY;
+        mHomeRoot.title = mContext.getString(R.string.root_home);
+        mHomeRoot.availableBytes = -1;
+        mHomeRoot.deriveFields();
+
+        // Special root for web host
+        mConnectionsRoot.authority = null;
+        mConnectionsRoot.rootId = "connections";
+        mConnectionsRoot.icon = R.drawable.ic_root_connections;
+        mConnectionsRoot.flags = Root.FLAG_LOCAL_ONLY;
+        mConnectionsRoot.title = mContext.getString(R.string.root_web_host);
+        mConnectionsRoot.availableBytes = -1;
+        mConnectionsRoot.deriveFields();
+
         // Special root for recents
-        mRecentsRoot.authority = null;
+        mRecentsRoot.authority = RecentsProvider.AUTHORITY;
         mRecentsRoot.rootId = null;
         mRecentsRoot.icon = R.drawable.ic_root_recent;
-        mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_CREATE
-                | Root.FLAG_SUPPORTS_IS_CHILD;
+        mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_IS_CHILD;
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
         mRecentsRoot.availableBytes = -1;
         mRecentsRoot.deriveFields();
@@ -199,6 +220,8 @@ public class RootsCache {
                 waitForFirstLoad();
             }
 
+            //mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
+            mTaskRoots.put(mConnectionsRoot.authority, mConnectionsRoot);
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
             final ContentResolver resolver = mContext.getContentResolver();
@@ -349,25 +372,29 @@ public class RootsCache {
         for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
             return root;
         }
-        return getRecentsRoot();
+        return getDefaultRoot();
     }
 
     public RootInfo getDefaultRoot() {
-    	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (root.isInternalStorage() || root.isExternalStorage() || root.isSecondaryStorage()) {
-                return root;
-            }
-		}
-        return getRecentsRoot();
+        return getPrimaryRoot();
     }
-    
+
     public RootInfo getDownloadRoot() {
-    	for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-    		if (root.isDownloads() || root.isDownloadsFolder()) {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isDownloads() || root.isDownloadsFolder()) {
                 return root;
             }
-		}
-        return getRecentsRoot();
+        }
+        return getDefaultRoot();
+    }
+
+    public RootInfo getPrimaryRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isStorage()) {
+                return root;
+            }
+        }
+        return getHomeRoot();
     }
 
     public RootInfo getSecondaryRoot() {
@@ -379,8 +406,34 @@ public class RootsCache {
         return null;
     }
 
+    public RootInfo getProcessRoot() {
+        for (RootInfo root : mRoots.get(AppsProvider.AUTHORITY)) {
+            if (root.isAppProcess()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
+    public RootInfo getAppsBackupRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isAppBackupFolder()) {
+                return root;
+            }
+        }
+        return getPrimaryRoot();
+    }
+
+    public RootInfo getHomeRoot() {
+        return mRecentsRoot;
+    }
+
     public RootInfo getRecentsRoot() {
         return mRecentsRoot;
+    }
+
+    public boolean isHomeRoot(RootInfo root) {
+        return mHomeRoot == root;
     }
 
     public boolean isRecentsRoot(RootInfo root) {

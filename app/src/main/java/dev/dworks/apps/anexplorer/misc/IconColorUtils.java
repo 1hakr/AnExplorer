@@ -17,7 +17,7 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.support.v4.content.ContextCompat;
 
 import com.google.common.collect.Maps;
 
@@ -206,18 +206,17 @@ public class IconColorUtils {
 
     public static int loadMimeColor(Context context, String mimeType,
                                     String authority, String docId, int defaultColor) {
-        final Resources res = context.getResources();
 
         if (Utils.isDir(mimeType)) {
             if (MediaDocumentsProvider.AUTHORITY.equals(authority)){
                 if(docId.startsWith(MediaDocumentsProvider.TYPE_ALBUM)){
-                    return res.getColor(R.color.item_doc_audio);
+                    return ContextCompat.getColor(context, R.color.item_doc_audio);
                 }
                 else if(docId.startsWith(MediaDocumentsProvider.TYPE_IMAGES_BUCKET)){
-                    return res.getColor(R.color.item_doc_image);
+                    return ContextCompat.getColor(context, R.color.item_doc_image);
                 }
                 else if(docId.startsWith(MediaDocumentsProvider.TYPE_VIDEOS_BUCKET)){
-                    return res.getColor(R.color.item_doc_video);
+                    return ContextCompat.getColor(context, R.color.item_doc_video);
                 }
             }
             return defaultColor;
@@ -226,50 +225,27 @@ public class IconColorUtils {
         // Look for exact match first
         Integer resId = sMimeColors.get(mimeType);
         if (resId != null) {
-            return res.getColor(resId);
+            return ContextCompat.getColor(context, resId);
         }
 
         if (mimeType == null) {
             // TODO: generic icon?
-            return res.getColor(R.color.item_doc_generic);
+            return ContextCompat.getColor(context, R.color.item_doc_generic);
         }
 
         // Otherwise look for partial match
         final String typeOnly = mimeType.split("/")[0];
 
         if ("audio".equals(typeOnly)) {
-            return res.getColor(R.color.item_doc_audio);
+            return ContextCompat.getColor(context, R.color.item_doc_audio);
         } else if ("image".equals(typeOnly)) {
-            return res.getColor(R.color.item_doc_image);
+            return ContextCompat.getColor(context, R.color.item_doc_image);
         } else if ("text".equals(typeOnly)) {
-            return res.getColor(R.color.item_doc_video);
+            return ContextCompat.getColor(context, R.color.item_doc_video);
         } else if ("video".equals(typeOnly)) {
-            return res.getColor(R.color.item_doc_video);
+            return ContextCompat.getColor(context, R.color.item_doc_video);
         } else {
-            return res.getColor(R.color.item_doc_file);
-        }
-    }
-
-    public static boolean isMimeSpecial(String mimeType) {
-        if (Utils.isDir(mimeType)) {
-            return false;
-        }
-
-        if (mimeType == null) {
-            // TODO: generic icon?
-            return false;
-        }
-
-        // Otherwise look for partial match
-        final String typeOnly = mimeType.split("/")[0];
-        if ("audio".equals(typeOnly)) {
-            return true;
-        } else if ("image".equals(typeOnly)) {
-            return true;
-        } else if ("video".equals(typeOnly)) {
-            return true;
-        } else {
-            return false;
+            return ContextCompat.getColor(context, R.color.item_doc_file);
         }
     }
 }

@@ -21,7 +21,6 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -31,7 +30,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Environment;
+import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -45,17 +44,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
-import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
-import dev.dworks.apps.anexplorer.misc.CancellationSignal;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
+import dev.dworks.apps.anexplorer.misc.PackageManagerUtils;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import dev.dworks.apps.anexplorer.model.RootInfo;
 
 /**
  * Presents a {@link DocumentsContract} view of Apps contents.
@@ -71,7 +69,7 @@ public class AppsProvider extends DocumentsProvider {
     
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
-            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_TOTAL_BYTES,
+            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -129,7 +127,7 @@ public class AppsProvider extends DocumentsProvider {
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_apps));
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_APP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, false));
-        row.add(Root.COLUMN_TOTAL_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, true));
+        row.add(Root.COLUMN_CAPACITY_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, true));
         
         final RowBuilder row1 = result.newRow();
         row1.add(Root.COLUMN_ROOT_ID, ROOT_ID_PROCESS);
@@ -138,7 +136,7 @@ public class AppsProvider extends DocumentsProvider {
         row1.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_processes));
         row1.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_PROCESS);
         row1.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, false));
-        row1.add(Root.COLUMN_TOTAL_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, true));
+        row1.add(Root.COLUMN_CAPACITY_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, true));
         return result;
     }
     
@@ -171,14 +169,7 @@ public class AppsProvider extends DocumentsProvider {
         final long token = Binder.clearCallingIdentity();
         try {
         	if (ROOT_ID_APP.equals(rootId)) {
-    			try {
-    				Uri packageUri = Uri.fromParts("package", packageName,null);
-    				if(packageUri != null){
-    					Intent intentUninstall = new Intent(Intent.ACTION_DELETE, packageUri);
-    					intentUninstall.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    					getContext().startActivity(intentUninstall);
-    				}	
-    			} catch (Exception e) { }
+				PackageManagerUtils.uninstallApp(getContext(), packageName);
         	}
         	else{
         		activityManager.killBackgroundProcesses(getPackageForDocId(docId));
@@ -187,37 +178,35 @@ public class AppsProvider extends DocumentsProvider {
             Binder.restoreCallingIdentity(token);
         }
     }
-    
-    @Override
-    public void moveDocument(String documentIdFrom, String documentIdTo, boolean deleteAfter) throws FileNotFoundException {
-    	final String packageName = getPackageForDocId(documentIdFrom);
-    	String fromFilePath = "";
-    	String fileName = "";
-    	try {
-        	PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-        	ApplicationInfo appInfo = packageInfo.applicationInfo;
-        	fromFilePath = appInfo.sourceDir;
-        	fileName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
-            fileName += getAppVersion(packageInfo.versionName);
+
+	@Override
+	public String copyDocument(String sourceDocumentId, String targetParentDocumentId) throws FileNotFoundException {
+		final String packageName = getPackageForDocId(sourceDocumentId);
+		String fromFilePath = "";
+		String fileName = "";
+		try {
+			PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
+			ApplicationInfo appInfo = packageInfo.applicationInfo;
+			fromFilePath = appInfo.sourceDir;
+			fileName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
+			fileName += getAppVersion(packageInfo.versionName);
 		} catch (Exception e) {
 		}
 
-		final RootInfo root = DocumentsApplication.getRootsCache(getContext()).getDefaultRoot();
-		File rootFile = (null != root) ? new File(root.path) : Environment.getExternalStorageDirectory();
-
-    	final File fileFrom = new File(fromFilePath);
-    	final File fileTo = new File(rootFile, "AppBackup");
-    	if(!fileTo.exists()){
-    		fileTo.mkdir();
-    	}
-        if (!FileUtils.moveFile(fileFrom, fileTo, fileName)) {
-            throw new IllegalStateException("Failed to copy " + fileFrom);
-        }
-        else{
-            FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(),
-                    fileName +"."+ FileUtils.getExtFromFilename(fileFrom.getPath())));
-        }
-    }
+		final File fileFrom = new File(fromFilePath);
+		final File fileTo = Utils.getAppsBackupFile(getContext());
+		if(!fileTo.exists()){
+			fileTo.mkdir();
+		}
+		if (!FileUtils.moveFile(fileFrom, fileTo, fileName)) {
+			throw new IllegalStateException("Failed to copy " + fileFrom);
+		}
+		else{
+			FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(),
+					fileName +"."+ FileUtils.getExtFromFilename(fileFrom.getPath())));
+		}
+		return fromFilePath;
+	}
 
     @Override
     public Cursor queryDocument(String docId, String[] projection) throws FileNotFoundException {
@@ -345,7 +334,7 @@ public class AppsProvider extends DocumentsProvider {
 			final String path = appInfo.sourceDir;
 			final String mimeType = Document.MIME_TYPE_APK;
 
-			int flags = Document.FLAG_SUPPORTS_EDIT | Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_THUMBNAIL;
+			int flags = Document.FLAG_SUPPORTS_COPY | Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_THUMBNAIL;
 			
 	        final long size = new File(appInfo.sourceDir).length();
 	        final long lastModified = packageInfo.lastUpdateTime;

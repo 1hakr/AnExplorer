@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="MiniFabLayout">
         <item name="android:layout_gravity">end</item>
@@ -26,7 +26,9 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginBottom">@dimen/mini_fab_margin_bottom</item>
         <item name="android:layout_marginLeft">@dimen/mini_fab_margin_left</item>
+        <item name="android:layout_marginStart" tools:targetApi="jelly_bean_mr1">@dimen/mini_fab_margin_left</item>
         <item name="android:layout_marginRight">@dimen/mini_fab_margin_right</item>
+        <item name="android:layout_marginEnd" tools:targetApi="jelly_bean_mr1">@dimen/mini_fab_margin_right</item>
         <item name="android:layout_marginTop">@dimen/mini_fab_margin_top</item>
         <item name="fabSize">mini</item>
         <item name="paddingEnd">0dp</item>

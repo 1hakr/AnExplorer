@@ -11,6 +11,7 @@
     <color name="defaultColor">#0288D1</color>
     <color name="alertColor">#323232</color>
     <color name="alertDarkColor">#ff242424</color>
+    <color name="material_red">#EF3A0F</color>
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
         <item>#0288D1</item>
@@ -62,13 +63,13 @@
 
     <color name="item_doc_apk">#8BC34A</color>
 
-    <color name="item_doc_pdf">#C62828</color>
-    <color name="item_doc_doc">#4285f4</color>
-    <color name="item_doc_sheet">#0f9d58</color>
-    <color name="item_doc_slide">#f4b400</color>
-    <color name="item_doc_word">#2B5796</color>
-    <color name="item_doc_excel">#1E7145</color>
-    <color name="item_doc_powerpoint">#D04525</color>
+    <color name="item_doc_pdf">#FFDB4437</color>
+    <color name="item_doc_doc">#FF4883F3</color>
+    <color name="item_doc_sheet">#FF16A765</color>
+    <color name="item_doc_slide">#FFF4B400</color>
+    <color name="item_doc_word">#FF4883F3</color>
+    <color name="item_doc_excel">#FF16A765</color>
+    <color name="item_doc_powerpoint">#FFFF7537</color>
 
     <color name="item_doc_compressed">#795548</color>
     <color name="item_doc_code">#607D8B</color>
@@ -78,5 +79,7 @@
     <color name="item_doc_event">#1E88E5</color>
     <color name="item_doc_font">#455A64</color>
 
+    <color name="defaultThemeColor">#808080</color>
 
+    <color name="divider_light">#97dddddd</color>
 </resources>

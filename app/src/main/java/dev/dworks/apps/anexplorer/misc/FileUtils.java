@@ -410,10 +410,16 @@ public class FileUtils {
             ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
             ZipEntry entry;
             File destFolder = new File(zipFile.getParent(), FileUtils.getNameFromFilename(zipFile.getName()));
-            //destFolder.mkdirs();
+            destFolder.mkdirs();
             while ((entry = zis.getNextEntry()) != null) {
                 File dest = new File(destFolder, entry.getName());
-                dest.getParentFile().mkdirs();
+                //dest.getParentFile().mkdirs();
+                if (entry.isDirectory()) {
+                    if (!dest.exists()) {
+                        dest.mkdirs();
+                    }
+                    continue;
+                }
                 int size;
                 byte[] buffer = new byte[2048];
                 FileOutputStream fos = new FileOutputStream(dest);
@@ -428,7 +434,7 @@ public class FileUtils {
             fis.close();
             success = true;
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return success;
     }

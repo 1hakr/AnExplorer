@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="dev.dworks.apps.anexplorer"
     android:installLocation="auto">
 
@@ -12,30 +13,38 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="22" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission
+        android:name="android.permission.WAKE_LOCK"
+        tools:node="remove" />
+    <uses-permission
+        android:name="com.google.android.c2dm.permission.RECEIVE"
+        tools:node="remove" />
+    <uses-permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        tools:node="remove" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false" />
 
     <application
-        android:name="dev.dworks.apps.anexplorer.DocumentsApplication"
+        android:name=".DocumentsApplication"
         android:allowBackup="true"
+        android:banner="@drawable/banner"
         android:icon="@drawable/ic_launcher"
         android:label="AnExplorer"
-        android:banner="@drawable/banner"
         android:supportsRtl="true">
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
-            android:name="dev.dworks.apps.anexplorer.DocumentsActivity"
+            android:name=".DocumentsActivity"
             android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
@@ -63,45 +72,49 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.provider.action.MANAGE_ROOT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="vnd.android.document/root" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!--For Phones and tablets-->
+            <!-- For Phones and tablets -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!--For TV-->
+            <!-- For TV -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <activity
-            android:name="dev.dworks.apps.anexplorer.StandaloneActivity"
-            android:theme="@style/Theme.Document" >
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
-
         <activity
-            android:name="dev.dworks.apps.anexplorer.setting.SettingsActivity"
+            android:name=".StandaloneActivity"
+            android:theme="@style/Theme.Document" />
+        <activity
+            android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
             android:theme="@style/Theme.Setting" />
         <activity
-            android:name="dev.dworks.apps.anexplorer.AboutActivity"
+            android:name=".AboutActivity"
             android:label="About"
-            android:theme="@style/Theme.About"
-            android:uiOptions="splitActionBarWhenNarrow" />
+            android:theme="@style/Theme.Document" />
 
-        <receiver android:name="dev.dworks.apps.anexplorer.receiver.PackageReceiver">
+        <receiver android:name=".receiver.PackageReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
                 <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
@@ -109,17 +122,20 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-        <receiver android:name="dev.dworks.apps.anexplorer.receiver.MountReceiver">
+        <receiver android:name=".receiver.MountReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
 
                 <data android:scheme="file" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.os.storage.action.VOLUME_STATE_CHANGED" />
+            </intent-filter>
         </receiver>
 
         <activity
-            android:name="dev.dworks.apps.anexplorer.NoteActivity"
+            android:name=".NoteActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="sensor"
             android:theme="@style/Theme.Note">
@@ -132,6 +148,35 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".receiver.ConnectionsReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.START_FTPSERVER" />
+                <action android:name="dev.dworks.apps.anexplorer.action.STOP_FTPSERVER" />
+                <action android:name="dev.dworks.apps.anexplorer.action.FTPSERVER_STARTED" />
+                <action android:name="dev.dworks.apps.anexplorer.action.FTPSERVER_STOPPED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".service.ConnectionsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".service.AppStopperService"
+            android:enabled="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_config" />
+        </service>
     </application>
 
 </manifest>

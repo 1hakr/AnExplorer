@@ -148,6 +148,12 @@ public class StandaloneActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
     }
+
+    @Override
+    public String getTag() {
+        return null;
+    }
+
     private void buildDefaultState() {
         mState = new State();
         final Intent intent = getIntent();
@@ -513,7 +519,7 @@ public class StandaloneActivity extends BaseActivity {
         if (mState.stack.root != null) {
             return mState.stack.root;
         } else {
-            return mRoots.getRecentsRoot();
+            return mRoots.getHomeRoot();
         }
     }
 

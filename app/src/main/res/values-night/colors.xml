@@ -7,4 +7,5 @@
 
     <color name="item_doc_list_background_activated">#1acbf1ed</color>
 
+    <color name="defaultThemeColor">#FFFFFF</color>
 </resources>

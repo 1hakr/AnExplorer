@@ -52,7 +52,7 @@
 
         <FrameLayout
             android:id="@+id/container_roots"
-            android:layout_width="256dp"
+            android:layout_width="@dimen/side_navigation_width"
             android:layout_height="match_parent" />
 
         <LinearLayout
