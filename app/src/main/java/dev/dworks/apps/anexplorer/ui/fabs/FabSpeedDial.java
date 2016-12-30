@@ -53,7 +53,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.slf4j.helpers.Util;
+
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.ui.VisibilityAwareLinearLayout;
 
 
@@ -251,11 +254,7 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
             touchGuard.setVisibility(GONE);
 
             if (touchGuardDrawable != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    touchGuard.setBackground(touchGuardDrawable);
-                } else {
-                    touchGuard.setBackgroundDrawable(touchGuardDrawable);
-                }
+                touchGuard.setBackground(touchGuardDrawable);
             }
 
             if (parent instanceof FrameLayout) {
@@ -281,7 +280,7 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
         // Set up the client's FAB
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageDrawable(fabDrawable);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Utils.hasLollipop()) {
             fab.setImageTintList(fabDrawableTint);
         }
         if (fabBackgroundTint != null) {
@@ -432,7 +431,7 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
         }
 
         miniFab.setBackgroundTintList(miniFabBackgroundTint);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Utils.hasLollipop()) {
             miniFab.setImageTintList(miniFabDrawableTint);
         }
 

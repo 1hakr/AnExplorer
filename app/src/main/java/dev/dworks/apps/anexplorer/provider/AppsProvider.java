@@ -29,13 +29,12 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Build;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import com.jaredrummler.android.processes.ProcessManager;
+import com.jaredrummler.android.processes.AndroidProcesses;
 import com.jaredrummler.android.processes.models.AndroidAppProcess;
 
 import java.io.File;
@@ -410,9 +409,23 @@ public class AppsProvider extends DocumentsProvider {
 	 * specified.
 	 */
 	public static List<ActivityManager.RunningAppProcessInfo> getRunningAppProcessInfo(Context ctx) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-			List<AndroidAppProcess> runningAppProcesses = ProcessManager.getRunningAppProcesses();
-			List<ActivityManager.RunningAppProcessInfo> appProcessInfos = new ArrayList<>();
+		ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningAppProcessInfo> appProcessInfos = new ArrayList<>();
+		if(Utils.hasNoughat()){
+			List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(1000);
+			for (ActivityManager.RunningServiceInfo process : runningServices) {
+				ActivityManager.RunningAppProcessInfo info = new ActivityManager.RunningAppProcessInfo(
+						process.process, process.pid, null
+				);
+				info.uid = process.uid;
+				info.importance = process.foreground ? RunningAppProcessInfo.IMPORTANCE_FOREGROUND : RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+				// TODO: Get more information about the process. pkgList, importance, lru, etc.
+				appProcessInfos.add(info);
+			}
+			return appProcessInfos;
+		}
+		else if (Utils.hasLollipopMR1()) {
+			List<AndroidAppProcess> runningAppProcesses = AndroidProcesses.getRunningAppProcesses();
 			for (AndroidAppProcess process : runningAppProcesses) {
 				ActivityManager.RunningAppProcessInfo info = new ActivityManager.RunningAppProcessInfo(
 						process.name, process.pid, null
@@ -424,7 +437,6 @@ public class AppsProvider extends DocumentsProvider {
 			}
 			return appProcessInfos;
 		}
-		ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
 		return am.getRunningAppProcesses();
 	}
 

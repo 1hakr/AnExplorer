@@ -53,16 +53,21 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 tools.add(new RootItem(root));
             }
         }
+
         if(!storage.isEmpty()){
             storage.addAll(phone);
             groupRoots.add(new GroupInfo("Storage", storage));
         } else if(!phone.isEmpty()){
             groupRoots.add(new GroupInfo("Storage", phone));
         }
+
         if(!library.isEmpty()){
             recent.addAll(library);
             groupRoots.add(new GroupInfo("Library", recent));
+        } else {
+            groupRoots.add(new GroupInfo("Library", recent));
         }
+
         if(!folders.isEmpty()){
             groupRoots.add(new GroupInfo("Folders", folders));
         }

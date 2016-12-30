@@ -328,6 +328,9 @@ public class ExternalStorageProvider extends StorageProvider {
             root.rootId = rootId;
             root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                     | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH ;
+            if (isEmpty(path)) {
+                root.flags |= Root.FLAG_EMPTY;
+            }
             root.title = getContext().getString(R.string.root_phone_storage);
             root.path = path;
             root.docId = getDocIdForFile(path);
@@ -345,6 +348,9 @@ public class ExternalStorageProvider extends StorageProvider {
             root.rootId = rootId;
             root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                     | Root.FLAG_SUPPORTS_SEARCH;
+            if (isEmpty(path)) {
+                root.flags |= Root.FLAG_EMPTY;
+            }
             root.title = getContext().getString(R.string.root_downloads);
             root.path = path;
             root.docId = getDocIdForFile(path);
@@ -362,6 +368,9 @@ public class ExternalStorageProvider extends StorageProvider {
             root.rootId = rootId;
             root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                     | Root.FLAG_SUPPORTS_SEARCH;
+            if (isEmpty(path)) {
+                root.flags |= Root.FLAG_EMPTY;
+            }
             root.title = getContext().getString(R.string.root_app_backup);
             root.path = path;
             root.docId = getDocIdForFile(path);
@@ -383,6 +392,9 @@ public class ExternalStorageProvider extends StorageProvider {
                 root.rootId = rootId;
                 root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                         | Root.FLAG_SUPPORTS_SEARCH;
+                if (isEmpty(path)) {
+                    root.flags |= Root.FLAG_EMPTY;
+                }
                 root.title = getContext().getString(R.string.root_bluetooth);
                 root.path = path;
                 root.docId = getDocIdForFile(path);
@@ -391,6 +403,10 @@ public class ExternalStorageProvider extends StorageProvider {
 			e.printStackTrace();
 		}
 	}
+
+    private boolean isEmpty(File file) {
+        return !file.isDirectory() || null == file || null == file.list() || file.list().length == 0;
+    }
 
     private void includeBookmarkRoot() {
         Cursor cursor = null;

@@ -125,10 +125,11 @@ public class RootsFragment extends Fragment {
         int leftWidth = width - Utils.dpToPx(leftPadding);
         int rightWidth = width - Utils.dpToPx(rightPadding);
 
-        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mList.setIndicatorBounds(leftWidth, rightWidth);
-        } else {
+        if(Utils.hasJellyBeanMR2()){
             mList.setIndicatorBoundsRelative(leftWidth, rightWidth);
+
+        } else {
+            mList.setIndicatorBounds(leftWidth, rightWidth);
         }
         return view;
     }

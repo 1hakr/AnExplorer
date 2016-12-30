@@ -1727,29 +1727,16 @@ public class DocumentsActivity extends BaseActivity {
 	private final Handler handler = new Handler();
 	private Drawable oldBackground;
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void changeActionBarColor() {
 
 		int color = SettingsActivity.getActionBarColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
 
 		if (oldBackground == null) {
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                colorDrawable.setCallback(drawableCallback);
-			} else {
-				getSupportActionBar().setBackgroundDrawable(colorDrawable);
-			}
-
+            getSupportActionBar().setBackgroundDrawable(colorDrawable);
 		} else {
 			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, colorDrawable });
-			// workaround for broken ActionBarContainer drawable handling on
-			// pre-API 17 builds
-			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				td.setCallback(drawableCallback);
-			} else {
-				getSupportActionBar().setBackgroundDrawable(td);
-			}
+            getSupportActionBar().setBackgroundDrawable(td);
 			td.startTransition(200);
 		}
 
