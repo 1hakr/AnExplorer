@@ -52,7 +52,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     public void initInterstitialAd(){
-        mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/2724050870");
+        mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/9134520474");
         requestNewInterstitial();
     }
 
