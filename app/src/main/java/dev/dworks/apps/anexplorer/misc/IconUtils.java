@@ -104,7 +104,7 @@ public class IconUtils {
         add("application/x-javascript", icon);
 
         // Compressed
-        icon = R.drawable.ic_doc_compressed;
+        icon = R.drawable.ic_doc_archive;
         add("application/mac-binhex40", icon);
         add("application/rar", icon);
         add("application/zip", icon);
@@ -329,7 +329,7 @@ public class IconUtils {
                 return "certificate";
             case R.drawable.ic_doc_codes:
                 return "source code";
-            case R.drawable.ic_doc_compressed:
+            case R.drawable.ic_doc_archive:
                 return "compressed";
             case R.drawable.ic_doc_contact:
                 return "contact";
