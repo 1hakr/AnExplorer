@@ -25,16 +25,12 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -73,7 +69,7 @@ public class RootedStorageProvider extends StorageProvider {
         public int flags;
         public String title;
         public String docId;
-        public String path;
+        public RootFile path;
     }
 
     public static final String ROOT_ID_ROOT = "Root";
@@ -81,30 +77,22 @@ public class RootedStorageProvider extends StorageProvider {
     private final Object mRootsLock = new Object();
 
     @GuardedBy("mRootsLock")
-    private ArrayList<RootInfo> mRoots;
-    @GuardedBy("mRootsLock")
-    private HashMap<String, RootInfo> mIdToRoot;
-    @GuardedBy("mRootsLock")
-    private HashMap<String, RootFile> mIdToPath;
+    private ArrayMap<String, RootInfo> mRoots = new ArrayMap<>();
 
     @Override
     public boolean onCreate() {
-        mRoots = Lists.newArrayList();
-        mIdToRoot = Maps.newHashMap();
-        mIdToPath = Maps.newHashMap();
 
     	try {
             final String rootId = ROOT_ID_ROOT;
             final RootFile path = new RootFile("/");
-            mIdToPath.put(rootId, path);
-
             final RootInfo root = new RootInfo();
+            mRoots.put(rootId, root);
+
             root.rootId = rootId;
             root.flags =  Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED;
             root.title = getContext().getString(R.string.root_root_storage);
+            root.path = path;
             root.docId = getDocIdForRootFile(path);
-            mRoots.add(root);
-            mIdToRoot.put(rootId, root);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -128,12 +116,12 @@ public class RootedStorageProvider extends StorageProvider {
         String path = file.getAbsolutePath();
 
         // Find the most-specific root path
-        Map.Entry<String, RootFile> mostSpecific = null;
+        Map.Entry<String, RootInfo> mostSpecific = null;
         synchronized (mRootsLock) {
-            for (Map.Entry<String, RootFile> root : mIdToPath.entrySet()) {
-                final String rootPath = root.getValue().getPath();
+            for (Map.Entry<String, RootInfo> root : mRoots.entrySet()) {
+                final String rootPath = root.getValue().path.getPath();
                 if (path.startsWith(rootPath) && (mostSpecific == null
-                        || rootPath.length() > mostSpecific.getValue().getPath().length())) {
+                        || rootPath.length() > mostSpecific.getValue().path.getPath().length())) {
                     mostSpecific = root;
                 }
             }
@@ -144,7 +132,7 @@ public class RootedStorageProvider extends StorageProvider {
         }
 
         // Start at first char of path under root
-        final String rootPath = mostSpecific.getValue().getPath();
+        final String rootPath = mostSpecific.getValue().path.getPath();
         if (rootPath.equals(path)) {
             path = "";
         } else if (rootPath.endsWith("/")) {
@@ -161,14 +149,19 @@ public class RootedStorageProvider extends StorageProvider {
         final String tag = docId.substring(0, splitIndex);
         final String path = docId.substring(splitIndex + 1);
 
-        RootFile target;
+        RootInfo root;
         synchronized (mRootsLock) {
-            target = mIdToPath.get(tag);
+            root = mRoots.get(tag);
         }
-        if (target == null) {
+        if (root == null) {
             throw new FileNotFoundException("No root for " + tag);
         }
 
+        RootFile target = root.path;
+
+        if (target == null) {
+            return null;
+        }
         target = new RootFile(target.getAbsolutePath() + path);
         return target;
     }
@@ -229,10 +222,7 @@ public class RootedStorageProvider extends StorageProvider {
     public Cursor queryRoots(String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
         synchronized (mRootsLock) {
-            for (String rootId : mIdToPath.keySet()) {
-                final RootInfo root = mIdToRoot.get(rootId);
-                final RootFile file = mIdToPath.get(rootId);
-                
+            for (RootInfo root : mRoots.values()) {
                 final RowBuilder row = result.newRow();
                 row.add(Root.COLUMN_ROOT_ID, root.rootId);
                 row.add(Root.COLUMN_FLAGS, root.flags);
@@ -379,7 +369,7 @@ public class RootedStorageProvider extends StorageProvider {
 
         final RootFile parent;
         synchronized (mRootsLock) {
-            parent = mIdToPath.get(rootId);
+            parent = mRoots.get(rootId).path;
         }
 
         try {
