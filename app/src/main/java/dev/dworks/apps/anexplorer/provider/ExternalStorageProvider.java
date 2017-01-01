@@ -320,7 +320,7 @@ public class ExternalStorageProvider extends StorageProvider {
     private void includeOtherRoot() {
     	try {
             final String rootId = ROOT_ID_PHONE;
-            final File path = new File(DIR_ROOT);
+            final File path = Utils.hasNoughat() ? Environment.getRootDirectory() : new File(DIR_ROOT);
 
             final RootInfo root = new RootInfo();
             mRoots.put(rootId, root);
