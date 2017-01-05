@@ -19,7 +19,6 @@ package dev.dworks.apps.anexplorer.provider;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +52,6 @@ import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.DiskInfo;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
@@ -129,19 +127,23 @@ public class ExternalStorageProvider extends StorageProvider {
     public boolean onCreate() {
         mHandler = new Handler();
         mArchiveHelper = new DocumentArchiveHelper(this, (char) 0);
-        updateVolumes();
+        updateRoots();
         updateSettings();
 
         return true;
     }
 
-    public void updateVolumes() {
+    @Override
+    public void updateRoots() {
         synchronized (mRootsLock) {
             updateVolumesLocked();
             includeOtherRoot();
             includeBookmarkRoot();
+            Log.d(TAG, "After updating volumes, found " + mRoots.size() + " active roots");
+            notifyRootsChanged(getContext());
         }
     }
+
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private void updateVolumesLocked() {
@@ -195,11 +197,6 @@ public class ExternalStorageProvider extends StorageProvider {
                 throw new IllegalStateException(e);
             }
         }
-
-        Log.d(TAG, "After updating volumes, found " + mRoots.size() + " active roots");
-
-        getContext().getContentResolver()
-                .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
 
     private void updateVolumesLocked2() {
@@ -313,8 +310,7 @@ public class ExternalStorageProvider extends StorageProvider {
         // as well as content://com.android.externalstorage.documents/document/*/children,
         // so just notify on content://com.android.externalstorage.documents/.
 
-        getContext().getContentResolver()
-                .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+        notifyRootsChanged(getContext());
     }
 
     private void includeOtherRoot() {
@@ -454,16 +450,11 @@ public class ExternalStorageProvider extends StorageProvider {
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
 
-    public static void updateVolumes(Context context){
-        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(context.getContentResolver(),
-                ExternalStorageProvider.AUTHORITY);
-        try {
-            ((ExternalStorageProvider) client.getLocalContentProvider()).updateVolumes();
-        } finally {
-            ContentProviderClientCompat.releaseQuietly(client);
-        }
+    public static void notifyDocumentsChanged(Context context, String rootId) {
+        Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+        context.getContentResolver().notifyChange(uri, null, false);
     }
-    
+
     public static boolean isDownloadAuthority(Intent intent){
     	if(null != intent.getData()){
         	String authority = intent.getData().getAuthority();

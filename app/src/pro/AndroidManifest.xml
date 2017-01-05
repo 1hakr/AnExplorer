@@ -81,4 +81,15 @@
         </provider>
     </application>
 
+    <provider
+        android:name="dev.dworks.apps.anexplorer.provider.NetworkStorageProvider"
+        android:authorities="dev.dworks.apps.anexplorer.pro.networkstorage.documents"
+        android:exported="true"
+        android:grantUriPermissions="true"
+        android:permission="android.permission.MANAGE_DOCUMENTS" >
+        <intent-filter>
+            <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+        </intent-filter>
+    </provider>
+
 </manifest>

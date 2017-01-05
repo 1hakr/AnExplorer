@@ -37,6 +37,9 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
+
 public class IconUtils {
 
     private static HashMap<String, Integer> sMimeIcons = Maps.newHashMap();
@@ -304,6 +307,17 @@ public class IconUtils {
             return ContextCompat.getDrawable(context, R.drawable.ic_doc_video);
         } else {
             return ContextCompat.getDrawable(context, R.drawable.ic_doc_generic);
+        }
+    }
+
+    public static Drawable loadSchemeIcon(Context context, String type) {
+
+        if (SERVER.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_connection_server);
+        } else if (CLIENT.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_connection_network);
+        } else {
+            return ContextCompat.getDrawable(context, R.drawable.ic_connection_server);
         }
     }
     

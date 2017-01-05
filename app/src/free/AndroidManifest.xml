@@ -110,6 +110,17 @@
             </intent-filter>
         </provider>
 
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.NetworkStorageProvider"
+            android:authorities="dev.dworks.apps.anexplorer.networkstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" >
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
         <!-- AdMob -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"

@@ -82,7 +82,13 @@ public class RootedStorageProvider extends StorageProvider {
     @Override
     public boolean onCreate() {
 
-    	try {
+        updateRoots();
+        return true;
+    }
+
+    @Override
+    public void updateRoots() {
+        try {
             final String rootId = ROOT_ID_ROOT;
             final RootFile path = new RootFile("/");
             final RootInfo root = new RootInfo();
@@ -93,12 +99,13 @@ public class RootedStorageProvider extends StorageProvider {
             root.title = getContext().getString(R.string.root_root_storage);
             root.path = path;
             root.docId = getDocIdForRootFile(path);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-        return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        notifyRootsChanged(getContext());
     }
-    
+
     private static String[] resolveRootProjection(String[] projection) {
         return projection != null ? projection : DEFAULT_ROOT_PROJECTION;
     }
@@ -110,6 +117,11 @@ public class RootedStorageProvider extends StorageProvider {
     public static void notifyRootsChanged(Context context) {
         context.getContentResolver()
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+    }
+
+    public static void notifyDocumentsChanged(Context context, String rootId) {
+        Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+        context.getContentResolver().notifyChange(uri, null, false);
     }
 
     private String getDocIdForRootFile(RootFile file) throws FileNotFoundException {

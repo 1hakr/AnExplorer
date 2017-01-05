@@ -1,45 +1,71 @@
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
+import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Loader;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.provider.BaseColumns;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.PopupMenu;
 
+import dev.dworks.apps.anexplorer.BaseActivity;
+import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
-import dev.dworks.apps.anexplorer.misc.IconUtils;
-import dev.dworks.apps.anexplorer.service.ConnectionsService;
+import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.network.NetworkConnection;
+import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.CompatTextView;
+import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
+import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_FAILEDTOSTART;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STARTED;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STOPPED;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_START_FTPSERVER;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_STOP_FTPSERVER;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
-public class ConnectionsFragment extends Fragment implements View.OnClickListener {
+public class ConnectionsFragment extends ListFragment implements View.OnClickListener{
 
-    private TextView statusText;
-    private TextView ftpAddrText;
-    private ImageButton ftpBtn;
+    public static final String TAG = "ConnectionsFragment";
+
+    private ListView mListView;
+
+    private ConnectionsAdapter mAdapter;
+    private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
+
+    private final int mLoaderId = 42;
+    private MaterialProgressBar mProgressBar;
+    private CompatTextView mEmptyView;
+    private FloatingActionButton fab;
 
     public static void show(FragmentManager fm) {
         final ConnectionsFragment fragment = new ConnectionsFragment();
         final FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.container_directory, fragment);
+        ft.replace(R.id.container_directory, fragment, TAG);
         ft.commitAllowingStateLoss();
+    }
+
+    public static ConnectionsFragment get(FragmentManager fm) {
+        return (ConnectionsFragment) fm.findFragmentByTag(TAG);
     }
 
     @Override
@@ -56,127 +82,177 @@ public class ConnectionsFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        statusText =(TextView) view.findViewById(R.id.statusText);
-        ftpAddrText = (TextView) view.findViewById(R.id.ftpAddressText);
-        ftpBtn = (ImageButton) view.findViewById(R.id.startStopButton);
-        ftpBtn.setOnClickListener(this);
+        final Resources res = getActivity().getResources();
 
-        ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        setTintedImage(icon, R.drawable.ic_root_connections);
+        int defaultColor = SettingsActivity.getActionBarColor();
+        int complimentaryColor = Utils.getComplementaryColor(defaultColor);
+
+        fab = (FloatingActionButton)view.findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList.valueOf(complimentaryColor));
+        fab.setOnClickListener(this);
+
+        mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
+        mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
+        mListView = (ListView) view.findViewById(R.id.list);
+        mListView.setOnItemClickListener(mItemListener);
+        fab.attachToListView(mListView);
+
+        // Indent our list divider to align with text
+        final Drawable divider = mListView.getDivider();
+        final boolean insetLeft = res.getBoolean(R.bool.list_divider_inset_left);
+        final int insetSize = res.getDimensionPixelSize(R.dimen.list_divider_inset);
+        if (insetLeft) {
+            mListView.setDivider(new InsetDrawable(divider, insetSize, 0, 0, 0));
+        } else {
+            mListView.setDivider(new InsetDrawable(divider, 0, 0, insetSize, 0));
+        }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setRetainInstance(true);
-    }
+        final Context context = getActivity();
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        updateStatus();
-        IntentFilter wifiFilter = new IntentFilter();
-        wifiFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        getActivity().registerReceiver(mWifiReceiver,wifiFilter);
-        IntentFilter ftpFilter = new IntentFilter();
-        ftpFilter.addAction(ACTION_FTPSERVER_STARTED);
-        ftpFilter.addAction(ACTION_FTPSERVER_STOPPED);
-        ftpFilter.addAction(ACTION_FTPSERVER_FAILEDTOSTART);
-        getActivity().registerReceiver(ftpReceiver,ftpFilter);
-    }
+        mAdapter = new ConnectionsAdapter(this);
+        mCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        getActivity().unregisterReceiver(mWifiReceiver);
-        getActivity().unregisterReceiver(ftpReceiver);
-    }
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                Uri contentsUri = ExplorerProvider.buildConnection();
+                return new CursorLoader(context, contentsUri, null, null, null, null);
+            }
 
-    @Override
-    public  void onDestroy(){
-        super.onDestroy();
-    }
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor result) {
+                if (!isAdded())
+                    return;
 
-    private void startServer() {
-        getActivity().sendBroadcast(new Intent(ACTION_START_FTPSERVER));
-    }
+                mAdapter.swapResult(result);
+                mEmptyView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
 
-    private void stopServer() {
-        getActivity().sendBroadcast(new Intent(ACTION_STOP_FTPSERVER));
-    }
-
-    private void updateStatus(){
-        setStatus(ConnectionsService.isRunning());
-    }
-
-    private void setStatus(boolean running){
-        if(running){
-            ftpAddrText.setText(ConnectionUtils.getFTPAddress(getActivity()));
-            ftpAddrText.setTextColor(ContextCompat.getColor(getActivity(), R.color.material_blue_grey_800));
-            statusText.setText(getString(R.string.ftp_status_running));
-            setTintedImage(ftpBtn, R.drawable.ic_stop);
-        } else {
-            ftpAddrText.setText("");
-            statusText.setText(getString(R.string.ftp_status_not_running));
-            setTintedImage(ftpBtn, R.drawable.ic_start);
-        }
-    }
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.startStopButton:
-                if(!ConnectionsService.isRunning()){
-                    if(ConnectionUtils.isConnectedToWifi(getActivity()))
-                        startServer();
-                    else
-                        ftpAddrText.setText(getString(R.string.ftp_no_wifi));
-                        ftpAddrText.setTextColor(ContextCompat.getColor(getActivity(), R.color.material_red));
+                if (isResumed()) {
+                    setListShown(true);
+                } else {
+                    setListShownNoAnimation(true);
                 }
-                else{
-                    stopServer();
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+                mAdapter.swapResult(null);
+            }
+        };
+        setListAdapter(mAdapter);
+        setListShown(false);
+        // Kick off loader at least once
+        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+
+    }
+
+    public void reload(){
+        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+        NetworkStorageProvider.notifyRootsChanged(getActivity());
+    }
+
+    private AdapterView.OnItemClickListener mItemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            final Cursor cursor = mAdapter.getItem(position);
+            if (cursor != null) {
+                NetworkConnection connection = NetworkConnection.fromConnectionsCursor(cursor);
+                openConnectionRoot(connection);
+            }
+        }
+    };
+
+    @Override
+    public void onClick(final View view) {
+        switch (view.getId()){
+            case R.id.fab:
+                addConnection();
+                break;
+            case R.id.button_popup:
+                final int position = mListView.getPositionForView(view);
+                if (position != ListView.INVALID_POSITION) {
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showPopupMenu(view, position);
+                        }
+                    });
                 }
                 break;
         }
     }
 
-    private BroadcastReceiver mWifiReceiver = new  BroadcastReceiver() {
+    private void showPopupMenu(View view, final int position) {
+        PopupMenu popup = new PopupMenu(getActivity(), view);
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager conMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = conMan.getActiveNetworkInfo();
-            if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI){
-                ftpAddrText.setText("");
+        popup.getMenuInflater().inflate(R.menu.popup_connections, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                return onPopupMenuItemClick(menuItem, position);
             }
-            else{
-                stopServer();
-                setStatus(false);
-                ftpAddrText.setText(getString(R.string.ftp_no_wifi));
-                ftpAddrText.setTextColor(ContextCompat.getColor(getActivity(), R.color.material_red));
+        });
+        popup.show();
+    }
+
+    public boolean onPopupMenuItemClick(MenuItem item, int position) {
+        final Cursor cursor = mAdapter.getItem(position);
+        int connection_id = getCursorInt(cursor, BaseColumns._ID);
+        NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
+        final int id = item.getItemId();
+        switch (id) {
+            case R.id.menu_edit:
+                editConnection(connection_id);
+                return true;
+            case R.id.menu_delete:
+                if(!networkConnection.type.equals(SERVER)) {
+                    deleteConnection(connection_id);
+                } else {
+                    ((BaseActivity)getActivity())
+                            .showSnackBar("Default server connection can't be deleted",
+                                    Snackbar.LENGTH_SHORT);
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void addConnection() {
+        CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager());
+        AnalyticsManager.logEvent("add_connection");
+    }
+
+    private void editConnection(int connection_id) {
+        CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager(), connection_id);
+        AnalyticsManager.logEvent("edit_connection");
+    }
+
+    private void deleteConnection(final int connection_id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Delete connection?").setCancelable(false).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int did) {
+                dialog.dismiss();
+                boolean success = NetworkConnection.deleteConnection(getActivity(), connection_id);
+                if(success){
+                    reload();
+                }
             }
-        }
-    };
+        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int did) {
+                dialog.dismiss();
+            }
+        });
+        DialogFragment.showThemedDialog(builder);
+        AnalyticsManager.logEvent("delete_connection");
+    }
 
-    private BroadcastReceiver ftpReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if(action == ACTION_FTPSERVER_STARTED) {
-            setStatus(true);
-        }
-        else if(action == ACTION_FTPSERVER_FAILEDTOSTART){
-            setStatus(false);
-            ftpAddrText.setText("Oops! Something went wrong");
-            ftpAddrText.setTextColor(ContextCompat.getColor(getActivity(), R.color.material_red));
-        }
-        else if(action == ACTION_FTPSERVER_STOPPED){
-            setStatus(false);
-        }
-        }
-    };
-
-    private void setTintedImage(ImageView imageview, int resourceId){
-        imageview.setImageDrawable(IconUtils.applyTintAttr(getActivity(), resourceId,
-                android.R.attr.textColorPrimary));
+    public void openConnectionRoot(NetworkConnection connection) {
+        DocumentsActivity activity = ((DocumentsActivity)getActivity());
+        activity.onRootPicked(activity.getRoots().getRootInfo(connection,
+                NetworkStorageProvider.AUTHORITY), true);
     }
 }

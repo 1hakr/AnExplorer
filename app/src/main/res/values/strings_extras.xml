@@ -26,6 +26,7 @@
     <string name="menu_uninstall">Uninstall</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_properties">Properties</string>
+    <string name="menu_edit">Edit</string>
 
     <string name="root_images">Images</string>
     <string name="root_audio">Audio</string>
@@ -43,7 +44,7 @@
     <string name="root_heat_map">Heat map</string>
     <string name="root_processes">Processes</string>
     <string name="root_home">Home</string>
-    <string name="root_web_host">Connections</string>
+    <string name="root_connections">Connections</string>
     <string name="root_document">Documents</string>
     <string name="root_archive">Archives</string>
     <string name="root_apk">APK</string>
@@ -179,8 +180,13 @@
     <string name="ftp_status_running">Running</string>
     <string name="ftp_status_not_running">Not Running</string>
     <string name="ftp_no_wifi">Make sure you\'re connected to WiFi</string>
-    <string name="ftp_notif_starting">FTP Web Server is starting</string>
-    <string name="ftp_notif_title">FTP Web Server started</string>
+    <string name="ftp_notif_starting">Transfer to PC is starting</string>
+    <string name="ftp_notif_title">Transfer to PC started</string>
     <string name="ftp_notif_text">at %s</string>
     <string name="ftp_notif_stop_server">STOP</string>
+
+    <string-array name="connection_types">
+        <item>FTP</item>
+        <item>FTPS</item>
+    </string-array>
 </resources>
