@@ -18,7 +18,7 @@
             android:paddingTop="@dimen/grid_item_padding">
 
             <android.support.v7.widget.AppCompatSpinner
-                android:id="@+id/type"
+                android:id="@+id/scheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

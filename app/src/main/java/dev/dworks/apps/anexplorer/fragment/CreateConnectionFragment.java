@@ -32,6 +32,7 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
@@ -45,6 +46,7 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_CONNECTION_ID;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
 /**
@@ -57,7 +59,7 @@ public class CreateConnectionFragment extends DialogFragment {
     private AppCompatEditText port;
     private AppCompatEditText username;
     private AppCompatEditText password;
-    private AppCompatSpinner type;
+    private AppCompatSpinner scheme;
     private AppCompatCheckBox anonymous;
     private View passwordContainer;
     private View usernameContainer;
@@ -106,7 +108,7 @@ public class CreateConnectionFragment extends DialogFragment {
         usernameContainer = view.findViewById(R.id.usernameContainer);
         password = (AppCompatEditText) view.findViewById(R.id.password);
         passwordContainer = view.findViewById(R.id.passwordContainer);
-        type = (AppCompatSpinner) view.findViewById(R.id.type);
+        scheme = (AppCompatSpinner) view.findViewById(R.id.scheme);
         anonymous = (AppCompatCheckBox) view.findViewById(R.id.anonymous);
         anonymous.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -119,6 +121,10 @@ public class CreateConnectionFragment extends DialogFragment {
         if(connection_id != 0){
             NetworkConnection connection =
                     NetworkConnection.fromConnectionId(getActivity(), connection_id);
+
+            ArrayAdapter myAdap = (ArrayAdapter) scheme.getAdapter();
+            int spinnerPosition = myAdap.getPosition(connection.getScheme().toUpperCase());
+            scheme.setSelection(spinnerPosition);
 
             name.setText(connection.getName());
             host.setText(connection.getHost());
@@ -163,8 +169,8 @@ public class CreateConnectionFragment extends DialogFragment {
         }
         networkConnection.username = username.getText().toString();
         networkConnection.password = password.getText().toString();
-        networkConnection.scheme = type.getSelectedItem().toString().toLowerCase();
-        networkConnection.type = "client";
+        networkConnection.scheme = scheme.getSelectedItem().toString().toLowerCase();
+        networkConnection.type = CLIENT;
         networkConnection.setAnonymous(anonymous.isChecked());
         networkConnection.build();
         return networkConnection;
