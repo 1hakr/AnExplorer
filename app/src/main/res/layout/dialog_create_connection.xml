@@ -39,14 +39,15 @@
                     android:layout_gravity="start"
                     android:hint="Connection Name"
                     android:inputType="text"
-                    android:textAlignment="viewStart"
                     android:nextFocusForward="@+id/host"
+                    android:textAlignment="viewStart"
                     android:theme="@style/EditTextAppTheme" />
 
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/hostContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -88,6 +89,31 @@
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/pathContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/grid_item_padding"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5">
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/path"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:hint="Path"
+                    android:inputType="textUri"
+                    android:textAlignment="viewStart"
+                    android:theme="@style/EditTextAppTheme" />
+
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
 
         <android.support.v7.widget.AppCompatCheckBox
             android:id="@+id/anonymous"

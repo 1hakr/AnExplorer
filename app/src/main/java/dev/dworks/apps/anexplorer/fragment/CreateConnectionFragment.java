@@ -45,6 +45,7 @@ import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_CONNECTION_ID;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
 /**
  * Dialog to create a new connection.
@@ -61,6 +62,9 @@ public class CreateConnectionFragment extends DialogFragment {
     private View passwordContainer;
     private View usernameContainer;
     private int connection_id;
+    private AppCompatEditText path;
+    private View hostContainer;
+    private View pathContainer;
 
     public static void show(FragmentManager fm) {
         final CreateConnectionFragment dialog = new CreateConnectionFragment();
@@ -95,6 +99,9 @@ public class CreateConnectionFragment extends DialogFragment {
         name = (AppCompatEditText) view.findViewById(R.id.name);
         host = (AppCompatEditText) view.findViewById(R.id.host);
         port = (AppCompatEditText) view.findViewById(R.id.port);
+        path = (AppCompatEditText) view.findViewById(R.id.path);
+        hostContainer = view.findViewById(R.id.hostContainer);
+        pathContainer = view.findViewById(R.id.pathContainer);
         username = (AppCompatEditText) view.findViewById(R.id.username);
         usernameContainer = view.findViewById(R.id.usernameContainer);
         password = (AppCompatEditText) view.findViewById(R.id.password);
@@ -116,9 +123,14 @@ public class CreateConnectionFragment extends DialogFragment {
             name.setText(connection.getName());
             host.setText(connection.getHost());
             port.setText(Integer.toString(connection.getPort()));
+            path.setText(connection.getPath());
             username.setText(connection.getUserName());
             password.setText(connection.getPassword());
             anonymous.setChecked(connection.isAnonymousLogin());
+            if(SERVER.equals(connection.getType())){
+                hostContainer.setVisibility(View.GONE);
+                pathContainer.setVisibility(View.VISIBLE);
+            }
         }
         builder.setTitle( (connection_id == 0 ? "New" : "Edit") + " Connection");
         builder.setView(view);
