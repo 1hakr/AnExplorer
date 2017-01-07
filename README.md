@@ -1,6 +1,10 @@
-AnExplorer
-==========
-![AnExplorer](https://github.com/DWorkS/AnExplorer/raw/master/header.png)
+AnExplorer All-in-One File Manager
+==================================
+[<img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=dev.dworks.apps.anexplorer)
+[<img alt="Get it on Amazon" height="45" style="margin-left: 8px;" src="https://images-na.ssl-images-amazon.com/images/G/01/AmazonMobileApps/amazon-apps-store-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=dev.dworks.apps.anexplorer)
+
+
+![AnExplorer](https://github.com/DWorkS/AnExplorer/raw/master/header.jpg)
 
 AnExplorer File Manager (File Explorer) is an Another File Manager which helps you manage your files easily.
 AnExplorer File Manager (File Explorer) is designed for all android devices including Phones, Phablets, Tablets and Google TV. It's a fully designed with Material guidelines by Google. It supports all Android versions from Jellybean, Kitkat, Marshmallow to Nougat.
@@ -49,7 +53,3 @@ License
     limitations under the License.
 
 
-
-
-
-[1]: https://play.google.com/store/apps/details?id=dev.dworks.apps.anexplorer
