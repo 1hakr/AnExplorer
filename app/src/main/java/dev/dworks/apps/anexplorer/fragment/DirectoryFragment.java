@@ -112,7 +112,6 @@ import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
-import static com.google.android.gms.actions.SearchIntents.EXTRA_QUERY;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_MANAGE;
@@ -129,6 +128,7 @@ import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_
 import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_DOC;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_IGNORE_STATE;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_QUERY;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_TYPE;
 import static dev.dworks.apps.anexplorer.misc.Utils.isRooted;

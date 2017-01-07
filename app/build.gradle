@@ -5,8 +5,8 @@ android {
     buildToolsVersion '25.0.1'
 
     defaultConfig {
-        versionName "3.3"
-        versionCode = 50
+        versionName "3.4"
+        versionCode = 51
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -90,10 +90,8 @@ dependencies {
     compile 'com.github.mjdev:libaums:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
     compile 'commons-net:commons-net:+'
-    //compile 'org.apache.commons:commons-vfs2:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
-    freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }

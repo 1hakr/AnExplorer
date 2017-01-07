@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -51,6 +53,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(null);
+		setUpDefaultStatusBar();
 
 		initControls();
 	}
@@ -157,6 +160,18 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						.startChooser();
 				AnalyticsManager.logEvent("share_app");
 				break;
+		}
+	}
+
+	public void setUpDefaultStatusBar() {
+		int color = ContextCompat.getColor(this, R.color.material_blue_grey_800);
+		if(Utils.hasLollipop()){
+			getWindow().setStatusBarColor(color);
+		}
+		else if(Utils.hasKitKat()){
+			SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+			systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
+			systemBarTintManager.setStatusBarTintEnabled(true);
 		}
 	}
 }
