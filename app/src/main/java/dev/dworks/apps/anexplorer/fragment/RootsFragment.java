@@ -51,7 +51,6 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
@@ -126,10 +125,11 @@ public class RootsFragment extends Fragment {
         int leftWidth = width - Utils.dpToPx(leftPadding);
         int rightWidth = width - Utils.dpToPx(rightPadding);
 
-        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mList.setIndicatorBounds(leftWidth, rightWidth);
-        } else {
+        if(Utils.hasJellyBeanMR2()){
             mList.setIndicatorBoundsRelative(leftWidth, rightWidth);
+
+        } else {
+            mList.setIndicatorBounds(leftWidth, rightWidth);
         }
         return view;
     }
@@ -159,26 +159,28 @@ public class RootsFragment extends Fragment {
 
                 final Intent includeApps = getArguments().getParcelable(EXTRA_INCLUDE_APPS);
 
-                mAdapter = new RootsExpandableAdapter(context, result, includeApps);
-                Parcelable state = mList.onSaveInstanceState();
-                mList.setAdapter(mAdapter);
-                mList.onRestoreInstanceState(state);
+                if (mAdapter == null) {
+                    mAdapter = new RootsExpandableAdapter(context, result, includeApps);
+                    Parcelable state = mList.onSaveInstanceState();
+                    mList.setAdapter(mAdapter);
+                    mList.onRestoreInstanceState(state);
+                } else {
+                    mAdapter.setData(result);
+                }
 
-                int groupCount = mList.getAdapter().getCount();
+                int groupCount = mAdapter.getGroupCount();
                 if(group_size != 0 && group_size == groupCount){
                     if (expandedIds != null) {
                         restoreExpandedState(expandedIds);
                     }
                 } else {
                     group_size = groupCount;
-                    if (groupCount >= 2) {
-                        mList.expandGroup(0, true);
-                        mList.expandGroup(1, true);
-                    } else if (groupCount == 1) {
-                        mList.expandGroup(0, true);
+                    for (int i = 0; i < group_size; i++) {
+                        mList.expandGroup(i);
                     }
                     expandedIds = getExpandedIds();
                     mList.setOnGroupExpandListener(mOnGroupExpandListener);
+                    mList.setOnGroupCollapseListener(mOnGroupCollapseListener);
                 }
             }
 
@@ -223,6 +225,7 @@ public class RootsFragment extends Fragment {
                         try {
                             long id = ExpandableListView.getPackedPositionForChild(i, j);
                             int index = mList.getFlatListPosition(id);
+                            //mList.setSelection(index);
                             mList.setItemChecked(index, true);
                         } catch (Exception e){}
 
@@ -302,6 +305,13 @@ public class RootsFragment extends Fragment {
         }
     };
 
+    private ExpandableListView.OnGroupCollapseListener mOnGroupCollapseListener = new ExpandableListView.OnGroupCollapseListener() {
+        @Override
+        public void onGroupCollapse(int i) {
+            expandedIds.remove(mAdapter.getGroupId(i));
+        }
+    };
+
     private void removeBookark(final BookmarkItem item) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Remove bookmark?")
@@ -317,7 +327,7 @@ public class RootsFragment extends Fragment {
                 if (rows > 0) {
                     ((BaseActivity) getActivity()).showInfo("Bookmark removed");
 
-                    ExternalStorageProvider.updateVolumes(getActivity());
+                    RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
                 }
             }
         }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -519,23 +529,6 @@ public class RootsFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private static boolean inArray(Long[] array, long element) {
-        for (long l : array) {
-            if (l == element) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static Long[] toLongArray(List<Long> list)  {
-        Long[] ret = new Long[list.size()];
-        int i = 0;
-        for (Long e : list)
-            ret[i++] = e.longValue();
-        return ret;
     }
 
     @Override

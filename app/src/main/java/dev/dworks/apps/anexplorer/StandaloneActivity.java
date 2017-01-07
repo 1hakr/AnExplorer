@@ -519,7 +519,7 @@ public class StandaloneActivity extends BaseActivity {
         if (mState.stack.root != null) {
             return mState.stack.root;
         } else {
-            return mRoots.getRecentsRoot();
+            return mRoots.getHomeRoot();
         }
     }
 

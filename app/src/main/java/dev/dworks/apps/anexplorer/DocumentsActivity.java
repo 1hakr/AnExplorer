@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
+import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
@@ -89,10 +90,12 @@ import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
+import dev.dworks.apps.anexplorer.fragment.ServerFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
@@ -109,7 +112,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
+import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
@@ -134,6 +137,8 @@ import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
+import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.isDownloadAuthority;
 
 public class DocumentsActivity extends BaseActivity {
 
@@ -278,18 +283,15 @@ public class DocumentsActivity extends BaseActivity {
 
         if (!mState.restored) {
             if (mState.action == ACTION_MANAGE) {
-                if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
-                    onRootPicked(getDownloadRoot(), true);
-                }
-                else {
-                    final Uri rootUri = getIntent().getData();
-                    new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
-                }
+                final Uri rootUri = getIntent().getData();
+                new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
             } else {
-            	if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
+            	if(isDownloadAuthority(getIntent())){
             		onRootPicked(getDownloadRoot(), true);
-            	}
-            	else{
+            	} if(ConnectionUtils.isServerAuthority(getIntent())){
+                    RootInfo root = getIntent().getExtras().getParcelable(EXTRA_ROOT);
+                    onRootPicked(root, true);
+                } else{
                     try {
                         new RestoreStackTask().execute();
                     }
@@ -313,9 +315,19 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     public void again() {
         if(Utils.hasMarshmallow()) {
-            ExternalStorageProvider.updateVolumes(this);
+            RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
-            mRoots.updateAsync();
+
+            //TODO refactor once home is added
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRoots.updateAsync();
+                    onRootPicked(mRoots.getDefaultRoot(), true);
+                }
+            }, 500);
+            //mRoots.updateAsync();
         }
     }
 
@@ -390,8 +402,8 @@ public class DocumentsActivity extends BaseActivity {
         } else if (IntentUtils.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
             mState.action = ACTION_OPEN_TREE;
         } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
-            mState.action = ACTION_MANAGE;
-            //mState.action = ACTION_BROWSE;
+            //mState.action = ACTION_MANAGE;
+            mState.action = ACTION_BROWSE;
         } else{
             mState.action = ACTION_BROWSE;
         }
@@ -545,9 +557,6 @@ public class DocumentsActivity extends BaseActivity {
             mState.showThumbnail = SettingsActivity.getDisplayFileThumbnail(this);
             mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
-        }
-        if(BuildConfig.FLAVOR.contains("other") || Utils.isTelevision(this)){
-            return;
         }
     }
 
@@ -1114,6 +1123,10 @@ public class DocumentsActivity extends BaseActivity {
         return mRoots.getAppsBackupRoot();
     }
 
+    public RootsCache getRoots(){
+        return mRoots;
+    }
+
     public DocumentInfo getCurrentDirectory() {
         return mState.stack.peek();
     }
@@ -1162,7 +1175,7 @@ public class DocumentsActivity extends BaseActivity {
         DocumentInfo cwd = getCurrentDirectory();
 
         //TODO : this has to be done nicely
-        if(cwd == null){
+        if(cwd == null && !root.isServerStorage()){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
 	                root.authority, root.documentId);
 	        DocumentInfo result;
@@ -1192,6 +1205,8 @@ public class DocumentsActivity extends BaseActivity {
                 }
                 else if(root.isConnections()){
                     ConnectionsFragment.show(fm);
+                } else if(root.isServerStorage()){
+                    ServerFragment.show(fm, root);
                 } else {
                     DirectoryFragment.showRecentsOpen(fm, anim);
 
@@ -1242,22 +1257,28 @@ public class DocumentsActivity extends BaseActivity {
         updateActionBar();
         invalidateMenu();
         dumpStack();
-        AppRate.with(this, mRateContainer).listener(new AppRate.OnShowListener() {
-            @Override
-            public void onRateAppShowing() {
-                // View is shown
-            }
 
-            @Override
-            public void onRateAppDismissed() {
-                // User has dismissed it
-            }
-
-            @Override
-            public void onRateAppClicked() {
-            }
-        }).checkAndShow();
+        if(!Utils.isOtherBuild() && !Utils.isTelevision(this)){
+            AppRate.with(this, mRateContainer).listener(mOnShowListener).checkAndShow();
+        }
     }
+
+    private AppRate.OnShowListener mOnShowListener = new AppRate.OnShowListener() {
+        @Override
+        public void onRateAppShowing() {
+            // View is shown
+        }
+
+        @Override
+        public void onRateAppDismissed() {
+            // User has dismissed it
+        }
+
+        @Override
+        public void onRateAppClicked() {
+            AnalyticsManager.logEvent("rate_app");
+        }
+    };
 
     public void onStackPicked(DocumentStack stack) {
         try {
@@ -1274,6 +1295,10 @@ public class DocumentsActivity extends BaseActivity {
     }
 
     public void onRootPicked(RootInfo root, boolean closeDrawer) {
+
+        if(null == root){
+            return;
+        }
         // Clear entire backstack and start in new root
         mState.stack.root = root;
         mState.stack.clear();
@@ -1714,29 +1739,16 @@ public class DocumentsActivity extends BaseActivity {
 	private final Handler handler = new Handler();
 	private Drawable oldBackground;
 
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void changeActionBarColor() {
 
 		int color = SettingsActivity.getActionBarColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
 
 		if (oldBackground == null) {
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                colorDrawable.setCallback(drawableCallback);
-			} else {
-				getSupportActionBar().setBackgroundDrawable(colorDrawable);
-			}
-
+            getSupportActionBar().setBackgroundDrawable(colorDrawable);
 		} else {
 			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, colorDrawable });
-			// workaround for broken ActionBarContainer drawable handling on
-			// pre-API 17 builds
-			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				td.setCallback(drawableCallback);
-			} else {
-				getSupportActionBar().setBackgroundDrawable(td);
-			}
+            getSupportActionBar().setBackgroundDrawable(td);
 			td.startTransition(200);
 		}
 

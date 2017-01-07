@@ -9,11 +9,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.network.NetworkConnection;
+
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
 public class ExplorerProvider extends ContentProvider {
     private static final String TAG = "ExplorerProvider";
@@ -23,14 +27,17 @@ public class ExplorerProvider extends ContentProvider {
 
     private static final int URI_BOOKMARK = 1;
     private static final int URI_BOOKMARK_ID = 2;
+    private static final int URI_CONNECTION = 3;
+    private static final int URI_CONNECTION_ID = 4;
 
     static {
         sMatcher.addURI(AUTHORITY, "bookmark", URI_BOOKMARK);
         sMatcher.addURI(AUTHORITY, "bookmark/*", URI_BOOKMARK_ID);
+        sMatcher.addURI(AUTHORITY, "connection", URI_CONNECTION);
+        sMatcher.addURI(AUTHORITY, "connection/*", URI_CONNECTION_ID);
     }
 
     public static final String TABLE_BOOKMARK = "bookmark";
-
     public static class BookmarkColumns {
         public static final String TITLE = "title";
         public static final String ROOT_ID = DocumentsContract.Root.COLUMN_ROOT_ID;
@@ -41,9 +48,27 @@ public class ExplorerProvider extends ContentProvider {
         public static final String FLAGS = "flags";
     }
 
+    public static final String TABLE_CONNECTION = "connection";
+    public static class ConnectionColumns {
+        public static final String NAME = "title";
+        public static final String TYPE = "type";
+        public static final String SCHEME = "scheme";
+        public static final String PATH = "path";
+        public static final String HOST = "host";
+        public static final String PORT = "port";
+        public static final String USERNAME = "username";
+        public static final String PASSWORD = "password";
+        public static final String ANONYMOUS_LOGIN = "anonymous_login";
+    }
+
     public static Uri buildBookmark() {
         return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
-                .authority(AUTHORITY).appendPath("bookmark").build();
+                .authority(AUTHORITY).appendPath(TABLE_BOOKMARK).build();
+    }
+
+    public static Uri buildConnection() {
+        return new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(AUTHORITY).appendPath(TABLE_CONNECTION).build();
     }
 
     private DatabaseHelper mHelper;
@@ -51,14 +76,15 @@ public class ExplorerProvider extends ContentProvider {
     @SuppressWarnings("unused")
     private static class DatabaseHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "internal.db";
-
-        private static final int VERSION_INIT = 1;
+        private final Context mContext;
+        private static final int VERSION_INIT = 2;
         private static final int VERSION_AS_BLOB = 3;
         private static final int VERSION_ADD_EXTERNAL = 4;
         private static final int VERSION_ADD_RECENT_KEY = 5;
 
         public DatabaseHelper(Context context) {
             super(context, DB_NAME, null, VERSION_ADD_RECENT_KEY);
+            mContext = context;
         }
 
         @Override
@@ -73,6 +99,22 @@ public class ExplorerProvider extends ContentProvider {
                     BookmarkColumns.FLAGS + " INTEGER," +
                     "UNIQUE (" + BookmarkColumns.AUTHORITY + ", " + BookmarkColumns.ROOT_ID + ", " + BookmarkColumns.PATH + ") ON CONFLICT REPLACE " +
                     ")");
+
+            db.execSQL("CREATE TABLE " + TABLE_CONNECTION + " (" +
+                    BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    ConnectionColumns.NAME + " TEXT," +
+                    ConnectionColumns.TYPE + " TEXT," +
+                    ConnectionColumns.SCHEME + " TEXT," +
+                    ConnectionColumns.PATH + " TEXT," +
+                    ConnectionColumns.HOST + " TEXT," +
+                    ConnectionColumns.PORT + " INTEGER," +
+                    ConnectionColumns.USERNAME + " TEXT," +
+                    ConnectionColumns.PASSWORD + " TEXT," +
+                    ConnectionColumns.ANONYMOUS_LOGIN + " BOOLEAN," +
+                    "UNIQUE (" + ConnectionColumns.NAME + ", " + ConnectionColumns.HOST + ", " + ConnectionColumns.PATH +  ") ON CONFLICT REPLACE " +
+                    ")");
+
+            addDefaultServer(db);
         }
 
         @Override
@@ -80,6 +122,30 @@ public class ExplorerProvider extends ContentProvider {
             Log.w(TAG, "Upgrading database; wiping app data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOKMARK);
             onCreate(db);
+        }
+
+        private void addDefaultServer(SQLiteDatabase db){
+            NetworkConnection connection = new NetworkConnection();
+            connection.name = "Transfer to PC";
+            connection.host = "";
+            connection.port = 2211;
+            connection.scheme = "ftp";
+            connection.type = SERVER;
+            connection.path = Environment.getExternalStorageDirectory().getAbsolutePath();
+            connection.setAnonymous(true);
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ConnectionColumns.NAME, connection.getName());
+            contentValues.put(ConnectionColumns.SCHEME, connection.getScheme());
+            contentValues.put(ConnectionColumns.TYPE, connection.getType());
+            contentValues.put(ConnectionColumns.PATH, connection.getPath());
+            contentValues.put(ConnectionColumns.HOST, connection.getHost());
+            contentValues.put(ConnectionColumns.PORT, connection.getPort());
+            contentValues.put(ConnectionColumns.USERNAME, connection.getUserName());
+            contentValues.put(ConnectionColumns.PASSWORD, connection.getPassword());
+            contentValues.put(ConnectionColumns.ANONYMOUS_LOGIN, connection.isAnonymousLogin());
+            db.insert(TABLE_CONNECTION, null, contentValues);
+
         }
     }
 
@@ -98,8 +164,11 @@ public class ExplorerProvider extends ContentProvider {
         final SQLiteDatabase db = mHelper.getReadableDatabase();
         switch (sMatcher.match(uri)) {
             case URI_BOOKMARK:
-                return db.query(TABLE_BOOKMARK, projection, null,
-                        null, null, null, sortOrder);
+                return db.query(TABLE_BOOKMARK, projection, selection,
+                        selectionArgs, null, null, sortOrder);
+            case URI_CONNECTION:
+                return db.query(TABLE_CONNECTION, projection, selection,
+                        selectionArgs, null, null, sortOrder);
             default:
                 throw new UnsupportedOperationException("Unsupported Uri " + uri);
         }
@@ -113,12 +182,15 @@ public class ExplorerProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         final SQLiteDatabase db = mHelper.getWritableDatabase();
-        final ContentValues key = new ContentValues();
         switch (sMatcher.match(uri)) {
             case URI_BOOKMARK:
                 // Ensure that row exists, then update with changed values
                 //db.insertWithOnConflict(TABLE_BOOKMARK, null, key, SQLiteDatabase.CONFLICT_IGNORE);
                 db.insert(TABLE_BOOKMARK, null, values);
+
+                return uri;
+            case URI_CONNECTION:
+                db.insert(TABLE_CONNECTION, null, values);
 
                 return uri;
             default:
@@ -134,17 +206,29 @@ public class ExplorerProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mHelper.getWritableDatabase();
-        final ContentValues key = new ContentValues();
         int count;
+        String id;
         switch (sMatcher.match(uri)) {
             case URI_BOOKMARK_ID:
-                String id = uri.getLastPathSegment();
+                id = uri.getLastPathSegment();
                 count = db.delete(TABLE_BOOKMARK,
                         BaseColumns._ID + "=?",
                         new String[]{id});
                 break;
             case URI_BOOKMARK:
                 count = db.delete(TABLE_BOOKMARK,
+                        selection,
+                        selectionArgs);
+
+                break;
+            case URI_CONNECTION_ID:
+                id = uri.getLastPathSegment();
+                count = db.delete(TABLE_CONNECTION,
+                        BaseColumns._ID + "=?",
+                        new String[]{id});
+                break;
+            case URI_CONNECTION:
+                count = db.delete(TABLE_CONNECTION,
                         selection,
                         selectionArgs);
 

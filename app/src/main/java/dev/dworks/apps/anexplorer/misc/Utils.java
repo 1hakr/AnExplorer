@@ -24,20 +24,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.text.TextUtilsCompat;
-import android.support.v4.view.*;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
@@ -63,6 +65,13 @@ public class Utils {
 
     public static final long KB_IN_BYTES = 1024;
     public static final String DIRECTORY_APPBACKUP = "AppBackup";
+
+    public static final String EXTRA_TYPE = "type";
+    public static final String EXTRA_ROOT = "root";
+    public static final String EXTRA_DOC = "doc";
+    public static final String EXTRA_QUERY = "query";
+    public static final String EXTRA_CONNECTION_ID = "connection_id";
+    public static final String EXTRA_IGNORE_STATE = "ignoreState";
 
     static final String[] BinaryPlaces = { "/data/bin/", "/system/bin/", "/system/xbin/", "/sbin/",
         "/data/local/xbin/", "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/",
@@ -317,7 +326,42 @@ public class Utils {
     }
 
     public static boolean isProVersion(){
-        return BuildConfig.FLAVOR.contains("Pro");
+        return BuildConfig.FLAVOR.contains("Pro") || BuildConfig.FLAVOR.contains("Underground");
+    }
+
+    public static boolean isOtherBuild(){
+        return BuildConfig.FLAVOR.contains("other");
+    }
+
+    public static boolean isGoogleBuild(){
+        return BuildConfig.FLAVOR.contains("google");
+    }
+
+    public static boolean isAmazonBuild(){
+        return BuildConfig.FLAVOR.contains("amazon");
+    }
+
+    public static Uri getAppUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("amzn://apps/android?p=" + BuildConfig.APPLICATION_ID);
+        }
+
+        return Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID);
+    }
+
+    public static Uri getAppShareUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("https://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID);
+        }
+
+        return Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID);
+    }
+
+    public static Uri getAppStoreUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID + "&showAll=1");
+        }
+        return Uri.parse("https://play.google.com/store/apps/dev?id=8683545855643814241");
     }
 
     public static boolean hasFeature(Context context, String feature) {
@@ -430,5 +474,19 @@ public class Utils {
             default:
                 return "";
         }
+    }
+
+    public static ColorStateList getColorStateList(Context context, int colorRes) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled}, // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+                new int[]{-android.R.attr.state_checked}, // unchecked
+                new int[]{android.R.attr.state_pressed}  // pressed
+        };
+
+        int color = ContextCompat.getColor(context, colorRes);
+
+        int[] colors = new int[]{color, color, color, color};
+        return new ColorStateList(states, colors);
     }
 }

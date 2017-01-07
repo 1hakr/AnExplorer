@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Handler;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -15,6 +14,7 @@ import java.util.LinkedList;
 
 import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.misc.PackageManagerUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_FINISHED;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.FORCE_STOP_STRING_LEFT_BOTTON;
@@ -126,7 +126,7 @@ public class AppDetailsAutomatorManager {
 		AccessibilityNodeInfo forceStopNodeInfo = null;
 		forceStopNodeInfo = AppDetailsAutomatorUtil.getAccessibilityNodeInfo(source, FORCE_STOP_STRING_RES_NAME);
 		if (forceStopNodeInfo == null) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			if (Utils.hasLollipop()) {
 				forceStopNodeInfo = AppDetailsAutomatorUtil.getAccessibilityNodeInfo(source, FORCE_STOP_STRING_RIGHT_BOTTON);
 			} else {
 				forceStopNodeInfo = AppDetailsAutomatorUtil.getAccessibilityNodeInfo(source, FORCE_STOP_STRING_LEFT_BOTTON);

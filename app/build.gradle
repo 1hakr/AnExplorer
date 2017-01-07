@@ -5,8 +5,8 @@ android {
     buildToolsVersion '25.0.1'
 
     defaultConfig {
-        versionName "3.3"
-        versionCode = 49
+        versionName "3.4"
+        versionCode = 51
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -45,11 +45,25 @@ android {
             applicationId "dev.dworks.apps.anexplorer.pro"
             dimension "default"
         }
-        play {
+        underground {
+            applicationId "dev.dworks.apps.anexplorer.underground"
+            dimension "default"
+        }
+        google {
+            dimension "release"
+        }
+        amazon {
             dimension "release"
         }
         other {
             dimension "release"
+        }
+    }
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+
+        if (names.contains("underground") && (names.contains("google") || names.contains("other"))) {
+            variant.ignore = true
         }
     }
     packagingOptions {
@@ -65,7 +79,7 @@ android {
 }
 
 ext {
-    supportLibVersion = '25.0.1'
+    supportLibVersion = '25.1.0'
     gmsVersion = '10.0.1'
 }
 
@@ -75,9 +89,9 @@ dependencies {
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
+    compile 'commons-net:commons-net:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
-    freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }

@@ -19,7 +19,6 @@ package dev.dworks.apps.anexplorer.misc;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -60,10 +59,8 @@ class ViewGroupUtilsHoneycomb {
 
         m.preTranslate(view.getLeft(), view.getTop());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (!view.getMatrix().isIdentity()) {
-                m.preConcat(view.getMatrix());
-            }
+        if (!view.getMatrix().isIdentity()) {
+            m.preConcat(view.getMatrix());
         }
     }
 }

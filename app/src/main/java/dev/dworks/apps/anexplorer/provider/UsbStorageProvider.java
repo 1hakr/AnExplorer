@@ -107,8 +107,13 @@ public class UsbStorageProvider extends DocumentsProvider {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         context.registerReceiver(mUsbReceiver, filter);
 
-        discoverDevices();
+        updateRoots();
         return true;
+    }
+
+    @Override
+    public void updateRoots() {
+        discoverDevices();
     }
 
     private static String[] resolveRootProjection(String[] projection) {

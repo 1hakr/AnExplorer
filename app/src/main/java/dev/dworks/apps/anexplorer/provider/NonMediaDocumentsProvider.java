@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
 import android.text.TextUtils;
@@ -139,10 +138,6 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     public static final String TYPE_APK_ROOT = "apk_root";
     public static final String TYPE_APK = "apk";
 
-    private static boolean sReturnedImagesEmpty = false;
-    private static boolean sReturnedVideosEmpty = false;
-    private static boolean sReturnedAudioEmpty = false;
-
     public static final Uri FILE_URI = MediaStore.Files.getContentUri("external");
 
     private static String joinNewline(String[] args) {
@@ -161,6 +156,11 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     public static void notifyRootsChanged(Context context) {
         context.getContentResolver()
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
+    }
+
+    public static void notifyDocumentsChanged(Context context, String rootId) {
+        Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+        context.getContentResolver().notifyChange(uri, null, false);
     }
 
     private static class Ident {
@@ -386,13 +386,24 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         }
     }
 
-    private boolean isEmpty(Uri uri) {
+    private boolean isEmpty(Uri uri, String type) {
         final ContentResolver resolver = getContext().getContentResolver();
         final long token = Binder.clearCallingIdentity();
         Cursor cursor = null;
         try {
-            cursor = resolver.query(uri, new String[] {
-                    BaseColumns._ID }, null, null, null);
+            String[] mimeType;
+            if (TYPE_DOCUMENT_ROOT.equals(type)) {
+                mimeType = DOCUMENT_MIMES;
+            } else if (TYPE_ARCHIVE_ROOT.equals(type)) {
+                mimeType = ARCHIVE_MIMES;
+            } else if (TYPE_APK_ROOT.equals(type)) {
+                mimeType = APK_MIMES;
+            } else {
+                return true;
+            }
+            cursor = resolver.query(FILE_URI,
+                    FileQuery.PROJECTION,
+                    FileColumns.MIME_TYPE + " IN "+ "("+toString(mimeType)+")" , null, null);
             return (cursor == null) || (cursor.getCount() == 0);
         } finally {
             IoUtils.closeQuietly(cursor);
@@ -402,9 +413,8 @@ public class NonMediaDocumentsProvider extends StorageProvider {
 
     private void includeFileRoot(MatrixCursor result, String root_type, int name_id, String mime_types) {
         int flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS;
-        if (isEmpty(FILE_URI)) {
+        if (isEmpty(FILE_URI, root_type)) {
             flags |= Root.FLAG_EMPTY;
-            sReturnedAudioEmpty = true;
         }
 
         final RowBuilder row = result.newRow();
@@ -454,13 +464,6 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         row.add(Document.COLUMN_LAST_MODIFIED,
                 cursor.getLong(FileQuery.DATE_MODIFIED) * DateUtils.SECOND_IN_MILLIS);
         row.add(Document.COLUMN_FLAGS, Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_SUPPORTS_DELETE);
-    }
-
-    private String cleanUpMediaDisplayName(String displayName) {
-        if (!MediaStore.UNKNOWN_STRING.equals(displayName)) {
-            return displayName;
-        }
-        return displayName;//getContext().getResources().getString(com.android.internal.R.string.unknownName);
     }
 
     public static String toString(String[] list) {

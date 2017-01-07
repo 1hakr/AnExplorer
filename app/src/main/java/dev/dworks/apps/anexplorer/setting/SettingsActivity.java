@@ -24,7 +24,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -241,30 +240,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		Drawable colorDrawable = new ColorDrawable(color);
 
 		if (oldBackground == null) {
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                colorDrawable.setCallback(drawableCallback);
-			} else {
-				getSupportActionBar().setBackgroundDrawable(colorDrawable);
-			}
+            getSupportActionBar().setBackgroundDrawable(colorDrawable);
 
-		} else {
+        } else {
 			TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, colorDrawable });
-			// workaround for broken ActionBarContainer drawable handling on
-			// pre-API 17 builds
-			// https://github.com/android/platform_frameworks_base/commit/a7cc06d82e45918c37429a59b14545c6a57db4e4
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-				td.setCallback(drawableCallback);
-			} else {
-                getSupportActionBar().setBackgroundDrawable(td);
-			}
+            getSupportActionBar().setBackgroundDrawable(td);
 			td.startTransition(200);
 		}
 
 		oldBackground = colorDrawable;
-		
-		// http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
 	}
 
 

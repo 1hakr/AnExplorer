@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +36,9 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
+
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
 public class IconUtils {
 
@@ -103,7 +107,7 @@ public class IconUtils {
         add("application/x-javascript", icon);
 
         // Compressed
-        icon = R.drawable.ic_doc_compressed;
+        icon = R.drawable.ic_doc_archive;
         add("application/mac-binhex40", icon);
         add("application/rar", icon);
         add("application/zip", icon);
@@ -284,12 +288,11 @@ public class IconUtils {
         // Look for exact match first
         Integer resId = sMimeIcons.get(mimeType);
         if (resId != null) {
-            return ContextCompat.getDrawable(context, resId);
+            return getDrawable(context, resId);
         }
 
         if (mimeType == null) {
-            // TODO: generic icon?
-            return null;
+            return ContextCompat.getDrawable(context, R.drawable.ic_doc_generic);
         }
 
         // Otherwise look for partial match
@@ -304,6 +307,17 @@ public class IconUtils {
             return ContextCompat.getDrawable(context, R.drawable.ic_doc_video);
         } else {
             return ContextCompat.getDrawable(context, R.drawable.ic_doc_generic);
+        }
+    }
+
+    public static Drawable loadSchemeIcon(Context context, String type) {
+
+        if (SERVER.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_connection_server);
+        } else if (CLIENT.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_connection_network);
+        } else {
+            return ContextCompat.getDrawable(context, R.drawable.ic_connection_server);
         }
     }
     
@@ -329,7 +343,7 @@ public class IconUtils {
                 return "certificate";
             case R.drawable.ic_doc_codes:
                 return "source code";
-            case R.drawable.ic_doc_compressed:
+            case R.drawable.ic_doc_archive:
                 return "compressed";
             case R.drawable.ic_doc_contact:
                 return "contact";
@@ -372,7 +386,7 @@ public class IconUtils {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static Drawable applyTintColor(Context context, int drawableId, int tintColorId) {
-        final Drawable icon = ContextCompat.getDrawable(context, drawableId);
+        final Drawable icon = getDrawable(context, drawableId);
         icon.mutate();
         DrawableCompat.setTintList(DrawableCompat.wrap(icon), ContextCompat.getColorStateList(context, tintColorId));
         return icon;
@@ -382,5 +396,13 @@ public class IconUtils {
         final TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(tintAttrId, outValue, true);
         return applyTintColor(context, drawableId, outValue.resourceId);
+    }
+
+    private static Drawable getDrawable(Context context, int drawableId){
+        try {
+            return ContextCompat.getDrawable(context, drawableId);
+        } catch (Resources.NotFoundException e){
+            return ContextCompat.getDrawable(context, R.drawable.ic_doc_generic);
+        }
     }
 }

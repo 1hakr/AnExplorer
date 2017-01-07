@@ -1,6 +1,8 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -16,8 +18,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
+import dev.dworks.apps.anexplorer.service.ConnectionsService;
 
 import static com.stericson.RootTools.Constants.TAG;
 
@@ -167,7 +172,7 @@ public class ConnectionUtils {
         return "ftp://"+ getLocalInetAddress(context).getHostAddress()+":"+FTP_SERVER_PORT;
     }
 
-    public  static int getAvailablePortForFTP(){
+    public static int getAvailablePortForFTP(){
         int port = 0;
         for(int i = FTP_SERVER_PORT ;i<65000;i++){
             if(isPortAvailable(i)) {
@@ -176,5 +181,26 @@ public class ConnectionUtils {
             }
         }
         return port;
+    }
+
+    public static boolean isServerRunning(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServices = manager.getRunningServices(Integer.MAX_VALUE);
+        String ftpServiceClassName = ConnectionsService.class.getName();
+        for (ActivityManager.RunningServiceInfo service : runningServices) {
+            String currentClassName = service.service.getClassName();
+            if (ftpServiceClassName.equals(currentClassName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isServerAuthority(Intent intent){
+        if(null != intent.getData()){
+            String authority = intent.getData().getAuthority();
+            return NetworkStorageProvider.AUTHORITY.equals(authority);
+        }
+        return false;
     }
 }
