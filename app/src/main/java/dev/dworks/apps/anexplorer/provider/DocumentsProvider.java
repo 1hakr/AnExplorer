@@ -1095,4 +1095,8 @@ public abstract class DocumentsProvider extends ContentProvider {
             throws SecurityException {
         return MODE_ALLOWED;
     }
+
+    public void updateRoots(){
+
+    }
 }

@@ -59,6 +59,8 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.ui.VisibilityAwareLinearLayout;
 
+import static dev.dworks.apps.anexplorer.misc.Utils.getColorStateList;
+
 
 /**
  * Created by yavorivanov on 01/01/2016.
@@ -195,7 +197,7 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
 
         fabDrawableTint = typedArray.getColorStateList(R.styleable.FabSpeedDial_fabDrawableTint);
         if (fabDrawableTint == null) {
-            fabDrawableTint = getColorStateList(R.color.fab_drawable_tint);
+            fabDrawableTint = getColorStateList(getContext(), R.color.fab_drawable_tint);
         }
 
         if (typedArray.hasValue(R.styleable.FabSpeedDial_fabBackgroundTint)) {
@@ -204,17 +206,17 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
 
         miniFabBackgroundTint = typedArray.getColorStateList(R.styleable.FabSpeedDial_miniFabBackgroundTint);
         if (miniFabBackgroundTint == null) {
-            miniFabBackgroundTint = getColorStateList(R.color.fab_background_tint);
+            miniFabBackgroundTint = getColorStateList(getContext(), R.color.fab_background_tint);
         }
 
         miniFabDrawableTint = typedArray.getColorStateList(R.styleable.FabSpeedDial_miniFabDrawableTint);
         if (miniFabDrawableTint == null) {
-            miniFabDrawableTint = getColorStateList(R.color.mini_fab_drawable_tint);
+            miniFabDrawableTint = getColorStateList(getContext(), R.color.mini_fab_drawable_tint);
         }
 
         miniFabTitleBackgroundTint = typedArray.getColorStateList(R.styleable.FabSpeedDial_miniFabTitleBackgroundTint);
         if (miniFabTitleBackgroundTint == null) {
-            miniFabTitleBackgroundTint = getColorStateList(R.color.mini_fab_title_background_tint);
+            miniFabTitleBackgroundTint = getColorStateList(getContext(), R.color.mini_fab_title_background_tint);
         }
 
         miniFabTitlesEnabled = typedArray.getBoolean(R.styleable.FabSpeedDial_miniFabTitlesEnabled, true);
@@ -533,20 +535,6 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
 
     private boolean isGravityEnd() {
         return fabGravity == BOTTOM_END || fabGravity == TOP_END;
-    }
-
-    private ColorStateList getColorStateList(int colorRes) {
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_enabled}, // enabled
-                new int[]{-android.R.attr.state_enabled}, // disabled
-                new int[]{-android.R.attr.state_checked}, // unchecked
-                new int[]{android.R.attr.state_pressed}  // pressed
-        };
-
-        int color = ContextCompat.getColor(getContext(), colorRes);
-
-        int[] colors = new int[]{color, color, color, color};
-        return new ColorStateList(states, colors);
     }
 
     @Override

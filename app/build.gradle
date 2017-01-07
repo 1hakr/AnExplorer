@@ -89,6 +89,8 @@ dependencies {
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
+    compile 'commons-net:commons-net:+'
+    //compile 'org.apache.commons:commons-vfs2:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-core:${gmsVersion}"

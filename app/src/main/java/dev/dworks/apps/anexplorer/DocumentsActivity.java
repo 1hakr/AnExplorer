@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 
+import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
@@ -89,10 +90,12 @@ import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
+import dev.dworks.apps.anexplorer.fragment.ServerFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
@@ -109,7 +112,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
+import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
@@ -134,6 +137,8 @@ import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
+import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.isDownloadAuthority;
 
 public class DocumentsActivity extends BaseActivity {
 
@@ -278,18 +283,15 @@ public class DocumentsActivity extends BaseActivity {
 
         if (!mState.restored) {
             if (mState.action == ACTION_MANAGE) {
-                if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
-                    onRootPicked(getDownloadRoot(), true);
-                }
-                else {
-                    final Uri rootUri = getIntent().getData();
-                    new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
-                }
+                final Uri rootUri = getIntent().getData();
+                new RestoreRootTask(rootUri).executeOnExecutor(getCurrentExecutor());
             } else {
-            	if(ExternalStorageProvider.isDownloadAuthority(getIntent())){
+            	if(isDownloadAuthority(getIntent())){
             		onRootPicked(getDownloadRoot(), true);
-            	}
-            	else{
+            	} if(ConnectionUtils.isServerAuthority(getIntent())){
+                    RootInfo root = getIntent().getExtras().getParcelable(EXTRA_ROOT);
+                    onRootPicked(root, true);
+                } else{
                     try {
                         new RestoreStackTask().execute();
                     }
@@ -313,7 +315,7 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     public void again() {
         if(Utils.hasMarshmallow()) {
-            ExternalStorageProvider.updateVolumes(this);
+            RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
 
             //TODO refactor once home is added
@@ -400,8 +402,8 @@ public class DocumentsActivity extends BaseActivity {
         } else if (IntentUtils.ACTION_OPEN_DOCUMENT_TREE.equals(action)) {
             mState.action = ACTION_OPEN_TREE;
         } else if (DocumentsContract.ACTION_MANAGE_ROOT.equals(action)) {
-            mState.action = ACTION_MANAGE;
-            //mState.action = ACTION_BROWSE;
+            //mState.action = ACTION_MANAGE;
+            mState.action = ACTION_BROWSE;
         } else{
             mState.action = ACTION_BROWSE;
         }
@@ -1121,6 +1123,10 @@ public class DocumentsActivity extends BaseActivity {
         return mRoots.getAppsBackupRoot();
     }
 
+    public RootsCache getRoots(){
+        return mRoots;
+    }
+
     public DocumentInfo getCurrentDirectory() {
         return mState.stack.peek();
     }
@@ -1169,7 +1175,7 @@ public class DocumentsActivity extends BaseActivity {
         DocumentInfo cwd = getCurrentDirectory();
 
         //TODO : this has to be done nicely
-        if(cwd == null){
+        if(cwd == null && !root.isServerStorage()){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
 	                root.authority, root.documentId);
 	        DocumentInfo result;
@@ -1199,6 +1205,8 @@ public class DocumentsActivity extends BaseActivity {
                 }
                 else if(root.isConnections()){
                     ConnectionsFragment.show(fm);
+                } else if(root.isServerStorage()){
+                    ServerFragment.show(fm, root);
                 } else {
                     DirectoryFragment.showRecentsOpen(fm, anim);
 
@@ -1287,6 +1295,10 @@ public class DocumentsActivity extends BaseActivity {
     }
 
     public void onRootPicked(RootInfo root, boolean closeDrawer) {
+
+        if(null == root){
+            return;
+        }
         // Clear entire backstack and start in new root
         mState.stack.root = root;
         mState.stack.clear();

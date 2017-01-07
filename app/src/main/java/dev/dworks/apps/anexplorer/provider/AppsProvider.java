@@ -20,6 +20,7 @@ package dev.dworks.apps.anexplorer.provider;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -53,6 +54,8 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
+
+import static dev.dworks.apps.anexplorer.R.id.size;
 
 /**
  * Presents a {@link DocumentsContract} view of Apps contents.
@@ -155,8 +158,6 @@ public class AppsProvider extends DocumentsProvider {
 				includeAppFromProcess(result, rootId, processInfo, query.toLowerCase());
 			}
     	}
-        final Uri notifyUri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
-        result.setNotificationUri(getContext().getContentResolver(), notifyUri);
     	return result;
     }
 
@@ -229,17 +230,28 @@ public class AppsProvider extends DocumentsProvider {
         		}	
         	}
         	else{
-    			List<RunningAppProcessInfo> runningProcessesList = getRunningAppProcessInfo(getContext());
-    			for (RunningAppProcessInfo processInfo : runningProcessesList) {
-    				includeAppFromProcess(result, docId, processInfo, null);
-    			}
+				if(Utils.hasNoughat()){
+					List<RunningServiceInfo> runningServices = activityManager.getRunningServices(1000);
+					for (RunningServiceInfo process : runningServices) {
+						includeAppFromService(result, docId, process, null);
+					}
+				}
+				else if (Utils.hasLollipopMR1()) {
+					List<AndroidAppProcess> runningAppProcesses = AndroidProcesses.getRunningAppProcesses();
+					for (AndroidAppProcess process : runningAppProcesses) {
+						includeAppFromProcess(result, docId, process, null);
+					}
+				} else {
+					List<RunningAppProcessInfo> runningProcessesList = activityManager.getRunningAppProcesses();
+					for (RunningAppProcessInfo processInfo : runningProcessesList) {
+						includeAppFromProcess(result, docId, processInfo, null);
+					}
+
+				}
         	}
         } finally {
             Binder.restoreCallingIdentity(token);
         }
-        final Uri notifyUri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, docId);
-        result.setNotificationUri(getContext().getContentResolver(), notifyUri);
-        notifyRootsChanged(getContext());
         return result;
     }
 
@@ -322,10 +334,6 @@ public class AppsProvider extends DocumentsProvider {
 			final String packageName = packageInfo.packageName;
             String summary = packageName;
             displayName = packageName;
-/*			try {
-				displayName = (String) (appInfo.loadLabel(packageManager) != null ? appInfo.loadLabel(packageManager) : appInfo.packageName);
-				summary = packageInfo.versionName == null ? "" : packageInfo.versionName;
-			} catch (Exception e) { }*/
 
 			if (null != query && !displayName.toLowerCase().contains(query)) {
 				return;
@@ -348,7 +356,88 @@ public class AppsProvider extends DocumentsProvider {
 	        row.add(Document.COLUMN_FLAGS, flags);
 		}
     }
-	
+
+	private void includeAppFromProcess(MatrixCursor result, String docId, AndroidAppProcess processInfo, String query ) {
+
+		String process = processInfo.name;
+		final String packageName = processInfo.getPackageName();
+		process = process.substring(process.lastIndexOf(".") + 1, process.length());
+		String summary = "";
+		String displayName = "";
+		ApplicationInfo appInfo = null;
+		try {
+			appInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES).applicationInfo;
+			displayName = process ;
+		} catch (Exception e) { }
+
+		if (TextUtils.isEmpty(displayName)) {
+			displayName = process;
+		}
+
+		if (null != query && !displayName.toLowerCase().contains(query)) {
+			return;
+		}
+		final String path = null != appInfo ? appInfo.sourceDir : "";
+		final String mimeType = Document.MIME_TYPE_APK;
+
+		int flags = Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_THUMBNAIL;
+
+		int importance = processInfo.foreground ? RunningAppProcessInfo.IMPORTANCE_FOREGROUND : RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+		summary = processTypeCache.get(importance);
+		final long size = getProcessSize(processInfo.pid);
+
+
+		final RowBuilder row = result.newRow();
+		row.add(Document.COLUMN_DOCUMENT_ID, getDocIdForApp(docId, packageName));
+		row.add(Document.COLUMN_DISPLAY_NAME, displayName);
+		row.add(Document.COLUMN_SUMMARY, summary);
+		row.add(Document.COLUMN_SIZE, size);
+		row.add(Document.COLUMN_MIME_TYPE, mimeType);
+		//row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
+		row.add(Document.COLUMN_PATH, path);
+		row.add(Document.COLUMN_FLAGS, flags);
+	}
+
+	private void includeAppFromService(MatrixCursor result, String docId, RunningServiceInfo processInfo, String query ) {
+
+		String process = processInfo.process;
+		final String packageName = processInfo.process;
+		process = process.substring(process.lastIndexOf(".") + 1, process.length());
+		String summary = "";
+		String displayName = "";
+		ApplicationInfo appInfo = null;
+		try {
+			appInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES).applicationInfo;
+			displayName = process ;
+		} catch (Exception e) { }
+
+		if (TextUtils.isEmpty(displayName)) {
+			displayName = process;
+		}
+
+		if (null != query && !displayName.toLowerCase().contains(query)) {
+			return;
+		}
+		final String path = null != appInfo ? appInfo.sourceDir : "";
+		final String mimeType = Document.MIME_TYPE_APK;
+
+		int flags = Document.FLAG_SUPPORTS_DELETE | Document.FLAG_SUPPORTS_THUMBNAIL;
+
+		int importance = processInfo.foreground ? RunningAppProcessInfo.IMPORTANCE_FOREGROUND : RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
+		summary = processTypeCache.get(importance);
+		final long size = getProcessSize(processInfo.pid);
+
+		final RowBuilder row = result.newRow();
+		row.add(Document.COLUMN_DOCUMENT_ID, getDocIdForApp(docId, packageName));
+		row.add(Document.COLUMN_DISPLAY_NAME, displayName);
+		row.add(Document.COLUMN_SUMMARY, summary);
+		row.add(Document.COLUMN_SIZE, size);
+		row.add(Document.COLUMN_MIME_TYPE, mimeType);
+		//row.add(Document.COLUMN_LAST_MODIFIED, processInfo.lastActivityTime);
+		row.add(Document.COLUMN_PATH, path);
+		row.add(Document.COLUMN_FLAGS, flags);
+	}
+
 	private static String getAppName(String packageName){
 		String name = packageName;
 		try {
@@ -408,26 +497,30 @@ public class AppsProvider extends DocumentsProvider {
 	 * running processes (it will not return an empty list).  This list ordering is not
 	 * specified.
 	 */
-	public static List<ActivityManager.RunningAppProcessInfo> getRunningAppProcessInfo(Context ctx) {
+	public static List<RunningAppProcessInfo> getRunningAppProcessInfo(Context ctx) {
 		ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningAppProcessInfo> appProcessInfos = new ArrayList<>();
+		List<RunningAppProcessInfo> appProcessInfos = new ArrayList<>();
+		String prevProcess = "";
 		if(Utils.hasNoughat()){
-			List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(1000);
-			for (ActivityManager.RunningServiceInfo process : runningServices) {
-				ActivityManager.RunningAppProcessInfo info = new ActivityManager.RunningAppProcessInfo(
+			List<RunningServiceInfo> runningServices = am.getRunningServices(1000);
+			for (RunningServiceInfo process : runningServices) {
+				RunningAppProcessInfo info = new RunningAppProcessInfo(
 						process.process, process.pid, null
 				);
 				info.uid = process.uid;
 				info.importance = process.foreground ? RunningAppProcessInfo.IMPORTANCE_FOREGROUND : RunningAppProcessInfo.IMPORTANCE_BACKGROUND;
-				// TODO: Get more information about the process. pkgList, importance, lru, etc.
-				appProcessInfos.add(info);
+
+				if(!prevProcess.equals(process.process)){
+					prevProcess = process.process;
+					appProcessInfos.add(info);
+				}
 			}
 			return appProcessInfos;
 		}
 		else if (Utils.hasLollipopMR1()) {
 			List<AndroidAppProcess> runningAppProcesses = AndroidProcesses.getRunningAppProcesses();
 			for (AndroidAppProcess process : runningAppProcesses) {
-				ActivityManager.RunningAppProcessInfo info = new ActivityManager.RunningAppProcessInfo(
+				RunningAppProcessInfo info = new RunningAppProcessInfo(
 						process.name, process.pid, null
 				);
 				info.uid = process.uid;
@@ -439,5 +532,4 @@ public class AppsProvider extends DocumentsProvider {
 		}
 		return am.getRunningAppProcesses();
 	}
-
 }

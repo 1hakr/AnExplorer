@@ -624,6 +624,8 @@ public final class DocumentsContract {
         public static final int FLAG_SUPPORTS_EDIT = 1 << 90;
 
         public static final int FLAG_SUPER_ADVANCED = 1 << 91;
+
+        public static final int FLAG_CONNECTION_SERVER = 1 << 92;
     }
 
     /**

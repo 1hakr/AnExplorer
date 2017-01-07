@@ -1,15 +1,6 @@
 package dev.dworks.apps.anexplorer.service;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
-import android.os.Process;
 
 import org.apache.ftpserver.ConnectionConfigFactory;
 import org.apache.ftpserver.FtpServer;
@@ -18,120 +9,56 @@ import org.apache.ftpserver.ftplet.Authority;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.impl.BaseUser;
+import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission;
+import org.apache.ftpserver.usermanager.impl.TransferRatePermission;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_FAILEDTOSTART;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STARTED;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STOPPED;
-import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.getAvailablePortForFTP;
+import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
+import dev.dworks.apps.anexplorer.network.NetworkServiceHandler;
 
 
-public class ConnectionsService extends Service {
+public class ConnectionsService extends NetworkServerService {
 
-    protected static final int MSG_START = 1;
-    protected static final int MSG_STOP = 2;
+    private FtpServer ftpServer;
 
-    private static FtpServer ftpServer;
-    private FTPServiceHandler FTPServiceHandler;
-    private Looper serviceLooper;
-
-    public ConnectionsService() {
+    @Override
+    protected NetworkServiceHandler createServiceHandler(Looper serviceLooper, NetworkServerService service) {
+        return new NetworkServiceHandler(serviceLooper, service);
     }
 
     @Override
-    public void onCreate() {
-        HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
-        serviceLooper = thread.getLooper();
-        FTPServiceHandler = new FTPServiceHandler(serviceLooper, this);
+    public Object getServer() {
+        return ftpServer;
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent == null) {
-            return START_REDELIVER_INTENT;
-        }
-        Bundle extras = intent.getExtras();
-        Message msg = FTPServiceHandler.obtainMessage();
-        msg.arg1 = MSG_START;
-        FTPServiceHandler.sendMessage(msg);
-
-        // we don't want the system to kill the ftp server
-        //return START_NOT_STICKY;
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        Message msg = FTPServiceHandler.obtainMessage();
-        msg.arg1 = MSG_STOP;
-        FTPServiceHandler.sendMessage(msg);
-    }
-
-    private final static class FTPServiceHandler extends Handler {
-
-        private final WeakReference<ConnectionsService> ftpServiceRef;
-
-        public FTPServiceHandler(Looper looper, ConnectionsService ftpService) {
-            super(looper);
-            this.ftpServiceRef = new WeakReference<>(ftpService);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            ConnectionsService ftpService = ftpServiceRef.get();
-            if (ftpService == null) {
-                return;
-            }
-
-            int toDo = msg.arg1;
-            if (toDo == MSG_START) {
-                if (ftpService.ftpServer == null) {
-                    ftpService.launchFtpServer();
-                    if (ftpService.ftpServer == null) {
-                        ftpService.stopSelf();
-                    }
-                }
-
-            } else if (toDo == MSG_STOP) {
-                if (ftpService.ftpServer != null) {
-                    ftpService.ftpServer.stop();
-                    ftpService.ftpServer = null;
-                }
-                if (ftpService.ftpServer == null) {
-                    ftpService.sendBroadcast(new Intent(ACTION_FTPSERVER_STOPPED));
-                }
-                ftpService.stopSelf();
-            }
-        }
-    }
-
-    protected void launchFtpServer() {
+    public boolean launchServer() {
         ListenerFactory listenerFactory = new ListenerFactory();
-        listenerFactory.setPort(getAvailablePortForFTP());
+        listenerFactory.setPort(ConnectionUtils.getAvailablePortForFTP());
 
         FtpServerFactory serverFactory = new FtpServerFactory();
-        ConnectionConfigFactory connectionConfigFactory = new ConnectionConfigFactory();
-        connectionConfigFactory.setAnonymousLoginEnabled(true);
-        serverFactory.setConnectionConfig(connectionConfigFactory.createConnectionConfig());
         serverFactory.addListener("default", listenerFactory.createListener());
 
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        ConnectionConfigFactory connectionConfigFactory = new ConnectionConfigFactory();
+        connectionConfigFactory.setAnonymousLoginEnabled(getNetworkConnection().isAnonymousLogin());
+        connectionConfigFactory.setMaxLoginFailures(5);
+        connectionConfigFactory.setLoginFailureDelay(2000);
+        serverFactory.setConnectionConfig(connectionConfigFactory.createConnectionConfig());
+
         BaseUser user = new BaseUser();
-        user.setName("anonymous");
-        user.setHomeDirectory(path);
+        user.setName(getNetworkConnection().getUserName());
+        user.setPassword(getNetworkConnection().getPassword());
+        user.setHomeDirectory(getNetworkConnection().getPath());
+
         List<Authority> list = new ArrayList<>();
         list.add(new WritePermission());
+        list.add(new TransferRatePermission(0, 0));
+        list.add(new ConcurrentLoginPermission(10, 10));
         user.setAuthorities(list);
+
         try {
             serverFactory.getUserManager().save(user);
         } catch (FtpException e) {
@@ -142,14 +69,21 @@ public class ConnectionsService extends Service {
         try{
             ftpServer = serverFactory.createServer();
             ftpServer.start();
-            sendBroadcast(new Intent(ACTION_FTPSERVER_STARTED));
+            return true;
         }catch(Exception e){
             ftpServer = null;
-            sendBroadcast(new Intent(ACTION_FTPSERVER_FAILEDTOSTART));
+            handleServerStartError(e);
         }
+        return false;
     }
 
-    public static boolean isRunning() {
+    @Override
+    public void stopServer() {
+        ftpServer.stop();
+        ftpServer = null;
+    }
+
+    public boolean isRunning() {
         return null != ftpServer && !ftpServer.isStopped();
     }
 }

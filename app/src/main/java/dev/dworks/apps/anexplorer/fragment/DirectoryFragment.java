@@ -112,6 +112,7 @@ import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
+import static com.google.android.gms.actions.SearchIntents.EXTRA_QUERY;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_MANAGE;
@@ -126,6 +127,10 @@ import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_REQUEST;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_NAMES;
 import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_DOC;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_IGNORE_STATE;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
+import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_TYPE;
 import static dev.dworks.apps.anexplorer.misc.Utils.isRooted;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -171,12 +176,6 @@ public class DirectoryFragment extends ListFragment {
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
 	private ArrayMap<Integer, Long> mSizes = new ArrayMap<Integer, Long>();
 	private ArrayList<DocumentInfo> docsAppUninstall = Lists.newArrayList();
-
-	private static final String EXTRA_TYPE = "type";
-	private static final String EXTRA_ROOT = "root";
-	private static final String EXTRA_DOC = "doc";
-	private static final String EXTRA_QUERY = "query";
-	private static final String EXTRA_IGNORE_STATE = "ignoreState";
 
 	private final int mLoaderId = 42;
 	private RootInfo root;
@@ -1563,8 +1562,13 @@ public class DirectoryFragment extends ListFragment {
 	private void setEmptyState() {
 		if (mAdapter.isEmpty()) {
 			mEmptyView.setVisibility(View.VISIBLE);
-			if(null != root && root.isRootedStorage() && !isRooted()){
+			if(null == root){
+				return;
+			}
+			if(root.isRootedStorage() && !isRooted()){
 				mEmptyView.setText("Your phone is not rooted!");
+			} else if(root.isNetworkStorage()){
+				mEmptyView.setText("Couldnt connect to the server!");
 			}
 		} else {
 			mEmptyView.setVisibility(View.GONE);
@@ -1898,7 +1902,7 @@ public class DirectoryFragment extends ListFragment {
 		Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
 		if(null != uri) {
 			((BaseActivity) getActivity()).showInfo("Bookmark added");
-			ExternalStorageProvider.updateVolumes(getActivity());
+			RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
 		}
 		Bundle params = new Bundle();
 		AnalyticsManager.logEvent("bookmark", params);

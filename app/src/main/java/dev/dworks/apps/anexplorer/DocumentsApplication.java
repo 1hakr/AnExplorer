@@ -117,8 +117,8 @@ public class DocumentsApplication extends Application {
         public void onReceive(Context context, Intent intent) {
             final Uri data = intent.getData();
             if (data != null) {
-                final String packageName = data.getSchemeSpecificPart();
-                mRoots.updatePackageAsync(packageName);
+                final String authority = data.getAuthority();
+                mRoots.updateAuthorityAsync(authority);
             } else {
                 mRoots.updateAsync();
             }

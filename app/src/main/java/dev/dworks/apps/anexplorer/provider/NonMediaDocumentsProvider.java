@@ -158,6 +158,11 @@ public class NonMediaDocumentsProvider extends StorageProvider {
                 .notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
     }
 
+    public static void notifyDocumentsChanged(Context context, String rootId) {
+        Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+        context.getContentResolver().notifyChange(uri, null, false);
+    }
+
     private static class Ident {
         public String type;
         public long id;

@@ -225,7 +225,7 @@ public class RootsFragment extends Fragment {
                         try {
                             long id = ExpandableListView.getPackedPositionForChild(i, j);
                             int index = mList.getFlatListPosition(id);
-                            mList.setSelection(index);
+                            //mList.setSelection(index);
                             mList.setItemChecked(index, true);
                         } catch (Exception e){}
 
@@ -327,7 +327,7 @@ public class RootsFragment extends Fragment {
                 if (rows > 0) {
                     ((BaseActivity) getActivity()).showInfo("Bookmark removed");
 
-                    ExternalStorageProvider.updateVolumes(getActivity());
+                    RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
                 }
             }
         }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
