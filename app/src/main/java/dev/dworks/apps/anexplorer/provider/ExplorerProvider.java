@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -77,51 +76,31 @@ public class ExplorerProvider extends ContentProvider {
     private static class DatabaseHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "internal.db";
         private final Context mContext;
-        private static final int VERSION_INIT = 2;
-        private static final int VERSION_AS_BLOB = 3;
-        private static final int VERSION_ADD_EXTERNAL = 4;
-        private static final int VERSION_ADD_RECENT_KEY = 5;
+        private static final int VERSION_INIT = 5;
+        private static final int VERSION_CONNECTIONS = 6;
 
         public DatabaseHelper(Context context) {
-            super(context, DB_NAME, null, VERSION_ADD_RECENT_KEY);
+            super(context, DB_NAME, null, VERSION_CONNECTIONS);
             mContext = context;
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + TABLE_BOOKMARK + " (" +
-                    BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    BookmarkColumns.TITLE + " TEXT," +
-                    BookmarkColumns.AUTHORITY + " TEXT," +
-                    BookmarkColumns.ROOT_ID + " TEXT," +
-                    BookmarkColumns.ICON + " INTEGER," +
-                    BookmarkColumns.PATH + " TEXT," +
-                    BookmarkColumns.FLAGS + " INTEGER," +
-                    "UNIQUE (" + BookmarkColumns.AUTHORITY + ", " + BookmarkColumns.ROOT_ID + ", " + BookmarkColumns.PATH + ") ON CONFLICT REPLACE " +
-                    ")");
-
-            db.execSQL("CREATE TABLE " + TABLE_CONNECTION + " (" +
-                    BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    ConnectionColumns.NAME + " TEXT," +
-                    ConnectionColumns.TYPE + " TEXT," +
-                    ConnectionColumns.SCHEME + " TEXT," +
-                    ConnectionColumns.PATH + " TEXT," +
-                    ConnectionColumns.HOST + " TEXT," +
-                    ConnectionColumns.PORT + " INTEGER," +
-                    ConnectionColumns.USERNAME + " TEXT," +
-                    ConnectionColumns.PASSWORD + " TEXT," +
-                    ConnectionColumns.ANONYMOUS_LOGIN + " BOOLEAN," +
-                    "UNIQUE (" + ConnectionColumns.NAME + ", " + ConnectionColumns.HOST + ", " + ConnectionColumns.PATH +  ") ON CONFLICT REPLACE " +
-                    ")");
-
-            addDefaultServer(db);
+            createTablesV1(db);
+            createTablesV2(db);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.w(TAG, "Upgrading database; wiping app data");
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOOKMARK);
-            onCreate(db);
+            int upgradeTo = oldVersion + 1;
+            while (upgradeTo <= newVersion) {
+                switch (upgradeTo) {
+                    case 2:
+                        createTablesV2(db);
+                        break;
+                }
+                upgradeTo++;
+            }
         }
 
         private void addDefaultServer(SQLiteDatabase db){
@@ -146,6 +125,37 @@ public class ExplorerProvider extends ContentProvider {
             contentValues.put(ConnectionColumns.ANONYMOUS_LOGIN, connection.isAnonymousLogin());
             db.insert(TABLE_CONNECTION, null, contentValues);
 
+        }
+
+        private void createTablesV1(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE " + TABLE_BOOKMARK + " (" +
+                    BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    BookmarkColumns.TITLE + " TEXT," +
+                    BookmarkColumns.AUTHORITY + " TEXT," +
+                    BookmarkColumns.ROOT_ID + " TEXT," +
+                    BookmarkColumns.ICON + " INTEGER," +
+                    BookmarkColumns.PATH + " TEXT," +
+                    BookmarkColumns.FLAGS + " INTEGER," +
+                    "UNIQUE (" + BookmarkColumns.AUTHORITY + ", " + BookmarkColumns.ROOT_ID + ", " + BookmarkColumns.PATH + ") ON CONFLICT REPLACE " +
+                    ")");
+        }
+
+        private void createTablesV2(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE " + TABLE_CONNECTION + " (" +
+                    BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    ConnectionColumns.NAME + " TEXT," +
+                    ConnectionColumns.TYPE + " TEXT," +
+                    ConnectionColumns.SCHEME + " TEXT," +
+                    ConnectionColumns.PATH + " TEXT," +
+                    ConnectionColumns.HOST + " TEXT," +
+                    ConnectionColumns.PORT + " INTEGER," +
+                    ConnectionColumns.USERNAME + " TEXT," +
+                    ConnectionColumns.PASSWORD + " TEXT," +
+                    ConnectionColumns.ANONYMOUS_LOGIN + " BOOLEAN," +
+                    "UNIQUE (" + ConnectionColumns.NAME + ", " + ConnectionColumns.HOST + ", " + ConnectionColumns.PATH +  ") ON CONFLICT REPLACE " +
+                    ")");
+
+            addDefaultServer(db);
         }
     }
 
