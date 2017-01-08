@@ -88,6 +88,7 @@ public class RootedStorageProvider extends StorageProvider {
 
     @Override
     public void updateRoots() {
+        mRoots.clear();
         try {
             final String rootId = ROOT_ID_ROOT;
             final RootFile path = new RootFile("/");

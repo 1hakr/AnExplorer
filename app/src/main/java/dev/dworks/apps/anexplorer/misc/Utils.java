@@ -44,6 +44,7 @@ import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
@@ -370,6 +371,10 @@ public class Utils {
 
     public static boolean hasLeanback(Context context) {
         return hasFeature(context, PackageManager.FEATURE_LEANBACK);
+    }
+
+    public static boolean hasWiFi(Context context) {
+        return hasFeature(context, PackageManager.FEATURE_WIFI);
     }
 
     public static boolean isTelevision(Context context) {

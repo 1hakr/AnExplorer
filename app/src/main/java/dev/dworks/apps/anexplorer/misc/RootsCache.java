@@ -521,13 +521,13 @@ public class RootsCache {
     }
 
     public static void updateRoots(Context context, String authority){
-        final ContentProviderClient esclient =
+        final ContentProviderClient client =
                 ContentProviderClientCompat.acquireUnstableContentProviderClient(
                         context.getContentResolver(), authority);
         try {
-            ((DocumentsProvider) esclient.getLocalContentProvider()).updateRoots();
+            ((DocumentsProvider) client.getLocalContentProvider()).updateRoots();
         } finally {
-            ContentProviderClientCompat.releaseQuietly(esclient);
+            ContentProviderClientCompat.releaseQuietly(client);
         }
     }
 }

@@ -113,6 +113,7 @@ public class UsbStorageProvider extends DocumentsProvider {
 
     @Override
     public void updateRoots() {
+        mRoots.clear();
         discoverDevices();
     }
 

@@ -24,6 +24,7 @@ import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -75,6 +76,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
 
     public void updateConnections() {
         Cursor cursor = null;
+        mRoots.clear();
         try {
             cursor = getContext().getContentResolver().query(ExplorerProvider.buildConnection(), null, null, null, null);
             while (cursor.moveToNext()) {
@@ -115,6 +117,9 @@ public class NetworkStorageProvider extends DocumentsProvider {
 
                 boolean isServer = networkConnection.getType().compareToIgnoreCase(SERVER) == 0;
                 if(isServer){
+                    if(!Utils.hasWiFi(getContext())) {
+                        continue;
+                    }
                     flags |= Root.FLAG_CONNECTION_SERVER;
                 }
 
