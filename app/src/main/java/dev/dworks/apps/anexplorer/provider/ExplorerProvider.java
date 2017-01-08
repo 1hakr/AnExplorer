@@ -95,7 +95,7 @@ public class ExplorerProvider extends ContentProvider {
             int upgradeTo = oldVersion + 1;
             while (upgradeTo <= newVersion) {
                 switch (upgradeTo) {
-                    case 2:
+                    case VERSION_CONNECTIONS:
                         createTablesV2(db);
                         break;
                 }
