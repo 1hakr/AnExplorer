@@ -261,7 +261,6 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     public void openConnectionRoot(NetworkConnection connection) {
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(activity.getRoots().getRootInfo(connection,
-                NetworkStorageProvider.AUTHORITY), true);
+        activity.onRootPicked(activity.getRoots().getRootInfo(connection), true);
     }
 }

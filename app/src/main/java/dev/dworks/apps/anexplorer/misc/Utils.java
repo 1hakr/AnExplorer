@@ -44,7 +44,6 @@ import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
@@ -60,7 +59,10 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
 
 public class Utils {
 
@@ -493,5 +495,13 @@ public class Utils {
 
         int[] colors = new int[]{color, color, color, color};
         return new ColorStateList(states, colors);
+    }
+
+    public static boolean isQSTile(Intent intent){
+        if(null != intent.getAction()){
+            String action = intent.getAction();
+            return ACTION_QS_TILE_PREFERENCES.equals(action);
+        }
+        return false;
     }
 }

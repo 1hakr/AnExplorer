@@ -16,8 +16,8 @@
         android:padding="@dimen/list_item_padding">
 
         <FrameLayout
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="30dp"
             android:layout_marginTop="30dp">
 
@@ -33,7 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
-                android:padding="40dp"
+                android:padding="30dp"
                 app:srcCompat="@drawable/ic_connection_server" />
 
         </FrameLayout>

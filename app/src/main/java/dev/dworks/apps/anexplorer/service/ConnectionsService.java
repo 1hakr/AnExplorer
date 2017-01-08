@@ -82,8 +82,4 @@ public class ConnectionsService extends NetworkServerService {
         ftpServer.stop();
         ftpServer = null;
     }
-
-    public boolean isRunning() {
-        return null != ftpServer && !ftpServer.isStopped();
-    }
 }

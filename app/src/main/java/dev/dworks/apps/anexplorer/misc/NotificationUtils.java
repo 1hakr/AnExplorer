@@ -24,6 +24,10 @@ public class NotificationUtils {
     public static final int FTP_NOTIFICATION_ID = 916;
 
     public static void createFtpNotification(Context context, Intent intent, int notification_id){
+        RootInfo root = intent.getExtras().getParcelable(EXTRA_ROOT);
+        if(null == root){
+            return;
+        }
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         long when = System.currentTimeMillis();
@@ -35,7 +39,6 @@ public class NotificationUtils {
         CharSequence stopText = getString(context,R.string.ftp_notif_stop_server);
 
         Intent notificationIntent = new Intent(context, DocumentsActivity.class);
-        RootInfo root = intent.getExtras().getParcelable(EXTRA_ROOT);
         notificationIntent.setData(root.getUri());
         notificationIntent.putExtras(intent.getExtras());
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

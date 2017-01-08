@@ -55,6 +55,7 @@ import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 
@@ -421,8 +422,8 @@ public class RootsCache {
         return null;
     }
 
-    public RootInfo getRootInfo(NetworkConnection connection, String authority){
-        for (RootInfo root : mRoots.get(authority)) {
+    public RootInfo getRootInfo(NetworkConnection connection){
+        for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
             if (root.rootId.equals(connection.getHost())
                     && root.path.equals(connection.getPath())) {
                 return root;

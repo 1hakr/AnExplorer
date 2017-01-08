@@ -21,6 +21,7 @@ import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider.ConnectionColumns;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorBolean;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
@@ -280,7 +281,7 @@ public class NetworkConnection  implements Durable, Parcelable {
                 networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -300,7 +301,27 @@ public class NetworkConnection  implements Durable, Parcelable {
                 networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+        } finally {
+            IoUtils.closeQuietly(cursor);
+        }
+
+        return networkConnection;
+    }
+
+    public static NetworkConnection getDefaultServer(Context context) {
+        Cursor cursor = null;
+        NetworkConnection networkConnection = null;
+        try {
+            cursor = context.getContentResolver()
+                    .query(ExplorerProvider.buildConnection(), null,
+                            ConnectionColumns.TYPE + "=? "
+                            , new String[]{SERVER}, null);
+            if (null != cursor && cursor.moveToFirst()) {
+                networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -318,7 +339,7 @@ public class NetworkConnection  implements Durable, Parcelable {
                 return true;
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
         }
 
         return false;

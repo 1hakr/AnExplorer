@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
     <uses-permission
         android:name="android.permission.WAKE_LOCK"
         tools:node="remove" />
@@ -102,6 +101,10 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
+            <!-- For Quick Setting Tiles -->
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -169,7 +172,6 @@
             android:name=".service.ConnectionsService"
             android:enabled="true"
             android:exported="false" />
-
         <service
             android:name=".service.AppStopperService"
             android:enabled="true"
@@ -178,10 +180,22 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_config" />
         </service>
+
+        <service
+            android:name=".service.ServerService"
+            android:icon="@drawable/ic_root_server"
+            android:label="@string/toggle_messages"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

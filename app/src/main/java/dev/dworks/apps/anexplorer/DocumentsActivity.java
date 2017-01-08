@@ -288,8 +288,12 @@ public class DocumentsActivity extends BaseActivity {
             } else {
             	if(isDownloadAuthority(getIntent())){
             		onRootPicked(getDownloadRoot(), true);
-            	} if(ConnectionUtils.isServerAuthority(getIntent())){
+            	} else if(ConnectionUtils.isServerAuthority(getIntent())){
                     RootInfo root = getIntent().getExtras().getParcelable(EXTRA_ROOT);
+                    onRootPicked(root, true);
+                } else if(Utils.isQSTile(getIntent())){
+                    NetworkConnection networkConnection = NetworkConnection.getDefaultServer(this);
+                    RootInfo root = mRoots.getRootInfo(networkConnection);
                     onRootPicked(root, true);
                 } else{
                     try {

@@ -70,7 +70,11 @@ public abstract class NetworkServerService extends Service {
         // get parameters
         Bundle extras = intent.getExtras();
         root = extras.getParcelable(EXTRA_ROOT);
-        networkConnection = NetworkConnection.fromRootInfo(getApplicationContext(), root);
+        if(null == root){
+            networkConnection = NetworkConnection.getDefaultServer(getApplicationContext());
+        } else {
+            networkConnection = NetworkConnection.fromRootInfo(getApplicationContext(), root);
+        }
         // send start message (to handler)
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = MSG_START;
