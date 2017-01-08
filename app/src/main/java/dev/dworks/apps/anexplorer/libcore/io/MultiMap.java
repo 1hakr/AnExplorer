@@ -18,6 +18,7 @@ package dev.dworks.apps.anexplorer.libcore.io;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,8 @@ public class MultiMap<K, V> {
      * Gets the list of values associated with each key.
      */
     public List<V> get(K key) {
-        return mInternalMap.get(key);
+        List<V> list = mInternalMap.get(key);
+        return list == null ? Collections.EMPTY_LIST : list;
     }
 
     /**
