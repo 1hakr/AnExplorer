@@ -46,8 +46,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -88,7 +86,7 @@ public class RootsFragment extends Fragment {
     private static final String GROUP_SIZE = "group_size";
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;
-    private ArrayList<Long> expandedIds = Lists.newArrayList();
+    private ArrayList<Long> expandedIds = new ArrayList<>();
 
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();

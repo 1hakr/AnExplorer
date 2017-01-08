@@ -9,8 +9,6 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.common.base.Splitter;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -132,7 +130,7 @@ public class NetworkConnection  implements Durable, Parcelable {
      * @throws IOException on error
      */
     private void changeToDir(final String directory) throws IOException {
-        Iterable<String> iterable = Splitter.on('/').omitEmptyStrings().split(directory);
+        String[] iterable = directory.split("/");
         // note: important: we first go to user home
         client.changeWorkingDirectory(getHomeDirectory());
         for (String dir : iterable) {

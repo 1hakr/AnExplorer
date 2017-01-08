@@ -23,8 +23,6 @@ package dev.dworks.apps.anexplorer.libcore.io;
 
 
 
-import com.google.common.base.Charsets;
-
 import dev.dworks.apps.anexplorer.libcore.util.EmptyArray;
 
 

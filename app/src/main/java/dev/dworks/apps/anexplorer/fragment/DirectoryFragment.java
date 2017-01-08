@@ -70,8 +70,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -175,7 +173,7 @@ public class DirectoryFragment extends ListFragment {
 	private DocumentsAdapter mAdapter;
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
 	private ArrayMap<Integer, Long> mSizes = new ArrayMap<Integer, Long>();
-	private ArrayList<DocumentInfo> docsAppUninstall = Lists.newArrayList();
+	private ArrayList<DocumentInfo> docsAppUninstall = new ArrayList<>();
 
 	private final int mLoaderId = 42;
 	private RootInfo root;
@@ -629,7 +627,7 @@ public class DirectoryFragment extends ListFragment {
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 			final SparseBooleanArray checked = mCurrentView.getCheckedItemPositions();
-			final ArrayList<DocumentInfo> docs = Lists.newArrayList();
+			final ArrayList<DocumentInfo> docs = new ArrayList<>();
 			final int size = checked.size();
 			for (int i = 0; i < size; i++) {
 				if (checked.valueAt(i)) {
@@ -793,8 +791,8 @@ public class DirectoryFragment extends ListFragment {
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			// intent.addCategory(Intent.CATEGORY_DEFAULT);
 
-			final ArrayList<String> mimeTypes = Lists.newArrayList();
-			final ArrayList<Uri> uris = Lists.newArrayList();
+			final ArrayList<String> mimeTypes = new ArrayList<>();
+			final ArrayList<Uri> uris = new ArrayList<>();
 			for (DocumentInfo doc : docs) {
 				mimeTypes.add(doc.mimeType);
 				uris.add(doc.derivedUri);
@@ -1092,7 +1090,7 @@ public class DirectoryFragment extends ListFragment {
         }
 
         try {
-            ArrayList<String> documentIds = Lists.newArrayList();
+            ArrayList<String> documentIds = new ArrayList<>();
             for (DocumentInfo doc : docs){
                 documentIds.add(DocumentsContract.getDocumentId(doc.derivedUri));
             }
@@ -1205,7 +1203,7 @@ public class DirectoryFragment extends ListFragment {
 		private Cursor mCursor;
 		private int mCursorCount;
 
-		private ArrayList<Footer> mFooters = Lists.newArrayList();
+		private ArrayList<Footer> mFooters = new ArrayList<>();
 
 		public void swapResult(DirectoryResult result) {
 			mCursor = result != null ? result.cursor : null;
@@ -1832,7 +1830,7 @@ public class DirectoryFragment extends ListFragment {
 	}
 
 	public boolean onPopupMenuItemClick(MenuItem item, int position) {
-		final ArrayList<DocumentInfo> docs = Lists.newArrayList();
+		final ArrayList<DocumentInfo> docs = new ArrayList<>();
 		final Cursor cursor = mAdapter.getItem(position);
 		final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 		docs.add(doc);

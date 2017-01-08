@@ -20,7 +20,6 @@ android {
             shrinkResources true
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
-                    'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
         release {
@@ -31,7 +30,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard/proguard-project.pro',
-                    'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
     }
@@ -85,7 +83,6 @@ ext {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
@@ -102,7 +99,3 @@ android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
 android.signingConfigs.release.storePassword props.keyStorePassword
 android.signingConfigs.release.keyAlias props.keyAlias
 android.signingConfigs.release.keyPassword props.keyAliasPassword
-
-if (getGradle().getStartParameter().getTaskRequests().toString().contains("Free")) {
-    apply plugin: 'com.google.gms.google-services'
-}

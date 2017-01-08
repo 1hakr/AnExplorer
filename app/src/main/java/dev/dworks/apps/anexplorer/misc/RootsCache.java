@@ -31,17 +31,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.util.ArraySet;
 import android.util.Log;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +45,8 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.libcore.io.MultiMap;
+import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
@@ -84,12 +80,12 @@ public class RootsCache {
     private final CountDownLatch mFirstLoad = new CountDownLatch(1);
 
     @GuardedBy("mLock")
-    private Multimap<String, RootInfo> mRoots = ArrayListMultimap.create();
+    private MultiMap<String, RootInfo> mRoots = new MultiMap<>();
     @GuardedBy("mLock")
-    private HashSet<String> mStoppedAuthorities = Sets.newHashSet();
+    private ArraySet<String> mStoppedAuthorities = new ArraySet<>();
 
     @GuardedBy("mObservedAuthorities")
-    private final HashSet<String> mObservedAuthorities = Sets.newHashSet();
+    private final ArraySet<String> mObservedAuthorities = new ArraySet<>();
 
     public RootsCache(Context context) {
         mContext = context;
@@ -182,8 +178,8 @@ public class RootsCache {
     private class UpdateTask extends AsyncTask<Void, Void, Void> {
         private final String mAuthority;
 
-        private final Multimap<String, RootInfo> mTaskRoots = ArrayListMultimap.create();
-        private final HashSet<String> mTaskStoppedAuthorities = Sets.newHashSet();
+        private final MultiMap<String, RootInfo> mTaskRoots = new MultiMap<>();
+        private final ArraySet<String> mTaskStoppedAuthorities = new ArraySet<>();
 
         /**
          * Update all roots.
@@ -286,7 +282,7 @@ public class RootsCache {
             }
         }
 
-        final List<RootInfo> roots = Lists.newArrayList();
+        final List<RootInfo> roots = new ArrayList<>();
         final Uri rootsUri = DocumentsContract.buildRootsUri(authority);
 
         ContentProviderClient client = null;
@@ -479,9 +475,8 @@ public class RootsCache {
         }
     }
 
-    @VisibleForTesting
     static List<RootInfo> getMatchingRoots(Collection<RootInfo> roots, State state) {
-        final List<RootInfo> matching = Lists.newArrayList();
+        final List<RootInfo> matching = new ArrayList<>();
         for (RootInfo root : roots) {
             final boolean supportsCreate = (root.flags & Root.FLAG_SUPPORTS_CREATE) != 0;
             final boolean supportsIsChild = (root.flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;

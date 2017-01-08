@@ -1,7 +1,5 @@
 package dev.dworks.apps.anexplorer.network;
 
-import com.google.common.base.Splitter;
-
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
@@ -127,7 +125,7 @@ public class FTPSNetworkClient extends NetworkClient {
      * @throws IOException on error
      */
     public boolean createDirectories(final String directory) throws IOException {
-        Iterable<String> iterable = Splitter.on('/').omitEmptyStrings().split(directory);
+        String[] iterable = directory.split("/");
         for (String dir : iterable) {
             boolean dirExists = client.changeWorkingDirectory(dir);
             if (!dirExists) {

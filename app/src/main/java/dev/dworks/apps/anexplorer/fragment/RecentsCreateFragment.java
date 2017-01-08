@@ -44,8 +44,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -166,7 +164,7 @@ public class RecentsCreateFragment extends ListFragment {
         @Override
         public List<DocumentStack> loadInBackground(Uri uri, CancellationSignal signal) {
             final Collection<RootInfo> matchingRoots = mRoots.getMatchingRootsBlocking(mState);
-            final ArrayList<DocumentStack> result = Lists.newArrayList();
+            final ArrayList<DocumentStack> result = new ArrayList<>();
 
             final ContentResolver resolver = getContext().getContentResolver();
             final Cursor cursor = resolver.query(

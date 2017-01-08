@@ -39,8 +39,6 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.common.collect.Lists;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -751,7 +749,7 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public String compressDocument(String parentDocumentId, ArrayList<String> documentIds) throws FileNotFoundException {
         final File fileFrom = getFileForDocId(parentDocumentId);
-        ArrayList<File> files = Lists.newArrayList();
+        ArrayList<File> files = new ArrayList<>();
         for (String documentId : documentIds){
             files.add(getFileForDocId(documentId));
         }

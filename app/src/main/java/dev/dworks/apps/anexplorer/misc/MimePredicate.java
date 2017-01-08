@@ -16,7 +16,7 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import com.google.common.base.Predicate;
+import com.android.internal.util.Predicate;
 
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
