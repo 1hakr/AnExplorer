@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         versionName "3.4"
-        versionCode = 52
+        versionCode = 53
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -99,3 +99,7 @@ android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
 android.signingConfigs.release.storePassword props.keyStorePassword
 android.signingConfigs.release.keyAlias props.keyAlias
 android.signingConfigs.release.keyPassword props.keyAliasPassword
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Free")) {
+    apply plugin: 'com.google.gms.google-services'
+}
