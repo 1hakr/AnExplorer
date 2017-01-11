@@ -228,9 +228,9 @@ public class DirectoryFragment extends ListFragment {
         return (root != null ? root.authority : "null") + ';' + (root != null ? root.rootId : "null") + ';' + (doc != null ? doc.documentId : "null");
 	}
 
-	public static DirectoryFragment get(FragmentManager fm) {
+	public static Fragment get(FragmentManager fm) {
 		// TODO: deal with multiple directories shown at once
-		return (DirectoryFragment) fm.findFragmentById(R.id.container_directory);
+		return fm.findFragmentById(R.id.container_directory);
 	}
 
 	@Override

@@ -179,7 +179,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             @Override
             public void run() {
                 mModified = !mInput.getText().toString().equals(mOriginal);
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
             }
         }, 250);
     }
@@ -338,7 +338,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             } else {
                 mOriginal = mInput.getText().toString();
                 mModified = false;
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
             }
         }
     }

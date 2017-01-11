@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         versionName "3.4"
-        versionCode = 53
+        versionCode = 54
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -89,6 +89,7 @@ dependencies {
     compile 'commons-net:commons-net:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
+    compile "com.android.support:exifinterface:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }

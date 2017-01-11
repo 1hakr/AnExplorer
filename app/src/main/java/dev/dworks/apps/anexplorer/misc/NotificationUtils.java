@@ -52,7 +52,7 @@ public class NotificationUtils {
                 .setContentTitle(contentTitle)
                 .setContentText(contentText)
                 .setContentIntent(contentIntent)
-                .setSmallIcon(R.drawable.ic_root_server)
+                .setSmallIcon(R.drawable.ic_stat_server)
                 .setTicker(tickerText)
                 .setWhen(when)
                 .setOngoing(true)
@@ -60,7 +60,7 @@ public class NotificationUtils {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setPriority(Notification.PRIORITY_MAX)
-                .addAction(R.drawable.abc_ic_clear_material, stopText, stopPendingIntent)
+                .addAction(R.drawable.ic_action_stop, stopText, stopPendingIntent)
                 .setShowWhen(false);
 
         Notification notification = builder.build();

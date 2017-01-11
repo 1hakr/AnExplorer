@@ -172,7 +172,7 @@
             android:name=".service.ConnectionsService"
             android:enabled="true"
             android:exported="false" />
-        <service
+<!--        <service
             android:name=".service.AppStopperService"
             android:enabled="true"
             android:label="@string/app_name"
@@ -184,7 +184,7 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_config" />
-        </service>
+        </service>-->
 
         <service
             android:name=".service.ServerService"

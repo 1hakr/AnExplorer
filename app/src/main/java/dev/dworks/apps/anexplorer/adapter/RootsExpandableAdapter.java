@@ -32,6 +32,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> connection = new ArrayList<>();
         final List<Item> rooted = new ArrayList<>();
         final List<Item> appbackup = new ArrayList<>();
+        final List<Item> usb = new ArrayList<>();
 
         final List<Item> storage = new ArrayList<>();
         final List<Item> network = new ArrayList<>();
@@ -51,6 +52,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 phone.add(new RootItem(root));
             } else if (root.isAppBackupFolder()) {
                 appbackup.add(new RootItem(root));
+            } else if (root.isUsbStorage()) {
+                usb.add(new RootItem(root));
             } else if (RootInfo.isLibrary(root)) {
                 library.add(new RootItem(root));
             } else if (RootInfo.isFolder(root)) {
@@ -67,13 +70,18 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         }
 
         if(!storage.isEmpty()){
+            storage.addAll(usb);
             storage.addAll(phone);
             storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", storage));
         } else if(!phone.isEmpty()){
+            storage.addAll(usb);
+            storage.addAll(phone);
             storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", phone));
         } else if(!rooted.isEmpty()){
+            storage.addAll(usb);
+            storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", rooted));
         }
 

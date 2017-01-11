@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Point;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -28,6 +27,7 @@ import android.os.OperationCanceledException;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
+import android.support.media.ExifInterface;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -51,7 +51,6 @@ import java.util.zip.ZipFile;
 
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.ExifInterfaceCompat;
 import dev.dworks.apps.anexplorer.misc.Preconditions;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -374,7 +373,7 @@ public class DocumentArchive implements Closeable {
         ParcelFileDescriptor[] pipe;
         InputStream inputStream = null;
         try {
-            pipe = ParcelFileDescriptor.createReliablePipe();
+            pipe = ParcelFileDescriptor.createPipe();
             inputStream = mZipFile.getInputStream(entry);
         } catch (IOException e) {
             if (inputStream != null) {
@@ -409,7 +408,11 @@ public class DocumentArchive implements Closeable {
                                 // Catch the exception before the outer try-with-resource closes the
                                 // pipe with close() instead of closeWithError().
                                 try {
-                                    outputPipe.closeWithError(e.getMessage());
+                                    if(Utils.hasKitKat()) {
+                                        outputPipe.closeWithError(e.getMessage());
+                                    } else {
+                                        outputPipe.close();
+                                    }
                                 } catch (IOException e2) {
                                     Log.e(TAG, "Failed to close the pipe after an error.", e2);
                                 }
@@ -444,6 +447,11 @@ public class DocumentArchive implements Closeable {
             throw new FileNotFoundException();
         }
 
+        if(!Utils.hasKitKat()){
+            return new AssetFileDescriptor(openDocument(documentId, "r", signal),
+                    0, entry.getSize());
+        }
+
         InputStream inputStream = null;
         try {
             inputStream = mZipFile.getInputStream(entry);
@@ -464,12 +472,10 @@ public class DocumentArchive implements Closeable {
                         extras.putInt(DocumentsContract.EXTRA_ORIENTATION, 270);
                         break;
                 }
-                if(Utils.hasKitKat()){
-                    final long[] thumb = ExifInterfaceCompat.getThumbnailRange(exif);
-                    if (thumb != null) {
-                        return new AssetFileDescriptor(openDocument(documentId, "r", signal),
-                                thumb[0], thumb[1], extras);
-                    }
+                final long[] thumb = exif.getThumbnailRange();
+                if (thumb != null) {
+                    return new AssetFileDescriptor(openDocument(documentId, "r", signal),
+                            thumb[0], thumb[1], extras);
                 }
             }
         } catch (IOException e) {
@@ -479,11 +485,8 @@ public class DocumentArchive implements Closeable {
             IoUtils.closeQuietly(inputStream);
         }
 
-
-        //return new AssetFileDescriptor(
-          //      openDocument(documentId, "r", signal), 0, entry.getSize(), null);
-        return new AssetFileDescriptor(openDocument(documentId, "r", signal),
-                0, AssetFileDescriptor.UNKNOWN_LENGTH);
+        return new AssetFileDescriptor(
+                openDocument(documentId, "r", signal), 0, entry.getSize(), null);
     }
 
     /**

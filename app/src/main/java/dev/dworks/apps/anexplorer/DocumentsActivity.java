@@ -952,9 +952,12 @@ public class DocumentsActivity extends BaseActivity {
      */
     private void setUserSortOrder(int sortOrder) {
         mState.userSortOrder = sortOrder;
-        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
-        if (directory != null) {
-        	directory.onUserSortOrderChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserSortOrderChanged();
+            }
         }
     }
 
@@ -963,9 +966,12 @@ public class DocumentsActivity extends BaseActivity {
      */
     private void setUserMode(int mode) {
         mState.userMode = mode;
-        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
-        if (directory != null) {
-        	directory.onUserModeChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserModeChanged();
+            }
         }
     }
 
@@ -973,9 +979,12 @@ public class DocumentsActivity extends BaseActivity {
      * refresh Data currently shown
      */
     private void refreshData() {
-        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
-        if (directory != null) {
-            directory.onUserSortOrderChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserSortOrderChanged();
+            }
         }
     }
 

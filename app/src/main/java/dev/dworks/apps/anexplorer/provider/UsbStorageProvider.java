@@ -38,6 +38,7 @@ import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileInputStream;
 import com.github.mjdev.libaums.fs.UsbFileOutputStream;
 import com.github.mjdev.libaums.partition.Partition;
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -420,8 +421,9 @@ public class UsbStorageProvider extends DocumentsProvider {
                 mRoots.put(Integer.toString(partition.hashCode()), usbPartition);
 
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
+            FirebaseCrash.report(e);
         }
 
         notifyRootsChanged();
