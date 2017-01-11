@@ -38,7 +38,6 @@ import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileInputStream;
 import com.github.mjdev.libaums.fs.UsbFileOutputStream;
 import com.github.mjdev.libaums.partition.Partition;
-import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,6 +48,7 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -423,7 +423,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             }
         } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
-            FirebaseCrash.report(e);
+            CrashReportingManager.logException(e);
         }
 
         notifyRootsChanged();
