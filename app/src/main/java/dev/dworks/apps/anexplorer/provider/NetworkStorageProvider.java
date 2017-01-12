@@ -22,6 +22,7 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -86,6 +87,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -160,7 +162,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
                 includeFile(result, null, new NetworkFile(parent, file));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            CrashReportingManager.logException(e);
         }
         return result;
     }

@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -101,7 +102,7 @@ public class RootedStorageProvider extends StorageProvider {
             root.path = path;
             root.docId = getDocIdForRootFile(path);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            CrashReportingManager.logException(e);
         }
 
         notifyRootsChanged(getContext());
@@ -394,14 +395,14 @@ public class RootedStorageProvider extends StorageProvider {
                     try {
                         includeRootFile(result, null, new RootFile(parent, line));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        CrashReportingManager.logException(e);
                     }
 
                 }
                 scanner.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            CrashReportingManager.logException(e);
         }
         return result;
     }

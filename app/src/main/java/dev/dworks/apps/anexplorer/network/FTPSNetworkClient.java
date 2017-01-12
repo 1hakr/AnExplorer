@@ -8,6 +8,7 @@ import org.apache.commons.net.ftp.FTPSClient;
 import java.io.IOException;
 import java.io.InputStream;
 
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.LogUtils;
 
 /**
@@ -113,6 +114,7 @@ public class FTPSNetworkClient extends NetworkClient {
 
         } catch (IOException e) {
             LogUtils.LOGE(TAG, "Error retrieving file from FTP server: " + host, e);
+            CrashReportingManager.logException(e);
         }
         return null;
     }

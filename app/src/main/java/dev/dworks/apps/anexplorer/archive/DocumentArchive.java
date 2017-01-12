@@ -51,6 +51,7 @@ import java.util.zip.ZipFile;
 
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.Preconditions;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -225,7 +226,7 @@ public class DocumentArchive implements Closeable {
                 return new DocumentArchive(context, snapshotFile, documentId, idDelimiter,
                         notificationUri);
             } catch (Exception e){
-                e.printStackTrace();
+                CrashReportingManager.logException(e);
                 return null;
             }
         } finally {
@@ -415,10 +416,12 @@ public class DocumentArchive implements Closeable {
                                     }
                                 } catch (IOException e2) {
                                     Log.e(TAG, "Failed to close the pipe after an error.", e2);
+                                    CrashReportingManager.logException(e);
                                 }
                             }
                         } catch (OperationCanceledException e) {
                             // Cancelled gracefully.
+                            CrashReportingManager.logException(e);
                         } finally {
                             IoUtils.closeQuietly(finalInputStream);
                         }
@@ -481,6 +484,7 @@ public class DocumentArchive implements Closeable {
         } catch (IOException e) {
             // Ignore the exception, as reading the EXIF may legally fail.
             Log.e(TAG, "Failed to obtain thumbnail from EXIF.", e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(inputStream);
         }

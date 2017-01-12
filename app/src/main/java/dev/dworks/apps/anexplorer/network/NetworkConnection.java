@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.model.Durable;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
@@ -218,6 +219,7 @@ public class NetworkConnection  implements Durable, Parcelable {
                 connectClient();
             } catch (IOException e) {
                 LogUtils.LOGD(TAG, "Error getting home dir:"+ e);
+                CrashReportingManager.logException(e);
             }
         }
         return path;
@@ -282,6 +284,7 @@ public class NetworkConnection  implements Durable, Parcelable {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -302,6 +305,7 @@ public class NetworkConnection  implements Durable, Parcelable {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -322,6 +326,7 @@ public class NetworkConnection  implements Durable, Parcelable {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }

@@ -12,6 +12,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.misc.PackageManagerUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -182,7 +183,7 @@ public class AppDetailsAutomatorManager {
 			} else {
 			}
 		} catch (Exception e) {
-			// TODO nothing
+			CrashReportingManager.logException(e);
 		}
 		return stringRes;
 	}

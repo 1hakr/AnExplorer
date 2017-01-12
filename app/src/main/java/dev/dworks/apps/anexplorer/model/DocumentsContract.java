@@ -55,6 +55,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.OsCompat;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -1368,7 +1369,7 @@ public final class DocumentsContract {
         final ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
                 file, ParcelFileDescriptor.MODE_READ_ONLY);
         Bundle extras = null;
-        if(Utils.hasKitKat()) {
+        if(!Utils.hasKitKat()) {
             return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
         }
         try {
@@ -1394,6 +1395,7 @@ public final class DocumentsContract {
                 return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
             }
         } catch (IOException e) {
+            CrashReportingManager.logException(e);
         }
 
         return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH, extras);

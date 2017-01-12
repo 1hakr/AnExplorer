@@ -33,6 +33,7 @@ import java.util.TimerTask;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
@@ -114,6 +115,7 @@ public class HomeFragment extends Fragment {
             }
             catch (Exception e){
                 storageStats.setVisibility(View.GONE);
+                CrashReportingManager.logException(e);
             }
         }
 
@@ -140,6 +142,7 @@ public class HomeFragment extends Fragment {
             }
             catch (Exception e){
                 memoryStats.setVisibility(View.GONE);
+                CrashReportingManager.logException(e);
             }
         }
         updateColor();

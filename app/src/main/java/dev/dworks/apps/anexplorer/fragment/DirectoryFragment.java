@@ -85,6 +85,7 @@ import dev.dworks.apps.anexplorer.loader.RecentLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.ImageUtils;
@@ -837,6 +838,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = ! DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to delete " + doc);
+				CrashReportingManager.logException(e);
 				hadTrouble = true;
 			}
 		}
@@ -883,6 +885,7 @@ public class DirectoryFragment extends ListFragment {
 			DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 		} catch (Exception e) {
 			Log.w(TAG, "Failed to delete " + doc);
+			CrashReportingManager.logException(e);
 			hadTrouble = true;
 		}
 
@@ -1072,6 +1075,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri, appBackupUri) == null;
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
+				CrashReportingManager.logException(e);
 				hadTrouble = true;
 			}
 		}
@@ -1097,6 +1101,7 @@ public class DirectoryFragment extends ListFragment {
             hadTrouble = ! DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
         } catch (Exception e) {
             Log.w(TAG, "Failed to Compress " + doc);
+			CrashReportingManager.logException(e);
             hadTrouble = true;
         }
 
@@ -1119,6 +1124,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = ! DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to Uncompress " + doc);
+				CrashReportingManager.logException(e);
                 hadTrouble = true;
             }
         }
@@ -1631,6 +1637,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!(e instanceof OperationCanceledException)) {
 					Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
 				}
+				CrashReportingManager.logException(e);
 			} finally {
 				ContentProviderClientCompat.releaseQuietly(client);
 			}
@@ -1691,6 +1698,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!(e instanceof OperationCanceledException)) {
 					Log.w(TAG, "Failed to calculate size for " + mPath + ": " + e);
 				}
+				CrashReportingManager.logException(e);
 			}
 			return result;
 		}

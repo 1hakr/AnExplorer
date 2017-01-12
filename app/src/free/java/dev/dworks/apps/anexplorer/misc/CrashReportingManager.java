@@ -2,6 +2,8 @@ package dev.dworks.apps.anexplorer.misc;
 
 import com.google.firebase.crash.FirebaseCrash;
 
+import dev.dworks.apps.anexplorer.BuildConfig;
+
 /**
  * Created by HaKr on 23/05/16.
  */
@@ -9,6 +11,10 @@ import com.google.firebase.crash.FirebaseCrash;
 public class CrashReportingManager {
 
     public static void logException(Exception e) {
-        FirebaseCrash.report(e);
+        if(BuildConfig.DEBUG){
+            e.printStackTrace();
+        } else {
+            FirebaseCrash.report(e);
+        }
     }
 }

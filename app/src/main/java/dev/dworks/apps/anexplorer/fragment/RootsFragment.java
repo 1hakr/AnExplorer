@@ -59,6 +59,7 @@ import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -225,7 +226,9 @@ public class RootsFragment extends Fragment {
                             int index = mList.getFlatListPosition(id);
                             //mList.setSelection(index);
                             mList.setItemChecked(index, true);
-                        } catch (Exception e){}
+                        } catch (Exception e){
+                            CrashReportingManager.logException(e);
+                        }
 
                         return;
                     }
@@ -421,6 +424,7 @@ public class RootsFragment extends Fragment {
                 }
                 catch (Exception e){
                     progress.setVisibility(View.GONE);
+                    CrashReportingManager.logException(e);
                 }
             }
             else{
