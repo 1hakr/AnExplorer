@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.network.NetworkServiceHandler;
 
 
@@ -62,7 +63,7 @@ public class ConnectionsService extends NetworkServerService {
         try {
             serverFactory.getUserManager().save(user);
         } catch (FtpException e) {
-            e.printStackTrace();
+            CrashReportingManager.logException(e);
         }
 
         // do start server
@@ -81,9 +82,5 @@ public class ConnectionsService extends NetworkServerService {
     public void stopServer() {
         ftpServer.stop();
         ftpServer = null;
-    }
-
-    public boolean isRunning() {
-        return null != ftpServer && !ftpServer.isStopped();
     }
 }

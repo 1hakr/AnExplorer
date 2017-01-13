@@ -97,6 +97,7 @@ import dev.dworks.apps.anexplorer.misc.AppRate;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
@@ -288,14 +289,20 @@ public class DocumentsActivity extends BaseActivity {
             } else {
             	if(isDownloadAuthority(getIntent())){
             		onRootPicked(getDownloadRoot(), true);
-            	} if(ConnectionUtils.isServerAuthority(getIntent())){
+            	} else if(ConnectionUtils.isServerAuthority(getIntent())){
                     RootInfo root = getIntent().getExtras().getParcelable(EXTRA_ROOT);
+                    onRootPicked(root, true);
+                } else if(Utils.isQSTile(getIntent())){
+                    NetworkConnection networkConnection = NetworkConnection.getDefaultServer(this);
+                    RootInfo root = mRoots.getRootInfo(networkConnection);
                     onRootPicked(root, true);
                 } else{
                     try {
                         new RestoreStackTask().execute();
                     }
-                    catch (SQLiteFullException e){ }
+                    catch (SQLiteFullException e){
+                        CrashReportingManager.logException(e);
+                    }
             	}
             }
         } else {
@@ -479,6 +486,7 @@ public class DocumentsActivity extends BaseActivity {
                 }
             } catch (IOException e) {
                 Log.w(TAG, "Failed to resume: " + e);
+                CrashReportingManager.logException(e);
             } finally {
                 IoUtils.closeQuietly(cursor);
             }
@@ -491,6 +499,7 @@ public class DocumentsActivity extends BaseActivity {
                     mState.stack.updateDocuments(getContentResolver());
                 } catch (FileNotFoundException e) {
                     Log.w(TAG, "Failed to restore stack: " + e);
+                    CrashReportingManager.logException(e);
                     mState.stack.reset();
                     mRestoredStack = false;
                 }
@@ -507,6 +516,7 @@ public class DocumentsActivity extends BaseActivity {
 	                }
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
+                    CrashReportingManager.logException(e);
 				}
             }
 
@@ -948,9 +958,12 @@ public class DocumentsActivity extends BaseActivity {
      */
     private void setUserSortOrder(int sortOrder) {
         mState.userSortOrder = sortOrder;
-        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
-        if (directory != null) {
-        	directory.onUserSortOrderChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserSortOrderChanged();
+            }
         }
     }
 
@@ -959,9 +972,12 @@ public class DocumentsActivity extends BaseActivity {
      */
     private void setUserMode(int mode) {
         mState.userMode = mode;
-        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
-        if (directory != null) {
-        	directory.onUserModeChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserModeChanged();
+            }
         }
     }
 
@@ -969,9 +985,12 @@ public class DocumentsActivity extends BaseActivity {
      * refresh Data currently shown
      */
     private void refreshData() {
-        final DirectoryFragment directory = DirectoryFragment.get(getFragmentManager());
-        if (directory != null) {
-            directory.onUserSortOrderChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            if (directory != null) {
+                directory.onUserSortOrderChanged();
+            }
         }
     }
 
@@ -1187,7 +1206,7 @@ public class DocumentsActivity extends BaseActivity {
 	                cwd = result;
 	            }
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+                CrashReportingManager.logException(e);
 			}
         }
         if(!SettingsActivity.getFolderAnimation(this)){
@@ -1291,6 +1310,7 @@ public class DocumentsActivity extends BaseActivity {
 
         } catch (FileNotFoundException e) {
             Log.w(TAG, "Failed to restore stack: " + e);
+            CrashReportingManager.logException(e);
         }
     }
 
@@ -1330,6 +1350,7 @@ public class DocumentsActivity extends BaseActivity {
                 return DocumentInfo.fromUri(getContentResolver(), uri);
             } catch (FileNotFoundException e) {
                 Log.w(TAG, "Failed to find root", e);
+                CrashReportingManager.logException(e);
                 return null;
             }
         }
@@ -1421,6 +1442,7 @@ public class DocumentsActivity extends BaseActivity {
     				view.setDataAndType(Uri.fromFile(file), doc.mimeType);
 				} catch (Exception e) {
 					view.setDataAndType(doc.derivedUri, doc.mimeType);
+                    CrashReportingManager.logException(e);
 				}
             }
 
@@ -1429,7 +1451,9 @@ public class DocumentsActivity extends BaseActivity {
                 // exported gives java.lang.SecurityException: Permission Denial:
                 try {
                     startActivity(view);
-                } catch (Exception e){ }
+                } catch (Exception e){
+                    CrashReportingManager.logException(e);
+                }
             }
             else{
                 showError(R.string.toast_no_application);
@@ -1449,6 +1473,7 @@ public class DocumentsActivity extends BaseActivity {
                     startActivity(manage);
                 } catch (ActivityNotFoundException ex) {
                     // Fall back to viewing
+                    CrashReportingManager.logException(ex);
                     final Intent view = new Intent(Intent.ACTION_VIEW);
                     view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                             | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -1458,6 +1483,7 @@ public class DocumentsActivity extends BaseActivity {
                         startActivity(view);
                     } catch (ActivityNotFoundException ex2) {
                         showError(R.string.toast_no_application);
+                        CrashReportingManager.logException(ex2);
                     }
                 }
             }
@@ -1583,6 +1609,7 @@ public class DocumentsActivity extends BaseActivity {
                 		resolver, cwd.derivedUri, mMimeType, mDisplayName);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to create document", e);
+                CrashReportingManager.logException(e);
             } finally {
             	ContentProviderClientCompat.releaseQuietly(client);
             }
@@ -1690,6 +1717,7 @@ public class DocumentsActivity extends BaseActivity {
     			} catch (Exception e) {
     				Log.w(TAG, "Failed to move " + doc);
     				hadTrouble = true;
+                    CrashReportingManager.logException(e);
     			}
     		}
 

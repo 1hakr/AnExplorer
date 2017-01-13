@@ -401,21 +401,29 @@ public class StandaloneActivity extends BaseActivity {
 
     @Override
     public void onStateChanged() {
-        invalidateOptionsMenu();
+        supportInvalidateOptionsMenu();
     }
     /**
      * Set state sort order based on explicit user action.
      */
     private void setUserSortOrder(int sortOrder) {
         mState.userSortOrder = sortOrder;
-        DirectoryFragment.get(getFragmentManager()).onUserSortOrderChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            directory.onUserSortOrderChanged();;
+        }
     }
     /**
      * Set state mode based on explicit user action.
      */
     private void setUserMode(int mode) {
         mState.userMode = mode;
-        DirectoryFragment.get(getFragmentManager()).onUserModeChanged();
+        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(fragment instanceof DirectoryFragment) {
+            final DirectoryFragment directory = (DirectoryFragment) fragment;
+            directory.onUserModeChanged();;
+        }
     }
     @Override
     public void setPending(boolean pending) {
@@ -614,7 +622,7 @@ public class StandaloneActivity extends BaseActivity {
             roots.onCurrentRootChanged();
         }
         updateActionBar();
-        invalidateOptionsMenu();
+        supportInvalidateOptionsMenu();
         dumpStack();
     }
     @Override

@@ -27,6 +27,8 @@ import android.widget.FrameLayout;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+
 public class DirectoryContainerView extends FrameLayout {
 	private boolean mDisappearingFirst = false;
     protected ArrayList<View> mDisappearingChildren;
@@ -48,7 +50,8 @@ public class DirectoryContainerView extends FrameLayout {
     	    Field field = ViewGroup.class.getDeclaredField("mDisappearingChildren");
     	    field.setAccessible(true);
     	    mDisappearingChildren = (ArrayList<View>) field.get(this);
-    	} catch (Exception ex) {
+    	} catch (Exception e) {
+            CrashReportingManager.logException(e);
     	}
         final ArrayList<View> disappearing = mDisappearingChildren;
         if (mDisappearingFirst && disappearing != null) {

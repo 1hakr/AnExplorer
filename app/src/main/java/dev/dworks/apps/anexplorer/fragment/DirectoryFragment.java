@@ -70,8 +70,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -87,6 +85,7 @@ import dev.dworks.apps.anexplorer.loader.RecentLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.ImageUtils;
@@ -175,7 +174,7 @@ public class DirectoryFragment extends ListFragment {
 	private DocumentsAdapter mAdapter;
 	private LoaderCallbacks<DirectoryResult> mCallbacks;
 	private ArrayMap<Integer, Long> mSizes = new ArrayMap<Integer, Long>();
-	private ArrayList<DocumentInfo> docsAppUninstall = Lists.newArrayList();
+	private ArrayList<DocumentInfo> docsAppUninstall = new ArrayList<>();
 
 	private final int mLoaderId = 42;
 	private RootInfo root;
@@ -230,9 +229,9 @@ public class DirectoryFragment extends ListFragment {
         return (root != null ? root.authority : "null") + ';' + (root != null ? root.rootId : "null") + ';' + (doc != null ? doc.documentId : "null");
 	}
 
-	public static DirectoryFragment get(FragmentManager fm) {
+	public static Fragment get(FragmentManager fm) {
 		// TODO: deal with multiple directories shown at once
-		return (DirectoryFragment) fm.findFragmentById(R.id.container_directory);
+		return fm.findFragmentById(R.id.container_directory);
 	}
 
 	@Override
@@ -629,7 +628,7 @@ public class DirectoryFragment extends ListFragment {
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 			final SparseBooleanArray checked = mCurrentView.getCheckedItemPositions();
-			final ArrayList<DocumentInfo> docs = Lists.newArrayList();
+			final ArrayList<DocumentInfo> docs = new ArrayList<>();
 			final int size = checked.size();
 			for (int i = 0; i < size; i++) {
 				if (checked.valueAt(i)) {
@@ -793,8 +792,8 @@ public class DirectoryFragment extends ListFragment {
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			// intent.addCategory(Intent.CATEGORY_DEFAULT);
 
-			final ArrayList<String> mimeTypes = Lists.newArrayList();
-			final ArrayList<Uri> uris = Lists.newArrayList();
+			final ArrayList<String> mimeTypes = new ArrayList<>();
+			final ArrayList<Uri> uris = new ArrayList<>();
 			for (DocumentInfo doc : docs) {
 				mimeTypes.add(doc.mimeType);
 				uris.add(doc.derivedUri);
@@ -839,6 +838,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = ! DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to delete " + doc);
+				CrashReportingManager.logException(e);
 				hadTrouble = true;
 			}
 		}
@@ -885,6 +885,7 @@ public class DirectoryFragment extends ListFragment {
 			DocumentsContract.deleteDocument(resolver, doc.derivedUri);
 		} catch (Exception e) {
 			Log.w(TAG, "Failed to delete " + doc);
+			CrashReportingManager.logException(e);
 			hadTrouble = true;
 		}
 
@@ -1074,6 +1075,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = DocumentsContract.copyDocument(resolver, doc.derivedUri, appBackupUri) == null;
 			} catch (Exception e) {
 				Log.w(TAG, "Failed to save " + doc);
+				CrashReportingManager.logException(e);
 				hadTrouble = true;
 			}
 		}
@@ -1092,13 +1094,14 @@ public class DirectoryFragment extends ListFragment {
         }
 
         try {
-            ArrayList<String> documentIds = Lists.newArrayList();
+            ArrayList<String> documentIds = new ArrayList<>();
             for (DocumentInfo doc : docs){
                 documentIds.add(DocumentsContract.getDocumentId(doc.derivedUri));
             }
             hadTrouble = ! DocumentsContract.compressDocument(resolver, doc.derivedUri, documentIds);
         } catch (Exception e) {
             Log.w(TAG, "Failed to Compress " + doc);
+			CrashReportingManager.logException(e);
             hadTrouble = true;
         }
 
@@ -1121,6 +1124,7 @@ public class DirectoryFragment extends ListFragment {
                 hadTrouble = ! DocumentsContract.uncompressDocument(resolver, doc.derivedUri);
             } catch (Exception e) {
                 Log.w(TAG, "Failed to Uncompress " + doc);
+				CrashReportingManager.logException(e);
                 hadTrouble = true;
             }
         }
@@ -1205,7 +1209,7 @@ public class DirectoryFragment extends ListFragment {
 		private Cursor mCursor;
 		private int mCursorCount;
 
-		private ArrayList<Footer> mFooters = Lists.newArrayList();
+		private ArrayList<Footer> mFooters = new ArrayList<>();
 
 		public void swapResult(DirectoryResult result) {
 			mCursor = result != null ? result.cursor : null;
@@ -1633,6 +1637,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!(e instanceof OperationCanceledException)) {
 					Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
 				}
+				CrashReportingManager.logException(e);
 			} finally {
 				ContentProviderClientCompat.releaseQuietly(client);
 			}
@@ -1693,6 +1698,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!(e instanceof OperationCanceledException)) {
 					Log.w(TAG, "Failed to calculate size for " + mPath + ": " + e);
 				}
+				CrashReportingManager.logException(e);
 			}
 			return result;
 		}
@@ -1832,7 +1838,7 @@ public class DirectoryFragment extends ListFragment {
 	}
 
 	public boolean onPopupMenuItemClick(MenuItem item, int position) {
-		final ArrayList<DocumentInfo> docs = Lists.newArrayList();
+		final ArrayList<DocumentInfo> docs = new ArrayList<>();
 		final Cursor cursor = mAdapter.getItem(position);
 		final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 		docs.add(doc);

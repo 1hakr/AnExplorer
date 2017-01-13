@@ -59,7 +59,10 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
 
 public class Utils {
 
@@ -372,6 +375,10 @@ public class Utils {
         return hasFeature(context, PackageManager.FEATURE_LEANBACK);
     }
 
+    public static boolean hasWiFi(Context context) {
+        return hasFeature(context, PackageManager.FEATURE_WIFI);
+    }
+
     public static boolean isTelevision(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
@@ -488,5 +495,13 @@ public class Utils {
 
         int[] colors = new int[]{color, color, color, color};
         return new ColorStateList(states, colors);
+    }
+
+    public static boolean isQSTile(Intent intent){
+        if(null != intent.getAction()){
+            String action = intent.getAction();
+            return ACTION_QS_TILE_PREFERENCES.equals(action);
+        }
+        return false;
     }
 }

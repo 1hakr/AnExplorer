@@ -184,6 +184,7 @@
     <string name="ftp_notif_title">Transfer to PC started</string>
     <string name="ftp_notif_text">at %s</string>
     <string name="ftp_notif_stop_server">STOP</string>
+    <string name="toggle_messages">Transfer to PC</string>
 
     <string-array name="connection_types">
         <item>FTP</item>

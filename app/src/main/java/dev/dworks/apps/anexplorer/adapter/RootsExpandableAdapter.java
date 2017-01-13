@@ -6,8 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,26 +19,27 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 
 public class RootsExpandableAdapter extends BaseExpandableListAdapter {
 
-    final List<GroupInfo> group = Lists.newArrayList();
+    final List<GroupInfo> group = new ArrayList<>();
 
     public RootsExpandableAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
         processRoots(roots);
     }
 
     private void processRoots(Collection<RootInfo> roots) {
-        List<GroupInfo> groupRoots = Lists.newArrayList();
-        final List<Item> phone = Lists.newArrayList();
-        final List<Item> recent = Lists.newArrayList();
-        final List<Item> connection = Lists.newArrayList();
-        final List<Item> rooted = Lists.newArrayList();
-        final List<Item> appbackup = Lists.newArrayList();
+        List<GroupInfo> groupRoots = new ArrayList<>();
+        final List<Item> phone = new ArrayList<>();
+        final List<Item> recent = new ArrayList<>();
+        final List<Item> connection = new ArrayList<>();
+        final List<Item> rooted = new ArrayList<>();
+        final List<Item> appbackup = new ArrayList<>();
+        final List<Item> usb = new ArrayList<>();
 
-        final List<Item> storage = Lists.newArrayList();
-        final List<Item> network = Lists.newArrayList();
-        final List<Item> apps = Lists.newArrayList();
-        final List<Item> library = Lists.newArrayList();
-        final List<Item> folders = Lists.newArrayList();
-        final List<Item> bookmarks = Lists.newArrayList();
+        final List<Item> storage = new ArrayList<>();
+        final List<Item> network = new ArrayList<>();
+        final List<Item> apps = new ArrayList<>();
+        final List<Item> library = new ArrayList<>();
+        final List<Item> folders = new ArrayList<>();
+        final List<Item> bookmarks = new ArrayList<>();
 
         for (RootInfo root : roots) {
             if (root.isRecents()) {
@@ -52,6 +52,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 phone.add(new RootItem(root));
             } else if (root.isAppBackupFolder()) {
                 appbackup.add(new RootItem(root));
+            } else if (root.isUsbStorage()) {
+                usb.add(new RootItem(root));
             } else if (RootInfo.isLibrary(root)) {
                 library.add(new RootItem(root));
             } else if (RootInfo.isFolder(root)) {
@@ -68,13 +70,18 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         }
 
         if(!storage.isEmpty()){
+            storage.addAll(usb);
             storage.addAll(phone);
             storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", storage));
         } else if(!phone.isEmpty()){
+            storage.addAll(usb);
+            storage.addAll(phone);
             storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", phone));
         } else if(!rooted.isEmpty()){
+            storage.addAll(usb);
+            storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", rooted));
         }
 

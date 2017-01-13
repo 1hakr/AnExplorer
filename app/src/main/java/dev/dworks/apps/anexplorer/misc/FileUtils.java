@@ -10,8 +10,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import com.google.common.collect.Lists;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -627,7 +625,7 @@ public class FileUtils {
     public static void updateMedia(Context context, ArrayList<DocumentInfo> docs, String parentPath) {
         try {
             if(Utils.hasKitKat()){
-                ArrayList<String> paths = Lists.newArrayList();
+                ArrayList<String> paths = new ArrayList<>();
                 for(DocumentInfo doc : docs){
                     paths.add(parentPath + File.separator + doc.displayName);
                 }

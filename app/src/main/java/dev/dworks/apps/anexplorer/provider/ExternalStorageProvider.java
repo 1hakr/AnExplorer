@@ -39,8 +39,6 @@ import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.common.collect.Lists;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,6 +50,7 @@ import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.DiskInfo;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
@@ -89,6 +88,7 @@ public class ExternalStorageProvider extends StorageProvider {
             Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE, Document.COLUMN_SUMMARY,
     };
     private boolean showFilesHidden;
+    private boolean isTelevision;
 
     private static class RootInfo {
         public String rootId;
@@ -127,6 +127,7 @@ public class ExternalStorageProvider extends StorageProvider {
     public boolean onCreate() {
         mHandler = new Handler();
         mArchiveHelper = new DocumentArchiveHelper(this, (char) 0);
+        isTelevision = Utils.isTelevision(getContext());
         updateRoots();
         updateSettings();
 
@@ -428,6 +429,7 @@ public class ExternalStorageProvider extends StorageProvider {
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -561,6 +563,9 @@ public class ExternalStorageProvider extends StorageProvider {
             flags |= Document.FLAG_SUPPORTS_RENAME;
             flags |= Document.FLAG_SUPPORTS_MOVE;
             flags |= Document.FLAG_SUPPORTS_EDIT;
+            if(isTelevision) {
+                flags |= Document.FLAG_DIR_PREFERS_GRID;
+            }
         }
 
         final String mimeType = getTypeForFile(file);
@@ -751,7 +756,7 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public String compressDocument(String parentDocumentId, ArrayList<String> documentIds) throws FileNotFoundException {
         final File fileFrom = getFileForDocId(parentDocumentId);
-        ArrayList<File> files = Lists.newArrayList();
+        ArrayList<File> files = new ArrayList<>();
         for (String documentId : documentIds){
             files.add(getFileForDocId(documentId));
         }

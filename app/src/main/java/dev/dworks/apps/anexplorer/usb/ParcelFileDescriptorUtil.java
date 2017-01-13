@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 /**
  * ParcelFileDescriptor Utility class.
@@ -69,7 +70,7 @@ public class ParcelFileDescriptorUtil {
                 mOut.flush();
             } catch (IOException e) {
                 Log.e("TransferThread", "writing failed");
-                e.printStackTrace();
+                CrashReportingManager.logException(e);
             } finally {
                 IoUtils.closeQuietly(mIn);
                 IoUtils.closeQuietly(mOut);

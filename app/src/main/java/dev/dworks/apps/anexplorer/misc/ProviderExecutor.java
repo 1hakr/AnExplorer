@@ -16,22 +16,19 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.support.v4.util.ArrayMap;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 
 public class ProviderExecutor extends Thread implements Executor {
 
     @GuardedBy("sExecutors")
-    private static HashMap<String, ProviderExecutor> sExecutors = Maps.newHashMap();
+    private static ArrayMap<String, ProviderExecutor> sExecutors = new ArrayMap<>();
 
     public static ProviderExecutor forAuthority(String authority) {
         synchronized (sExecutors) {
@@ -52,7 +49,7 @@ public class ProviderExecutor extends Thread implements Executor {
 
     private final LinkedBlockingQueue<Runnable> mQueue = new LinkedBlockingQueue<Runnable>();
 
-    private final ArrayList<WeakReference<Preemptable>> mPreemptable = Lists.newArrayList();
+    private final ArrayList<WeakReference<Preemptable>> mPreemptable = new ArrayList<>();
 
     @SuppressWarnings("unused")
 	private void preempt() {

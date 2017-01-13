@@ -26,11 +26,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.util.ArrayMap;
 import android.util.TypedValue;
-
-import com.google.common.collect.Maps;
-
-import java.util.HashMap;
 
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
@@ -42,7 +39,7 @@ import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
 public class IconUtils {
 
-    private static HashMap<String, Integer> sMimeIcons = Maps.newHashMap();
+    private static ArrayMap<String, Integer> sMimeIcons = new ArrayMap<>();
 
     private static void add(String mimeType, int resId) {
         if (sMimeIcons.put(mimeType, resId) != null) {

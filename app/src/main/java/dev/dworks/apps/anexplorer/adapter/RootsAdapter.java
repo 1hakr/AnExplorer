@@ -6,8 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +34,10 @@ public class RootsAdapter extends ArrayAdapter<Item> {
         RootItem root_root = null;
         RootItem phone = null;
 
-        final List<RootInfo> clouds = Lists.newArrayList();
-        final List<RootInfo> locals = Lists.newArrayList();
-        final List<RootInfo> extras = Lists.newArrayList();
-        final List<RootInfo> bookmarks = Lists.newArrayList();
+        final List<RootInfo> clouds = new ArrayList<>();
+        final List<RootInfo> locals = new ArrayList<>();
+        final List<RootInfo> extras = new ArrayList<>();
+        final List<RootInfo> bookmarks = new ArrayList<>();
 
         for (RootInfo root : roots) {
             if (root.isRecents()) {

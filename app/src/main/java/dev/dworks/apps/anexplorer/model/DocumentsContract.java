@@ -30,7 +30,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,6 +40,7 @@ import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.support.media.ExifInterface;
 import android.util.Log;
 import android.widget.SearchView.OnCloseListener;
 
@@ -55,7 +55,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
-import dev.dworks.apps.anexplorer.misc.ExifInterfaceCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.OsCompat;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -1369,7 +1369,9 @@ public final class DocumentsContract {
         final ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
                 file, ParcelFileDescriptor.MODE_READ_ONLY);
         Bundle extras = null;
-
+        if(!Utils.hasKitKat()) {
+            return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
+        }
         try {
             final ExifInterface exif = new ExifInterface(file.getAbsolutePath());
 
@@ -1388,16 +1390,14 @@ public final class DocumentsContract {
                     break;
             }
 
-            if(Utils.hasKitKat()){
-                final long[] thumb = ExifInterfaceCompat.getThumbnailRange(exif);
-                if (thumb != null) {
-                    return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
-                }
+            final long[] thumb = exif.getThumbnailRange();
+            if (thumb != null) {
+                return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
             }
         } catch (IOException e) {
+            CrashReportingManager.logException(e);
         }
-        // TODO : Remove
-        //return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH, extras);
-        return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
+
+        return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH, extras);
     }
 }

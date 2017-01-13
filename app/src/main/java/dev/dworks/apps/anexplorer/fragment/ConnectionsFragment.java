@@ -31,6 +31,7 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
@@ -119,7 +120,15 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
                 Uri contentsUri = ExplorerProvider.buildConnection();
-                return new CursorLoader(context, contentsUri, null, null, null, null);
+
+                String selection = null;
+                String[] selectionArgs = null;
+                if(!Utils.hasWiFi(getActivity())){
+                    selection = ExplorerProvider.ConnectionColumns.TYPE + "!=? " ;
+                    selectionArgs = new String[]{SERVER};
+                }
+
+                return new CursorLoader(context, contentsUri, null, selection, selectionArgs, null);
             }
 
             @Override
@@ -151,7 +160,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     public void reload(){
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
-        NetworkStorageProvider.notifyRootsChanged(getActivity());
+        RootsCache.updateRoots(getActivity(), NetworkStorageProvider.AUTHORITY);
     }
 
     private AdapterView.OnItemClickListener mItemListener = new AdapterView.OnItemClickListener() {
@@ -252,7 +261,6 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     public void openConnectionRoot(NetworkConnection connection) {
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(activity.getRoots().getRootInfo(connection,
-                NetworkStorageProvider.AUTHORITY), true);
+        activity.onRootPicked(activity.getRoots().getRootInfo(connection), true);
     }
 }

@@ -9,20 +9,20 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.common.base.Splitter;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.model.Durable;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider.ConnectionColumns;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorBolean;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
@@ -132,7 +132,7 @@ public class NetworkConnection  implements Durable, Parcelable {
      * @throws IOException on error
      */
     private void changeToDir(final String directory) throws IOException {
-        Iterable<String> iterable = Splitter.on('/').omitEmptyStrings().split(directory);
+        String[] iterable = directory.split("/");
         // note: important: we first go to user home
         client.changeWorkingDirectory(getHomeDirectory());
         for (String dir : iterable) {
@@ -219,6 +219,7 @@ public class NetworkConnection  implements Durable, Parcelable {
                 connectClient();
             } catch (IOException e) {
                 LogUtils.LOGD(TAG, "Error getting home dir:"+ e);
+                CrashReportingManager.logException(e);
             }
         }
         return path;
@@ -282,7 +283,8 @@ public class NetworkConnection  implements Durable, Parcelable {
                 networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -302,7 +304,29 @@ public class NetworkConnection  implements Durable, Parcelable {
                 networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
+        } finally {
+            IoUtils.closeQuietly(cursor);
+        }
+
+        return networkConnection;
+    }
+
+    public static NetworkConnection getDefaultServer(Context context) {
+        Cursor cursor = null;
+        NetworkConnection networkConnection = null;
+        try {
+            cursor = context.getContentResolver()
+                    .query(ExplorerProvider.buildConnection(), null,
+                            ConnectionColumns.TYPE + "=? "
+                            , new String[]{SERVER}, null);
+            if (null != cursor && cursor.moveToFirst()) {
+                networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
+            CrashReportingManager.logException(e);
         } finally {
             IoUtils.closeQuietly(cursor);
         }
@@ -320,7 +344,7 @@ public class NetworkConnection  implements Durable, Parcelable {
                 return true;
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
+            Log.w(TAG, "Failed to load some roots from " + NetworkStorageProvider.AUTHORITY + ": " + e);
         }
 
         return false;

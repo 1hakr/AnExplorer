@@ -1,13 +1,17 @@
 package dev.dworks.apps.anexplorer.network;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.service.NetworkServerService;
 
@@ -52,6 +56,13 @@ public class NetworkServiceHandler extends Handler {
             boolean started = service.launchServer();
             if (started && service.getServer() != null) {
                 sendBroadcast(service, ACTION_FTPSERVER_STARTED);
+                if(null == service.getRootInfo()) {
+                    Context context = service.getApplicationContext();
+                    String contentTitle = context.getString(R.string.ftp_notif_title)
+                            + " \n " + String.format(context.getString(R.string.ftp_notif_text),
+                            ConnectionUtils.getFTPAddress(context));
+                    Toast.makeText(context, contentTitle, Toast.LENGTH_LONG).show();
+                }
             } else {
                 service.stopSelf();
             }

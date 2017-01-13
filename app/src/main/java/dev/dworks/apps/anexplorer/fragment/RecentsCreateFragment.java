@@ -44,8 +44,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +55,7 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.loader.UriDerivativeLoader;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
@@ -166,7 +165,7 @@ public class RecentsCreateFragment extends ListFragment {
         @Override
         public List<DocumentStack> loadInBackground(Uri uri, CancellationSignal signal) {
             final Collection<RootInfo> matchingRoots = mRoots.getMatchingRootsBlocking(mState);
-            final ArrayList<DocumentStack> result = Lists.newArrayList();
+            final ArrayList<DocumentStack> result = new ArrayList<>();
 
             final ContentResolver resolver = getContext().getContentResolver();
             final Cursor cursor = resolver.query(
@@ -187,6 +186,7 @@ public class RecentsCreateFragment extends ListFragment {
                         result.add(stack);
                     } catch (IOException e) {
                         Log.w(TAG, "Failed to resolve stack: " + e);
+                        CrashReportingManager.logException(e);
                     }
                 }
             } finally {

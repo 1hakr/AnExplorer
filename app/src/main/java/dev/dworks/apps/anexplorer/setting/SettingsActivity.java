@@ -35,6 +35,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -170,6 +171,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             //return Base64.encodeToString(value.getBytes(), Base64.DEFAULT);
         }
         catch (Exception e) {
+            CrashReportingManager.logException(e);
         }
         return value;
     }
