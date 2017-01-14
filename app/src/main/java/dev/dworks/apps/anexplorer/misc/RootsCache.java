@@ -133,7 +133,7 @@ public class RootsCache {
 
         // Special root for recents
         mRecentsRoot.authority = RecentsProvider.AUTHORITY;
-        mRecentsRoot.rootId = null;
+        mRecentsRoot.rootId = "recents";
         mRecentsRoot.icon = R.drawable.ic_root_recent;
         mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_IS_CHILD;
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
@@ -208,7 +208,7 @@ public class RootsCache {
                 waitForFirstLoad();
             }
 
-            //mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
+            mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
             mTaskRoots.put(mConnectionsRoot.authority, mConnectionsRoot);
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
@@ -364,7 +364,7 @@ public class RootsCache {
     }
 
     public RootInfo getDefaultRoot() {
-        return getPrimaryRoot();
+        return getHomeRoot();
     }
 
     public RootInfo getDownloadRoot() {
@@ -445,7 +445,7 @@ public class RootsCache {
     }
 
     public RootInfo getHomeRoot() {
-        return mRecentsRoot;
+        return mHomeRoot;
     }
 
     public RootInfo getRecentsRoot() {

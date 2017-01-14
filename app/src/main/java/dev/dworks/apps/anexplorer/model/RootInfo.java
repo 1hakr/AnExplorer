@@ -261,7 +261,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isRecents() {
-        return RecentsProvider.AUTHORITY.equals(authority) && rootId == null;
+        return RecentsProvider.AUTHORITY.equals(authority) && "recents".equals(rootId);
     }
 
     public boolean isStorage() {
@@ -529,9 +529,12 @@ public class RootInfo implements Durable, Parcelable {
         return root.isHome() || root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
     }
 
-    public static boolean isLibrary(RootInfo root){
-        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio()
-                || root.isDocument() || root.isArchive() || root.isApk();
+    public static boolean isLibraryMedia(RootInfo root){
+        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio();
+    }
+
+    public static boolean isLibraryNonMedia(RootInfo root){
+        return root.isDocument() || root.isArchive() || root.isApk();
     }
 
     public static boolean isFolder(RootInfo root){

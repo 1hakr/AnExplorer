@@ -76,6 +76,7 @@
             android:ellipsize="end"
             android:gravity="start"
             android:singleLine="true"
+            android:visibility="gone"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="?android:attr/textColorSecondary"
