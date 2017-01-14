@@ -17,39 +17,46 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
+import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.ui.ArcProgress;
+import dev.dworks.apps.anexplorer.ui.HomeItem;
+import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
+
+import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
 
 /**
  * Display home.
  */
 public class HomeFragment extends Fragment {
 
-    private ArcProgress storageStats;
-    private ArcProgress memoryStats;
-    private View statsBackground;
-    private TextView storageSummary;
+    private HomeItem storageStats;
+    private HomeItem memoryStats;
     private Timer storageTimer;
     private Timer processTimer;
+    private RootsCache roots;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -69,31 +76,42 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         storageTimer = new Timer();
         processTimer = new Timer();
-        statsBackground = view.findViewById(R.id.stats_background);
-        storageStats = (ArcProgress) view.findViewById(R.id.storage_stats);
-        memoryStats = (ArcProgress) view.findViewById(R.id.memory_stats);
-        storageSummary = (TextView) view.findViewById(R.id.storage_summary);
+        storageStats = (HomeItem) view.findViewById(R.id.storage_stats);
+        memoryStats = (HomeItem) view.findViewById(R.id.memory_stats);
         showData();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateColor();
     }
 
     public void showData(){
         Context context = getActivity();
-        final RootsCache roots = DocumentsApplication.getRootsCache(context);
-        RootInfo root = roots.getPrimaryRoot();
-        String summaryText = "";
-        if (root.availableBytes >= 0) {
-            summaryText = context.getString(R.string.storage_stats,
-                    Formatter.formatFileSize(context, root.availableBytes),
-                    Formatter.formatFileSize(context, root.totalBytes));
-            storageSummary.setText(summaryText);
+        roots = DocumentsApplication.getRootsCache(context);
+        showStorage();
+        showMemory(0);
+    }
+
+    private void showStorage() {
+        final RootInfo primaryRoot = roots.getPrimaryRoot();
+        if (null != primaryRoot) {
+            storageStats.setInfo(primaryRoot);
+            storageStats.setAction(R.drawable.ic_analyze, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((DocumentsActivity)getActivity()).showInfo("Coming Soon!");
+                }
+            });
+            storageStats.setCardListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DocumentsActivity activity = ((DocumentsActivity)getActivity());
+                    activity.onRootPicked(primaryRoot, true);
+                }
+            });
             try {
-                final double percentStore = (((root.totalBytes - root.availableBytes) / (double) root.totalBytes) * 100);
+                final double percentStore = (((primaryRoot.totalBytes - primaryRoot.availableBytes) / (double) primaryRoot.totalBytes) * 100);
                 storageStats.setProgress(0);
                 storageTimer.schedule(new TimerTask() {
                     @Override
@@ -113,15 +131,40 @@ public class HomeFragment extends Fragment {
                 }, 50, 20);
             }
             catch (Exception e){
-                storageStats.setVisibility(View.GONE);
             }
         }
 
-        root = roots.getProcessRoot();
-        if (root.availableBytes >= 0) {
+    }
+
+    private void showMemory(long currentAvailableBytes) {
+
+        final RootInfo processRoot = roots.getProcessRoot();
+        if (null != processRoot) {
+            memoryStats.setInfo(processRoot);
+            memoryStats.setAction(R.drawable.ic_clean, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new OperationTask(processRoot).execute();
+                }
+            });
+            memoryStats.setCardListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DocumentsActivity activity = ((DocumentsActivity)getActivity());
+                    activity.onRootPicked(processRoot, true);
+                }
+            });
+            if(currentAvailableBytes != 0) {
+                long availableBytes = currentAvailableBytes - processRoot.availableBytes;
+                String summaryText = availableBytes <= 0 ? "Already cleaned up!" : getActivity().getString(R.string.root_available_bytes,
+                        Formatter.formatFileSize(getActivity(), availableBytes));
+                ((DocumentsActivity) getActivity()).showInfo(summaryText);
+            }
+
             try {
-                final double percentStore = (((root.totalBytes - root.availableBytes) / (double) root.totalBytes) * 100);
+                final double percentStore = (((processRoot.totalBytes - processRoot.availableBytes) / (double) processRoot.totalBytes) * 100);
                 memoryStats.setProgress(0);
+                processTimer = new Timer();
                 processTimer.schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -139,26 +182,9 @@ public class HomeFragment extends Fragment {
                 }, 50, 20);
             }
             catch (Exception e){
-                memoryStats.setVisibility(View.GONE);
+                e.printStackTrace();
             }
         }
-        updateColor();
-    }
-
-    public void updateColor(){
-        int accentColor = SettingsActivity.getActionBarColor();
-        int complimentartyColor = Utils.getComplementaryColor(accentColor);
-
-        statsBackground.setBackgroundColor(accentColor);
-        storageStats.setFinishedStrokeColor(complimentartyColor);
-        memoryStats.setFinishedStrokeColor(complimentartyColor);
-
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        final Context context = getActivity();
     }
 
     @Override
@@ -166,5 +192,58 @@ public class HomeFragment extends Fragment {
         super.onDestroy();
         storageTimer.cancel();
         processTimer.cancel();
+    }
+
+
+    private class OperationTask extends AsyncTask<Void, Void, Boolean> {
+
+        private MaterialProgressDialog progressDialog;
+        private RootInfo root;
+        private long currentAvailableBytes;
+
+        public OperationTask(RootInfo root) {
+            progressDialog = new MaterialProgressDialog(getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setColor(SettingsActivity.getActionBarColor());
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Cleaning up RAM...");
+            this.root = root;
+            currentAvailableBytes = root.availableBytes;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            boolean result = false;
+            cleanupMemory(getContext());
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if (!Utils.isActivityAlive(getActivity())) {
+                return;
+            }
+            AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
+            AppsProvider.notifyRootsChanged(getActivity());
+            roots = DocumentsApplication.getRootsCache(getActivity());
+            showMemory(currentAvailableBytes);
+            progressDialog.dismiss();
+        }
+    }
+
+    public void cleanupMemory(Context context){
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningProcessesList = getRunningAppProcessInfo(context);
+        for (ActivityManager.RunningAppProcessInfo processInfo : runningProcessesList) {
+            activityManager.killBackgroundProcesses(processInfo.processName);
+        }
     }
 }

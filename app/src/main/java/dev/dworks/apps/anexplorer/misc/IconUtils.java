@@ -371,17 +371,24 @@ public class IconUtils {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static Drawable applyTintColor(Context context, int drawableId, int tintColorId) {
+    public static Drawable applyTintList(Context context, int drawableId, int tintColorId) {
         final Drawable icon = getDrawable(context, drawableId);
         icon.mutate();
         DrawableCompat.setTintList(DrawableCompat.wrap(icon), ContextCompat.getColorStateList(context, tintColorId));
         return icon;
     }
 
+    public static Drawable applyTint(Context context, int drawableId, int tintColorId) {
+        final Drawable icon = getDrawable(context, drawableId);
+        icon.mutate();
+        DrawableCompat.setTint(DrawableCompat.wrap(icon), tintColorId);
+        return icon;
+    }
+
     public static Drawable applyTintAttr(Context context, int drawableId, int tintAttrId) {
         final TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(tintAttrId, outValue, true);
-        return applyTintColor(context, drawableId, outValue.resourceId);
+        return applyTintList(context, drawableId, outValue.resourceId);
     }
 
     private static Drawable getDrawable(Context context, int drawableId){

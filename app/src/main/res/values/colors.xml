@@ -82,4 +82,8 @@
     <color name="defaultThemeColor">#808080</color>
 
     <color name="divider_light">#97dddddd</color>
+
+    <color name="window_background">#fff1f1f1</color>
+    <color name="drawer_background">#fff1f1f1</color>
+    <color name="directory_background">#fff7f7f7</color>
 </resources>
