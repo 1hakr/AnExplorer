@@ -4,9 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:name="dev.dworks.apps.anexplorer.DocumentsApplicationFree"
-        tools:replace="android:name">
+    <application>
         <provider
             android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"
             android:authorities="dev.dworks.apps.anexplorer.recents"

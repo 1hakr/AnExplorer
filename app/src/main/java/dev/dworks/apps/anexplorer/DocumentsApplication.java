@@ -31,6 +31,7 @@ import android.os.RemoteException;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
@@ -74,7 +75,9 @@ public class DocumentsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        if(!BuildConfig.DEBUG) {
+            AnalyticsManager.intialize(getApplicationContext());
+        }
         sInstance = this;
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
