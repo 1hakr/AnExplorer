@@ -445,7 +445,7 @@ public class RootsCache {
     }
 
     public RootInfo getHomeRoot() {
-        return mHomeRoot;
+        return mRecentsRoot;
     }
 
     public RootInfo getRecentsRoot() {

@@ -324,7 +324,17 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
-            mRoots.updateAsync();
+
+            //TODO refactor once home is added
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRoots.updateAsync();
+                    onRootPicked(mRoots.getDefaultRoot(), true);
+                }
+            }, 500);
+            //mRoots.updateAsync();
         }
     }
 
