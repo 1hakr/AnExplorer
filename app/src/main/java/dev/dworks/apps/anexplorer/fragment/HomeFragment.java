@@ -36,7 +36,6 @@ import java.util.TimerTask;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
@@ -45,6 +44,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.HomeItem;
+import dev.dworks.apps.anexplorer.ui.HomeItemSmall;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
 import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
@@ -53,18 +53,25 @@ import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProc
  * Display home.
  */
 public class HomeFragment extends Fragment {
+    public static final String TAG = "HomeFragment";
 
     private HomeItem storageStats;
     private HomeItem memoryStats;
     private Timer storageTimer;
     private Timer processTimer;
     private RootsCache roots;
+    private HomeItemSmall transfer_pc;
+    private HomeItemSmall app_backup;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
         final FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.container_directory, fragment);
+        ft.replace(R.id.container_directory, fragment, TAG);
         ft.commitAllowingStateLoss();
+    }
+
+    public static HomeFragment get(FragmentManager fm) {
+        return (HomeFragment) fm.findFragmentByTag(TAG);
     }
 
     @Override
@@ -80,6 +87,8 @@ public class HomeFragment extends Fragment {
         processTimer = new Timer();
         storageStats = (HomeItem) view.findViewById(R.id.storage_stats);
         memoryStats = (HomeItem) view.findViewById(R.id.memory_stats);
+        transfer_pc = (HomeItemSmall) view.findViewById(R.id.transfer_pc);
+        app_backup = (HomeItemSmall) view.findViewById(R.id.app_backup);
         showData();
     }
 
@@ -93,11 +102,14 @@ public class HomeFragment extends Fragment {
         roots = DocumentsApplication.getRootsCache(context);
         showStorage();
         showMemory(0);
+        showTransfer();
+        showBackup();
     }
 
     private void showStorage() {
         final RootInfo primaryRoot = roots.getPrimaryRoot();
         if (null != primaryRoot) {
+            storageStats.setVisibility(View.VISIBLE);
             storageStats.setInfo(primaryRoot);
             storageStats.setAction(R.drawable.ic_analyze, new View.OnClickListener() {
                 @Override
@@ -108,8 +120,7 @@ public class HomeFragment extends Fragment {
             storageStats.setCardListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    DocumentsActivity activity = ((DocumentsActivity)getActivity());
-                    activity.onRootPicked(primaryRoot, true);
+                    openRoot(primaryRoot);
                 }
             });
             try {
@@ -136,6 +147,8 @@ public class HomeFragment extends Fragment {
                 storageStats.setVisibility(View.GONE);
                 CrashReportingManager.logException(e);
             }
+        } else {
+            storageStats.setVisibility(View.GONE);
         }
 
     }
@@ -144,6 +157,7 @@ public class HomeFragment extends Fragment {
 
         final RootInfo processRoot = roots.getProcessRoot();
         if (null != processRoot) {
+            memoryStats.setVisibility(View.VISIBLE);
             memoryStats.setInfo(processRoot);
             memoryStats.setAction(R.drawable.ic_clean, new View.OnClickListener() {
                 @Override
@@ -154,8 +168,7 @@ public class HomeFragment extends Fragment {
             memoryStats.setCardListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    DocumentsActivity activity = ((DocumentsActivity)getActivity());
-                    activity.onRootPicked(processRoot, true);
+                    openRoot(processRoot);
                 }
             });
             if(currentAvailableBytes != 0) {
@@ -189,6 +202,39 @@ public class HomeFragment extends Fragment {
                 memoryStats.setVisibility(View.GONE);
                 CrashReportingManager.logException(e);
             }
+        }
+    }
+
+
+    private void showTransfer() {
+        final RootInfo root = roots.getServerRoot();
+        if (null != root) {
+            transfer_pc.setVisibility(View.VISIBLE);
+            transfer_pc.setInfo(root);
+            transfer_pc.setCardListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openRoot(root);
+                }
+            });
+        } else {
+            transfer_pc.setVisibility(View.GONE);
+        }
+    }
+
+    private void showBackup() {
+        final RootInfo root = roots.getAppRoot();
+        if (null != root) {
+            app_backup.setVisibility(View.VISIBLE);
+            app_backup.setInfo(root);
+            app_backup.setCardListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openRoot(root);
+                }
+            });
+        } else {
+            app_backup.setVisibility(View.GONE);
         }
     }
 
@@ -238,10 +284,16 @@ public class HomeFragment extends Fragment {
             }
             AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
             AppsProvider.notifyRootsChanged(getActivity());
+            RootsCache.updateRoots(getActivity(), AppsProvider.AUTHORITY);
             roots = DocumentsApplication.getRootsCache(getActivity());
             showMemory(currentAvailableBytes);
             progressDialog.dismiss();
         }
+    }
+
+    private void openRoot(RootInfo rootInfo){
+        DocumentsActivity activity = ((DocumentsActivity)getActivity());
+        activity.onRootPicked(rootInfo, true);
     }
 
     public void cleanupMemory(Context context){

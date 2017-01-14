@@ -175,10 +175,8 @@ public class DocumentsActivity extends BaseActivity {
     private RootsCache mRoots;
     private State mState;
 	private boolean mAuthenticated;
-	private FrameLayout mSaveContainer;
     private FrameLayout mRateContainer;
     private boolean mActionMode;
-    private LruCache<String, Long> mFileSizeCache;
     private FloatingActionsMenu mActionMenu;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -204,8 +202,6 @@ public class DocumentsActivity extends BaseActivity {
 
 		mRoots = DocumentsApplication.getRootsCache(this);
 
-        mFileSizeCache = new LruCache<String, Long>(100);
-
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
 
@@ -214,7 +210,6 @@ public class DocumentsActivity extends BaseActivity {
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
-        mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
 
         initControls();
@@ -325,6 +320,10 @@ public class DocumentsActivity extends BaseActivity {
             RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
             mRoots.updateAsync();
+            final RootInfo root = getCurrentRoot();
+            if(root.isHome()){
+                HomeFragment.get(getFragmentManager()).showData();
+            }
         }
     }
 

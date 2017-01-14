@@ -20,10 +20,6 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class HomeItem extends FrameLayout {
 
-    final int[] attrsArray = {
-            android.R.attr.textAppearance,
-            android.R.attr.textColor,
-    };
     private Context mContext;
     private ImageView icon;
     private TextView title;

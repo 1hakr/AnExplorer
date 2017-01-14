@@ -382,7 +382,7 @@ public class RootsCache {
                 return root;
             }
         }
-        return getHomeRoot();
+        return null;
     }
 
     public RootInfo getSecondaryRoot() {
@@ -397,6 +397,24 @@ public class RootsCache {
     public RootInfo getProcessRoot() {
         for (RootInfo root : mRoots.get(AppsProvider.AUTHORITY)) {
             if (root.isAppProcess()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
+    public RootInfo getAppRoot() {
+        for (RootInfo root : mRoots.get(AppsProvider.AUTHORITY)) {
+            if (root.isAppPackage()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
+    public RootInfo getServerRoot() {
+        for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
+            if (root.isServer()) {
                 return root;
             }
         }
