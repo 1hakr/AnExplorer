@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.1'
+    
+    applicationVariants.all { variant -> variant.outputs.each { output -> output.outputFile = new File(output.outputFile.parent, "${applicationId}-v${variant.versionName}.apk") } }
 
     defaultConfig {
         versionName "3.4"
