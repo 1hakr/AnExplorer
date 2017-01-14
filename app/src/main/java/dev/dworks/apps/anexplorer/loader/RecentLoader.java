@@ -24,20 +24,19 @@ import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 import android.text.format.DateUtils;
 import android.util.Log;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AbstractFuture;
-
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -90,7 +89,7 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
     private final RootsCache mRoots;
     private final State mState;
 
-    private final HashMap<RootInfo, RecentTask> mTasks = Maps.newHashMap();
+    private final ArrayMap<RootInfo, RecentTask> mTasks = new ArrayMap<>();
 
     private final int mSortOrder = State.SORT_ORDER_LAST_MODIFIED;
 
@@ -102,13 +101,14 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
     // TODO: create better transfer of ownership around cursor to ensure its
     // closed in all edge cases.
 
-    public class RecentTask extends AbstractFuture<Cursor> implements Runnable, Closeable {
+    public class RecentTask extends FutureTask<Cursor> implements Runnable, Closeable {
         public final String authority;
         public final String rootId;
 
         private Cursor mWithRoot;
 
-        public RecentTask(String authority, String rootId) {
+        public RecentTask(@NonNull Runnable runnable, String authority, String rootId) {
+            super(runnable, null);
             this.authority = authority;
             this.rootId = rootId;
         }
@@ -181,7 +181,12 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
             final Collection<RootInfo> roots = mRoots.getMatchingRootsBlocking(mState);
             for (RootInfo root : roots) {
                 if ((root.flags & Root.FLAG_SUPPORTS_RECENTS) != 0) {
-                    final RecentTask task = new RecentTask(root.authority, root.rootId);
+                    final RecentTask task = new RecentTask(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    }, root.authority, root.rootId);
                     mTasks.put(root, task);
                 }
             }
@@ -203,7 +208,7 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
 
         // Collect all finished tasks
         boolean allDone = true;
-        List<Cursor> cursors = Lists.newArrayList();
+        List<Cursor> cursors = new ArrayList<>();
         for (RecentTask task : mTasks.values()) {
             if (task.isDone()) {
                 try {

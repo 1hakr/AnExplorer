@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
@@ -113,6 +114,7 @@ public class RootInfo implements Durable, Parcelable {
                 availableBytes = in.readLong();
                 totalBytes = in.readLong();
                 mimeTypes = DurableUtils.readNullableString(in);
+                path = DurableUtils.readNullableString(in);
                 deriveFields();
                 break;
             default:
@@ -133,6 +135,7 @@ public class RootInfo implements Durable, Parcelable {
         out.writeLong(availableBytes);
         out.writeLong(totalBytes);
         DurableUtils.writeNullableString(out, mimeTypes);
+        DurableUtils.writeNullableString(out, path);
     }
 
     @Override
@@ -235,6 +238,10 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_home;
         } else if (isConnections()) {
             derivedIcon = R.drawable.ic_root_connections;
+        } else if (isServerStorage()) {
+            derivedIcon = R.drawable.ic_root_server;
+        } else if (isNetworkStorage()) {
+            derivedIcon = R.drawable.ic_root_network;
         }
     }
 
@@ -258,7 +265,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isStorage() {
-        return ExternalStorageProvider.AUTHORITY.equals(authority);
+        return isInternalStorage() || isExternalStorage() || isSecondaryStorage();
     }
 
     public boolean isRootedStorage() {
@@ -370,6 +377,14 @@ public class RootInfo implements Durable, Parcelable {
                 && AppsProvider.ROOT_ID_PROCESS.equals(rootId);
     }
 
+    public boolean isNetworkStorage() {
+        return NetworkStorageProvider.AUTHORITY.equals(authority);
+    }
+
+    public boolean isServerStorage() {
+        return NetworkStorageProvider.AUTHORITY.equals(authority) && isServer();
+    }
+
     public boolean isUsbStorage() {
         return UsbStorageProvider.AUTHORITY.equals(authority);
     }
@@ -418,6 +433,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isUsb() {
         return (flags & Root.FLAG_REMOVABLE_USB) != 0;
+    }
+
+    public boolean isServer() {
+        return (flags & Root.FLAG_CONNECTION_SERVER) != 0;
     }
 
     public Drawable loadIcon(Context context) {
@@ -516,8 +535,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isFolder(RootInfo root){
-        return root.isBluetoothFolder() || root.isDownloadsFolder()
-                || root.isAppBackupFolder() || root.isDownloads();
+        return root.isBluetoothFolder() || root.isDownloadsFolder() || root.isDownloads();
     }
 
     public static boolean isBookmark(RootInfo root){
@@ -525,11 +543,20 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isTools(RootInfo root){
-        return root.isConnections() || root.isRootedStorage() || root.isAppPackage() || root.isAppProcess();
+        return root.isConnections() || root.isRootedStorage() || root.isAppPackage()
+                || root.isAppProcess();
+    }
+
+    public static boolean isNetwork(RootInfo root){
+        return root.isNetworkStorage();
+    }
+
+    public static boolean isApps(RootInfo root){
+        return root.isAppPackage() || root.isAppProcess();
     }
 
     public static boolean isOtherRoot(RootInfo root){
-        return root.isHome() || root.isConnections();
+        return root.isHome() || root.isConnections() || root.isNetworkStorage();
     }
 
 }

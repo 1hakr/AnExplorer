@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -51,6 +53,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(null);
+		setUpDefaultStatusBar();
 
 		initControls();
 	}
@@ -64,7 +67,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setTextColor(Utils.getComplementaryColor(SettingsActivity.getActionBarColor(this)));
-		String header = logo.getText() + getSuffix() + (Utils.isTelevision(this)? " for Android TV" : "") + " v" + BuildConfig.VERSION_NAME;
+		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 
 		TextView action_rate = (TextView)findViewById(R.id.action_rate);
@@ -77,7 +80,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		action_share.setOnClickListener(this);
 		action_feedback.setOnClickListener(this);
 
-		if(isNonPlay()){
+		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
 			action_support.setVisibility(View.GONE);
 		} else if(Utils.isTelevision(this)){
@@ -104,11 +107,8 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
     }
 
     private String getSuffix(){
-        return Utils.isProVersion() ? " Pro" : "";
-    }
-
-    private boolean isNonPlay(){
-        return BuildConfig.FLAVOR.contains("other");
+        return Utils.isProVersion() ? " Pro" : ""
+				+ (Utils.isTelevision(this)? " for Android TV" : "");
     }
 
 	@Override
@@ -138,25 +138,40 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 				break;
 			case R.id.action_rate:
 				Intent intentMarket = new Intent("android.intent.action.VIEW");
-				intentMarket.setData(Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
+				intentMarket.setData(Utils.getAppUri());
 				startActivity(intentMarket);
 				AnalyticsManager.logEvent("rate_app");
 				break;
 			case R.id.action_support:
 				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-				intentMarketAll.setData(Uri.parse("market://search?q=pub:DWorkS"));
+				intentMarketAll.setData(Utils.getAppStoreUri());
 				startActivity(intentMarketAll);
 				AnalyticsManager.logEvent("love_app");
 				break;
 			case R.id.action_share:
+
+				String shareText = "I found this file mananger very useful. Give it a try. "
+						+ Utils.getAppShareUri().toString();
 				ShareCompat.IntentBuilder
 						.from(this)
-						.setText(Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID).toString())
+						.setText(shareText)
 						.setType("text/plain")
 						.setChooserTitle("Share AnExplorer")
 						.startChooser();
 				AnalyticsManager.logEvent("share_app");
 				break;
+		}
+	}
+
+	public void setUpDefaultStatusBar() {
+		int color = ContextCompat.getColor(this, R.color.material_blue_grey_800);
+		if(Utils.hasLollipop()){
+			getWindow().setStatusBarColor(color);
+		}
+		else if(Utils.hasKitKat()){
+			SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+			systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
+			systemBarTintManager.setStatusBarTintEnabled(true);
 		}
 	}
 }

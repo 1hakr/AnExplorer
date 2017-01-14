@@ -13,6 +13,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 
@@ -52,7 +53,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     public void initInterstitialAd(){
-        mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/2724050870");
+        mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/9134520474");
         requestNewInterstitial();
     }
 
@@ -102,7 +103,9 @@ public class AdWrapper extends FrameLayout {
             if(null != mAdView){
                 mAdView.loadAd(new AdRequest.Builder().build());
             }
-        } catch (Exception e){ }
+        } catch (Exception e){
+            CrashReportingManager.logException(e);
+        }
     }
 
     AdListener adListener = new AdListener() {

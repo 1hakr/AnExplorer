@@ -5,8 +5,8 @@ android {
     buildToolsVersion '25.0.1'
 
     defaultConfig {
-        versionName "3.3"
-        versionCode = 49
+        versionName "3.4"
+        versionCode = 54
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -20,7 +20,6 @@ android {
             shrinkResources true
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
-                    'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
         release {
@@ -31,7 +30,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard/proguard-project.pro',
-                    'proguard/proguard-guava.pro',
                     'proguard/proguard-google-play-services.pro'
         }
     }
@@ -45,11 +43,25 @@ android {
             applicationId "dev.dworks.apps.anexplorer.pro"
             dimension "default"
         }
-        play {
+        underground {
+            applicationId "dev.dworks.apps.anexplorer.underground"
+            dimension "default"
+        }
+        google {
+            dimension "release"
+        }
+        amazon {
             dimension "release"
         }
         other {
             dimension "release"
+        }
+    }
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+
+        if (names.contains("underground") && (names.contains("google") || names.contains("other"))) {
+            variant.ignore = true
         }
     }
     packagingOptions {
@@ -71,13 +83,14 @@ ext {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.google.guava:guava:18.0'
     compile 'com.jaredrummler:android-processes:+'
     compile 'com.github.mjdev:libaums:+'
     compile 'org.apache.ftpserver:ftpserver-core:+'
+    compile 'commons-net:commons-net:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:cardview-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
-    freeCompile "com.google.firebase:firebase-core:${gmsVersion}"
+    compile "com.android.support:exifinterface:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
 }

@@ -48,6 +48,7 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -107,8 +108,14 @@ public class UsbStorageProvider extends DocumentsProvider {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         context.registerReceiver(mUsbReceiver, filter);
 
-        discoverDevices();
+        updateRoots();
         return true;
+    }
+
+    @Override
+    public void updateRoots() {
+        mRoots.clear();
+        discoverDevices();
     }
 
     private static String[] resolveRootProjection(String[] projection) {
@@ -295,6 +302,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             return getMimeType(getFileForDocId(documentId));
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
+            CrashReportingManager.logException(e);
         }
 
         return "application/octet-stream";
@@ -361,7 +369,7 @@ public class UsbStorageProvider extends DocumentsProvider {
                 row.add(Document.COLUMN_SUMMARY, FileUtils.formatFileCount(file.list().length));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            CrashReportingManager.logException(e);
         }
 
         // Only publish dates reasonably after epoch
@@ -377,7 +385,9 @@ public class UsbStorageProvider extends DocumentsProvider {
             for (UsbDevice device : usbManager.getDeviceList().values()) {
                 discoverDevice(device);
             }
-        } catch (Exception e){}
+        } catch (Exception e){
+            CrashReportingManager.logException(e);
+        }
     }
 
     private void discoverDevice(UsbDevice device) {
@@ -414,8 +424,9 @@ public class UsbStorageProvider extends DocumentsProvider {
                 mRoots.put(Integer.toString(partition.hashCode()), usbPartition);
 
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
+            CrashReportingManager.logException(e);
         }
 
         notifyRootsChanged();

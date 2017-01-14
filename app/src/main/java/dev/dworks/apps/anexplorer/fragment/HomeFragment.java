@@ -37,6 +37,7 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
@@ -131,6 +132,8 @@ public class HomeFragment extends Fragment {
                 }, 50, 20);
             }
             catch (Exception e){
+                storageStats.setVisibility(View.GONE);
+                CrashReportingManager.logException(e);
             }
         }
 
@@ -182,7 +185,8 @@ public class HomeFragment extends Fragment {
                 }, 50, 20);
             }
             catch (Exception e){
-                e.printStackTrace();
+                memoryStats.setVisibility(View.GONE);
+                CrashReportingManager.logException(e);
             }
         }
     }
@@ -221,7 +225,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected Boolean doInBackground(Void... params) {
             boolean result = false;
-            cleanupMemory(getContext());
+            cleanupMemory(getActivity());
             return result;
         }
 

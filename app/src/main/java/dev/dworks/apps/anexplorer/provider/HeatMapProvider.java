@@ -30,11 +30,10 @@ import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -90,21 +89,17 @@ public class HeatMapProvider extends StorageProvider {
     private final Object mRootsLock = new Object();
 
     @GuardedBy("mRootsLock")
-    private ArrayList<RootInfo> mRoots;
+    private ArrayList<RootInfo> mRoots = new ArrayList<>();
     @GuardedBy("mRootsLock")
-    private HashMap<String, RootInfo> mIdToRoot;
+    private ArrayMap<String, RootInfo> mIdToRoot = new ArrayMap<>();
     @GuardedBy("mRootsLock")
-    private HashMap<String, File> mIdToPath;
+    private ArrayMap<String, File> mIdToPath = new ArrayMap<>();
 
     @GuardedBy("mObservers")
-    private Map<File, DirectoryObserver> mObservers = Maps.newHashMap();
+    private ArrayMap<File, DirectoryObserver> mObservers = new ArrayMap<>();
 
     @Override
     public boolean onCreate() {
-        mRoots = Lists.newArrayList();
-        mIdToRoot = Maps.newHashMap();
-        mIdToPath = Maps.newHashMap();
-
         updateVolumes();
         return true;
     }

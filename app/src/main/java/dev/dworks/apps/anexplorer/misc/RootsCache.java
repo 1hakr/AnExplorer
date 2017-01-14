@@ -31,17 +31,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.util.ArraySet;
 import android.util.Log;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -51,12 +45,17 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.libcore.io.MultiMap;
+import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
+import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 
@@ -82,12 +81,12 @@ public class RootsCache {
     private final CountDownLatch mFirstLoad = new CountDownLatch(1);
 
     @GuardedBy("mLock")
-    private Multimap<String, RootInfo> mRoots = ArrayListMultimap.create();
+    private MultiMap<String, RootInfo> mRoots = new MultiMap<>();
     @GuardedBy("mLock")
-    private HashSet<String> mStoppedAuthorities = Sets.newHashSet();
+    private ArraySet<String> mStoppedAuthorities = new ArraySet<>();
 
     @GuardedBy("mObservedAuthorities")
-    private final HashSet<String> mObservedAuthorities = Sets.newHashSet();
+    private final ArraySet<String> mObservedAuthorities = new ArraySet<>();
 
     public RootsCache(Context context) {
         mContext = context;
@@ -100,12 +99,11 @@ public class RootsCache {
         }
 
         @Override
-        public void onChange(boolean selfChange) {
-        	super.onChange(selfChange);
-        }
-        
-        @Override
         public void onChange(boolean selfChange, Uri uri) {
+            if (uri == null) {
+                Log.w(TAG, "Received onChange event for null uri. Skipping.");
+                return;
+            }
             if (LOGD) Log.d(TAG, "Updating roots due to change at " + uri);
             updateAuthorityAsync(uri.getAuthority());
         }
@@ -129,7 +127,7 @@ public class RootsCache {
         mConnectionsRoot.rootId = "connections";
         mConnectionsRoot.icon = R.drawable.ic_root_connections;
         mConnectionsRoot.flags = Root.FLAG_LOCAL_ONLY;
-        mConnectionsRoot.title = mContext.getString(R.string.root_web_host);
+        mConnectionsRoot.title = mContext.getString(R.string.root_connections);
         mConnectionsRoot.availableBytes = -1;
         mConnectionsRoot.deriveFields();
 
@@ -146,20 +144,10 @@ public class RootsCache {
     }
 
     /**
-     * Gather roots from storage providers belonging to given package name.
-     */
-    public void updatePackageAsync(String packageName) {
-        new UpdateTask(packageName).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    /**
      * Gather roots from storage providers belonging to given authority.
      */
     public void updateAuthorityAsync(String authority) {
-        final ProviderInfo info = mContext.getPackageManager().resolveContentProvider(authority, 0);
-        if (info != null) {
-            updatePackageAsync(info.packageName);
-        }
+        new UpdateTask(authority).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void waitForFirstLoad() {
@@ -189,10 +177,10 @@ public class RootsCache {
     }
 
     private class UpdateTask extends AsyncTask<Void, Void, Void> {
-        private final String mFilterPackage;
+        private final String mAuthority;
 
-        private final Multimap<String, RootInfo> mTaskRoots = ArrayListMultimap.create();
-        private final HashSet<String> mTaskStoppedAuthorities = Sets.newHashSet();
+        private final MultiMap<String, RootInfo> mTaskRoots = new MultiMap<>();
+        private final ArraySet<String> mTaskStoppedAuthorities = new ArraySet<>();
 
         /**
          * Update all roots.
@@ -202,11 +190,11 @@ public class RootsCache {
         }
 
         /**
-         * Only update roots belonging to given package name. Other roots will
+         * Only update roots belonging to given authority. Other roots will
          * be copied from cached {@link #mRoots} values.
          */
-        public UpdateTask(String filterPackage) {
-            mFilterPackage = filterPackage;
+        public UpdateTask(String authority) {
+            mAuthority = authority;
         }
 
         @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -214,7 +202,7 @@ public class RootsCache {
         protected Void doInBackground(Void... params) {
             final long start = SystemClock.elapsedRealtime();
 
-            if (mFilterPackage != null) {
+            if (mAuthority != null) {
                 // Need at least first load, since we're going to be using
                 // previously cached values for non-matching packages.
                 waitForFirstLoad();
@@ -264,7 +252,7 @@ public class RootsCache {
 
             // Try using cached roots if filtering
             boolean cacheHit = false;
-            if (mFilterPackage != null && !mFilterPackage.equals(info.packageName)) {
+            if (mAuthority != null && !mAuthority.equals(info.authority)) {
                 synchronized (mLock) {
                     if (mTaskRoots.putAll(info.authority, mRoots.get(info.authority))) {
                         if (LOGD) Log.d(TAG, "Used cached roots for " + info.authority);
@@ -295,7 +283,7 @@ public class RootsCache {
             }
         }
 
-        final List<RootInfo> roots = Lists.newArrayList();
+        final List<RootInfo> roots = new ArrayList<>();
         final Uri rootsUri = DocumentsContract.buildRootsUri(authority);
 
         ContentProviderClient client = null;
@@ -394,7 +382,7 @@ public class RootsCache {
                 return root;
             }
         }
-        return null;
+        return getHomeRoot();
     }
 
     public RootInfo getSecondaryRoot() {
@@ -424,12 +412,44 @@ public class RootsCache {
         return getPrimaryRoot();
     }
 
+    public RootInfo getRootInfo(String rootId, String authority){
+        for (RootInfo root : mRoots.get(authority)) {
+            if (root.rootId.equals(rootId)) {
+                return root;
+            }
+        }
+
+        return null;
+    }
+
+    public RootInfo getRootInfo(NetworkConnection connection){
+        for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
+            if (root.rootId.equals(connection.getHost())
+                    && root.path.equals(connection.getPath())) {
+                return root;
+            }
+        }
+
+        return null;
+    }
+
+    public RootInfo getRootInfo(String host, String path, String authority){
+        for (RootInfo root : mRoots.get(authority)) {
+            if (root.rootId.equals(host)
+                    && root.path.equals(path)) {
+                return root;
+            }
+        }
+
+        return null;
+    }
+
     public RootInfo getHomeRoot() {
-        return mHomeRoot;
+        return mRecentsRoot;
     }
 
     public RootInfo getRecentsRoot() {
-        return mHomeRoot;
+        return mRecentsRoot;
     }
 
     public boolean isHomeRoot(RootInfo root) {
@@ -456,9 +476,8 @@ public class RootsCache {
         }
     }
 
-    @VisibleForTesting
     static List<RootInfo> getMatchingRoots(Collection<RootInfo> roots, State state) {
-        final List<RootInfo> matching = Lists.newArrayList();
+        final List<RootInfo> matching = new ArrayList<>();
         for (RootInfo root : roots) {
             final boolean supportsCreate = (root.flags & Root.FLAG_SUPPORTS_CREATE) != 0;
             final boolean supportsIsChild = (root.flags & Root.FLAG_SUPPORTS_IS_CHILD) != 0;
@@ -500,5 +519,16 @@ public class RootsCache {
             matching.add(root);
         }
         return matching;
+    }
+
+    public static void updateRoots(Context context, String authority){
+        final ContentProviderClient client =
+                ContentProviderClientCompat.acquireUnstableContentProviderClient(
+                        context.getContentResolver(), authority);
+        try {
+            ((DocumentsProvider) client.getLocalContentProvider()).updateRoots();
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
     }
 }

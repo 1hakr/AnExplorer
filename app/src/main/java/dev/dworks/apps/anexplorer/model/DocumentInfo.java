@@ -312,6 +312,15 @@ public class DocumentInfo implements Durable, Parcelable {
         return (index != -1) ? cursor.getInt(index) : 0;
     }
 
+
+    /**
+     * Missing or null values are returned as 0.
+     */
+    public static boolean getCursorBolean(Cursor cursor, String columnName) {
+        final int index = cursor.getColumnIndex(columnName);
+        return (index != -1) ? cursor.getInt(index) == 1 : false;
+    }
+
     public static FileNotFoundException asFileNotFoundException(Throwable t)
             throws FileNotFoundException {
         if (t instanceof FileNotFoundException) {

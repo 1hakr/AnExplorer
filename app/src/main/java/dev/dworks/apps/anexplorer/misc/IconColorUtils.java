@@ -18,18 +18,18 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
-
-import com.google.common.collect.Maps;
-
-import java.util.HashMap;
+import android.support.v4.util.ArrayMap;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
+
 public class IconColorUtils {
 
-    private static HashMap<String, Integer> sMimeColors = Maps.newHashMap();
+    private static ArrayMap<String, Integer> sMimeColors = new ArrayMap<>();
 
     private static void add(String mimeType, int resId) {
         if (sMimeColors.put(mimeType, resId) != null) {
@@ -246,6 +246,17 @@ public class IconColorUtils {
             return ContextCompat.getColor(context, R.color.item_doc_video);
         } else {
             return ContextCompat.getColor(context, R.color.item_doc_file);
+        }
+    }
+
+    public static int loadSchmeColor(Context context, String type) {
+
+        if (SERVER.equals(type)) {
+            return ContextCompat.getColor(context, R.color.item_connection_server);
+        } else if (CLIENT.equals(type)) {
+            return ContextCompat.getColor(context, R.color.item_connection_client);
+        } else {
+            return ContextCompat.getColor(context, R.color.item_connection_server);
         }
     }
 }

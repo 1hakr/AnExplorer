@@ -86,4 +86,7 @@
     <color name="window_background">#fff1f1f1</color>
     <color name="drawer_background">#fff1f1f1</color>
     <color name="directory_background">#fff7f7f7</color>
+
+    <color name="item_connection_server">#4CAF50</color>
+    <color name="item_connection_client">#00838F</color>
 </resources>

@@ -49,6 +49,7 @@ import java.util.TimerTask;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -179,7 +180,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             @Override
             public void run() {
                 mModified = !mInput.getText().toString().equals(mOriginal);
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
             }
         }, 250);
     }
@@ -226,14 +227,14 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 br.close();
                 return text;
             }catch (Exception e){
-                e.printStackTrace();
                 errorMsg = e.getLocalizedMessage();
+                CrashReportingManager.logException(e);
             }finally {
                 if(null != is){
                     try {
                         is.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        CrashReportingManager.logException(e);
                     }
                 }
             }
@@ -300,8 +301,8 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     ufos.write(mInput.getText().toString().getBytes("UTF-8"));
                     ufos.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
                     errorMsg = e.getLocalizedMessage();
+                    CrashReportingManager.logException(e);
                 }
                 return null;
             } else {
@@ -314,8 +315,8 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     os.write(mInput.getText().toString().getBytes("UTF-8"));
                     os.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
                     errorMsg = e.getLocalizedMessage();
+                    CrashReportingManager.logException(e);
                 }
                 return null;
             }
@@ -338,7 +339,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             } else {
                 mOriginal = mInput.getText().toString();
                 mModified = false;
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
             }
         }
     }
@@ -363,7 +364,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             try {
                 return getContentResolver().openInputStream(uri);
             } catch (Exception e) {
-                e.printStackTrace();
+                CrashReportingManager.logException(e);
             }
         } else if (scheme.startsWith(ContentResolver.SCHEME_FILE)) {
             File f = new File(uri.getPath());
@@ -371,7 +372,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 try {
                     return new FileInputStream(f);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    CrashReportingManager.logException(e);
                 }
             }
         }
@@ -384,7 +385,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             try {
                 return getContentResolver().openOutputStream(uri);
             } catch (Exception e) {
-                e.printStackTrace();
+                CrashReportingManager.logException(e);
             }
         } else if (scheme.startsWith(ContentResolver.SCHEME_FILE)) {
             File f = new File(uri.getPath());
@@ -392,7 +393,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 try {
                     return new FileOutputStream(f);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    CrashReportingManager.logException(e);
                 }
             }
         }

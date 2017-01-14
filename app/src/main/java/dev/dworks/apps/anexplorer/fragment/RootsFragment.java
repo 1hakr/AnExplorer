@@ -46,8 +46,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -61,6 +59,7 @@ import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -88,7 +87,7 @@ public class RootsFragment extends Fragment {
     private static final String GROUP_SIZE = "group_size";
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;
-    private ArrayList<Long> expandedIds = Lists.newArrayList();
+    private ArrayList<Long> expandedIds = new ArrayList<>();
 
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();
@@ -125,10 +124,11 @@ public class RootsFragment extends Fragment {
         int leftWidth = width - Utils.dpToPx(leftPadding);
         int rightWidth = width - Utils.dpToPx(rightPadding);
 
-        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mList.setIndicatorBounds(leftWidth, rightWidth);
-        } else {
+        if(Utils.hasJellyBeanMR2()){
             mList.setIndicatorBoundsRelative(leftWidth, rightWidth);
+
+        } else {
+            mList.setIndicatorBounds(leftWidth, rightWidth);
         }
         return view;
     }
@@ -158,10 +158,14 @@ public class RootsFragment extends Fragment {
 
                 final Intent includeApps = getArguments().getParcelable(EXTRA_INCLUDE_APPS);
 
-                mAdapter = new RootsExpandableAdapter(context, result, includeApps);
-                Parcelable state = mList.onSaveInstanceState();
-                mList.setAdapter(mAdapter);
-                mList.onRestoreInstanceState(state);
+                if (mAdapter == null) {
+                    mAdapter = new RootsExpandableAdapter(context, result, includeApps);
+                    Parcelable state = mList.onSaveInstanceState();
+                    mList.setAdapter(mAdapter);
+                    mList.onRestoreInstanceState(state);
+                } else {
+                    mAdapter.setData(result);
+                }
 
                 int groupCount = mAdapter.getGroupCount();
                 if(group_size != 0 && group_size == groupCount){
@@ -220,9 +224,11 @@ public class RootsFragment extends Fragment {
                         try {
                             long id = ExpandableListView.getPackedPositionForChild(i, j);
                             int index = mList.getFlatListPosition(id);
-                            mList.setSelection(index);
+                            //mList.setSelection(index);
                             mList.setItemChecked(index, true);
-                        } catch (Exception e){}
+                        } catch (Exception e){
+                            CrashReportingManager.logException(e);
+                        }
 
                         return;
                     }
@@ -322,7 +328,7 @@ public class RootsFragment extends Fragment {
                 if (rows > 0) {
                     ((BaseActivity) getActivity()).showInfo("Bookmark removed");
 
-                    ExternalStorageProvider.updateVolumes(getActivity());
+                    RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
                 }
             }
         }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -418,6 +424,7 @@ public class RootsFragment extends Fragment {
                 }
                 catch (Exception e){
                     progress.setVisibility(View.GONE);
+                    CrashReportingManager.logException(e);
                 }
             }
             else{

@@ -25,14 +25,12 @@ import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.AbsListView;
 
-import com.google.common.collect.Maps;
-
-import java.util.HashMap;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
@@ -111,7 +109,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         public String currentSearch;
 
         /** Instance state for every shown directory */
-        public HashMap<String, SparseArray<Parcelable>> dirState = Maps.newHashMap();
+        public ArrayMap<String, SparseArray<Parcelable>> dirState = new ArrayMap<>();
 
         public static final int ACTION_OPEN = 1;
         public static final int ACTION_CREATE = 2;
