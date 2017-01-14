@@ -319,11 +319,17 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
-            mRoots.updateAsync();
-            final RootInfo root = getCurrentRoot();
-            if(root.isHome()){
-                HomeFragment.get(getFragmentManager()).showData();
-            }
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mRoots.updateAsync();
+                    final RootInfo root = getCurrentRoot();
+                    if(root.isHome()){
+                        HomeFragment.get(getFragmentManager()).showData();
+                    }
+                }
+            }, 500);
         }
     }
 

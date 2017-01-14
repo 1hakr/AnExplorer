@@ -21,25 +21,40 @@ import android.app.ActivityManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Loader;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.adapter.RecentsAdapter;
+import dev.dworks.apps.anexplorer.cursor.LimitCursorWrapper;
+import dev.dworks.apps.anexplorer.loader.RecentLoader;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.DirectoryResult;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
@@ -47,6 +62,7 @@ import dev.dworks.apps.anexplorer.ui.HomeItem;
 import dev.dworks.apps.anexplorer.ui.HomeItemSmall;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
+import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
 
 /**
@@ -54,7 +70,9 @@ import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProc
  */
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
+    private static final int MAX_RECENT_COUNT = 10;
 
+    private final int mLoaderId = 42;
     private HomeItem storageStats;
     private HomeItem memoryStats;
     private Timer storageTimer;
@@ -62,6 +80,11 @@ public class HomeFragment extends Fragment {
     private RootsCache roots;
     private HomeItemSmall transfer_pc;
     private HomeItemSmall app_backup;
+    private RecyclerView mRecyclerView;
+    private RecentsAdapter mRecentsAdapter;
+    private LoaderManager.LoaderCallbacks<DirectoryResult> mCallbacks;
+    private View recents_container;
+    private TextView recents;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -89,21 +112,26 @@ public class HomeFragment extends Fragment {
         memoryStats = (HomeItem) view.findViewById(R.id.memory_stats);
         transfer_pc = (HomeItemSmall) view.findViewById(R.id.transfer_pc);
         app_backup = (HomeItemSmall) view.findViewById(R.id.app_backup);
+        recents = (TextView)view.findViewById(R.id.recents);
+        recents_container = view.findViewById(R.id.recents_container);
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+
+        roots = DocumentsApplication.getRootsCache(getActivity());
+        showRecents();
         showData();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
     public void showData(){
-        Context context = getActivity();
-        roots = DocumentsApplication.getRootsCache(context);
+        roots = DocumentsApplication.getRootsCache(getActivity());
+
+        int complimentaryColor = Utils.getComplementaryColor(SettingsActivity.getActionBarColor());
+        recents.setTextColor(complimentaryColor);
         showStorage();
         showMemory(0);
         showTransfer();
         showBackup();
+        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
     }
 
     private void showStorage() {
@@ -238,6 +266,58 @@ public class HomeFragment extends Fragment {
         }
     }
 
+
+    private void showRecents() {
+        final RootInfo root = roots.getRecentsRoot();
+        recents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openRoot(root);
+            }
+        });
+
+        LinearLayoutManager linearLayoutManager =
+                new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        mRecentsAdapter = new RecentsAdapter(getActivity(), null);
+        mRecentsAdapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(RecentsAdapter.ViewHolder item, int position) {
+                openDocument(item.mDocumentInfo);
+            }
+        });
+        mRecyclerView.setAdapter(mRecentsAdapter);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        LinearSnapHelper helper = new LinearSnapHelper();
+        helper.attachToRecyclerView(mRecyclerView);
+        final BaseActivity.State state = getDisplayState(this);
+        mCallbacks = new LoaderManager.LoaderCallbacks<DirectoryResult>() {
+
+            @Override
+            public Loader<DirectoryResult> onCreateLoader(int id, Bundle args) {
+                final RootsCache roots = DocumentsApplication.getRootsCache(getActivity());
+                return new RecentLoader(getActivity(), roots, state);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<DirectoryResult> loader, DirectoryResult result) {
+                if (!isAdded())
+                    return;
+                if(null == result.cursor || (null != result.cursor && result.cursor.getCount() == 0)) {
+                    recents_container.setVisibility(View.GONE);
+                } else {
+                    recents_container.setVisibility(View.VISIBLE);
+                    mRecentsAdapter.swapCursor(new LimitCursorWrapper(result.cursor, MAX_RECENT_COUNT));
+                }
+            }
+
+            @Override
+            public void onLoaderReset(Loader<DirectoryResult> loader) {
+                mRecentsAdapter.swapCursor(null);
+            }
+        };
+        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -286,9 +366,19 @@ public class HomeFragment extends Fragment {
             AppsProvider.notifyRootsChanged(getActivity());
             RootsCache.updateRoots(getActivity(), AppsProvider.AUTHORITY);
             roots = DocumentsApplication.getRootsCache(getActivity());
-            showMemory(currentAvailableBytes);
-            progressDialog.dismiss();
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    showMemory(currentAvailableBytes);
+                    progressDialog.dismiss();
+                }
+            }, 500);
         }
+    }
+
+    private static BaseActivity.State getDisplayState(Fragment fragment) {
+        return ((BaseActivity) fragment.getActivity()).getDisplayState();
     }
 
     private void openRoot(RootInfo rootInfo){
@@ -302,5 +392,12 @@ public class HomeFragment extends Fragment {
         for (ActivityManager.RunningAppProcessInfo processInfo : runningProcessesList) {
             activityManager.killBackgroundProcesses(processInfo.processName);
         }
+    }
+
+    private void openDocument(DocumentInfo doc) {
+        ((BaseActivity) getActivity()).onDocumentPicked(doc);
+        Bundle params = new Bundle();
+        params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+        AnalyticsManager.logEvent("open", params);
     }
 }

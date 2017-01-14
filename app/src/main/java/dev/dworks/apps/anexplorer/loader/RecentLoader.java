@@ -98,6 +98,7 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
 
     private DirectoryResult mResult;
 
+
     // TODO: create better transfer of ownership around cursor to ensure its
     // closed in all edge cases.
 
