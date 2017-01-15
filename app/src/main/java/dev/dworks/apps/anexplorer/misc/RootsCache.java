@@ -55,6 +55,7 @@ import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
@@ -133,7 +134,7 @@ public class RootsCache {
 
         // Special root for recents
         mRecentsRoot.authority = RecentsProvider.AUTHORITY;
-        mRecentsRoot.rootId = null;
+        mRecentsRoot.rootId = "recents";
         mRecentsRoot.icon = R.drawable.ic_root_recent;
         mRecentsRoot.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_IS_CHILD;
         mRecentsRoot.title = mContext.getString(R.string.root_recent);
@@ -208,7 +209,7 @@ public class RootsCache {
                 waitForFirstLoad();
             }
 
-            //mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
+            mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
             mTaskRoots.put(mConnectionsRoot.authority, mConnectionsRoot);
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
@@ -364,7 +365,7 @@ public class RootsCache {
     }
 
     public RootInfo getDefaultRoot() {
-        return getPrimaryRoot();
+        return getHomeRoot();
     }
 
     public RootInfo getDownloadRoot() {
@@ -382,7 +383,7 @@ public class RootsCache {
                 return root;
             }
         }
-        return getHomeRoot();
+        return null;
     }
 
     public RootInfo getSecondaryRoot() {
@@ -397,6 +398,24 @@ public class RootsCache {
     public RootInfo getProcessRoot() {
         for (RootInfo root : mRoots.get(AppsProvider.AUTHORITY)) {
             if (root.isAppProcess()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
+    public RootInfo getAppRoot() {
+        for (RootInfo root : mRoots.get(AppsProvider.AUTHORITY)) {
+            if (root.isAppPackage()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
+    public RootInfo getServerRoot() {
+        for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
+            if (root.isServer()) {
                 return root;
             }
         }
@@ -444,8 +463,20 @@ public class RootsCache {
         return null;
     }
 
+    public ArrayList<RootInfo> getShortcutsInfo(){
+        ArrayList<RootInfo> list = new ArrayList<>();
+        list.add(getServerRoot());
+        list.add(getAppRoot());
+        for (RootInfo root : mRoots.get(MediaDocumentsProvider.AUTHORITY)) {
+            if (RootInfo.isLibraryMedia(root)) {
+                list.add(root);
+            }
+        }
+        return list;
+    }
+
     public RootInfo getHomeRoot() {
-        return mRecentsRoot;
+        return mHomeRoot;
     }
 
     public RootInfo getRecentsRoot() {

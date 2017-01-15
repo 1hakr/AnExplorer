@@ -5,8 +5,8 @@ android {
     buildToolsVersion '25.0.1'
 
     defaultConfig {
-        versionName "3.4"
-        versionCode = 54
+        versionName "3.5"
+        versionCode = 55
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -88,6 +88,7 @@ dependencies {
     compile 'org.apache.ftpserver:ftpserver-core:+'
     compile 'commons-net:commons-net:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:cardview-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     compile "com.android.support:exifinterface:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"

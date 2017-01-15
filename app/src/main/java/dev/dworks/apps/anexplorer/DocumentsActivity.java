@@ -175,11 +175,10 @@ public class DocumentsActivity extends BaseActivity {
     private RootsCache mRoots;
     private State mState;
 	private boolean mAuthenticated;
-	private FrameLayout mSaveContainer;
     private FrameLayout mRateContainer;
     private boolean mActionMode;
-    private LruCache<String, Long> mFileSizeCache;
     private FloatingActionsMenu mActionMenu;
+    private boolean mFromHome;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -204,8 +203,6 @@ public class DocumentsActivity extends BaseActivity {
 
 		mRoots = DocumentsApplication.getRootsCache(this);
 
-        mFileSizeCache = new LruCache<String, Long>(100);
-
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
 
@@ -214,7 +211,6 @@ public class DocumentsActivity extends BaseActivity {
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
-        mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
 
         initControls();
@@ -324,17 +320,17 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
-
-            //TODO refactor once home is added
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mRoots.updateAsync();
-                    onRootPicked(mRoots.getDefaultRoot(), true);
+                    final RootInfo root = getCurrentRoot();
+                    if(root.isHome()){
+                        HomeFragment.get(getFragmentManager()).showData();
+                    }
                 }
             }, 500);
-            //mRoots.updateAsync();
         }
     }
 
@@ -1023,8 +1019,18 @@ public class DocumentsActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
             // TODO: open root drawer once we can capture back key
+            if(mFromHome){
+                mFromHome = false;
+                HomeFragment.show(getFragmentManager());
+                return;
+            }
             super.onBackPressed();
         } else {
+            if(mFromHome){
+                mFromHome = false;
+                HomeFragment.show(getFragmentManager());
+                return;
+            }
             super.onBackPressed();
         }
     }
@@ -1312,6 +1318,10 @@ public class DocumentsActivity extends BaseActivity {
             Log.w(TAG, "Failed to restore stack: " + e);
             CrashReportingManager.logException(e);
         }
+    }
+    public void onRootPicked(RootInfo root) {
+        mFromHome = true;
+        onRootPicked(root, true);
     }
 
     public void onRootPicked(RootInfo root, boolean closeDrawer) {

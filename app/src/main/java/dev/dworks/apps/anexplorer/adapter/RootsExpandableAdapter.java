@@ -37,7 +37,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> storage = new ArrayList<>();
         final List<Item> network = new ArrayList<>();
         final List<Item> apps = new ArrayList<>();
-        final List<Item> library = new ArrayList<>();
+        final List<Item> libraryMedia = new ArrayList<>();
+        final List<Item> libraryNonMedia = new ArrayList<>();
         final List<Item> folders = new ArrayList<>();
         final List<Item> bookmarks = new ArrayList<>();
 
@@ -54,8 +55,10 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 appbackup.add(new RootItem(root));
             } else if (root.isUsbStorage()) {
                 usb.add(new RootItem(root));
-            } else if (RootInfo.isLibrary(root)) {
-                library.add(new RootItem(root));
+            } else if (RootInfo.isLibraryMedia(root)) {
+                libraryMedia.add(new RootItem(root));
+            } else if (RootInfo.isLibraryNonMedia(root)) {
+                libraryNonMedia.add(new RootItem(root));
             } else if (RootInfo.isFolder(root)) {
                 folders.add(new RootItem(root));
             } else if (RootInfo.isBookmark(root)) {
@@ -69,20 +72,11 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        if(!storage.isEmpty()){
+        if(!storage.isEmpty() || !phone.isEmpty() || !rooted.isEmpty()){
             storage.addAll(usb);
             storage.addAll(phone);
             storage.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", storage));
-        } else if(!phone.isEmpty()){
-            storage.addAll(usb);
-            storage.addAll(phone);
-            storage.addAll(rooted);
-            groupRoots.add(new GroupInfo("Storage", phone));
-        } else if(!rooted.isEmpty()){
-            storage.addAll(usb);
-            storage.addAll(rooted);
-            groupRoots.add(new GroupInfo("Storage", rooted));
         }
 
         if(!network.isEmpty()){
@@ -99,17 +93,16 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             groupRoots.add(new GroupInfo("Apps", apps));
         }
 
-        if(!library.isEmpty()){
-            recent.addAll(library);
+        if(!libraryMedia.isEmpty() || !libraryNonMedia.isEmpty()){
+            recent.addAll(libraryMedia);
+            recent.addAll(libraryNonMedia);
             groupRoots.add(new GroupInfo("Library", recent));
         } else {
             groupRoots.add(new GroupInfo("Library", recent));
         }
 
         if(!folders.isEmpty()){
-            if(!bookmarks.isEmpty()){
-                folders.addAll(bookmarks);
-            }
+            folders.addAll(bookmarks);
             groupRoots.add(new GroupInfo("Folders", folders));
         }
 

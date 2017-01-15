@@ -32,8 +32,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -409,30 +407,6 @@ public class RootsFragment extends Fragment {
             final Context context = convertView.getContext();
             icon.setImageDrawable(root.loadDrawerIcon(context));
             title.setText(root.title);
-
-            // Show available space if no summary
-            String summaryText = root.summary;
-            if (TextUtils.isEmpty(summaryText) && root.availableBytes >= 0) {
-                summaryText = context.getString(R.string.root_available_bytes,
-                        Formatter.formatFileSize(context, root.availableBytes));
-                try {
-                    Long current = 100 * root.availableBytes / root.totalBytes ;
-                    progress.setVisibility(View.VISIBLE);
-                    progress.setMax(100);
-                    progress.setProgress(100 - current.intValue());
-                    progress.setColor(color);
-                }
-                catch (Exception e){
-                    progress.setVisibility(View.GONE);
-                    CrashReportingManager.logException(e);
-                }
-            }
-            else{
-                progress.setVisibility(View.GONE);
-            }
-
-            summary.setText(summaryText);
-            summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
         }
     }
 
