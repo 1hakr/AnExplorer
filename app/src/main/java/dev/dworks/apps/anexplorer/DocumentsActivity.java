@@ -178,6 +178,7 @@ public class DocumentsActivity extends BaseActivity {
     private FrameLayout mRateContainer;
     private boolean mActionMode;
     private FloatingActionsMenu mActionMenu;
+    private boolean mFromHome;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -1018,8 +1019,18 @@ public class DocumentsActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
             // TODO: open root drawer once we can capture back key
+            if(mFromHome){
+                mFromHome = false;
+                HomeFragment.show(getFragmentManager());
+                return;
+            }
             super.onBackPressed();
         } else {
+            if(mFromHome){
+                mFromHome = false;
+                HomeFragment.show(getFragmentManager());
+                return;
+            }
             super.onBackPressed();
         }
     }
@@ -1307,6 +1318,10 @@ public class DocumentsActivity extends BaseActivity {
             Log.w(TAG, "Failed to restore stack: " + e);
             CrashReportingManager.logException(e);
         }
+    }
+    public void onRootPicked(RootInfo root) {
+        mFromHome = true;
+        onRootPicked(root, true);
     }
 
     public void onRootPicked(RootInfo root, boolean closeDrawer) {

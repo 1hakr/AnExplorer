@@ -62,6 +62,7 @@
     <color name="item_doc_image">#00838F</color>
 
     <color name="item_doc_apk">#8BC34A</color>
+    <color name="item_doc_apps">#795548</color>
 
     <color name="item_doc_pdf">#FFDB4437</color>
     <color name="item_doc_doc">#FF4883F3</color>

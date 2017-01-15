@@ -73,4 +73,13 @@
         <attr name="arc_bottom_text" format="string"/>
         <attr name="arc_bottom_text_size" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="RecyclerViewPlus">
+        <attr name="columnWidth" format="dimension"/>
+        <attr name="type" format="enum">
+            <enum name="list" value="0"/>
+            <enum name="grid" value="1"/>
+            <enum name="gallery" value="2"/>
+        </attr>
+    </declare-styleable>
 </resources>

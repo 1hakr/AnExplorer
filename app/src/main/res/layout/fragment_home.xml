@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
@@ -26,29 +26,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <LinearLayout
+        <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+            android:id="@+id/shortcuts_recycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="5dp">
-
-            <dev.dworks.apps.anexplorer.ui.HomeItemSmall
-                android:id="@+id/transfer_pc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <dev.dworks.apps.anexplorer.ui.HomeItemSmall
-                android:id="@+id/app_backup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:layout_height="120dp"
+            android:clipToPadding="false"
+            android:padding="10dp"
+            app:columnWidth="100dp"
+            app:type="gallery" />
 
         <LinearLayout
             android:id="@+id/recents_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -81,14 +73,16 @@
 
             </FrameLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerview"
+            <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+                android:id="@+id/recents_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:minHeight="@dimen/grid_item_height"
                 android:paddingEnd="@dimen/list_item_padding"
-                android:paddingStart="10dp" />
+                android:paddingStart="10dp"
+                app:columnWidth="@dimen/grid_item_height"
+                app:type="gallery" />
         </LinearLayout>
     </LinearLayout>
 

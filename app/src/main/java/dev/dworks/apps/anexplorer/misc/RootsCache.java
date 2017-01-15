@@ -55,6 +55,7 @@ import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
@@ -460,6 +461,18 @@ public class RootsCache {
         }
 
         return null;
+    }
+
+    public ArrayList<RootInfo> getShortcutsInfo(){
+        ArrayList<RootInfo> list = new ArrayList<>();
+        list.add(getServerRoot());
+        list.add(getAppRoot());
+        for (RootInfo root : mRoots.get(MediaDocumentsProvider.AUTHORITY)) {
+            if (RootInfo.isLibraryMedia(root)) {
+                list.add(root);
+            }
+        }
+        return list;
     }
 
     public RootInfo getHomeRoot() {

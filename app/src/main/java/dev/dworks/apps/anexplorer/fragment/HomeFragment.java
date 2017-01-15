@@ -27,7 +27,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +46,7 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.RecentsAdapter;
+import dev.dworks.apps.anexplorer.adapter.ShortcutsAdapter;
 import dev.dworks.apps.anexplorer.cursor.LimitCursorWrapper;
 import dev.dworks.apps.anexplorer.loader.RecentLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
@@ -59,7 +61,6 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.HomeItem;
-import dev.dworks.apps.anexplorer.ui.HomeItemSmall;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
@@ -78,13 +79,13 @@ public class HomeFragment extends Fragment {
     private Timer storageTimer;
     private Timer processTimer;
     private RootsCache roots;
-    private HomeItemSmall transfer_pc;
-    private HomeItemSmall app_backup;
-    private RecyclerView mRecyclerView;
+    private RecyclerView mRecentsRecycler;
+    private RecyclerView mShortcutsRecycler;
     private RecentsAdapter mRecentsAdapter;
     private LoaderManager.LoaderCallbacks<DirectoryResult> mCallbacks;
     private View recents_container;
     private TextView recents;
+    private ShortcutsAdapter mShortcutsAdapter;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -110,12 +111,11 @@ public class HomeFragment extends Fragment {
         processTimer = new Timer();
         storageStats = (HomeItem) view.findViewById(R.id.storage_stats);
         memoryStats = (HomeItem) view.findViewById(R.id.memory_stats);
-        transfer_pc = (HomeItemSmall) view.findViewById(R.id.transfer_pc);
-        app_backup = (HomeItemSmall) view.findViewById(R.id.app_backup);
         recents = (TextView)view.findViewById(R.id.recents);
         recents_container = view.findViewById(R.id.recents_container);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        mShortcutsRecycler = (RecyclerView) view.findViewById(R.id.shortcuts_recycler);
+        mRecentsRecycler = (RecyclerView) view.findViewById(R.id.recents_recycler);
 
         roots = DocumentsApplication.getRootsCache(getActivity());
         showRecents();
@@ -129,8 +129,7 @@ public class HomeFragment extends Fragment {
         recents.setTextColor(complimentaryColor);
         showStorage();
         showMemory(0);
-        showTransfer();
-        showBackup();
+        showShortcuts();
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
     }
 
@@ -200,7 +199,7 @@ public class HomeFragment extends Fragment {
                 }
             });
             if(currentAvailableBytes != 0) {
-                long availableBytes = currentAvailableBytes - processRoot.availableBytes;
+                long availableBytes = processRoot.availableBytes - currentAvailableBytes;
                 String summaryText = availableBytes <= 0 ? "Already cleaned up!" : getActivity().getString(R.string.root_available_bytes,
                         Formatter.formatFileSize(getActivity(), availableBytes));
                 ((DocumentsActivity) getActivity()).showInfo(summaryText);
@@ -233,39 +232,17 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-    private void showTransfer() {
-        final RootInfo root = roots.getServerRoot();
-        if (null != root) {
-            transfer_pc.setVisibility(View.VISIBLE);
-            transfer_pc.setInfo(root);
-            transfer_pc.setCardListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openRoot(root);
-                }
-            });
-        } else {
-            transfer_pc.setVisibility(View.GONE);
-        }
+    private void showShortcuts() {
+        ArrayList<RootInfo> data = roots.getShortcutsInfo();
+        mShortcutsAdapter = new ShortcutsAdapter(getActivity(), data);
+        mShortcutsAdapter.setOnItemClickListener(new ShortcutsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(ShortcutsAdapter.ViewHolder item, int position) {
+                openRoot(mShortcutsAdapter.getItem(position));
+            }
+        });
+        mShortcutsRecycler.setAdapter(mShortcutsAdapter);
     }
-
-    private void showBackup() {
-        final RootInfo root = roots.getAppRoot();
-        if (null != root) {
-            app_backup.setVisibility(View.VISIBLE);
-            app_backup.setInfo(root);
-            app_backup.setCardListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openRoot(root);
-                }
-            });
-        } else {
-            app_backup.setVisibility(View.GONE);
-        }
-    }
-
 
     private void showRecents() {
         final RootInfo root = roots.getRecentsRoot();
@@ -276,8 +253,11 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        LinearLayoutManager linearLayoutManager =
-                new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager layoutManager;
+        if(Utils.isTelevision(getActivity())){
+            layoutManager =
+                    new GridLayoutManager(getActivity(), 2);
+        }
         mRecentsAdapter = new RecentsAdapter(getActivity(), null);
         mRecentsAdapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {
             @Override
@@ -285,10 +265,10 @@ public class HomeFragment extends Fragment {
                 openDocument(item.mDocumentInfo);
             }
         });
-        mRecyclerView.setAdapter(mRecentsAdapter);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecentsRecycler.setAdapter(mRecentsAdapter);
+        //mRecentsRecycler.setLayoutManager(layoutManager);
         LinearSnapHelper helper = new LinearSnapHelper();
-        helper.attachToRecyclerView(mRecyclerView);
+        helper.attachToRecyclerView(mRecentsRecycler);
         final BaseActivity.State state = getDisplayState(this);
         mCallbacks = new LoaderManager.LoaderCallbacks<DirectoryResult>() {
 
@@ -383,7 +363,7 @@ public class HomeFragment extends Fragment {
 
     private void openRoot(RootInfo rootInfo){
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(rootInfo, true);
+        activity.onRootPicked(rootInfo);
     }
 
     public void cleanupMemory(Context context){

@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import java.io.DataInputStream;
@@ -75,6 +76,7 @@ public class RootInfo implements Durable, Parcelable {
     public String derivedPackageName;
     public String[] derivedMimeTypes;
     public int derivedIcon;
+    public int derivedColor;
 
     public RootInfo() {
         reset();
@@ -97,6 +99,7 @@ public class RootInfo implements Durable, Parcelable {
         derivedPackageName = null;
         derivedMimeTypes = null;
         derivedIcon = 0;
+        derivedColor = 0;
     }
 
     @Override
@@ -181,6 +184,7 @@ public class RootInfo implements Durable, Parcelable {
 
     public void deriveFields() {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
+        derivedColor = R.color.item_doc_doc;
 
         // TODO: remove these special case icons
         if (isInternalStorage()) {
@@ -218,18 +222,25 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isImages()) {
             derivedIcon = R.drawable.ic_root_image;
+            derivedColor = R.color.item_doc_image;
         } else if (isVideos()) {
             derivedIcon = R.drawable.ic_root_video;
+            derivedColor = R.color.item_doc_video;
         } else if (isAudio()) {
             derivedIcon = R.drawable.ic_root_audio;
+            derivedColor = R.color.item_doc_audio;
         } else if (isDocument()) {
             derivedIcon = R.drawable.ic_root_document;
+            derivedColor = R.color.item_doc_pdf;
         } else if (isArchive()) {
             derivedIcon = R.drawable.ic_root_archive;
+            derivedColor = R.color.item_doc_compressed;
         } else if (isApk()) {
             derivedIcon = R.drawable.ic_root_apk;
+            derivedColor = R.color.item_doc_apk;
         } else if (isAppPackage()) {
             derivedIcon = R.drawable.ic_root_apps;
+            derivedColor = R.color.item_doc_apps;
         } else if (isAppProcess()) {
             derivedIcon = R.drawable.ic_root_process;
         } else if (isRecents()) {
@@ -240,8 +251,10 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_connections;
         } else if (isServerStorage()) {
             derivedIcon = R.drawable.ic_root_server;
+            derivedColor = R.color.item_connection_server;
         } else if (isNetworkStorage()) {
             derivedIcon = R.drawable.ic_root_network;
+            derivedColor = R.color.item_connection_client;
         }
     }
 
@@ -469,6 +482,16 @@ public class RootInfo implements Durable, Parcelable {
     public Drawable loadToolbarIcon(Context context) {
         if (derivedIcon != 0) {
             return IconUtils.applyTintAttr(context, derivedIcon, R.attr.colorControlNormal);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+
+    public Drawable loadShortcutIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTint(context, derivedIcon,
+                    ContextCompat.getColor(context, android.R.color.white));
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }
