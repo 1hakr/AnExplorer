@@ -131,6 +131,7 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_OPEN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_OPEN_TREE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
@@ -178,7 +179,7 @@ public class DocumentsActivity extends BaseActivity {
     private FrameLayout mRateContainer;
     private boolean mActionMode;
     private FloatingActionsMenu mActionMenu;
-    private boolean mFromHome;
+    private RootInfo mParentRoot;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -779,7 +780,7 @@ public class DocumentsActivity extends BaseActivity {
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        if(Utils.isTelevision(this)) {
+        if(isTelevision()) {
             menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
             menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
         }
@@ -1019,16 +1020,16 @@ public class DocumentsActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
             // TODO: open root drawer once we can capture back key
-            if(mFromHome){
-                mFromHome = false;
-                HomeFragment.show(getFragmentManager());
+            if(null != mParentRoot){
+                onRootPicked(mParentRoot, true);
+                mParentRoot = null;
                 return;
             }
             super.onBackPressed();
         } else {
-            if(mFromHome){
-                mFromHome = false;
-                HomeFragment.show(getFragmentManager());
+            if(null != mParentRoot){
+                onRootPicked(mParentRoot, true);
+                mParentRoot = null;
                 return;
             }
             super.onBackPressed();
@@ -1283,7 +1284,7 @@ public class DocumentsActivity extends BaseActivity {
         invalidateMenu();
         dumpStack();
 
-        if(!Utils.isOtherBuild() && !Utils.isTelevision(this)){
+        if(!Utils.isOtherBuild() && !isTelevision()){
             AppRate.with(this, mRateContainer).listener(mOnShowListener).checkAndShow();
         }
     }
@@ -1319,8 +1320,8 @@ public class DocumentsActivity extends BaseActivity {
             CrashReportingManager.logException(e);
         }
     }
-    public void onRootPicked(RootInfo root) {
-        mFromHome = true;
+    public void onRootPicked(RootInfo root, RootInfo parentRoot) {
+        mParentRoot = parentRoot;
         onRootPicked(root, true);
     }
 
@@ -1823,7 +1824,7 @@ public class DocumentsActivity extends BaseActivity {
 
     public void invalidateMenu(){
         supportInvalidateOptionsMenu();
-        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -1874,7 +1875,7 @@ public class DocumentsActivity extends BaseActivity {
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
         ViewCompat.setNestedScrollingEnabled(currentView, true);
         mActionMenu.show();
-        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setBackgroundTintList(complimentaryColor);
         mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
     }

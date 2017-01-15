@@ -66,6 +66,7 @@ import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 @SuppressLint("DefaultLocale")
@@ -88,7 +89,6 @@ public class ExternalStorageProvider extends StorageProvider {
             Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE, Document.COLUMN_SUMMARY,
     };
     private boolean showFilesHidden;
-    private boolean isTelevision;
 
     private static class RootInfo {
         public String rootId;
@@ -127,7 +127,6 @@ public class ExternalStorageProvider extends StorageProvider {
     public boolean onCreate() {
         mHandler = new Handler();
         mArchiveHelper = new DocumentArchiveHelper(this, (char) 0);
-        isTelevision = Utils.isTelevision(getContext());
         updateRoots();
         updateSettings();
 
@@ -563,7 +562,7 @@ public class ExternalStorageProvider extends StorageProvider {
             flags |= Document.FLAG_SUPPORTS_RENAME;
             flags |= Document.FLAG_SUPPORTS_MOVE;
             flags |= Document.FLAG_SUPPORTS_EDIT;
-            if(isTelevision) {
+            if(isTelevision()) {
                 flags |= Document.FLAG_DIR_PREFERS_GRID;
             }
         }

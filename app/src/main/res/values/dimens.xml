@@ -76,4 +76,6 @@
     <dimen name="side_navigation_width">304dp</dimen>
 
     <dimen name="expander_inset">8dp</dimen>
+
+    <integer name="recycler_type">2</integer>
 </resources>

@@ -28,11 +28,13 @@ import android.widget.PopupMenu;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
@@ -41,6 +43,7 @@ import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
@@ -57,6 +60,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     private MaterialProgressBar mProgressBar;
     private CompatTextView mEmptyView;
     private FloatingActionButton fab;
+    private RootInfo mConnectionsRoot;
 
     public static void show(FragmentManager fm) {
         final ConnectionsFragment fragment = new ConnectionsFragment();
@@ -73,6 +77,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(false);
+        mConnectionsRoot = DocumentsApplication.getRootsCache(getActivity()).getConnectionsRoot();
     }
 
     @Override
@@ -91,6 +96,9 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         fab = (FloatingActionButton)view.findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(complimentaryColor));
         fab.setOnClickListener(this);
+        if(isTelevision()){
+            fab.setVisibility(View.GONE);
+        }
 
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
         mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
@@ -261,6 +269,6 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     public void openConnectionRoot(NetworkConnection connection) {
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(activity.getRoots().getRootInfo(connection), true);
+        activity.onRootPicked(activity.getRoots().getRootInfo(connection), mConnectionsRoot);
     }
 }

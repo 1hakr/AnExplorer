@@ -119,6 +119,7 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
@@ -183,7 +184,6 @@ public class DirectoryFragment extends ListFragment {
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
     private boolean isOperationSupported;
-    private boolean hasLeanback;
 	private ContentProviderClient mExternalStorageClient;
 
 	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
@@ -293,7 +293,7 @@ public class DirectoryFragment extends ListFragment {
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
-        hasLeanback = Utils.isTelevision(getActivity());
+
 		isApp = root != null && root.isApp();
         isOperationSupported = root != null && (root.isRootedStorage() || root.isUsbStorage());
 
@@ -375,7 +375,7 @@ public class DirectoryFragment extends ListFragment {
 				}
 
 				mLastSortOrder = state.derivedSortOrder;
-				if(Utils.isTelevision(getActivity())){
+				if(isTelevision()){
 					mCurrentView.requestFocus();
 				}
 			}
@@ -620,7 +620,7 @@ public class DirectoryFragment extends ListFragment {
 				compress.setVisible(editMode && !isOperationSupported);
 
 				info.setVisible(count == 1);
-				bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
+				bookmark.setVisible(isTelevision() && count == 1);
 			}
 			return true;
 		}
@@ -1309,7 +1309,7 @@ public class DirectoryFragment extends ListFragment {
 			final View popupButton = convertView.findViewById(R.id.button_popup);
 
 			popupButton.setOnClickListener(this);
-            popupButton.setVisibility(hasLeanback ? View.INVISIBLE : View.VISIBLE);
+            popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
             if(state.action == ACTION_BROWSE){
                 final View iconView = convertView.findViewById(android.R.id.icon);
                 if (null != iconView) {

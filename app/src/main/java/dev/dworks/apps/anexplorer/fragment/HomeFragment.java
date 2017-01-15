@@ -27,7 +27,6 @@ import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
@@ -86,6 +85,7 @@ public class HomeFragment extends Fragment {
     private View recents_container;
     private TextView recents;
     private ShortcutsAdapter mShortcutsAdapter;
+    private RootInfo mHomeRoot;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -118,6 +118,7 @@ public class HomeFragment extends Fragment {
         mRecentsRecycler = (RecyclerView) view.findViewById(R.id.recents_recycler);
 
         roots = DocumentsApplication.getRootsCache(getActivity());
+        mHomeRoot = roots.getHomeRoot();
         showRecents();
         showData();
     }
@@ -253,11 +254,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        RecyclerView.LayoutManager layoutManager;
-        if(Utils.isTelevision(getActivity())){
-            layoutManager =
-                    new GridLayoutManager(getActivity(), 2);
-        }
         mRecentsAdapter = new RecentsAdapter(getActivity(), null);
         mRecentsAdapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {
             @Override
@@ -266,7 +262,6 @@ public class HomeFragment extends Fragment {
             }
         });
         mRecentsRecycler.setAdapter(mRecentsAdapter);
-        //mRecentsRecycler.setLayoutManager(layoutManager);
         LinearSnapHelper helper = new LinearSnapHelper();
         helper.attachToRecyclerView(mRecentsRecycler);
         final BaseActivity.State state = getDisplayState(this);
@@ -363,7 +358,7 @@ public class HomeFragment extends Fragment {
 
     private void openRoot(RootInfo rootInfo){
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(rootInfo);
+        activity.onRootPicked(rootInfo, mHomeRoot);
     }
 
     public void cleanupMemory(Context context){

@@ -465,7 +465,9 @@ public class RootsCache {
 
     public ArrayList<RootInfo> getShortcutsInfo(){
         ArrayList<RootInfo> list = new ArrayList<>();
-        list.add(getServerRoot());
+        if(Utils.hasWiFi(mContext)) {
+            list.add(getServerRoot());
+        }
         list.add(getAppRoot());
         for (RootInfo root : mRoots.get(MediaDocumentsProvider.AUTHORITY)) {
             if (RootInfo.isLibraryMedia(root)) {
@@ -481,6 +483,10 @@ public class RootsCache {
 
     public RootInfo getRecentsRoot() {
         return mRecentsRoot;
+    }
+
+    public RootInfo getConnectionsRoot() {
+        return mConnectionsRoot;
     }
 
     public boolean isHomeRoot(RootInfo root) {

@@ -14,7 +14,6 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 
 /**
@@ -43,13 +42,13 @@ public class AdWrapper extends FrameLayout {
 
     private void init(Context context) {
         //Ads
-        if(!Utils.isTelevision(context)){
+        //if(!Utils.isTelevision(context)){
             LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
             initAd();
-        } else {
+        /*} else {
             mInterstitialAd = new InterstitialAd(context);
             initInterstitialAd();
-        }
+        }*/
     }
 
     public void initInterstitialAd(){

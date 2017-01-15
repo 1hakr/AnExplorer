@@ -35,6 +35,7 @@ import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class DocumentsApplication extends Application {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
@@ -47,6 +48,7 @@ public class DocumentsApplication extends Application {
     private RootsCache mRoots;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
+    private static boolean isTelevision;
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
@@ -98,6 +100,8 @@ public class DocumentsApplication extends Application {
         final IntentFilter localeFilter = new IntentFilter();
         localeFilter.addAction(Intent.ACTION_LOCALE_CHANGED);
         registerReceiver(mCacheReceiver, localeFilter);
+
+        isTelevision = Utils.isTelevision(this);
     }
 
     public static synchronized DocumentsApplication getInstance() {
@@ -127,4 +131,8 @@ public class DocumentsApplication extends Application {
             }
         }
     };
+
+    public static boolean isTelevision() {
+        return isTelevision;
+    }
 }

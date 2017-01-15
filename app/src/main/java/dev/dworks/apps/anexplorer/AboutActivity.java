@@ -83,7 +83,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
 			action_support.setVisibility(View.GONE);
-		} else if(Utils.isTelevision(this)){
+		} else if(DocumentsApplication.isTelevision()){
 			action_share.setVisibility(View.GONE);
 			action_feedback.setVisibility(View.GONE);
 		}
@@ -108,7 +108,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 
     private String getSuffix(){
         return Utils.isProVersion() ? " Pro" : ""
-				+ (Utils.isTelevision(this)? " for Android TV" : "");
+				+ (DocumentsApplication.isTelevision()? " for Android TV" : "");
     }
 
 	@Override
