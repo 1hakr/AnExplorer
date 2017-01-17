@@ -688,7 +688,7 @@ public class DocumentsActivity extends BaseActivity {
                     mToolbar.setTitle(root.title);
                     mToolbarStack.setVisibility(View.GONE);
                     mToolbarStack.setAdapter(null);
-                    AnalyticsManager.setCurrentScreen(this, root.title);
+                    AnalyticsManager.setCurrentScreen(this, root.derivedTag);
                 } else {
                     mToolbar.setTitle(null);
                     mToolbarStack.setVisibility(View.VISIBLE);
@@ -716,7 +716,7 @@ public class DocumentsActivity extends BaseActivity {
                 onCurrentDirectoryChanged(ANIM_NONE);
                 Bundle params = new Bundle();
                 params.putString("query", query);
-                AnalyticsManager.logEvent("search", params);
+                AnalyticsManager.logEvent("search", getCurrentRoot(), params);
                 return true;
             }
 
@@ -885,43 +885,43 @@ public class DocumentsActivity extends BaseActivity {
             setUserSortOrder(State.SORT_ORDER_DISPLAY_NAME);
             Bundle params = new Bundle();
             params.putString("type", "name");
-            AnalyticsManager.logEvent("sort", params);
+            AnalyticsManager.logEvent("sort_name", params);
             return true;
         } else if (id == R.id.menu_sort_date) {
             setUserSortOrder(State.SORT_ORDER_LAST_MODIFIED);
             Bundle params = new Bundle();
             params.putString("type", "modified");
-            AnalyticsManager.logEvent("sort", params);
+            AnalyticsManager.logEvent("sort_modified", params);
             return true;
         } else if (id == R.id.menu_sort_size) {
             setUserSortOrder(State.SORT_ORDER_SIZE);
             Bundle params = new Bundle();
             params.putString("type", "size");
-            AnalyticsManager.logEvent("sort", params);
+            AnalyticsManager.logEvent("sort_size", params);
             return true;
         } else if (id == R.id.menu_grid) {
             setUserMode(State.MODE_GRID);
             Bundle params = new Bundle();
             params.putString("type", "grid");
-            AnalyticsManager.logEvent("display", params);
+            AnalyticsManager.logEvent("display_grid", params);
             return true;
         } else if (id == R.id.menu_list) {
             setUserMode(State.MODE_LIST);
             Bundle params = new Bundle();
             params.putString("type", "list");
-            AnalyticsManager.logEvent("display", params);
+            AnalyticsManager.logEvent("display_list", params);
             return true;
         } else if (id == R.id.menu_settings) {
             startActivityForResult(new Intent(this, SettingsActivity.class), CODE_SETTINGS);
-            AnalyticsManager.logEvent("open_setting");
+            AnalyticsManager.logEvent("setting_open");
             return true;
         } else if (id == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
-            AnalyticsManager.logEvent("open_about");
+            AnalyticsManager.logEvent("about_open");
             return true;
         } else if (id == R.id.menu_exit) {
             Bundle params = new Bundle();
-            AnalyticsManager.logEvent("exit_app");
+            AnalyticsManager.logEvent("app_exit");
             android.os.Process.killProcess(android.os.Process.myPid());
             return true;
         } else {
@@ -933,14 +933,14 @@ public class DocumentsActivity extends BaseActivity {
         CreateDirectoryFragment.show(getSupportFragmentManager());
         Bundle params = new Bundle();
         params.putString(FILE_TYPE, "folder");
-        AnalyticsManager.logEvent("create", params);
+        AnalyticsManager.logEvent("create_folder", params);
     }
 
     private void createFile() {
         CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
         Bundle params = new Bundle();
         params.putString(FILE_TYPE, "file");
-        AnalyticsManager.logEvent("create", params);
+        AnalyticsManager.logEvent("create_file", params);
     }
 
     /**
@@ -1302,7 +1302,7 @@ public class DocumentsActivity extends BaseActivity {
 
         @Override
         public void onRateAppClicked() {
-            AnalyticsManager.logEvent("rate_app");
+            AnalyticsManager.logEvent("app_rate");
         }
     };
 
@@ -1735,7 +1735,7 @@ public class DocumentsActivity extends BaseActivity {
             Bundle params2 = new Bundle();
             params2.putBoolean(FILE_MOVE, deleteAfter);
             params2.putInt(FILE_COUNT, docs.size());
-            AnalyticsManager.logEvent("moved", params2);
+            AnalyticsManager.logEvent("files_moved", params2);
 
             return hadTrouble;
         }

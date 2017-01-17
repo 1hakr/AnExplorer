@@ -52,6 +52,10 @@ public class AnalyticsManager {
 
     }
 
+    public static void logEvent(String eventName, RootInfo rootInfo, Bundle params){
+
+    }
+
     public static void setCurrentScreen(Activity activity, String screenName){
 
     }

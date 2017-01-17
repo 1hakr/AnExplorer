@@ -148,7 +148,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 break;
             case R.id.menu_save:
                 save(false);
-                AnalyticsManager.logEvent("save_text");
+                AnalyticsManager.logEvent("text_save");
                 break;
             case R.id.menu_revert:
                 setSaveProgress(true);
@@ -158,7 +158,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     showError("Unable to Load file");
                 }
                 setSaveProgress(false);
-                AnalyticsManager.logEvent("revert_text");
+                AnalyticsManager.logEvent("text_revert");
                 break;
         }
         return super.onOptionsItemSelected(item);

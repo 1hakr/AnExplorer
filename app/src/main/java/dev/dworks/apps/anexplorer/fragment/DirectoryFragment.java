@@ -538,8 +538,13 @@ public class DirectoryFragment extends ListFragment {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 					((BaseActivity) getActivity()).onDocumentPicked(doc);
 					Bundle params = new Bundle();
-					params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
-					AnalyticsManager.logEvent(doc.isDirectory() ? "browse" : "open", params);
+					String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+					params.putString(FILE_TYPE, type);
+					if(doc.isDirectory()) {
+						AnalyticsManager.logEvent("browse", root, params);
+					} else {
+						AnalyticsManager.logEvent("open" + "_" + type, params);
+					}
 				}
 			}
 		}
@@ -687,7 +692,7 @@ public class DirectoryFragment extends ListFragment {
 				selectAll = !selectAll;
 				Bundle params = new Bundle();
 				params.putInt(FILE_COUNT, count);
-				AnalyticsManager.logEvent("detail", params);
+				AnalyticsManager.logEvent("select", params);
 				return true;
 
 			case R.id.menu_info:
@@ -783,9 +788,10 @@ public class DirectoryFragment extends ListFragment {
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
 			Bundle params = new Bundle();
-			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+			String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+			params.putString(FILE_TYPE, type);
 			params.putInt(FILE_COUNT, docs.size());
-			AnalyticsManager.logEvent("share", params);
+			AnalyticsManager.logEvent("share"+"_"+type, params);
 
 		} else if (docs.size() > 1) {
 			intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -1880,7 +1886,8 @@ public class DirectoryFragment extends ListFragment {
                 getActivity().startActivity(intent2);
             }
             Bundle params = new Bundle();
-			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType));
+			String type = IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType);
+			params.putString(FILE_TYPE, type);
 			AnalyticsManager.logEvent("details", params);
             return true;
 		case R.id.menu_info:
@@ -1911,7 +1918,7 @@ public class DirectoryFragment extends ListFragment {
 			RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
 		}
 		Bundle params = new Bundle();
-		AnalyticsManager.logEvent("bookmark", params);
+		AnalyticsManager.logEvent("bookmarked", root, params);
 	}
 
 	private void stopDocument(ArrayList<DocumentInfo> docs, int type) {
@@ -1950,8 +1957,9 @@ public class DirectoryFragment extends ListFragment {
 			((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
 		}
 		Bundle params = new Bundle();
-		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
-		AnalyticsManager.logEvent("open", params);
+		String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+		params.putString(FILE_TYPE, type);
+		AnalyticsManager.logEvent("open"+"_"+type, params);
 	}
 
 	private void moveDocument(ArrayList<DocumentInfo> docs, boolean move) {
@@ -1959,7 +1967,7 @@ public class DirectoryFragment extends ListFragment {
 		Bundle params = new Bundle();
 		params.putBoolean(FILE_MOVE, move);
 		params.putInt(FILE_COUNT, docs.size());
-		AnalyticsManager.logEvent("move", params);
+		AnalyticsManager.logEvent("move_"+move, params);
 	}
 
 	private void renameDocument(DocumentInfo doc){
@@ -1978,7 +1986,8 @@ public class DirectoryFragment extends ListFragment {
 			DetailFragment.show(activity.getSupportFragmentManager(), doc);
 		}
 		Bundle params = new Bundle();
-		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+		params.putString(FILE_TYPE, type);
 		AnalyticsManager.logEvent("details", params);
 	}
 

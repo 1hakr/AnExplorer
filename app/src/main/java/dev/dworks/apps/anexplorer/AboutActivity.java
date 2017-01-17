@@ -129,13 +129,13 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 				break;
 			case R.id.action_rate:
 				openPlaystore(this);
-				AnalyticsManager.logEvent("rate_app");
+				AnalyticsManager.logEvent("app_rate");
 				break;
 			case R.id.action_support:
 				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
 				intentMarketAll.setData(Utils.getAppStoreUri());
 				startActivity(intentMarketAll);
-				AnalyticsManager.logEvent("love_app");
+				AnalyticsManager.logEvent("app_love");
 				break;
 			case R.id.action_share:
 
@@ -147,7 +147,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						.setType("text/plain")
 						.setChooserTitle("Share AnExplorer")
 						.startChooser();
-				AnalyticsManager.logEvent("share_app");
+				AnalyticsManager.logEvent("app_share");
 				break;
 		}
 	}

@@ -269,12 +269,12 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     private void addConnection() {
         CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager());
-        AnalyticsManager.logEvent("add_connection");
+        AnalyticsManager.logEvent("connection_add");
     }
 
     private void editConnection(int connection_id) {
         CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager(), connection_id);
-        AnalyticsManager.logEvent("edit_connection");
+        AnalyticsManager.logEvent("connection_edit");
     }
 
     private void deleteConnection(final int connection_id) {
@@ -293,7 +293,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
             }
         });
         DialogFragment.showThemedDialog(builder);
-        AnalyticsManager.logEvent("delete_connection");
+        AnalyticsManager.logEvent("connection_delete");
     }
 
     public void openConnectionRoot(NetworkConnection connection) {

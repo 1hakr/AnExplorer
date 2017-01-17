@@ -411,7 +411,6 @@ public class NetworkStorageProvider extends DocumentsProvider {
     }
 
     public static Uri addConnection(Context context, NetworkConnection connection) {
-        AnalyticsManager.logEvent("add_connection");
         ContentValues contentValues = new ContentValues();
         contentValues.put(ConnectionColumns.NAME, connection.getName());
         contentValues.put(ConnectionColumns.SCHEME, connection.getScheme());

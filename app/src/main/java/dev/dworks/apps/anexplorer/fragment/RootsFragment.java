@@ -256,7 +256,7 @@ public class RootsFragment extends Fragment {
                 activity.onRootPicked(((RootItem) item).root, true);
                 Bundle params = new Bundle();
                 params.putString("type", ((RootItem) item).root.title);
-                AnalyticsManager.logEvent("navigate", params);
+                AnalyticsManager.logEvent("navigate", ((RootItem) item).root, params);
             } else if (item instanceof AppItem) {
                 activity.onAppPicked(((AppItem) item).info);
             } else {

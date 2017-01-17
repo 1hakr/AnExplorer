@@ -77,6 +77,7 @@ public class RootInfo implements Durable, Parcelable {
     public String[] derivedMimeTypes;
     public int derivedIcon;
     public int derivedColor;
+    public String derivedTag;
 
     public RootInfo() {
         reset();
@@ -185,12 +186,15 @@ public class RootInfo implements Durable, Parcelable {
     public void deriveFields() {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
         derivedColor = R.color.item_doc_doc;
+        derivedTag = title;
 
         // TODO: remove these special case icons
         if (isInternalStorage()) {
             derivedIcon = R.drawable.ic_root_internal;
+            derivedTag = "storage";
         } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
+            derivedTag = "storage";
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
         } else if (isPhoneStorage()) {
@@ -206,6 +210,7 @@ public class RootInfo implements Durable, Parcelable {
             else {
                 derivedIcon = R.drawable.ic_root_sdcard;
             }
+            derivedTag = "storage";
         } else if (isUsbStorage()) {
             derivedIcon = R.drawable.ic_root_usb;
         } else if (isDownloadsFolder()) {
@@ -252,9 +257,11 @@ public class RootInfo implements Durable, Parcelable {
         } else if (isServerStorage()) {
             derivedIcon = R.drawable.ic_root_server;
             derivedColor = R.color.item_connection_server;
+            derivedTag = "server";
         } else if (isNetworkStorage()) {
             derivedIcon = R.drawable.ic_root_network;
             derivedColor = R.color.item_connection_client;
+            derivedTag = "network";
         }
     }
 

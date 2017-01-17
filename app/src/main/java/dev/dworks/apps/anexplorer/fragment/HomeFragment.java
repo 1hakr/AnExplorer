@@ -62,6 +62,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.HomeItem;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
 
@@ -70,7 +71,7 @@ import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProc
  */
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
-    private static final int MAX_RECENT_COUNT = 10;
+    private static final int MAX_RECENT_COUNT = isTelevision() ? 20 : 10;
 
     private final int mLoaderId = 42;
     private HomeItem storageStats;
@@ -143,6 +144,8 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     ((DocumentsActivity)getActivity()).showInfo("Coming Soon!");
+                    Bundle params = new Bundle();
+                    AnalyticsManager.logEvent("storage_analyze", params);
                 }
             });
             storageStats.setCardListener(new View.OnClickListener() {
@@ -191,6 +194,8 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     new OperationTask(processRoot).execute();
+                    Bundle params = new Bundle();
+                    AnalyticsManager.logEvent("process_clean", params);
                 }
             });
             memoryStats.setCardListener(new View.OnClickListener() {
@@ -359,6 +364,7 @@ public class HomeFragment extends Fragment {
     private void openRoot(RootInfo rootInfo){
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
         activity.onRootPicked(rootInfo, mHomeRoot);
+        AnalyticsManager.logEvent("open_shortcuts", rootInfo ,new Bundle());
     }
 
     public void cleanupMemory(Context context){
@@ -372,7 +378,8 @@ public class HomeFragment extends Fragment {
     private void openDocument(DocumentInfo doc) {
         ((BaseActivity) getActivity()).onDocumentPicked(doc);
         Bundle params = new Bundle();
-        params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
-        AnalyticsManager.logEvent("open", params);
+        String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+        params.putString(FILE_TYPE, type);
+        AnalyticsManager.logEvent("open_image_recent", params);
     }
 }
