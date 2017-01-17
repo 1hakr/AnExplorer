@@ -18,6 +18,8 @@ import android.provider.BaseColumns;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +78,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(isTelevision());
         mConnectionsRoot = DocumentsApplication.getRootsCache(getActivity()).getConnectionsRoot();
     }
 
@@ -104,6 +106,9 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
         mListView = (ListView) view.findViewById(R.id.list);
         mListView.setOnItemClickListener(mItemListener);
+        if(isTelevision()) {
+            mListView.setOnItemLongClickListener(mItemLongClickListener);
+        }
         fab.attachToListView(mListView);
 
         // Indent our list divider to align with text
@@ -181,6 +186,30 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
             }
         }
     };
+
+    private AdapterView.OnItemLongClickListener mItemLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+            showPopupMenu(view, position);
+            return false;
+        }
+    };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.connections_options, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_add:
+                addConnection();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onClick(final View view) {

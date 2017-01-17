@@ -26,4 +26,5 @@
 
     <dimen name="list_divider_inset">72dp</dimen>
     <dimen name="side_navigation_width">288dp</dimen>
+    <integer name="recycler_type">1</integer>
 </resources>

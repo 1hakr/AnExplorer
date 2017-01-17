@@ -37,6 +37,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.text.TextUtilsCompat;
@@ -59,7 +60,6 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
@@ -503,5 +503,27 @@ public class Utils {
             return ACTION_QS_TILE_PREFERENCES.equals(action);
         }
         return false;
+    }
+
+    public static String getSuffix(){
+        return Utils.isProVersion() ? " Pro" : ""
+                + (DocumentsApplication.isTelevision()? " for Android TV" : "");
+    }
+
+    public static void openFeedback(Activity activity){
+        ShareCompat.IntentBuilder
+                .from(activity)
+                .setEmailTo(new String[]{"hakr@dworks.in"})
+                .setSubject("AnExplorer Feedback" + getSuffix())
+                .setType("text/email")
+                .setChooserTitle("Send Feedback")
+                .startChooser();
+    }
+
+    public static void openPlaystore(Context çontext){
+        Intent intent = new Intent(Intent.ACTION_VIEW, Utils.getAppUri());
+        if(Utils.isIntentAvailable(çontext, intent)) {
+            çontext.startActivity(intent);
+        }
     }
 }

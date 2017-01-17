@@ -23,5 +23,5 @@
     <dimen name="list_item_padding">16dp</dimen>
 
     <dimen name="list_divider_inset">72dp</dimen>
-
+    <integer name="recycler_type">1</integer>
 </resources>

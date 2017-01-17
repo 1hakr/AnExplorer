@@ -32,4 +32,5 @@
     <dimen name="grid_item_padding">8dp</dimen>
     <dimen name="progress_bar_size">80dp</dimen>
     <dimen name="side_navigation_width">288dp</dimen>
+    <integer name="recycler_type">1</integer>
 </resources>

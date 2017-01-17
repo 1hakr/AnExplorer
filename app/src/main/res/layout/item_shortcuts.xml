@@ -12,13 +12,13 @@
         android:background="@drawable/item_root"
         android:baselineAligned="false"
         android:gravity="center"
-        android:minHeight="100dp"
+        android:minHeight="80dp"
         android:orientation="vertical"
         android:padding="10dp">
 
         <FrameLayout
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:duplicateParentState="true">
 
             <dev.dworks.apps.anexplorer.ui.CircleImage
@@ -34,7 +34,7 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@null"
                 android:duplicateParentState="true"
-                android:padding="20dp"
+                android:padding="15dp"
                 tools:src="@drawable/ic_root_server" />
 
         </FrameLayout>

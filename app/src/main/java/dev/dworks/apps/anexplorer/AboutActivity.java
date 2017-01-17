@@ -33,6 +33,9 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
+import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
+import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
+import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
 public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -106,11 +109,6 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
         }
     }
 
-    private String getSuffix(){
-        return Utils.isProVersion() ? " Pro" : ""
-				+ (DocumentsApplication.isTelevision()? " for Android TV" : "");
-    }
-
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
@@ -127,19 +125,10 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						Uri.parse("https://twitter.com/1HaKr")));
 				break;
 			case R.id.action_feedback:
-				ShareCompat.IntentBuilder
-						.from(this)
-						.setEmailTo(new String[]{"hakr@dworks.in"})
-						.setSubject("AnExplorer Feedback" + getSuffix())
-						.setType("text/email")
-						.setChooserTitle("Send Feedback")
-						.startChooser();
-				AnalyticsManager.logEvent("feedback");
+				openFeedback(this);
 				break;
 			case R.id.action_rate:
-				Intent intentMarket = new Intent("android.intent.action.VIEW");
-				intentMarket.setData(Utils.getAppUri());
-				startActivity(intentMarket);
+				openPlaystore(this);
 				AnalyticsManager.logEvent("rate_app");
 				break;
 			case R.id.action_support:

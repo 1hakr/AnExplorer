@@ -422,11 +422,9 @@ public class UsbStorageProvider extends DocumentsProvider {
                 usbPartition.device = device.getUsbDevice();
                 usbPartition.fileSystem = partition.getFileSystem();
                 mRoots.put(Integer.toString(partition.hashCode()), usbPartition);
-
             }
         } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
-            CrashReportingManager.logException(e);
         }
 
         notifyRootsChanged();
