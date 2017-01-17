@@ -126,13 +126,22 @@ public class HomeFragment extends Fragment {
 
     public void showData(){
         roots = DocumentsApplication.getRootsCache(getActivity());
-
         int complimentaryColor = Utils.getComplementaryColor(SettingsActivity.getActionBarColor());
         recents.setTextColor(complimentaryColor);
         showStorage();
         showMemory(0);
         showShortcuts();
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+    }
+
+    public void reloadData(){
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showData();
+            }
+        }, 500);
     }
 
     private void showStorage() {
@@ -269,6 +278,7 @@ public class HomeFragment extends Fragment {
         mRecentsRecycler.setAdapter(mRecentsAdapter);
         LinearSnapHelper helper = new LinearSnapHelper();
         helper.attachToRecyclerView(mRecentsRecycler);
+
         final BaseActivity.State state = getDisplayState(this);
         mCallbacks = new LoaderManager.LoaderCallbacks<DirectoryResult>() {
 
