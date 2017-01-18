@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -407,6 +408,15 @@ public class RootsFragment extends Fragment {
             final Context context = convertView.getContext();
             icon.setImageDrawable(root.loadDrawerIcon(context));
             title.setText(root.title);
+
+            // Show available space if no summary
+            if(root.isNetworkStorage()) {
+                String summaryText = root.summary;
+                summary.setText(summaryText);
+                summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
+            } else {
+                summary.setVisibility(View.GONE);
+            }
         }
     }
 

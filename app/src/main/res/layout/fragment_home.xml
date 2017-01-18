@@ -28,7 +28,7 @@
         <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
             android:id="@+id/shortcuts_recycler"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="100dp"
             android:clipToPadding="false"
             android:padding="10dp"
             app:columnWidth="100dp"

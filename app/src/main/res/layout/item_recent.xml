@@ -5,14 +5,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@color/item_doc_grid_protect_background_light"
-    app:cardUseCompatPadding="true">
+    android:background="@drawable/item_root"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    app:cardCornerRadius="4dp"
+    app:cardUseCompatPadding="true"
+    app:elevation="8dp">
 
     <FrameLayout
         android:layout_width="@dimen/grid_item_height"
         android:layout_height="@dimen/grid_item_height"
-        android:layout_gravity="center"
-        android:background="@color/item_doc_grid_background">
+        android:layout_gravity="center" >
 
         <ImageView
             android:id="@+id/icon_thumb"
