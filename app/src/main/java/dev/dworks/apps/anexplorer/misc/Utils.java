@@ -251,10 +251,7 @@ public class Utils {
         boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
         boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
 
-        if(!hasMenuKey && !hasBackKey) {
-            return true;
-        }
-        return false;
+        return !hasMenuKey && !hasBackKey;
 
     }
 
@@ -313,11 +310,8 @@ public class Utils {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static boolean isActivityAlive(Activity activity) {
-        if (null == activity
-                || (null != activity && Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing())) {
-            return false;
-        }
-        return true;
+        return !(null == activity
+                || (null != activity && Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing()));
     }
 
     public static boolean isAPK(String mimeType){

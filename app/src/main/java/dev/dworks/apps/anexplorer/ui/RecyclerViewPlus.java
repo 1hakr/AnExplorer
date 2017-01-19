@@ -30,7 +30,7 @@ public class RecyclerViewPlus extends RecyclerView {
         super(context, attrs, defStyle);
 
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RecyclerViewPlus,
-                defStyle, 0);;
+                defStyle, 0);
         type = attributes.getInt(R.styleable.RecyclerViewPlus_type, TYPE_LIST);
         columnWidth = attributes.getDimensionPixelSize(R.styleable.RecyclerViewPlus_columnWidth, -1);
         attributes.recycle();

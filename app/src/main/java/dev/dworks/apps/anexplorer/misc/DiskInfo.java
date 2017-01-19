@@ -65,10 +65,7 @@ public class DiskInfo {
         if (label.toLowerCase().startsWith("usb")) {
             return false;
         }
-        if (label.toLowerCase().startsWith("multiple")) {
-            return false;
-        }
-        return true;
+        return !label.toLowerCase().startsWith("multiple");
     }
 
     public String getDescription() {

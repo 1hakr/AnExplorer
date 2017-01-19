@@ -82,11 +82,11 @@ public class NetworkFile{
 	}
 
 	public boolean isDirectory() {
-		return isRoot ? true : (null == file ? false : file.isDirectory());
+		return isRoot || (null != file && file.isDirectory());
 	}
 
 	public boolean isFile() {
-		return isRoot ? false : file.isFile();
+		return !isRoot && file.isFile();
 	}
 
 	public long getSize() {

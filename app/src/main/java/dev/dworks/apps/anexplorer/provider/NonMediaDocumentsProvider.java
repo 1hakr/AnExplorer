@@ -435,7 +435,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     }
 
     private interface FileQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 FileColumns._ID,
                 FileColumns.TITLE,
                 FileColumns.MIME_TYPE,
@@ -443,12 +443,12 @@ public class NonMediaDocumentsProvider extends StorageProvider {
                 FileColumns.DATA,
                 FileColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int TITLE = 1;
-        final int MIME_TYPE = 2;
-        final int SIZE = 3;
-        final int DATA = 4;
-        final int DATE_MODIFIED = 5;
+        int _ID = 0;
+        int TITLE = 1;
+        int MIME_TYPE = 2;
+        int SIZE = 3;
+        int DATA = 4;
+        int DATE_MODIFIED = 5;
     }
 
     private void includeFile(MatrixCursor result, Cursor cursor) {

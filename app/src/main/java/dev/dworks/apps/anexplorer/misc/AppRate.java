@@ -173,7 +173,7 @@ public class AppRate implements View.OnClickListener{
     private void showAppRate() {
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(null != viewGroup){
-            mainView = (ViewGroup) inflater.inflate(R.layout.layout_app_feedback, ((ViewGroup) viewGroup), false);
+            mainView = (ViewGroup) inflater.inflate(R.layout.layout_app_feedback, viewGroup, false);
         }
         else{
             mainView = (ViewGroup) inflater.inflate(R.layout.layout_app_feedback, null);
@@ -290,7 +290,7 @@ public class AppRate implements View.OnClickListener{
         /**
          * Will never retry
          */
-        NONE;
+        NONE
     }
     
     /**

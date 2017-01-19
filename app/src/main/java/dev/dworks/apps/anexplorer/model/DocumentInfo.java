@@ -318,7 +318,7 @@ public class DocumentInfo implements Durable, Parcelable {
      */
     public static boolean getCursorBolean(Cursor cursor, String columnName) {
         final int index = cursor.getColumnIndex(columnName);
-        return (index != -1) ? cursor.getInt(index) == 1 : false;
+        return (index != -1) && cursor.getInt(index) == 1;
     }
 
     public static FileNotFoundException asFileNotFoundException(Throwable t)

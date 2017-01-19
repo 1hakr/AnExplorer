@@ -64,7 +64,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -568,7 +568,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         final String mimeType = getTypeForFile(file);
-        if (mArchiveHelper.isSupportedArchiveType(mimeType)) {
+        if (DocumentArchiveHelper.isSupportedArchiveType(mimeType)) {
             flags |= Document.FLAG_ARCHIVE;
         }
 
@@ -792,7 +792,7 @@ public class ExternalStorageProvider extends StorageProvider {
             String parentDocumentId, String[] projection, String sortOrder)
             throws FileNotFoundException {
         if (mArchiveHelper.isArchivedDocument(parentDocumentId) ||
-                mArchiveHelper.isSupportedArchiveType(getDocumentType(parentDocumentId))) {
+                DocumentArchiveHelper.isSupportedArchiveType(getDocumentType(parentDocumentId))) {
             return mArchiveHelper.queryChildDocuments(parentDocumentId, projection, sortOrder);
         }
 

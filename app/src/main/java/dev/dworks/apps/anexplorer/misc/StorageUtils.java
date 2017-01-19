@@ -354,7 +354,7 @@ public final class StorageUtils {
 		if(null != stat){
             if(Utils.hasJellyBeanMR2()){
                 final long blockSize = stat.getBlockSizeLong();
-                final long availableBlocks = (isTotal ? (long)stat.getBlockCountLong() : (long)stat.getAvailableBlocksLong());
+                final long availableBlocks = (isTotal ? stat.getBlockCountLong() : stat.getAvailableBlocksLong());
                 return availableBlocks * blockSize;
             }
             else{

@@ -56,7 +56,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.usb.ParcelFileDescriptorUtil;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 public class UsbStorageProvider extends DocumentsProvider {

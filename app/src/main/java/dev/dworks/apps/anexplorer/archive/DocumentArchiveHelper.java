@@ -274,7 +274,7 @@ public class DocumentArchiveHelper implements Closeable {
             final int columnIndex = cursor.getColumnIndex(COLUMN_LOCAL_FILE_PATH);
             final String localFilePath = columnIndex != -1 ? cursor.getString(columnIndex) : null;
             final File localFile = localFilePath != null ? new File(localFilePath) : null;
-            final Uri notificationUri = ((AbstractCursor)cursor).getNotificationUri();
+            final Uri notificationUri = cursor.getNotificationUri();
             final Loader loader = new Loader(mProvider, localFile, id, mIdDelimiter,
                     notificationUri);
 

@@ -376,13 +376,13 @@ public class DocumentsActivity extends BaseActivity {
                 else {
                     showError(R.string.incorrect_pin);
                 }
-            };
-            
+            }
+
             public void onCancel() {
                 super.onCancel();
                 finish();
                 d.dismiss();
-            };
+            }
         }.getView(), new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         
         PINDialogFragment pinFragment = new PINDialogFragment();
@@ -1884,7 +1884,7 @@ public class DocumentsActivity extends BaseActivity {
         final RootInfo root = getCurrentRoot();
         return !RootInfo.isOtherRoot(root) &&
                 isCreateSupported() &&
-                (root.isRootedStorage() ? Utils.isRooted() : true)
+                (!root.isRootedStorage() || Utils.isRooted())
                 && mState.currentSearch == null;
     }
 

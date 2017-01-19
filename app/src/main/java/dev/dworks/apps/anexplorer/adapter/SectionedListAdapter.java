@@ -33,7 +33,7 @@ public class SectionedListAdapter extends BaseAdapter {
     private ArrayList<SectionAdapter> mSections = new ArrayList<>();
 
     public interface SectionAdapter extends ListAdapter {
-        public View getHeaderView(View convertView, ViewGroup parent);
+        View getHeaderView(View convertView, ViewGroup parent);
     }
 
     public void clearSections() {

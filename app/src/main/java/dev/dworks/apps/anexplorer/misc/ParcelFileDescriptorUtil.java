@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.dworks.apps.anexplorer.usb;
+package dev.dworks.apps.anexplorer.misc;
 
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 /**
  * ParcelFileDescriptor Utility class.

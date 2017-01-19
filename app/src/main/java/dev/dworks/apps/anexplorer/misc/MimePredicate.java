@@ -61,10 +61,7 @@ public class MimePredicate implements Predicate<DocumentInfo> {
         if (doc.isDirectory()) {
             return true;
         }
-        if (mimeMatches(mFilters, doc.mimeType)) {
-            return true;
-        }
-        return false;
+        return mimeMatches(mFilters, doc.mimeType);
     }
 
     public static boolean mimeMatches(String[] filters, String[] tests) {

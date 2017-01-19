@@ -21,7 +21,6 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
@@ -33,7 +32,7 @@ import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.network.FTPInputStream;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.network.NetworkFile;
-import dev.dworks.apps.anexplorer.root.ParcelFileDescriptorUtil;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;

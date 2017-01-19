@@ -288,7 +288,7 @@ public class AppsProvider extends DocumentsProvider {
 
 		if (processInfo.importance != RunningAppProcessInfo.IMPORTANCE_EMPTY
 				&& processInfo.importance != RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE) {
-			String process = (String) (processInfo.processName);
+			String process = processInfo.processName;
 			process = process.substring(process.lastIndexOf(".") + 1, process.length());
 			String summary = "";
 			String displayName = "";
@@ -461,13 +461,10 @@ public class AppsProvider extends DocumentsProvider {
     }
 
 	private static boolean isAppUseful(ApplicationInfo appInfo) {
-		 if (appInfo.flags != 0 
-				 && ((appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
-				 || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)) {
-             return true;
-		 }
-		return false;
-	}
+        return appInfo.flags != 0
+                && ((appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+                || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0);
+    }
 
 	public static String getDocIdForApp(String rootId, String packageName){
     	return rootId + ":" + packageName;
