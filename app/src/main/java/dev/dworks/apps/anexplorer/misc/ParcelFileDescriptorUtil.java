@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © unknown year Mark Murphy
  *             2014-2015 Jan Seeger
  *

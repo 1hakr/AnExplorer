@@ -16,8 +16,10 @@
 
 package dev.dworks.apps.anexplorer.libcore.io;
 
+import android.annotation.TargetApi;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.os.Build;
 
 import java.io.Closeable;
 import java.io.File;
@@ -84,6 +86,7 @@ public final class IoUtils {
     /**
      * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
             try {

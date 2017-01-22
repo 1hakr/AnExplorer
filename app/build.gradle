@@ -93,6 +93,8 @@ dependencies {
     compile "com.android.support:exifinterface:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:+'
 }
 
 def props = new Properties()

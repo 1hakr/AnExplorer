@@ -264,6 +264,9 @@ public class AppRate implements View.OnClickListener{
                 break;
             case action_feedback:
                 openFeedback(activity);
+                hideAllViews(mainView);
+                editor.putBoolean(KEY_CLICKED, true);
+                editor.apply();
                 break;
         }
     }
