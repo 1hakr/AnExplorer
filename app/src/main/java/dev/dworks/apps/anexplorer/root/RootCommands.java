@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +39,7 @@ import java.util.regex.Pattern;
 public class RootCommands {
 
     private static final String UNIX_ESCAPE_EXPRESSION = "(\\(|\\)|\\[|\\]|\\s|\'|\"|`|\\{|\\}|&|\\\\|\\?)";
+    private static SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private static String getCommandLineString(String input) {
         return input.replaceAll(UNIX_ESCAPE_EXPRESSION, "\\\\$1");
@@ -437,5 +439,15 @@ public class RootCommands {
         }
 
         return results;
+    }
+
+    public static long getTimeinMillis(String date){
+        long timeInMillis = 0;
+        try {
+            timeInMillis = simpledateformat.parse(date).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return timeInMillis;
     }
 }

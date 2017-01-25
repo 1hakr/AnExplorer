@@ -222,13 +222,13 @@ public class RootedStorageProvider extends StorageProvider {
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
         row.add(Document.COLUMN_PATH, file.getAbsolutePath());
         row.add(Document.COLUMN_FLAGS, flags);
-/*        if(file.isDirectory() && null != file.list()){
-        	row.add(Document.COLUMN_SUMMARY, file.list().length + " files");
-        }*/
         // Only publish dates reasonably after epoch
-/*        long lastModified = file.lastModified();
+        long lastModified = file.getLastModified();
         if (lastModified > 31536000000L) {
             row.add(Document.COLUMN_LAST_MODIFIED, lastModified);
+        }
+/*        if (file.isDirectory() && null != file.list()) {
+            row.add(Document.COLUMN_SUMMARY, file.list().length + " files");
         }*/
     }
     
