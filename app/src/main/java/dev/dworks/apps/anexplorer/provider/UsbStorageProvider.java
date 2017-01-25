@@ -51,12 +51,12 @@ import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 public class UsbStorageProvider extends DocumentsProvider {
@@ -89,6 +89,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     private class UsbPartition {
         UsbDevice device;
         FileSystem fileSystem;
+        boolean permissionGranted;
     }
 
     private final Map<String, UsbPartition> mRoots = new HashMap<>();
@@ -116,6 +117,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     public void updateRoots() {
         mRoots.clear();
         discoverDevices();
+        notifyRootsChanged();
     }
 
     private static String[] resolveRootProjection(String[] projection) {
@@ -148,11 +150,21 @@ public class UsbStorageProvider extends DocumentsProvider {
 
         for (Map.Entry<String, UsbPartition> root : mRoots.entrySet()) {
             UsbPartition usbPartition = root.getValue();
-            FileSystem fileSystem = usbPartition.fileSystem;
-            UsbFile rootDirectory = fileSystem.getRootDirectory();
-            String volumeLabel = fileSystem.getVolumeLabel();
-
             UsbDevice usbDevice = usbPartition.device;
+            FileSystem fileSystem = usbPartition.fileSystem;
+            UsbFile rootDirectory = null;
+            String volumeLabel = null;
+            Long availableBytes = 0L;
+            Long capactityBytes = 0L;
+            String documentId = root.getKey() + ROOT_SEPERATOR;
+
+            if(null != fileSystem){
+                rootDirectory = fileSystem.getRootDirectory();
+                volumeLabel = fileSystem.getVolumeLabel();
+                availableBytes = fileSystem.getFreeSpace();
+                capactityBytes = fileSystem.getCapacity();
+                documentId = getDocIdForFile(rootDirectory);
+            }
 
             String title = "";
             if (Utils.hasLollipop()) {
@@ -163,8 +175,6 @@ public class UsbStorageProvider extends DocumentsProvider {
             if(TextUtils.isEmpty(title)) {
                 title = getContext().getString(R.string.root_usb);
             }
-
-            String documentId = getDocIdForFile(rootDirectory);
 
             int flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                     | Root.FLAG_SUPPORTS_IS_CHILD;
@@ -177,8 +187,8 @@ public class UsbStorageProvider extends DocumentsProvider {
             row.add(Root.COLUMN_FLAGS, flags);
             // These columns are optional
             row.add(Root.COLUMN_SUMMARY, volumeLabel);
-            row.add(Root.COLUMN_AVAILABLE_BYTES, fileSystem.getFreeSpace());
-            row.add(Root.COLUMN_CAPACITY_BYTES, fileSystem.getCapacity());
+            row.add(Root.COLUMN_AVAILABLE_BYTES, availableBytes);
+            row.add(Root.COLUMN_CAPACITY_BYTES, capactityBytes);
             row.add(Root.COLUMN_PATH, UsbUtils.getPath(usbDevice));
             // Root.COLUMN_MIME_TYPE is another optional column and useful if you have multiple roots with different
             // types of mime types (roots that don't match the requested mime type are automatically hidden)
@@ -192,7 +202,12 @@ public class UsbStorageProvider extends DocumentsProvider {
         try {
             updateSettings();
             final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-            includeFile(result, getFileForDocId(documentId));
+            if(requestPermission()){
+                includeFile(result, getFileForDocId(documentId));
+            } else {
+                includeDefaultDocument(result, documentId);
+            }
+
             return result;
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
@@ -383,7 +398,11 @@ public class UsbStorageProvider extends DocumentsProvider {
     public void discoverDevices(){
         try{
             for (UsbDevice device : usbManager.getDeviceList().values()) {
-                discoverDevice(device);
+                if(hasPermission(device)) {
+                    discoverDevice(device);
+                } else {
+                    addRoot(device);
+                }
             }
         } catch (Exception e){
             CrashReportingManager.logException(e);
@@ -421,20 +440,37 @@ public class UsbStorageProvider extends DocumentsProvider {
                 UsbPartition usbPartition = new UsbPartition();
                 usbPartition.device = device.getUsbDevice();
                 usbPartition.fileSystem = partition.getFileSystem();
-                mRoots.put(Integer.toString(partition.hashCode()), usbPartition);
+                usbPartition.permissionGranted = true;
+                mRoots.put(Integer.toString(device.getUsbDevice().getDeviceId()), usbPartition);
             }
         } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
         }
+    }
 
-        notifyRootsChanged();
+    private void addRoot(UsbDevice device) {
+        try {
+            UsbPartition usbPartition = new UsbPartition();
+            usbPartition.device = device;
+            usbPartition.permissionGranted = false;
+            mRoots.put(Integer.toString(device.getDeviceId()), usbPartition);
+        } catch (Exception e) {
+            Log.e(TAG, "error setting up device", e);
+        }
     }
 
     private String getDocIdForFile(UsbFile file) throws FileNotFoundException {
 
         if (file.isRoot()) {
             for (Map.Entry<String, UsbPartition> root : mRoots.entrySet()) {
-                if (file.equals(root.getValue().fileSystem.getRootDirectory())) {
+                FileSystem fileSystem = root.getValue().fileSystem;
+                if(null != fileSystem) {
+                    if (file.equals(fileSystem.getRootDirectory())) {
+                        String documentId = root.getKey() + ROOT_SEPERATOR;
+                        mFileCache.put(documentId, file);
+                        return documentId;
+                    }
+                } else {
                     String documentId = root.getKey() + ROOT_SEPERATOR;
                     mFileCache.put(documentId, file);
                     return documentId;
@@ -492,17 +528,13 @@ public class UsbStorageProvider extends DocumentsProvider {
                 boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
                 if (permission) {
                     discoverDevice(usbDevice);
+                    notifyRootsChanged();
                 } else {
                     // so we don't ask for permission again
                 }
-            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-                if (usbDevice != null) {
-                    discoverDevice(usbDevice);
-                }
-            } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                if (usbDevice != null) {
-                    detachDevice(usbDevice);
-                }
+            } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)
+                    || UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
+                updateRoots();
             }
         }
     };
@@ -519,5 +551,27 @@ public class UsbStorageProvider extends DocumentsProvider {
 
     public void updateSettings(){
         showFilesHidden = SettingsActivity.getDisplayFileHidden(getContext());
+    }
+
+    private boolean requestPermission() {
+        for (Map.Entry<String, UsbPartition> root : mRoots.entrySet()) {
+            UsbPartition usbPartition = root.getValue();
+            if (!usbPartition.permissionGranted) {
+                discoverDevice(usbPartition.device);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void includeDefaultDocument(MatrixCursor result, String documentId) {
+
+        final MatrixCursor.RowBuilder row = result.newRow();
+        row.add(Document.COLUMN_DOCUMENT_ID, documentId);
+        row.add(Document.COLUMN_DISPLAY_NAME, "");
+        row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
+        row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
+                | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
+                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE);
     }
 }
