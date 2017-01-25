@@ -34,6 +34,7 @@ import android.text.format.DateUtils;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
@@ -46,12 +47,17 @@ public class DocumentsApplication extends Application {
     }
 
     private RootsCache mRoots;
+    private SAFManager mSAFManager;
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnails;
     private static boolean isTelevision;
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
+    }
+
+    public static SAFManager getSAFManager(Context context) {
+        return ((DocumentsApplication) context.getApplicationContext()).mSAFManager;
     }
 
     public static ThumbnailCache getThumbnailsCache(Context context, Point size) {
@@ -86,6 +92,8 @@ public class DocumentsApplication extends Application {
 
         mRoots = new RootsCache(this);
         mRoots.updateAsync();
+
+        mSAFManager = new SAFManager(this);
 
         mThumbnails = new ThumbnailCache(memoryClassBytes / 4);
 

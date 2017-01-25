@@ -141,8 +141,12 @@ public class Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
-    public static boolean hasNoughat() {
+    public static boolean hasNougat() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
+    public static boolean hasNougatMR1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1;
     }
 
     public static boolean hasMoreHeap(){

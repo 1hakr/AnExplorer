@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Images;
@@ -26,8 +27,10 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 public abstract class StorageProvider extends DocumentsProvider{
 
 	private static final String TAG = "StorageProvider";
-    
-	protected interface AudioAlbumThumbnailQuery {
+
+    public static final Uri FILE_URI = MediaStore.Files.getContentUri("external");
+
+    protected interface AudioAlbumThumbnailQuery {
         String[] PROJECTION = new String[] {
         		Audio.Media._ID,
         		Audio.Media.ALBUM_ID,

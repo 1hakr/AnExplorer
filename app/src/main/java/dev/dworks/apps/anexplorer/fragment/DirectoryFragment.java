@@ -94,6 +94,7 @@ import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DirectoryResult;
@@ -294,6 +295,11 @@ public class DirectoryFragment extends ListFragment {
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
 
+		if(null != root && root.isSecondaryStorage()){
+			if(!doc.isWriteSupported()){
+				SAFManager.takeCardUriPermission(getActivity(), new File(doc.path));
+			}
+		}
 		isApp = root != null && root.isApp();
         isOperationSupported = root != null && (root.isRootedStorage() || root.isUsbStorage());
 

@@ -105,6 +105,7 @@ import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper.PINDialogFragment;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -139,6 +140,7 @@ import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.misc.SAFManager.ADD_STORAGE_REQUEST_CODE;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.isDownloadAuthority;
 
@@ -1408,6 +1410,8 @@ public class DocumentsActivity extends BaseActivity {
         	if(resultCode == RESULT_FIRST_USER){
         		recreate();
         	}
+        }  else if(requestCode == ADD_STORAGE_REQUEST_CODE){
+            SAFManager.onActivityResult(this, requestCode, resultCode, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -1427,19 +1431,7 @@ public class DocumentsActivity extends BaseActivity {
         	// Explicit file picked, return
             new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
         } else if (mState.action == ACTION_BROWSE) {
-            
-        	/*if(doc.isZipFile()){
-                mState.stack.push(doc);
-                mState.stackTouched = true;
-                onCurrentDirectoryChanged(ANIM_DOWN);
-        		return;
-        	}*/
-/*            final long token = Binder.clearCallingIdentity();
-            try {
 
-            } finally {
-                Binder.restoreCallingIdentity(token);
-            }*/        	
             // Fall back to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

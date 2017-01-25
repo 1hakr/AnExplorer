@@ -52,7 +52,7 @@ public class DiskInfo {
         return id;
     }
 
-    private boolean isInteresting(String label) {
+    public boolean isInteresting(String label) {
         if (TextUtils.isEmpty(label)) {
             return false;
         }

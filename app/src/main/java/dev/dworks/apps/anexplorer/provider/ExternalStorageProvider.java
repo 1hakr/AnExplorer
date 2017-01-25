@@ -33,8 +33,9 @@ import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
+import android.os.storage.StorageManager;
 import android.support.v4.os.EnvironmentCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
@@ -45,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
@@ -55,6 +57,7 @@ import dev.dworks.apps.anexplorer.misc.DiskInfo;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -64,7 +67,6 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -164,7 +166,7 @@ public class ExternalStorageProvider extends StorageProvider {
                 rootId = ROOT_ID_PRIMARY_EMULATED;
                 title = getContext().getString(R.string.root_internal_storage);
             } else if (storageVolume.getUuid() != null) {
-                rootId = ROOT_ID_SECONDARY + storageVolume.getUserLabel();
+                rootId = ROOT_ID_SECONDARY + storageVolume.getUuid();
                 String label = storageVolume.getUserLabel();
                 title = !TextUtils.isEmpty(label) ? label
                         : getContext().getString(R.string.root_external_storage)
@@ -201,9 +203,11 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private void updateVolumesLocked2() {
         mRoots.clear();
+
         VolumeInfo primaryVolume = null;
         final int userId = 0;//UserHandle.myUserId();
         StorageUtils storageUtils = new StorageUtils(getContext());
+        StorageManager mStorageManager = (StorageManager) getContext().getSystemService(Context.STORAGE_SERVICE);
         for (VolumeInfo volume : storageUtils.getVolumes()) {
             if (!volume.isMountedReadable()) continue;
             final String rootId;
@@ -219,11 +223,11 @@ public class ExternalStorageProvider extends StorageProvider {
                     // or USB OTG drive plugged in. Using getBestVolumeDescription()
                     // will give us a nice string like "Samsung SD card" or "SanDisk USB drive"
                     final VolumeInfo privateVol = storageUtils.findPrivateForEmulated(volume);
-                    title = StorageUtils.getBestVolumeDescription(privateVol);
+                    title = StorageUtils.getBestVolumeDescription(getContext(), privateVol);
                 }
             } else if (volume.getType() == VolumeInfo.TYPE_PUBLIC) {
                 rootId = ROOT_ID_SECONDARY + volume.getFsUuid();
-                title = StorageUtils.getBestVolumeDescription(volume);
+                title = StorageUtils.getBestVolumeDescription(getContext(), volume);
             } else {
                 // Unsupported volume; ignore
                 continue;
@@ -316,7 +320,7 @@ public class ExternalStorageProvider extends StorageProvider {
     private void includeOtherRoot() {
     	try {
             final String rootId = ROOT_ID_PHONE;
-            final File path = Utils.hasNoughat() ? Environment.getRootDirectory() : new File(DIR_ROOT);
+            final File path = Utils.hasNougat() ? Environment.getRootDirectory() : new File(DIR_ROOT);
 
             final RootInfo root = new RootInfo();
             mRoots.put(rootId, root);
@@ -550,9 +554,11 @@ public class ExternalStorageProvider extends StorageProvider {
             file = getFileForDocId(docId);
         }
 
+        DocumentFile documentFile = getDocumentFile(docId, file);
+
         int flags = 0;
 
-        if (file.canWrite()) {
+        if (documentFile.canWrite()) {
             if (file.isDirectory()) {
                 flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
             } else {
@@ -655,17 +661,16 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         final File file = FileUtils.buildUniqueFile(parent, mimeType, displayName);
+        DocumentFile documentFile = getDocumentFile(docId, parent);
         if (Document.MIME_TYPE_DIR.equals(mimeType)) {
-            if (!file.mkdir()) {
+            DocumentFile newFile = documentFile.createDirectory(displayName);
+            if (!newFile.exists()) {
                 throw new IllegalStateException("Failed to mkdir " + file);
             }
         } else {
-            try {
-                if (!file.createNewFile()) {
-                    throw new IllegalStateException("Failed to touch " + file);
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to touch " + file + ": " + e);
+            DocumentFile newFile = documentFile.createFile(mimeType, displayName);
+            if (!newFile.exists()) {
+                throw new IllegalStateException("Failed to touch " + file);
             }
         }
         return getDocIdForFile(file);
@@ -674,31 +679,13 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
         final File file = getFileForDocId(docId);
-        final boolean isDirectory = file.isDirectory();
-        if (isDirectory) {
-            FileUtils.deleteContents(file);
-        }
-        if (!file.delete()) {
+        DocumentFile documentFile = getDocumentFile(docId, file);
+
+        if (!documentFile.delete()) {
             throw new IllegalStateException("Failed to delete " + file);
         }
 
-        final ContentResolver resolver = getContext().getContentResolver();
-        final Uri externalUri = MediaStore.Files.getContentUri("external");
-
-        // Remove media store entries for any files inside this directory, using
-        // path prefix match. Logic borrowed from MtpDatabase.
-        if (isDirectory) {
-            final String path = file.getAbsolutePath() + "/";
-            resolver.delete(externalUri,
-                    "_data LIKE ?1 AND lower(substr(_data,1,?2))=lower(?3)",
-                    new String[] { path + "%", Integer.toString(path.length()), path });
-        }
-
-        // Remove media store entry for this exact file.
-        final String path = file.getAbsolutePath();
-        resolver.delete(externalUri,
-                "_data LIKE ?1 AND lower(_data)=lower(?2)",
-                new String[] { path, path });
+        FileUtils.removeMediaStore(getContext(), file);
     }
 
     @Override
@@ -708,11 +695,12 @@ public class ExternalStorageProvider extends StorageProvider {
         displayName = FileUtils.buildValidFatFilename(displayName);
 
         final File before = getFileForDocId(docId);
+        DocumentFile documentFile = getDocumentFile(docId, before);
         final File after = new File(before.getParentFile(), displayName);
         if (after.exists()) {
             throw new IllegalStateException("Already exists " + after);
         }
-        if (!before.renameTo(after)) {
+        if (!documentFile.renameTo(displayName)) {
             throw new IllegalStateException("Failed to rename to " + after);
         }
         final String afterDocId = getDocIdForFile(after);
@@ -740,6 +728,7 @@ public class ExternalStorageProvider extends StorageProvider {
             throws FileNotFoundException {
         final File before = getFileForDocId(sourceDocumentId);
         final File after = new File(getFileForDocId(targetParentDocumentId), before.getName());
+        DocumentFile documentFile = getDocumentFile(sourceDocumentId, before);
 
         if (after.exists()) {
             throw new IllegalStateException("Already exists " + after);
@@ -747,7 +736,7 @@ public class ExternalStorageProvider extends StorageProvider {
         if (!before.renameTo(after)) {
             throw new IllegalStateException("Failed to move to " + after);
         } else {
-            FileUtils.updateMedia(getContext(), before.getPath());
+            FileUtils.updateMediaStore(getContext(), before.getPath());
         }
         return getDocIdForFile(after);
     }
@@ -852,7 +841,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     return ParcelFileDescriptor.open(file, pfdMode, mHandler, new ParcelFileDescriptor.OnCloseListener() {
                         @Override
                         public void onClose(IOException e) {
-                            FileUtils.updateMedia(getContext(), file.getPath());
+                            FileUtils.updateMediaStore(getContext(), file.getPath());
                         }
                     });
                 } catch (IOException e) {
@@ -985,7 +974,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     case CREATE:
                     case DELETE:
                         mResolver.notifyChange(mNotifyUri, null, false);
-                        FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(mFile, path));
+                        FileUtils.updateMediaStore(getContext(), FileUtils.makeFilePath(mFile, path));
                         break;
                 }
             }
@@ -1016,4 +1005,9 @@ public class ExternalStorageProvider extends StorageProvider {
             stopObserving(mFile);
         }
     }
+
+    private DocumentFile getDocumentFile(String docId, File file) throws FileNotFoundException {
+        return DocumentsApplication.getSAFManager(getContext()).getDocumentFile(docId, file);
+    }
+
 }

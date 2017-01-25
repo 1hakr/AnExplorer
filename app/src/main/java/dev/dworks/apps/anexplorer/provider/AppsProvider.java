@@ -55,8 +55,6 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
-import static dev.dworks.apps.anexplorer.R.id.size;
-
 /**
  * Presents a {@link DocumentsContract} view of Apps contents.
  */
@@ -202,7 +200,7 @@ public class AppsProvider extends DocumentsProvider {
 			throw new IllegalStateException("Failed to copy " + fileFrom);
 		}
 		else{
-			FileUtils.updateMedia(getContext(), FileUtils.makeFilePath(fileTo.getPath(),
+			FileUtils.updateMediaStore(getContext(), FileUtils.makeFilePath(fileTo.getPath(),
 					fileName +"."+ FileUtils.getExtFromFilename(fileFrom.getPath())));
 		}
 		return fromFilePath;
@@ -230,7 +228,7 @@ public class AppsProvider extends DocumentsProvider {
         		}	
         	}
         	else{
-				if(Utils.hasNoughat()){
+				if(Utils.hasNougat()){
 					List<RunningServiceInfo> runningServices = activityManager.getRunningServices(1000);
 					for (RunningServiceInfo process : runningServices) {
 						includeAppFromService(result, docId, process, null);
@@ -498,7 +496,7 @@ public class AppsProvider extends DocumentsProvider {
 		ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
 		List<RunningAppProcessInfo> appProcessInfos = new ArrayList<>();
 		String prevProcess = "";
-		if(Utils.hasNoughat()){
+		if(Utils.hasNougat()){
 			List<RunningServiceInfo> runningServices = am.getRunningServices(1000);
 			for (RunningServiceInfo process : runningServices) {
 				RunningAppProcessInfo info = new RunningAppProcessInfo(

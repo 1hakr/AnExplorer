@@ -1,5 +1,6 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -31,6 +32,8 @@ import java.util.zip.ZipOutputStream;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+
+import static dev.dworks.apps.anexplorer.provider.StorageProvider.FILE_URI;
 
 public class FileUtils {
 
@@ -612,7 +615,7 @@ public class FileUtils {
         return new File(parentFile, name).getPath();
     }
 
-    public static void updateMedia(Context context, String... pathsArray){
+    public static void updateMediaStore(Context context, String... pathsArray){
         MediaScannerConnection.scanFile(context, pathsArray, null, new MediaScannerConnection.OnScanCompletedListener() {
             @Override
             public void onScanCompleted(String s, Uri uri) {
@@ -622,7 +625,7 @@ public class FileUtils {
         });
     }
 
-    public static void updateMedia(Context context, ArrayList<DocumentInfo> docs, String parentPath) {
+    public static void updateMediaStore(Context context, ArrayList<DocumentInfo> docs, String parentPath) {
         try {
             if(Utils.hasKitKat()){
                 ArrayList<String> paths = new ArrayList<>();
@@ -630,7 +633,7 @@ public class FileUtils {
                     paths.add(parentPath + File.separator + doc.displayName);
                 }
                 String[] pathsArray = paths.toArray(new String[paths.size()]);
-                FileUtils.updateMedia(context, pathsArray);
+                FileUtils.updateMediaStore(context, pathsArray);
             }
             else{
                 Uri contentUri = Uri.fromFile(new File(parentPath).getParentFile());
@@ -643,16 +646,40 @@ public class FileUtils {
         }
     }
 
-    public static void updateMedia(Context context, String path) {
+    public static void updateMediaStore(Context context, String path) {
         try {
             if(Utils.hasKitKat()){
-                FileUtils.updateMedia(context, new String[]{path});
+                FileUtils.updateMediaStore(context, new String[]{path});
             }
             else{
                 Uri contentUri = Uri.fromFile(new File(path).getParentFile());
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
                 context.sendBroadcast(mediaScanIntent);
             }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeMediaStore(Context context, File file) {
+        try {
+            final ContentResolver resolver = context.getContentResolver();
+
+            // Remove media store entries for any files inside this directory, using
+            // path prefix match. Logic borrowed from MtpDatabase.
+            if (file.isDirectory()) {
+                final String path = file.getAbsolutePath() + "/";
+                resolver.delete(FILE_URI,
+                        "_data LIKE ?1 AND lower(substr(_data,1,?2))=lower(?3)",
+                        new String[] { path + "%", Integer.toString(path.length()), path });
+            }
+
+            // Remove media store entry for this exact file.
+            final String path = file.getAbsolutePath();
+            resolver.delete(FILE_URI,
+                    "_data LIKE ?1 AND lower(_data)=lower(?2)",
+                    new String[] { path, path });
         }
         catch (Exception e){
             e.printStackTrace();

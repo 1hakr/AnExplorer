@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -137,8 +136,6 @@ public class NonMediaDocumentsProvider extends StorageProvider {
 
     public static final String TYPE_APK_ROOT = "apk_root";
     public static final String TYPE_APK = "apk";
-
-    public static final Uri FILE_URI = MediaStore.Files.getContentUri("external");
 
     private static String joinNewline(String[] args) {
         return TextUtils.join("\n", args);

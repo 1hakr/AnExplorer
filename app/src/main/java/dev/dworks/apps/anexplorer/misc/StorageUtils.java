@@ -25,7 +25,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
-import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -35,7 +35,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
+
+import static android.R.attr.label;
+import static dev.dworks.apps.anexplorer.misc.DiskInfo.FLAG_SD;
+import static dev.dworks.apps.anexplorer.misc.DiskInfo.FLAG_USB;
 
 public final class StorageUtils {
     private static final String TAG = "StorageUtils";
@@ -366,7 +371,7 @@ public final class StorageUtils {
 		else return 0L;
 	}
 
-    public static String getBestVolumeDescription(VolumeInfo vol) {
+    public static String getBestVolumeDescription(Context context, VolumeInfo vol) {
         if (vol == null) return null;
         // Nickname always takes precedence when defined
 /*        if (!TextUtils.isEmpty(vol.fsUuid)) {
@@ -379,7 +384,25 @@ public final class StorageUtils {
             return vol.getDescription();
         }
         if (vol.disk != null) {
-            return vol.disk.getDescription();
+            final Resources res = context.getResources();
+            int flags = vol.disk.flags;
+            String label = vol.disk.label;
+            if ((flags & FLAG_SD) != 0) {
+                if (vol.disk.isInteresting(label)) {
+                    return res.getString(R.string.storage_sd_card_label, label);
+                } else {
+                    return res.getString(R.string.storage_sd_card);
+                }
+            } else if ((flags & FLAG_USB) != 0) {
+                if (vol.disk.isInteresting(label)) {
+                    return res.getString(R.string.storage_usb_drive_label, label);
+                } else {
+                    return res.getString(R.string.storage_usb_drive);
+                }
+            } else {
+                return null;
+            }
+            //return vol.disk.getDescription();
         }
         return null;
     }

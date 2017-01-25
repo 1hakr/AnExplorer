@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         versionName "3.5"
@@ -17,7 +17,7 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            shrinkResources true
+            shrinkResources false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
                     'proguard/proguard-google-play-services.pro'
