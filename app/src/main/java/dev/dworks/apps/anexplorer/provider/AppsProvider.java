@@ -61,8 +61,8 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 @SuppressLint("DefaultLocale")
 public class AppsProvider extends DocumentsProvider {
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".apps.documents";
-    public static final String ROOT_ID_APP = "apps";
-    public static final String ROOT_ID_PROCESS = "process";
+    public static final String ROOT_ID_APP = "apps:";
+    public static final String ROOT_ID_PROCESS = "process:";
     
     // docId format: apps: com.package
     // docId format: process: com.package
@@ -144,13 +144,13 @@ public class AppsProvider extends DocumentsProvider {
     public Cursor querySearchDocuments(String rootId, String query, String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
 
-    	if (ROOT_ID_APP.equals(rootId)) {
+		if(rootId.startsWith(ROOT_ID_APP)) {
     		List<PackageInfo> allAppList = packageManager.getInstalledPackages(PackageManager.GET_UNINSTALLED_PACKAGES);
     		for (PackageInfo packageInfo : allAppList) {
     			includeAppFromPackage(result, rootId, packageInfo, query.toLowerCase());
     		}	
     	}
-    	else{
+		else if(rootId.startsWith(ROOT_ID_PROCESS)) {
 			List<RunningAppProcessInfo> runningProcessesList = activityManager.getRunningAppProcesses();
 			for (RunningAppProcessInfo processInfo : runningProcessesList) {
 				includeAppFromProcess(result, rootId, processInfo, query.toLowerCase());
@@ -161,17 +161,17 @@ public class AppsProvider extends DocumentsProvider {
 
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
-        // Delegate to real provider
     	final String rootId = getRootIdForDocId(docId);
     	final String packageName = getPackageForDocId(docId);
         final long token = Binder.clearCallingIdentity();
         try {
-        	if (ROOT_ID_APP.equals(rootId)) {
+        	if (rootId.startsWith(ROOT_ID_APP)) {
 				PackageManagerUtils.uninstallApp(getContext(), packageName);
         	}
-        	else{
+        	else if(rootId.startsWith(ROOT_ID_PROCESS)) {
         		activityManager.killBackgroundProcesses(getPackageForDocId(docId));
         	}
+        	notifyDocumentsChanged(docId);
         } finally {
             Binder.restoreCallingIdentity(token);
         }
@@ -216,18 +216,18 @@ public class AppsProvider extends DocumentsProvider {
     @Override
     public Cursor queryChildDocuments(String docId, String[] projection, String sortOrder)
             throws FileNotFoundException {
-        final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
+        final MatrixCursor result = new DocumentCursor(resolveDocumentProjection(projection), docId);
 
         // Delegate to real provider
         final long token = Binder.clearCallingIdentity();
         try {
-        	if (ROOT_ID_APP.equals(docId)) {
+        	if (docId.startsWith(ROOT_ID_APP)) {
         		List<PackageInfo> allAppList = packageManager.getInstalledPackages(PackageManager.GET_UNINSTALLED_PACKAGES);
         		for (PackageInfo packageInfo : allAppList) {
         			includeAppFromPackage(result, docId, packageInfo, null);
         		}	
         	}
-        	else{
+        	else if(docId.startsWith(ROOT_ID_PROCESS)) {
 				if(Utils.hasNougat()){
 					List<RunningServiceInfo> runningServices = activityManager.getRunningServices(1000);
 					for (RunningServiceInfo process : runningServices) {
@@ -465,19 +465,13 @@ public class AppsProvider extends DocumentsProvider {
     }
 
 	public static String getDocIdForApp(String rootId, String packageName){
-    	return rootId + ":" + packageName;
+    	return rootId + packageName;
     }
     
     public static String getPackageForDocId(String docId){
         final int splitIndex = docId.indexOf(':', 1);
         final String packageName = docId.substring(splitIndex + 1);
         return packageName;
-    }
-    
-    public static String getRootIdForDocId(String docId){
-        final int splitIndex = docId.indexOf(':', 1);
-        final String tag = docId.substring(0, splitIndex);
-        return tag;
     }
 
 	private long getProcessSize(int pid) {
@@ -526,5 +520,25 @@ public class AppsProvider extends DocumentsProvider {
 			return appProcessInfos;
 		}
 		return am.getRunningAppProcesses();
+	}
+
+	private class DocumentCursor extends MatrixCursor {
+		public DocumentCursor(String[] columnNames, String docId) {
+			super(columnNames);
+
+			final Uri notifyUri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, docId);
+			setNotificationUri(getContext().getContentResolver(), notifyUri);
+		}
+
+		@Override
+		public void close() {
+			super.close();
+		}
+	}
+
+	private void notifyDocumentsChanged(String docId){
+		final String rootId = getRootIdForDocId(docId);
+		Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+		getContext().getContentResolver().notifyChange(uri, null, false);
 	}
 }

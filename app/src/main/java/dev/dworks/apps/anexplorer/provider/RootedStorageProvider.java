@@ -281,6 +281,7 @@ public class RootedStorageProvider extends StorageProvider {
                 throw new IllegalStateException("Failed to touch " + file + ": " + e);
             }
         }
+        notifyDocumentsChanged(docId);
         return getDocIdForRootFile(new RootFile(path, displayName));
     }
 
@@ -298,6 +299,7 @@ public class RootedStorageProvider extends StorageProvider {
         }
         final String afterDocId = getDocIdForRootFile(new RootFile(after.getParent(), displayName));
         if (!TextUtils.equals(documentId, afterDocId)) {
+            notifyDocumentsChanged(documentId);
             return afterDocId;
         } else {
             return null;
@@ -311,7 +313,9 @@ public class RootedStorageProvider extends StorageProvider {
         if (!RootCommands.moveCopyRoot(before.getPath(), after.getPath())) {
             throw new IllegalStateException("Failed to copy " + before);
         }
-        return getDocIdForRootFile(after);
+        final String afterDocId = getDocIdForRootFile(after);
+        notifyDocumentsChanged(afterDocId);
+        return afterDocId;
     }
 
     @Override
@@ -325,6 +329,7 @@ public class RootedStorageProvider extends StorageProvider {
         }
         final String afterDocId = getDocIdForRootFile(after);
         if (!TextUtils.equals(sourceDocumentId, afterDocId)) {
+            notifyDocumentsChanged(afterDocId);
             return afterDocId;
         } else {
             return null;
@@ -337,6 +342,7 @@ public class RootedStorageProvider extends StorageProvider {
         if (!RootCommands.deleteFileRoot(file.getPath())) {
             throw new IllegalStateException("Failed to delete " + file);
         }
+        notifyDocumentsChanged(docId);
     }
 
     @Override
@@ -471,7 +477,6 @@ public class RootedStorageProvider extends StorageProvider {
         }
     }
 
-
     private class DirectoryCursor extends MatrixCursor {
 
         public DirectoryCursor(String[] columnNames, String docId, RootFile file) {
@@ -484,5 +489,11 @@ public class RootedStorageProvider extends StorageProvider {
         public void close() {
             super.close();
         }
+    }
+
+    private void notifyDocumentsChanged(String docId){
+        final String rootId = getRootIdForDocId(docId);
+        Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+        getContext().getContentResolver().notifyChange(uri, null, false);
     }
 }

@@ -44,7 +44,7 @@ public class SAFManager {
         DocumentFile documentFile = null;
         if(docId.startsWith(ROOT_ID_SECONDARY)){
             String newDocId = docId.substring(ROOT_ID_SECONDARY.length());
-            Uri uri = getRootId(newDocId);
+            Uri uri = getRootUri(newDocId);
             if(null == uri){
                 return DocumentFile.fromFile(file);
             }
@@ -61,11 +61,11 @@ public class SAFManager {
 
     public DocumentFile getDocumentFile(Uri uri, File file)
             throws FileNotFoundException {
-        String docId = getRootId(uri);
+        String docId = getRootUri(uri);
         return getDocumentFile(docId, null);
     }
 
-    private static String getRootId(Uri uri) {
+    public static String getRootUri(Uri uri) {
         if (isTreeUri(uri)) {
             return dev.dworks.apps.anexplorer.model.DocumentsContract.getTreeDocumentId(uri);
         }
@@ -80,9 +80,8 @@ public class SAFManager {
         return dev.dworks.apps.anexplorer.model.DocumentsContract.isTreeUri(uri);
     }
 
-
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    private Uri getRootId(String docId){
+    private Uri getRootUri(String docId){
         Uri treeUri;
         final int splitIndex = docId.indexOf(':', 1);
         final String tag = docId.substring(0, splitIndex);
@@ -97,7 +96,7 @@ public class SAFManager {
         List<UriPermission> permissions = mContext.getContentResolver().getPersistedUriPermissions();
         for (UriPermission permission :
                 permissions) {
-            String treeRootId = getRootId(permission.getUri());
+            String treeRootId = getRootUri(permission.getUri());
             if(docId.startsWith(treeRootId)){
                 treeUri = permission.getUri();
                 secondaryRoots.put(tag, treeUri);
@@ -137,9 +136,10 @@ public class SAFManager {
                 if (Utils.hasKitKat()) {
                     activity.getContentResolver().takePersistableUriPermission(uri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    RootsCache.updateRoots(activity, ExternalStorageProvider.AUTHORITY);
+                    String rootId = ExternalStorageProvider.ROOT_ID_SECONDARY + getRootUri(uri);
+                    ExternalStorageProvider.notifyDocumentsChanged(activity, rootId);
+                    return true;
                 }
-                return true;
             }
         }
         return false;

@@ -1031,18 +1031,6 @@ public class DirectoryFragment extends ListFragment {
 									});
 				}
 			}
-
-            if(mType == TYPE_RECENT_OPEN){
-                onUserSortOrderChanged();
-            }
-            else if (null != root && root.isAppProcess()) {
-                AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
-                AppsProvider.notifyRootsChanged(getActivity());
-            }
-
-            if(id == R.id.menu_delete && isOperationSupported){
-                onUserSortOrderChanged();
-            }
 		}
 	}
 

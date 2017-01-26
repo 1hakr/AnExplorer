@@ -146,7 +146,6 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
-
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private void updateVolumesLocked() {
         mRoots.clear();
@@ -207,7 +206,6 @@ public class ExternalStorageProvider extends StorageProvider {
         VolumeInfo primaryVolume = null;
         final int userId = 0;//UserHandle.myUserId();
         StorageUtils storageUtils = new StorageUtils(getContext());
-        StorageManager mStorageManager = (StorageManager) getContext().getSystemService(Context.STORAGE_SERVICE);
         for (VolumeInfo volume : storageUtils.getVolumes()) {
             if (!volume.isMountedReadable()) continue;
             final String rootId;
@@ -673,7 +671,9 @@ public class ExternalStorageProvider extends StorageProvider {
                 throw new IllegalStateException("Failed to touch " + file);
             }
         }
-        return getDocIdForFile(file);
+        final String afterDocId = getDocIdForFile(file);
+        notifyDocumentsChanged(afterDocId);
+        return afterDocId;
     }
 
     @Override
@@ -686,6 +686,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         FileUtils.removeMediaStore(getContext(), file);
+        notifyDocumentsChanged(docId);
     }
 
     @Override
@@ -705,6 +706,7 @@ public class ExternalStorageProvider extends StorageProvider {
         }
         final String afterDocId = getDocIdForFile(after);
         if (!TextUtils.equals(docId, afterDocId)) {
+            notifyDocumentsChanged(afterDocId);
             return afterDocId;
         } else {
             return null;
@@ -719,7 +721,9 @@ public class ExternalStorageProvider extends StorageProvider {
         if (!FileUtils.moveFile(before, after, null)) {
             throw new IllegalStateException("Failed to copy " + before);
         }
-        return getDocIdForFile(after);
+        final String afterDocId = getDocIdForFile(after);
+        notifyDocumentsChanged(afterDocId);
+        return afterDocId;
     }
 
     @Override
@@ -736,6 +740,7 @@ public class ExternalStorageProvider extends StorageProvider {
         if (!before.renameTo(after)) {
             throw new IllegalStateException("Failed to move to " + after);
         } else {
+            notifyDocumentsChanged(targetParentDocumentId);
             FileUtils.updateMediaStore(getContext(), before.getPath());
         }
         return getDocIdForFile(after);
@@ -751,6 +756,7 @@ public class ExternalStorageProvider extends StorageProvider {
         if (!FileUtils.compressFile(fileFrom, files)) {
             throw new IllegalStateException("Failed to extract " + fileFrom);
         }
+        notifyDocumentsChanged(parentDocumentId);
         return getDocIdForFile(fileFrom);
     }
 
@@ -760,6 +766,7 @@ public class ExternalStorageProvider extends StorageProvider {
         if (!FileUtils.uncompress(fileFrom)) {
             throw new IllegalStateException("Failed to extract " + fileFrom);
         }
+        notifyDocumentsChanged(documentId);
         return getDocIdForFile(fileFrom);
     }
 
@@ -966,8 +973,6 @@ public class ExternalStorageProvider extends StorageProvider {
         public void onEvent(int event, String path) {
             if ((event & NOTIFY_EVENTS) != 0) {
                 if (LOG_INOTIFY) Log.d(TAG, "onEvent() " + event + " at " + path);
-                //notify roots changed
-                //mResolver.notifyChange(DocumentsContract.buildRootsUri(AUTHORITY), null, false);
                 switch ((event & NOTIFY_EVENTS)){
                     case MOVED_FROM:
                     case MOVED_TO:
@@ -1008,6 +1013,14 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private DocumentFile getDocumentFile(String docId, File file) throws FileNotFoundException {
         return DocumentsApplication.getSAFManager(getContext()).getDocumentFile(docId, file);
+    }
+
+    private void notifyDocumentsChanged(String docId){
+        if(docId.startsWith(ROOT_ID_SECONDARY)){
+            final String rootId = getRootIdForDocId(docId);
+            Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+            getContext().getContentResolver().notifyChange(uri, null, false);
+        }
     }
 
 }

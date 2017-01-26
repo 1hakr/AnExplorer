@@ -70,9 +70,6 @@ public class UsbStorageProvider extends DocumentsProvider {
      */
     private static final String ACTION_USB_PERMISSION = "dev.dworks.apps.anexplorer.action.USB_PERMISSION";
 
-    private static final String DIRECTORY_SEPERATOR = "/";
-    private static final String ROOT_SEPERATOR = ":";
-
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
             Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES, Root.COLUMN_PATH,
@@ -218,8 +215,13 @@ public class UsbStorageProvider extends DocumentsProvider {
     public Cursor queryChildDocuments(String parentDocumentId, String[] projection, String sortOrder) throws FileNotFoundException {
         try {
             updateSettings();
-            final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-            UsbFile parent = getFileForDocId(parentDocumentId);
+            final MatrixCursor result = new DocumentCursor(resolveDocumentProjection(projection), parentDocumentId);
+            UsbFile parent;
+            try {
+                parent = getFileForDocId(parentDocumentId);
+            } catch (Exception e){
+                return result;
+            }
             for (UsbFile child : parent.listFiles()) {
                 includeFile(result, child);
             }
@@ -266,7 +268,10 @@ public class UsbStorageProvider extends DocumentsProvider {
                 child = parent.createFile(getFileName(mimeType, displayName));
             }
 
-            return getDocIdForFile(child);
+            final String afterDocId = getDocIdForFile(child);
+            notifyDocumentsChanged(afterDocId);
+            return afterDocId;
+
 
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
@@ -280,7 +285,9 @@ public class UsbStorageProvider extends DocumentsProvider {
             file.setName(getFileName(getMimeType(file), displayName));
             mFileCache.remove(documentId);
 
-            return getDocIdForFile(file);
+            final String afterDocId = getDocIdForFile(file);
+            notifyDocumentsChanged(afterDocId);
+            return afterDocId;
 
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
@@ -293,6 +300,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             UsbFile file = getFileForDocId(documentId);
             file.delete();
             mFileCache.remove(documentId);
+            notifyDocumentsChanged(documentId);
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -441,7 +449,7 @@ public class UsbStorageProvider extends DocumentsProvider {
                 usbPartition.device = device.getUsbDevice();
                 usbPartition.fileSystem = partition.getFileSystem();
                 usbPartition.permissionGranted = true;
-                mRoots.put(Integer.toString(device.getUsbDevice().getDeviceId()), usbPartition);
+                mRoots.put(getRootId(device.getUsbDevice()), usbPartition);
             }
         } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
@@ -453,7 +461,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             UsbPartition usbPartition = new UsbPartition();
             usbPartition.device = device;
             usbPartition.permissionGranted = false;
-            mRoots.put(Integer.toString(device.getDeviceId()), usbPartition);
+            mRoots.put(getRootId(device), usbPartition);
         } catch (Exception e) {
             Log.e(TAG, "error setting up device", e);
         }
@@ -529,6 +537,7 @@ public class UsbStorageProvider extends DocumentsProvider {
                 if (permission) {
                     discoverDevice(usbDevice);
                     notifyRootsChanged();
+                    notifyDocumentsChanged(getContext(), getRootId(usbDevice)+ROOT_SEPERATOR);
                 } else {
                     // so we don't ask for permission again
                 }
@@ -573,5 +582,29 @@ public class UsbStorageProvider extends DocumentsProvider {
         row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
                 | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
                 | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE);
+    }
+
+    private String getRootId(UsbDevice usbDevice) {
+        return Integer.toString(usbDevice.getDeviceId());
+    }
+
+    private class DocumentCursor extends MatrixCursor {
+        public DocumentCursor(String[] columnNames, String docId) {
+            super(columnNames);
+
+            final Uri notifyUri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, docId);
+            setNotificationUri(getContext().getContentResolver(), notifyUri);
+        }
+
+        @Override
+        public void close() {
+            super.close();
+        }
+    }
+
+    private void notifyDocumentsChanged(String docId){
+        final String rootId = getRootIdForDocId(docId);
+        Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
+        getContext().getContentResolver().notifyChange(uri, null, false);
     }
 }

@@ -60,13 +60,12 @@ import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-
 /**
  * Cache of known storage backends and their roots.
  */
 public class RootsCache {
     private static final boolean LOGD = true;
+    public static final String TAG = "RootsCache";
 
     public static final Uri sNotificationUri = Uri.parse(
             "content://"+ BuildConfig.APPLICATION_ID+".roots/");
