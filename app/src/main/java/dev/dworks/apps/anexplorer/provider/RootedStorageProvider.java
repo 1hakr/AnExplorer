@@ -73,7 +73,7 @@ public class RootedStorageProvider extends StorageProvider {
         public RootFile path;
     }
 
-    public static final String ROOT_ID_ROOT = "Root";
+    public static final String ROOT_ID_ROOT = "root";
 
     private final Object mRootsLock = new Object();
 
@@ -492,7 +492,7 @@ public class RootedStorageProvider extends StorageProvider {
     }
 
     private void notifyDocumentsChanged(String docId){
-        final String rootId = getRootIdForDocId(docId);
+        final String rootId = getParentRootIdForDocId(docId);
         Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
         getContext().getContentResolver().notifyChange(uri, null, false);
     }

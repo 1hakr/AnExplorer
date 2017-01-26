@@ -177,14 +177,13 @@ public class AppsProvider extends DocumentsProvider {
 
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
-    	final String rootId = getRootIdForDocId(docId);
     	final String packageName = getPackageForDocId(docId);
         final long token = Binder.clearCallingIdentity();
         try {
-        	if (rootId.startsWith(ROOT_ID_USER_APP)) {
+        	if (docId.startsWith(ROOT_ID_USER_APP)) {
 				PackageManagerUtils.uninstallApp(getContext(), packageName);
         	}
-        	else if(rootId.startsWith(ROOT_ID_PROCESS)) {
+        	else if(docId.startsWith(ROOT_ID_PROCESS)) {
         		activityManager.killBackgroundProcesses(getPackageForDocId(docId));
         	}
         	notifyDocumentsChanged(docId);
@@ -565,7 +564,7 @@ public class AppsProvider extends DocumentsProvider {
 	}
 
 	private void notifyDocumentsChanged(String docId){
-		final String rootId = getRootIdForDocId(docId);
+		final String rootId = getParentRootIdForDocId(docId);
 		Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
 		getContext().getContentResolver().notifyChange(uri, null, false);
 	}

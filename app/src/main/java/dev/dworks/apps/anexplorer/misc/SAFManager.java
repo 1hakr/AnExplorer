@@ -59,7 +59,7 @@ public class SAFManager {
         return documentFile;
     }
 
-    public DocumentFile getDocumentFile(Uri uri, File file)
+    public DocumentFile getDocumentFile(Uri uri)
             throws FileNotFoundException {
         String docId = getRootUri(uri);
         return getDocumentFile(docId, null);

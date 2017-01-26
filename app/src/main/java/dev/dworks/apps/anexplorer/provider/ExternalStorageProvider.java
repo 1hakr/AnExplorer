@@ -33,7 +33,6 @@ import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.os.storage.StorageManager;
 import android.support.v4.os.EnvironmentCompat;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
@@ -1017,7 +1016,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private void notifyDocumentsChanged(String docId){
         if(docId.startsWith(ROOT_ID_SECONDARY)){
-            final String rootId = getRootIdForDocId(docId);
+            final String rootId = getParentRootIdForDocId(docId);
             Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
             getContext().getContentResolver().notifyChange(uri, null, false);
         }

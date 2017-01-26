@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
@@ -759,5 +762,22 @@ public class FileUtils {
         } else {
             return EMPTY;
         }
+    }
+
+    public static boolean copy(InputStream inputStream, OutputStream outputStream){
+        boolean successful = false;
+        try {
+            IoUtils.copy(inputStream, outputStream);
+            outputStream.flush();
+            successful = true;
+        } catch (IOException e) {
+            Log.e("TransferThread", "writing failed");
+            CrashReportingManager.logException(e);
+        } finally {
+            IoUtils.closeQuietly(inputStream);
+            IoUtils.closeQuietly(outputStream);
+        }
+
+        return successful;
     }
 }

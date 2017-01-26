@@ -194,25 +194,22 @@ public class RootInfo implements Durable, Parcelable {
             derivedTag = "storage";
         } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
-            derivedTag = "storage";
+            derivedTag = "external storage";
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
         } else if (isPhoneStorage()) {
             derivedIcon = R.drawable.ic_root_phone;
         } else if (isSecondaryStorage()) {
-	        if (isSecondaryStorageSD()) {
-	            derivedIcon = R.drawable.ic_root_sdcard;
-	        } else if (isSecondaryStorageUSB()) {
+            derivedIcon = R.drawable.ic_root_sdcard;
+            if (isSecondaryStorageUSB()) {
 	            derivedIcon = R.drawable.ic_root_usb;
 	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;
 	        }
-            else {
-                derivedIcon = R.drawable.ic_root_sdcard;
-            }
-            derivedTag = "storage";
+            derivedTag = "secondary storage";
         } else if (isUsbStorage()) {
             derivedIcon = R.drawable.ic_root_usb;
+            derivedTag = "usb storage";
         } else if (isDownloadsFolder()) {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
@@ -313,15 +310,15 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isSecondaryStorageSD() {
-        return contains(path, "sd", "card", "emmc");
+        return contains(path, "sd", "card", "emmc") || contains(title, "sd", "card", "emmc");
     }
     
     public boolean isSecondaryStorageUSB() {
-        return contains(path, "usb");
+        return contains(path, "usb") || contains(title, "usb");
     }
     
     public boolean isSecondaryStorageHDD() {
-        return contains(path, "hdd");
+        return contains(path, "hdd") || contains(title, "hdd");
     }
 
     public boolean isDownloadsFolder() {

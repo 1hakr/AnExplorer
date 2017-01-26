@@ -385,7 +385,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
             try {
                 DocumentFile documentFile = DocumentsApplication.getSAFManager(
-                        getApplicationContext()).getDocumentFile(uri, null);
+                        getApplicationContext()).getDocumentFile(uri);
                 Uri finalUri = null == documentFile ? uri : documentFile.getUri();
                 return getContentResolver().openOutputStream(finalUri);
             } catch (Exception e) {

@@ -1103,7 +1103,7 @@ public abstract class DocumentsProvider extends ContentProvider {
 
     }
 
-    public static String getRootIdForDocId(String docId){
+    public static String getParentRootIdForDocId(String docId){
         final int splitIndex = docId.indexOf(':', 1);
         final String rootId = docId.substring(0, splitIndex);
         final String path = docId.substring(splitIndex + 1);
@@ -1113,5 +1113,11 @@ public abstract class DocumentsProvider extends ContentProvider {
             parentPath = path.substring(0, pathSplitIndex);
         }
         return rootId + ROOT_SEPERATOR + parentPath;
+    }
+
+    public static String getRootIdForDocId(String docId){
+        final int splitIndex = docId.indexOf(':', 1);
+        final String rootId = docId.substring(0, splitIndex);
+        return rootId;
     }
 }

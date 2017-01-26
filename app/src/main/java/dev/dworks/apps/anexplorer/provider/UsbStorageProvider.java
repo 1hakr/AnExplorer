@@ -27,6 +27,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -37,11 +38,13 @@ import com.github.mjdev.libaums.fs.FileSystem;
 import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileInputStream;
 import com.github.mjdev.libaums.fs.UsbFileOutputStream;
+import com.github.mjdev.libaums.fs.UsbFileStreamFactory;
 import com.github.mjdev.libaums.partition.Partition;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
@@ -58,6 +61,8 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
+
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 
 public class UsbStorageProvider extends DocumentsProvider {
 
@@ -83,13 +88,15 @@ public class UsbStorageProvider extends DocumentsProvider {
     private UsbManager usbManager;
     private boolean showFilesHidden;
 
+    public static final String ROOT_ID_USB = "usb";
+
     private class UsbPartition {
         UsbDevice device;
         FileSystem fileSystem;
         boolean permissionGranted;
     }
 
-    private final Map<String, UsbPartition> mRoots = new HashMap<>();
+    private final ArrayMap<String, UsbPartition> mRoots = new ArrayMap<>();
 
     private final LruCache<String, UsbFile> mFileCache = new LruCache<>(100);
 
@@ -145,7 +152,7 @@ public class UsbStorageProvider extends DocumentsProvider {
         // Create a cursor with either the requested fields, or the default projection if "projection" is null.
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
 
-        for (Map.Entry<String, UsbPartition> root : mRoots.entrySet()) {
+        for (ArrayMap.Entry<String, UsbPartition> root : mRoots.entrySet()) {
             UsbPartition usbPartition = root.getValue();
             UsbDevice usbDevice = usbPartition.device;
             FileSystem fileSystem = usbPartition.fileSystem;
@@ -173,8 +180,8 @@ public class UsbStorageProvider extends DocumentsProvider {
                 title = getContext().getString(R.string.root_usb);
             }
 
-            int flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
-                    | Root.FLAG_SUPPORTS_IS_CHILD;
+            int flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY
+                    | Root.FLAG_ADVANCED | Root.FLAG_SUPPORTS_IS_CHILD;
 
             final MatrixCursor.RowBuilder row = result.newRow();
             // These columns are required
@@ -271,8 +278,6 @@ public class UsbStorageProvider extends DocumentsProvider {
             final String afterDocId = getDocIdForFile(child);
             notifyDocumentsChanged(afterDocId);
             return afterDocId;
-
-
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -306,18 +311,59 @@ public class UsbStorageProvider extends DocumentsProvider {
         }
     }
 
-/*    @Override
+    @Override
     public Cursor querySearchDocuments(String rootId, String query, String[] projection) throws FileNotFoundException {
-        final UsbFile parent;
         UsbPartition usbPartition = mRoots.get(rootId);
-        parent = usbPartition.fileSystem.getRootDirectory();
+        final UsbFile parent = usbPartition.fileSystem.getRootDirectory();
         updateSettings();
-
-        for (File file : FileUtils.searchDirectory(parent.getPath(), query)) {
-            includeFile(result, null, file);
-        }
+        final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
+        //TODO implement actual search
         return result;
-    }*/
+    }
+
+    @Override
+    public String moveDocument(String sourceDocumentId, String sourceParentDocumentId, String targetParentDocumentId) throws FileNotFoundException {
+        try {
+            final UsbFile before = getFileForDocId(sourceDocumentId);
+            final UsbFile after = getFileForDocId(targetParentDocumentId);
+
+            before.moveTo(after);
+            final String afterDocId = getDocIdForFile(after);
+            if (!TextUtils.equals(sourceDocumentId, afterDocId)) {
+                notifyDocumentsChanged(afterDocId);
+                return afterDocId;
+            } else {
+                return null;
+            }
+
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
+    }
+
+    @Override
+    public String copyDocument(String sourceDocumentId, String targetParentDocumentId) throws FileNotFoundException {
+        try {
+
+            UsbPartition usbPartition = mRoots.get(getRootIdForDocId(sourceDocumentId));
+            final FileSystem fileSystem = usbPartition.fileSystem;
+            final UsbFile before = getFileForDocId(sourceDocumentId);
+            final UsbFile after = getFileForDocId(targetParentDocumentId);
+            final UsbFile newFile = after.createFile(before.getName());
+            InputStream inputStream = UsbFileStreamFactory.createBufferedInputStream(before, fileSystem);
+            OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(newFile, fileSystem);
+
+            if (!FileUtils.copy(inputStream, outputStream)) {
+                throw new IllegalStateException("Failed to copy " + before);
+            }
+            final String afterDocId = getDocIdForFile(after);
+            notifyDocumentsChanged(afterDocId);
+            return afterDocId;
+
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
+    }
 
     @Override
     public String getDocumentType(String documentId) {
@@ -366,13 +412,22 @@ public class UsbStorageProvider extends DocumentsProvider {
                 return;
             }
         }
-        int flags = Document.FLAG_SUPPORTS_DELETE
-                | Document.FLAG_SUPPORTS_WRITE
-                | Document.FLAG_SUPPORTS_RENAME;
 
+        int flags = 0;
         if (file.isDirectory()) {
             flags |= Document.FLAG_DIR_SUPPORTS_CREATE;
+        } else {
+            flags |= Document.FLAG_SUPPORTS_WRITE;
         }
+        flags |= Document.FLAG_SUPPORTS_DELETE;
+        flags |= Document.FLAG_SUPPORTS_RENAME;
+        flags |= Document.FLAG_SUPPORTS_MOVE;
+        flags |= Document.FLAG_SUPPORTS_EDIT;
+
+        if(isTelevision()) {
+            flags |= Document.FLAG_DIR_PREFERS_GRID;
+        }
+
 
         final String mimeType = getMimeType(file);
         if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
@@ -585,7 +640,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     }
 
     private String getRootId(UsbDevice usbDevice) {
-        return Integer.toString(usbDevice.getDeviceId());
+        return ROOT_ID_USB + Integer.toString(usbDevice.getDeviceId());
     }
 
     private class DocumentCursor extends MatrixCursor {
@@ -603,7 +658,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     }
 
     private void notifyDocumentsChanged(String docId){
-        final String rootId = getRootIdForDocId(docId);
+        final String rootId = getParentRootIdForDocId(docId);
         Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
         getContext().getContentResolver().notifyChange(uri, null, false);
     }
