@@ -212,7 +212,7 @@ public class AppsProvider extends DocumentsProvider {
 		if(!fileTo.exists()){
 			fileTo.mkdir();
 		}
-		if (!FileUtils.moveFile(fileFrom, fileTo, fileName)) {
+		if (!FileUtils.moveDocument(fileFrom, fileTo, fileName)) {
 			throw new IllegalStateException("Failed to copy " + fileFrom);
 		}
 		else{

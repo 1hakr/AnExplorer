@@ -34,6 +34,7 @@ import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.network.NetworkFile;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 import static dev.dworks.apps.anexplorer.provider.ExplorerProvider.ConnectionColumns;
@@ -255,7 +256,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
                 return mime;
             }
         }
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 
     /**

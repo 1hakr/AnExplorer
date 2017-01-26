@@ -24,6 +24,7 @@ import android.os.Build;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -310,5 +311,19 @@ public final class IoUtils {
             count += n;
         }
         return count;
+    }
+
+    /**
+     * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
+     */
+    public static void flushQuietly(Flushable flushable) {
+        if (flushable != null) {
+            try {
+                flushable.flush();
+            } catch (RuntimeException rethrown) {
+                throw rethrown;
+            } catch (Exception ignored) {
+            }
+        }
     }
 }

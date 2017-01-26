@@ -63,6 +63,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
 public class UsbStorageProvider extends DocumentsProvider {
 
@@ -375,7 +376,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             CrashReportingManager.logException(e);
         }
 
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 
     private static String getMimeType(UsbFile file) {
@@ -389,7 +390,7 @@ public class UsbStorageProvider extends DocumentsProvider {
                 return mimeType;
             }
         }
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 
     private static String getFileName(String mimeType, String displayName) {

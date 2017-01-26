@@ -10,6 +10,7 @@ public final class MimeTypes {
 
     public static final String ALL_MIME_TYPES = "*/*";
     private static final HashMap<String, String> MIME_TYPES = new HashMap<String, String>();
+    public static final String BASIC_MIME_TYPE = "application/octet-stream";
 
     private MimeTypes() {}
 
@@ -37,7 +38,7 @@ public final class MimeTypes {
         MIME_TYPES.put("bz2", "application/x-bzip2");
         MIME_TYPES.put("cab", "application/vnd.ms-cab-compressed");
         MIME_TYPES.put("gz", "application/x-gzip");
-        MIME_TYPES.put("lrf", "application/octet-stream");
+        MIME_TYPES.put("lrf", BASIC_MIME_TYPE);
         MIME_TYPES.put("jar", "application/java-archive");
         MIME_TYPES.put("xz", "application/x-xz");
         MIME_TYPES.put("Z", "application/x-compress");
@@ -46,8 +47,8 @@ public final class MimeTypes {
         MIME_TYPES.put("ksh", "text/plain");
         MIME_TYPES.put("sh", "application/x-sh");
 
-        MIME_TYPES.put("db", "application/octet-stream");
-        MIME_TYPES.put("db3", "application/octet-stream");
+        MIME_TYPES.put("db", BASIC_MIME_TYPE);
+        MIME_TYPES.put("db3", BASIC_MIME_TYPE);
 
         MIME_TYPES.put("otf", "application/x-font-otf");
         MIME_TYPES.put("ttf", "application/x-font-ttf");

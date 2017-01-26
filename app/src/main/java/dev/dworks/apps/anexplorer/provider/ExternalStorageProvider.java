@@ -55,7 +55,6 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.DiskInfo;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
-import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.StorageUtils;
 import dev.dworks.apps.anexplorer.misc.StorageVolume;
@@ -68,6 +67,7 @@ import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForFile;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 @SuppressLint("DefaultLocale")
@@ -714,13 +714,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     @Override
     public String copyDocument(String sourceDocumentId, String targetParentDocumentId) throws FileNotFoundException {
-        final File before = getFileForDocId(sourceDocumentId);
-        final File after = getFileForDocId(targetParentDocumentId);
-
-        if (!FileUtils.moveFile(before, after, null)) {
-            throw new IllegalStateException("Failed to copy " + before);
-        }
-        final String afterDocId = getDocIdForFile(after);
+        final String afterDocId = copy(sourceDocumentId, targetParentDocumentId);
         notifyDocumentsChanged(afterDocId);
         return afterDocId;
     }
@@ -729,20 +723,9 @@ public class ExternalStorageProvider extends StorageProvider {
     public String moveDocument(String sourceDocumentId, String sourceParentDocumentId,
                                String targetParentDocumentId)
             throws FileNotFoundException {
-        final File before = getFileForDocId(sourceDocumentId);
-        final File after = new File(getFileForDocId(targetParentDocumentId), before.getName());
-        DocumentFile documentFile = getDocumentFile(sourceDocumentId, before);
-
-        if (after.exists()) {
-            throw new IllegalStateException("Already exists " + after);
-        }
-        if (!before.renameTo(after)) {
-            throw new IllegalStateException("Failed to move to " + after);
-        } else {
-            notifyDocumentsChanged(targetParentDocumentId);
-            FileUtils.updateMediaStore(getContext(), before.getPath());
-        }
-        return getDocIdForFile(after);
+        final String afterDocId = move(sourceDocumentId, targetParentDocumentId);
+        notifyDocumentsChanged(afterDocId);
+        return afterDocId;
     }
 
     @Override
@@ -900,27 +883,6 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
-    private static String getTypeForFile(File file) {
-        if (file.isDirectory()) {
-            return Document.MIME_TYPE_DIR;
-        } else {
-            return getTypeForName(file.getName());
-        }
-    }
-
-    private static String getTypeForName(String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypes.getMimeTypeFromExtension(extension);
-            if (mime != null) {
-                return mime;
-            }
-        }
-
-        return "application/octet-stream";
-    }
-
     private void startObserving(File file, Uri notifyUri) {
         synchronized (mObservers) {
             DirectoryObserver observer = mObservers.get(file);
@@ -1022,4 +984,69 @@ public class ExternalStorageProvider extends StorageProvider {
         }
     }
 
+    private String copy(String sourceDocumentId,
+                        String targetParentDocumentId) throws FileNotFoundException {
+
+        final String afterDocId;
+        final File source = getFileForDocId(sourceDocumentId);
+        final File target = getFileForDocId(targetParentDocumentId);
+
+        boolean isSourceSecondry = sourceDocumentId.startsWith(ROOT_ID_SECONDARY);
+        boolean istargetSecondry = targetParentDocumentId.startsWith(ROOT_ID_SECONDARY);
+
+        if(isSourceSecondry && istargetSecondry && Utils.hasLollipop()){
+            DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
+            DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
+            if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
+                throw new IllegalStateException("Failed to copy " + source);
+            }
+            afterDocId = getDocIdForFile(new File(targetDirectory.getUri().getPath()));
+        } else {
+            if (!FileUtils.moveDocument(source, target, null)) {
+                throw new IllegalStateException("Failed to copy " + source);
+            }
+            afterDocId = getDocIdForFile(target);
+        }
+
+        return afterDocId;
+    }
+
+    private String move(String sourceDocumentId,
+                        String targetParentDocumentId) throws FileNotFoundException {
+
+        final String afterDocId;
+        final File source = getFileForDocId(sourceDocumentId);
+        final File target = getFileForDocId(targetParentDocumentId);
+
+        boolean isSourceSecondry = sourceDocumentId.startsWith(ROOT_ID_SECONDARY);
+        boolean istargetSecondry = targetParentDocumentId.startsWith(ROOT_ID_SECONDARY);
+
+        if(isSourceSecondry && istargetSecondry && Utils.hasLollipop()){
+            DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
+            DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
+            if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
+                throw new IllegalStateException("Failed to move " + source);
+            } else {
+                if(!sourceDirectory.delete()){
+                    throw new IllegalStateException("Failed to move " + source);
+                }
+            }
+            afterDocId = getDocIdForFile(new File(targetDirectory.getUri().getPath()));
+        } else {
+            final File after = new File(target, source.getName());
+
+            if (after.exists()) {
+                throw new IllegalStateException("Already exists " + after);
+            }
+            if (!source.renameTo(after)) {
+                throw new IllegalStateException("Failed to move to " + after);
+            } else {
+                notifyDocumentsChanged(targetParentDocumentId);
+                FileUtils.updateMediaStore(getContext(), source.getPath());
+            }
+            afterDocId = getDocIdForFile(target);
+        }
+
+        return afterDocId;
+    }
 }
