@@ -389,7 +389,18 @@ public class RootInfo implements Durable, Parcelable {
     
     public boolean isAppPackage() {
         return AppsProvider.AUTHORITY.equals(authority)
-                && AppsProvider.ROOT_ID_APP.equals(rootId);
+                && (AppsProvider.ROOT_ID_USER_APP.equals(rootId)
+                || AppsProvider.ROOT_ID_SYSTEM_APP.equals(rootId));
+    }
+
+    public boolean isUserApp() {
+        return AppsProvider.AUTHORITY.equals(authority)
+                && AppsProvider.ROOT_ID_USER_APP.equals(rootId);
+    }
+
+    public boolean isSystemApp() {
+        return AppsProvider.AUTHORITY.equals(authority)
+                && AppsProvider.ROOT_ID_SYSTEM_APP.equals(rootId);
     }
     
     public boolean isAppProcess() {

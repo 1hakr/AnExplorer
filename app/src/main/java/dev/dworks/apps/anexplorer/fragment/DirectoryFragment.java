@@ -1800,7 +1800,7 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
             open.setVisible(root.isAppPackage());
 			save.setVisible(root.isAppPackage());
-			delete.setVisible(root.isAppPackage());
+			delete.setVisible(root.isUserApp());
 		}
 		else{
 			final State state = getDisplayState(DirectoryFragment.this);
