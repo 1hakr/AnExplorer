@@ -69,6 +69,7 @@ public class UsbStorageProvider extends DocumentsProvider {
     private static final String TAG = UsbStorageProvider.class.getSimpleName();
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".usbstorage.documents";
+    // docId format: root:/path/to/file
 
     /**
      * Action string to request the permission to communicate with an UsbDevice.

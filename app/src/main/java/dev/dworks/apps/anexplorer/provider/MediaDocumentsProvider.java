@@ -63,6 +63,7 @@ public class MediaDocumentsProvider extends StorageProvider {
 	private static final String TAG = "MediaDocumentsProvider";
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".media.documents";
+    // docId format: root:id
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,

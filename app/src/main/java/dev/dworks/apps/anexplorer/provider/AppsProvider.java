@@ -61,12 +61,13 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 @SuppressLint("DefaultLocale")
 public class AppsProvider extends DocumentsProvider {
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".apps.documents";
+	// docId format: user_apps:com.package
+	// docId format: system_apps:com.package
+	// docId format: process:com.package
+
     public static final String ROOT_ID_USER_APP = "user_apps:";
     public static final String ROOT_ID_SYSTEM_APP = "system_apps:";
     public static final String ROOT_ID_PROCESS = "process:";
-    
-    // docId format: apps: com.package
-    // docId format: process: com.package
     
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,

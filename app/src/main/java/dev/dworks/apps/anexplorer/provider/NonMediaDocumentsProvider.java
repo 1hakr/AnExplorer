@@ -52,6 +52,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
 	private static final String TAG = "NonMediaDocumentsProvider";
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".nonmedia.documents";
+    // docId format: root:id
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,

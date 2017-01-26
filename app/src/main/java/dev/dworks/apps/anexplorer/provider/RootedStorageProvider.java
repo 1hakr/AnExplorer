@@ -52,7 +52,6 @@ public class RootedStorageProvider extends StorageProvider {
     private static final String TAG = "RootedStorage";
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".rootedstorage.documents";
-
     // docId format: root:path/to/file
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {

@@ -46,6 +46,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
     private static final String TAG = NetworkStorageProvider.class.getSimpleName();
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".networkstorage.documents";
+    // docId format: adress:/path/to/file
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
