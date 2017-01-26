@@ -45,7 +45,9 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
 
         for (RootInfo root : roots) {
             if (root.isRecents()) {
-                recent.add(new RootItem(root));
+                if(recent.size() == 0) {
+                    recent.add(new RootItem(root));
+                }
             } else if (root.isConnections()) {
                 connection.add(new RootItem(root));
             } else if (root.isRootedStorage()) {
@@ -103,7 +105,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             recent.addAll(libraryMedia);
             recent.addAll(libraryNonMedia);
             groupRoots.add(new GroupInfo("Library", recent));
-        } else {
+        } else if(!recent.isEmpty()){
             groupRoots.add(new GroupInfo("Library", recent));
         }
 

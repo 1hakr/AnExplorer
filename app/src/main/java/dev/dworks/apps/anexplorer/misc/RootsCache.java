@@ -378,7 +378,7 @@ public class RootsCache {
 
     public RootInfo getPrimaryRoot() {
         for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
-            if (root.isStorage()) {
+            if (root.isStorage() && !root.isSecondaryStorage()) {
                 return root;
             }
         }

@@ -1139,7 +1139,7 @@ public class DocumentsActivity extends BaseActivity {
         if (mState.stack.root != null) {
             return mState.stack.root;
         } else {
-            return mRoots.getDefaultRoot();
+            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getPrimaryRoot();
         }
     }
     
