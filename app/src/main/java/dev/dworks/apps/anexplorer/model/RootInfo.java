@@ -240,8 +240,11 @@ public class RootInfo implements Durable, Parcelable {
         } else if (isApk()) {
             derivedIcon = R.drawable.ic_root_apk;
             derivedColor = R.color.item_doc_apk;
-        } else if (isAppPackage()) {
+        } else if (isUserApp()) {
             derivedIcon = R.drawable.ic_root_apps;
+            derivedColor = R.color.item_doc_apps;
+        } else if (isSystemApp()) {
+            derivedIcon = R.drawable.ic_root_system_apps;
             derivedColor = R.color.item_doc_apps;
         } else if (isAppProcess()) {
             derivedIcon = R.drawable.ic_root_process;
