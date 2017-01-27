@@ -77,6 +77,8 @@ public class HomeFragment extends Fragment {
     private HomeItem storageStats;
     private HomeItem memoryStats;
     private Timer storageTimer;
+    private Timer secondatyStorageTimer;
+    private Timer usbStorageTimer;
     private Timer processTimer;
     private RootsCache roots;
     private RecyclerView mRecentsRecycler;
@@ -87,6 +89,8 @@ public class HomeFragment extends Fragment {
     private TextView recents;
     private ShortcutsAdapter mShortcutsAdapter;
     private RootInfo mHomeRoot;
+    private HomeItem secondayStorageStats;
+    private HomeItem usbStorageStats;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -109,8 +113,12 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         storageTimer = new Timer();
+        secondatyStorageTimer = new Timer();
+        usbStorageTimer = new Timer();
         processTimer = new Timer();
         storageStats = (HomeItem) view.findViewById(R.id.storage_stats);
+        secondayStorageStats = (HomeItem) view.findViewById(R.id.seconday_storage_stats);
+        usbStorageStats = (HomeItem) view.findViewById(R.id.usb_storage_stats);
         memoryStats = (HomeItem) view.findViewById(R.id.memory_stats);
         recents = (TextView)view.findViewById(R.id.recents);
         recents_container = view.findViewById(R.id.recents_container);
@@ -129,6 +137,7 @@ public class HomeFragment extends Fragment {
         int complimentaryColor = Utils.getComplementaryColor(SettingsActivity.getActionBarColor());
         recents.setTextColor(complimentaryColor);
         showStorage();
+        showOtherStorage();
         showMemory(0);
         showShortcuts();
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
@@ -190,7 +199,85 @@ public class HomeFragment extends Fragment {
         } else {
             storageStats.setVisibility(View.GONE);
         }
+    }
 
+
+    private void showOtherStorage() {
+        final RootInfo secondaryRoot = roots.getSecondaryRoot();
+        if (null != secondaryRoot) {
+            secondayStorageStats.setVisibility(View.VISIBLE);
+            secondayStorageStats.setInfo(secondaryRoot);
+            secondayStorageStats.setCardListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openRoot(secondaryRoot);
+                }
+            });
+            try {
+                final double percentStore = (((secondaryRoot.totalBytes - secondaryRoot.availableBytes) / (double) secondaryRoot.totalBytes) * 100);
+                secondayStorageStats.setProgress(0);
+                secondatyStorageTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (secondayStorageStats.getProgress() >= (int) percentStore) {
+                                    secondatyStorageTimer.cancel();
+                                } else {
+                                    secondayStorageStats.setProgress(storageStats.getProgress() + 1);
+                                }
+
+                            }
+                        });
+                    }
+                }, 50, 20);
+            }
+            catch (Exception e){
+                secondayStorageStats.setVisibility(View.GONE);
+                CrashReportingManager.logException(e);
+            }
+        } else {
+            secondayStorageStats.setVisibility(View.GONE);
+        }
+
+        final RootInfo usbRoot = roots.getUSBRoot();
+        if (null != usbRoot) {
+            usbStorageStats.setVisibility(View.VISIBLE);
+            usbStorageStats.setInfo(usbRoot);
+            usbStorageStats.setCardListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openRoot(usbRoot);
+                }
+            });
+            try {
+                final double percentStore = (((usbRoot.totalBytes - usbRoot.availableBytes) / (double) usbRoot.totalBytes) * 100);
+                usbStorageStats.setProgress(0);
+                usbStorageTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (usbStorageStats.getProgress() >= (int) percentStore) {
+                                    usbStorageTimer.cancel();
+                                } else {
+                                    usbStorageStats.setProgress(storageStats.getProgress() + 1);
+                                }
+
+                            }
+                        });
+                    }
+                }, 50, 20);
+            }
+            catch (Exception e){
+                usbStorageStats.setVisibility(View.GONE);
+                CrashReportingManager.logException(e);
+            }
+        } else {
+            usbStorageStats.setVisibility(View.GONE);
+        }
     }
 
     private void showMemory(long currentAvailableBytes) {
@@ -215,7 +302,8 @@ public class HomeFragment extends Fragment {
             });
             if(currentAvailableBytes != 0) {
                 long availableBytes = processRoot.availableBytes - currentAvailableBytes;
-                String summaryText = availableBytes <= 0 ? "Already cleaned up!" : getActivity().getString(R.string.root_available_bytes,
+                String summaryText = availableBytes <= 0 ? "Already cleaned up!" :
+                        getActivity().getString(R.string.root_available_bytes,
                         Formatter.formatFileSize(getActivity(), availableBytes));
                 ((DocumentsActivity) getActivity()).showInfo(summaryText);
             }
@@ -312,6 +400,8 @@ public class HomeFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         storageTimer.cancel();
+        secondatyStorageTimer.cancel();
+        usbStorageTimer.cancel();
         processTimer.cancel();
     }
 

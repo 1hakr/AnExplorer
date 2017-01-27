@@ -21,6 +21,18 @@
             android:layout_height="wrap_content" />
 
         <dev.dworks.apps.anexplorer.ui.HomeItem
+            android:id="@+id/seconday_storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <dev.dworks.apps.anexplorer.ui.HomeItem
+            android:id="@+id/usb_storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <dev.dworks.apps.anexplorer.ui.HomeItem
             android:id="@+id/memory_stats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

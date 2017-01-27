@@ -59,6 +59,7 @@ import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 /**
  * Cache of known storage backends and their roots.
@@ -388,6 +389,15 @@ public class RootsCache {
     public RootInfo getSecondaryRoot() {
         for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
             if (root.isSecondaryStorage()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
+    public RootInfo getUSBRoot() {
+        for (RootInfo root : mRoots.get(UsbStorageProvider.AUTHORITY)) {
+            if (root.isUsbStorage()) {
                 return root;
             }
         }

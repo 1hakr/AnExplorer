@@ -46,6 +46,7 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:paddingBottom="8dp"
+            android:paddingEnd="8dp"
             android:paddingTop="8dp">
 
             <TextView
@@ -84,7 +85,6 @@
             android:id="@+id/action_layout"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_marginStart="10dp"
             android:visibility="gone">
 
             <ImageButton
