@@ -27,6 +27,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
@@ -48,6 +49,7 @@ import java.io.OutputStream;
 import java.util.Map;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
@@ -245,14 +247,18 @@ public class UsbStorageProvider extends DocumentsProvider {
         try {
             UsbFile file = getFileForDocId(documentId);
 
-            final int accessMode = ParcelFileDescriptorUtil.parseMode(mode);
+/*            final int accessMode = ParcelFileDescriptorUtil.parseMode(mode);
             if ((accessMode | ParcelFileDescriptor.MODE_READ_ONLY) == ParcelFileDescriptor.MODE_READ_ONLY) {
                 return ParcelFileDescriptorUtil.pipeFrom(new UsbFileInputStream(file));
             } else if ((accessMode | ParcelFileDescriptor.MODE_WRITE_ONLY) == ParcelFileDescriptor.MODE_WRITE_ONLY) {
                 return ParcelFileDescriptorUtil.pipeTo(new UsbFileOutputStream(file));
+            }*/
+            final boolean isWrite = (mode.indexOf('w') != -1);
+            if (isWrite) {
+                return ParcelFileDescriptorUtil.pipeTo(new UsbFileOutputStream(file));
+            } else {
+                return ParcelFileDescriptorUtil.pipeFrom(new UsbFileInputStream(file));
             }
-
-            return null;
 
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
@@ -326,18 +332,9 @@ public class UsbStorageProvider extends DocumentsProvider {
     @Override
     public String moveDocument(String sourceDocumentId, String sourceParentDocumentId, String targetParentDocumentId) throws FileNotFoundException {
         try {
-            final UsbFile before = getFileForDocId(sourceDocumentId);
-            final UsbFile after = getFileForDocId(targetParentDocumentId);
-
-            before.moveTo(after);
-            final String afterDocId = getDocIdForFile(after);
-            if (!TextUtils.equals(sourceDocumentId, afterDocId)) {
-                notifyDocumentsChanged(afterDocId);
-                return afterDocId;
-            } else {
-                return null;
-            }
-
+            final String afterDocId = move(sourceDocumentId, targetParentDocumentId);
+            notifyDocumentsChanged(afterDocId);
+            return afterDocId;
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -346,22 +343,9 @@ public class UsbStorageProvider extends DocumentsProvider {
     @Override
     public String copyDocument(String sourceDocumentId, String targetParentDocumentId) throws FileNotFoundException {
         try {
-
-            UsbPartition usbPartition = mRoots.get(getRootIdForDocId(sourceDocumentId));
-            final FileSystem fileSystem = usbPartition.fileSystem;
-            final UsbFile before = getFileForDocId(sourceDocumentId);
-            final UsbFile after = getFileForDocId(targetParentDocumentId);
-            final UsbFile newFile = after.createFile(before.getName());
-            InputStream inputStream = UsbFileStreamFactory.createBufferedInputStream(before, fileSystem);
-            OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(newFile, fileSystem);
-
-            if (!FileUtils.copy(inputStream, outputStream)) {
-                throw new IllegalStateException("Failed to copy " + before);
-            }
-            final String afterDocId = getDocIdForFile(after);
+            final String afterDocId = copy(sourceDocumentId, targetParentDocumentId);
             notifyDocumentsChanged(afterDocId);
             return afterDocId;
-
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -664,5 +648,78 @@ public class UsbStorageProvider extends DocumentsProvider {
         final String rootId = getParentRootIdForDocId(docId);
         Uri uri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, rootId);
         getContext().getContentResolver().notifyChange(uri, null, false);
+    }
+
+    private DocumentFile getDocumentFile(String docId) throws FileNotFoundException {
+        return DocumentsApplication.getSAFManager(getContext()).getDocumentFile(docId, null);
+    }
+
+    private String copy(String sourceDocumentId,
+                        String targetParentDocumentId) throws IOException {
+
+        final String afterDocId;
+        final UsbFile before = getFile(sourceDocumentId);
+        final UsbFile after = getFile(targetParentDocumentId);
+
+        boolean isSourceUSB = sourceDocumentId.startsWith(ROOT_ID_USB);
+        boolean isTargetUSB = targetParentDocumentId.startsWith(ROOT_ID_USB);
+
+        if(!(isSourceUSB && isTargetUSB) && Utils.hasLollipop()){
+            DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId);
+            DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId);
+            if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
+                throw new IllegalStateException("Failed to copy ");
+            }
+            afterDocId = targetParentDocumentId;
+        } else {
+
+            UsbPartition usbPartition = mRoots.get(getRootIdForDocId(sourceDocumentId));
+            final FileSystem fileSystem = usbPartition.fileSystem;
+            final UsbFile newFile = after.createFile(before.getName());
+            InputStream inputStream = UsbFileStreamFactory.createBufferedInputStream(before, fileSystem);
+            OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(newFile, fileSystem);
+
+            if (!FileUtils.copy(inputStream, outputStream)) {
+                throw new IllegalStateException("Failed to copy " + before);
+            }
+            afterDocId = getDocIdForFile(after);
+        }
+
+        return afterDocId;
+    }
+
+    private String move(String sourceDocumentId,
+                        String targetParentDocumentId) throws IOException {
+        final String afterDocId;
+        final UsbFile before = getFile(sourceDocumentId);
+        final UsbFile after = getFile(targetParentDocumentId);
+
+        boolean isSourceUSB = sourceDocumentId.startsWith(ROOT_ID_USB);
+        boolean isTargetUSB = targetParentDocumentId.startsWith(ROOT_ID_USB);
+
+        if(!(isSourceUSB && isTargetUSB) && Utils.hasLollipop()){
+            DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId);
+            DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId);
+            if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
+                throw new IllegalStateException("Failed to move ");
+            } else {
+                if(!sourceDirectory.delete()){
+                    throw new IllegalStateException("Failed to move ");
+                }
+            }
+            afterDocId = targetParentDocumentId;
+        } else {
+            before.moveTo(after);
+            afterDocId = getDocIdForFile(after);
+        }
+
+        return afterDocId;
+    }
+
+    private UsbFile getFile(String documentId) throws IOException {
+        if(!documentId.startsWith(ROOT_ID_USB)){
+            return null;
+        }
+        return getFileForDocId(documentId);
     }
 }

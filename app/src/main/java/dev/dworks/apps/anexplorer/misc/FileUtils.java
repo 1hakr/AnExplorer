@@ -793,7 +793,7 @@ public class FileUtils {
 
     public static boolean moveDocument(Context context, DocumentFile fileFrom, DocumentFile fileTo) {
 
-        if (fileTo.isDirectory() && fileTo.canWrite()) {
+        if (fileTo.isDirectory() /*&& fileTo.canWrite()*/) {
             if (fileFrom.isFile()) {
                 return copyDocument(context, fileFrom, fileTo);
             } else if (fileFrom.isDirectory()) {

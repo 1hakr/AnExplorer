@@ -69,6 +69,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForFile;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
+import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
 
 @SuppressLint("DefaultLocale")
 public class ExternalStorageProvider extends StorageProvider {
@@ -990,13 +991,13 @@ public class ExternalStorageProvider extends StorageProvider {
                         String targetParentDocumentId) throws FileNotFoundException {
 
         final String afterDocId;
-        final File source = getFileForDocId(sourceDocumentId);
-        final File target = getFileForDocId(targetParentDocumentId);
+        final File source = getFile(sourceDocumentId);
+        final File target = getFile(targetParentDocumentId);
 
-        boolean isSourceSecondry = sourceDocumentId.startsWith(ROOT_ID_SECONDARY);
-        boolean istargetSecondry = targetParentDocumentId.startsWith(ROOT_ID_SECONDARY);
+        boolean isSourceOther = isFromOtherProvider(sourceDocumentId);
+        boolean isTargetOther = isFromOtherProvider(targetParentDocumentId);
 
-        if((isSourceSecondry || istargetSecondry) && Utils.hasLollipop()){
+        if((isSourceOther || isTargetOther) && Utils.hasLollipop()){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
@@ -1017,13 +1018,13 @@ public class ExternalStorageProvider extends StorageProvider {
                         String targetParentDocumentId) throws FileNotFoundException {
 
         final String afterDocId;
-        final File source = getFileForDocId(sourceDocumentId);
-        final File target = getFileForDocId(targetParentDocumentId);
+        final File source = getFile(sourceDocumentId);
+        final File target = getFile(targetParentDocumentId);
 
-        boolean isSourceSecondry = sourceDocumentId.startsWith(ROOT_ID_SECONDARY);
-        boolean istargetSecondry = targetParentDocumentId.startsWith(ROOT_ID_SECONDARY);
+        boolean isSourceOther = isFromOtherProvider(sourceDocumentId);
+        boolean isTargetOther = isFromOtherProvider(targetParentDocumentId);
 
-        if((isSourceSecondry || istargetSecondry) && Utils.hasLollipop()){
+        if((isSourceOther || isTargetOther) && Utils.hasLollipop()){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
@@ -1050,5 +1051,16 @@ public class ExternalStorageProvider extends StorageProvider {
         }
 
         return afterDocId;
+    }
+
+    private File getFile(String documentId) throws FileNotFoundException {
+        if(documentId.startsWith(ROOT_ID_USB)){
+            return null;
+        }
+        return getFileForDocId(documentId);
+    }
+
+    private boolean isFromOtherProvider(String documentId){
+        return documentId.startsWith(ROOT_ID_SECONDARY) || documentId.startsWith(ROOT_ID_USB);
     }
 }

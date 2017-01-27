@@ -12,6 +12,7 @@ import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.support.v4.provider.BasicDocumentFile;
 import android.support.v4.provider.DocumentFile;
+import android.support.v4.provider.UsbDocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 
@@ -20,10 +21,12 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 
 import static android.app.Activity.RESULT_OK;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.ROOT_ID_SECONDARY;
+import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
 
 
 public class SAFManager {
@@ -50,10 +53,15 @@ public class SAFManager {
             }
             Uri fileUri = buildDocumentUriMaybeUsingTree(uri, newDocId);
             documentFile = BasicDocumentFile.fromUri(mContext, fileUri);
-        }
-
-        if(null == documentFile && null != file){
-            documentFile = DocumentFile.fromFile(file);
+        } else if(docId.startsWith(ROOT_ID_USB)){
+            documentFile = UsbDocumentFile.fromUri(mContext, docId);
+        } else {
+            if(null != file){
+                documentFile = DocumentFile.fromFile(file);
+            } else {
+                documentFile = BasicDocumentFile.fromUri(mContext,
+                        DocumentsContract.buildDocumentUri(ExternalStorageProvider.AUTHORITY, docId));
+            }
         }
 
         return documentFile;
