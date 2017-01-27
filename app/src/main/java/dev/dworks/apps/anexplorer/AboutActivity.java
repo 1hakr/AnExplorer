@@ -24,7 +24,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
@@ -44,12 +43,15 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(Utils.hasKitKat() && !Utils.hasLollipop()){
+			setTheme(R.style.Theme_Document_Translucent);
+		}
 		setContentView(R.layout.activity_about);
 
 		Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		mToolbar.setTitleTextAppearance(this, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
 		if(Utils.hasKitKat() && !Utils.hasLollipop()) {
-			((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
+			//((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
 			mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
 		}
 		int color = SettingsActivity.getActionBarColor(this);
