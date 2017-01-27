@@ -1088,7 +1088,7 @@ public class DirectoryFragment extends ListFragment {
         final ContentResolver resolver = context.getContentResolver();
 
         boolean hadTrouble = false;
-        if (!parent.isEditSupported()) {
+        if (!parent.isArchiveSupported()) {
             Log.w(TAG, "Skipping " + doc);
             hadTrouble = true;
         }
@@ -1114,7 +1114,7 @@ public class DirectoryFragment extends ListFragment {
 
         boolean hadTrouble = false;
         for (DocumentInfo doc : docs) {
-            if (!doc.isEditSupported()) {
+            if (!doc.isArchiveSupported()) {
                 Log.w(TAG, "Skipping " + doc);
                 hadTrouble = true;
                 continue;
@@ -1816,22 +1816,21 @@ public class DirectoryFragment extends ListFragment {
             final Cursor cursor = mAdapter.getItem(position);
             final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 			final boolean manageMode = state.action == ACTION_BROWSE;
-			final boolean canEdit = doc != null && doc.isEditSupported();
-			final boolean canDelete = doc != null && doc.isDeleteSupported();
-			final boolean canRename = doc != null && doc.isRenameSupported();
-            final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
-            if(null != compress)
-                compress.setVisible(manageMode && canEdit && !isCompressed && !isOperationSupported);
-            if(null != uncompress)
-                uncompress.setVisible(manageMode && canEdit && isCompressed && !isOperationSupported);
-            if(null != bookmark) {
-                bookmark.setVisible(manageMode && canEdit && Utils.isDir(doc.mimeType) && !isOperationSupported);
-            }
-			share.setVisible(manageMode);
-			delete.setVisible(manageMode && canDelete);
-			rename.setVisible(manageMode && canRename);
-			copy.setVisible(manageMode && canEdit);
-			cut.setVisible(manageMode && canEdit);
+			if(null != doc){
+				final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
+				if(null != compress)
+					compress.setVisible(manageMode && doc.isArchiveSupported() && !isCompressed && !isOperationSupported);
+				if(null != uncompress)
+					uncompress.setVisible(manageMode && doc.isArchiveSupported() && isCompressed && !isOperationSupported);
+				if(null != bookmark) {
+					bookmark.setVisible(manageMode && doc.isBookmarkSupported() && Utils.isDir(doc.mimeType) && !isOperationSupported);
+				}
+				share.setVisible(manageMode);
+				delete.setVisible(manageMode && doc.isDeleteSupported());
+				rename.setVisible(manageMode && doc.isRenameSupported());
+				copy.setVisible(manageMode && doc.isCopySupported());
+				cut.setVisible(manageMode && doc.isMoveSupported());
+			}
 		}
 
 		popup.show();

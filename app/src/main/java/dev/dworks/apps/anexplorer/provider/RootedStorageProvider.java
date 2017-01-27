@@ -208,6 +208,8 @@ public class RootedStorageProvider extends StorageProvider {
             flags |= Document.FLAG_SUPPORTS_DELETE;
             flags |= Document.FLAG_SUPPORTS_RENAME;
             flags |= Document.FLAG_SUPPORTS_MOVE;
+            flags |= Document.FLAG_SUPPORTS_COPY;
+            flags |= Document.FLAG_SUPPORTS_ARCHIVE;
             flags |= Document.FLAG_SUPPORTS_EDIT;
         }
 

@@ -247,10 +247,6 @@ public class DocumentInfo implements Durable, Parcelable {
         return (flags & Document.FLAG_SUPPORTS_COPY) != 0;
     }
 
-    public boolean isEditSupported() {
-        return (flags & Document.FLAG_SUPPORTS_EDIT) != 0;
-    }
-
     public boolean isRemoveSupported() {
         return (flags & Document.FLAG_SUPPORTS_REMOVE) != 0;
     }
@@ -259,8 +255,12 @@ public class DocumentInfo implements Durable, Parcelable {
         return (flags & Document.FLAG_SUPPORTS_RENAME) != 0;
     }
 
-    public boolean isCompresssionSupported() {
-        return (flags & Document.FLAG_SUPPORTS_COMPRESSION) != 0;
+    public boolean isArchiveSupported() {
+        return (flags & Document.FLAG_SUPPORTS_ARCHIVE) != 0;
+    }
+
+    public boolean isBookmarkSupported() {
+        return (flags & Document.FLAG_SUPPORTS_BOOKMARK) != 0;
     }
 
     public boolean isWriteSupported() {

@@ -565,9 +565,11 @@ public class ExternalStorageProvider extends StorageProvider {
             flags |= Document.FLAG_SUPPORTS_DELETE;
             flags |= Document.FLAG_SUPPORTS_RENAME;
             flags |= Document.FLAG_SUPPORTS_MOVE;
-            flags |= Document.FLAG_SUPPORTS_EDIT;
             flags |= Document.FLAG_SUPPORTS_COPY;
-            flags |= Document.FLAG_SUPPORTS_COMPRESSION;
+            flags |= Document.FLAG_SUPPORTS_ARCHIVE;
+            flags |= Document.FLAG_SUPPORTS_BOOKMARK;
+            flags |= Document.FLAG_SUPPORTS_EDIT;
+
             if(isTelevision()) {
                 flags |= Document.FLAG_DIR_PREFERS_GRID;
             }
