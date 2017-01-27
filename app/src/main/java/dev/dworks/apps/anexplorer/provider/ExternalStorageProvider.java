@@ -565,6 +565,8 @@ public class ExternalStorageProvider extends StorageProvider {
             flags |= Document.FLAG_SUPPORTS_RENAME;
             flags |= Document.FLAG_SUPPORTS_MOVE;
             flags |= Document.FLAG_SUPPORTS_EDIT;
+            flags |= Document.FLAG_SUPPORTS_COPY;
+            flags |= Document.FLAG_SUPPORTS_COMPRESSION;
             if(isTelevision()) {
                 flags |= Document.FLAG_DIR_PREFERS_GRID;
             }
@@ -994,7 +996,7 @@ public class ExternalStorageProvider extends StorageProvider {
         boolean isSourceSecondry = sourceDocumentId.startsWith(ROOT_ID_SECONDARY);
         boolean istargetSecondry = targetParentDocumentId.startsWith(ROOT_ID_SECONDARY);
 
-        if(isSourceSecondry && istargetSecondry && Utils.hasLollipop()){
+        if((isSourceSecondry || istargetSecondry) && Utils.hasLollipop()){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
@@ -1021,7 +1023,7 @@ public class ExternalStorageProvider extends StorageProvider {
         boolean isSourceSecondry = sourceDocumentId.startsWith(ROOT_ID_SECONDARY);
         boolean istargetSecondry = targetParentDocumentId.startsWith(ROOT_ID_SECONDARY);
 
-        if(isSourceSecondry && istargetSecondry && Utils.hasLollipop()){
+        if((isSourceSecondry || istargetSecondry) && Utils.hasLollipop()){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {

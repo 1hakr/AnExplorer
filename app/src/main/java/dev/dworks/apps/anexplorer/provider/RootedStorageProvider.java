@@ -31,6 +31,8 @@ import android.text.TextUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -41,6 +43,7 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -423,14 +426,14 @@ public class RootedStorageProvider extends StorageProvider {
             String documentId, String mode, CancellationSignal signal)
             throws FileNotFoundException {
         final RootFile file = getRootFileForDocId(documentId);
-        /*InputStream is = RootCommands.getFile(file.getPath());
+        InputStream is = RootCommands.getFile(file.getPath());
 
         try {
             return ParcelFileDescriptorUtil.pipeFrom(is);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }*/
+        }
         return ParcelFileDescriptor.open(new File(file.getPath()), ParcelFileDescriptor.MODE_READ_ONLY);
     }
 
