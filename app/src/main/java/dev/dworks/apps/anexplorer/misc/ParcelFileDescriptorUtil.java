@@ -66,11 +66,11 @@ public class ParcelFileDescriptorUtil {
         public void run() {
             try {
                 IoUtils.copy(mIn, mOut);
-                mOut.flush();
             } catch (IOException e) {
                 Log.e("TransferThread", "writing failed");
                 CrashReportingManager.logException(e);
             } finally {
+                IoUtils.flushQuietly(mOut);
                 IoUtils.closeQuietly(mIn);
                 IoUtils.closeQuietly(mOut);
             }
