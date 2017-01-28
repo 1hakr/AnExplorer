@@ -53,4 +53,4 @@ public class ParsedDocumentId {
             return mArchiveId + idDelimiter + mPath;
         }
     }
-};
+}

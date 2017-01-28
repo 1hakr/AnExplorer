@@ -34,11 +34,9 @@ import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
@@ -53,6 +51,8 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
+
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
 @SuppressLint("DefaultLocale")
 public class HeatMapProvider extends StorageProvider {
@@ -413,7 +413,7 @@ public class HeatMapProvider extends StorageProvider {
             }
         }
 
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 
     private void startObserving(File file, Uri notifyUri) {

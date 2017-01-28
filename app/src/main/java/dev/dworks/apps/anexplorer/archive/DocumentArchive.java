@@ -58,6 +58,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 
 import static android.support.annotation.RestrictTo.Scope.GROUP_ID;
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
 /**
  * Provides basic implementation for creating, extracting and accessing
@@ -540,6 +541,6 @@ public class DocumentArchive implements Closeable {
             }
         }
 
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 }

@@ -74,6 +74,8 @@ public class FTPSNetworkClient extends NetworkClient {
     @Override
     public boolean connectClient() throws IOException {
         boolean isLoggedIn = true;
+        client.setAutodetectUTF8(true);
+        client.setControlEncoding("UTF-8");
         client.connect(host, port);
         client.setFileType(FTP.BINARY_FILE_TYPE);
         client.enterLocalPassiveMode();

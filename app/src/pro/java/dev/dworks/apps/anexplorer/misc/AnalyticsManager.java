@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 
 public class AnalyticsManager {
     private static Context sAppContext = null;
@@ -49,6 +50,10 @@ public class AnalyticsManager {
     }
 
     public static void logEvent(String eventName, Bundle params){
+
+    }
+
+    public static void logEvent(String eventName, RootInfo rootInfo, Bundle params){
 
     }
 

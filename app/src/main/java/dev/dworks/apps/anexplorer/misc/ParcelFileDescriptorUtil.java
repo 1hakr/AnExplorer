@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright © unknown year Mark Murphy
  *             2014-2015 Jan Seeger
  *
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.dworks.apps.anexplorer.usb;
+package dev.dworks.apps.anexplorer.misc;
 
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 /**
  * ParcelFileDescriptor Utility class.
@@ -67,11 +66,11 @@ public class ParcelFileDescriptorUtil {
         public void run() {
             try {
                 IoUtils.copy(mIn, mOut);
-                mOut.flush();
             } catch (IOException e) {
                 Log.e("TransferThread", "writing failed");
                 CrashReportingManager.logException(e);
             } finally {
+                IoUtils.flushQuietly(mOut);
                 IoUtils.closeQuietly(mIn);
                 IoUtils.closeQuietly(mOut);
             }

@@ -2,7 +2,6 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,17 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+import static dev.dworks.apps.anexplorer.R.id.action_close;
+import static dev.dworks.apps.anexplorer.R.id.action_feedback;
+import static dev.dworks.apps.anexplorer.R.id.action_rate;
+import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
+import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
 /**
  * Created by nicolas on 06/03/14.
@@ -168,23 +173,23 @@ public class AppRate implements View.OnClickListener{
     private void showAppRate() {
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(null != viewGroup){
-            mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, ((ViewGroup) viewGroup), false);
+            mainView = (ViewGroup) inflater.inflate(R.layout.layout_app_feedback, viewGroup, false);
         }
         else{
-            mainView = (ViewGroup) inflater.inflate(R.layout.app_rate, null);
+            mainView = (ViewGroup) inflater.inflate(R.layout.layout_app_feedback, null);
         }
 
-        View background = mainView.findViewById(R.id.background);
-        ImageView close = (ImageView) mainView.findViewById(R.id.close);
-        ImageView rate = (ImageView) mainView.findViewById(R.id.rate);
-        TextView textView = (TextView) mainView.findViewById(R.id.text);
+        ImageView action_close = (ImageView) mainView.findViewById(R.id.action_close);
+        Button action_rate = (Button) mainView.findViewById(R.id.action_rate);
+        Button action_feedback = (Button) mainView.findViewById(R.id.action_feedback);
 
-        background.setBackgroundColor(Utils.getLightColor(
-                Utils.getComplementaryColor(SettingsActivity.getActionBarColor(activity))));
-        textView.setText(text);
+        int color = Utils.getComplementaryColor(SettingsActivity.getActionBarColor(activity));
+        action_rate.setTextColor(color);
+        action_feedback.setTextColor(color);
 
-        close.setOnClickListener(this);
-        rate.setOnClickListener(this);
+        action_close.setOnClickListener(this);
+        action_rate.setOnClickListener(this);
+        action_feedback.setOnClickListener(this);
 
         if (delay > 0) {
             activity.getWindow().getDecorView().postDelayed(new Runnable() {
@@ -246,16 +251,19 @@ public class AppRate implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.close:
+            case action_close:
                 hideAllViews(mainView);
                 if (onShowListener != null)onShowListener.onRateAppDismissed();
                 break;
-            case R.id.rate:
-                Intent intent = new Intent(Intent.ACTION_VIEW, Utils.getAppUri());
-                if(Utils.isIntentAvailable(activity, intent)) {
-                    activity.startActivity(intent);
-                }
+            case action_rate:
+                openPlaystore(activity);
                 if (onShowListener != null)onShowListener.onRateAppClicked();
+                hideAllViews(mainView);
+                editor.putBoolean(KEY_CLICKED, true);
+                editor.apply();
+                break;
+            case action_feedback:
+                openFeedback(activity);
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);
                 editor.apply();
@@ -285,7 +293,7 @@ public class AppRate implements View.OnClickListener{
         /**
          * Will never retry
          */
-        NONE;
+        NONE
     }
     
     /**

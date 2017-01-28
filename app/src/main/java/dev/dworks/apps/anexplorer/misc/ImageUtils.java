@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.media.ExifInterface;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
-import dev.dworks.apps.anexplorer.usb.Exif;
 
 public class ImageUtils {
 
@@ -376,7 +376,8 @@ public class ImageUtils {
         try {
             // Determine the orientation for this image
             is = factory.createInputStream();
-            final int orientation = Exif.getOrientation(is, -1);
+            final ExifInterface exif = new ExifInterface(is);
+            final int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, -1);
             is.close();
 
             // Decode the bitmap

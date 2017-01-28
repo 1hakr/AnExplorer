@@ -24,13 +24,13 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
 
-import static com.stericson.RootTools.Constants.TAG;
-
 /**
  * Created by HaKr on 05/09/16.
  */
 
 public class ConnectionUtils {
+
+    public static final String TAG = ConnectionUtils.class.getSimpleName();
 
     static public final String ACTION_FTPSERVER_STARTED = BuildConfig.APPLICATION_ID + ".action.FTPSERVER_STARTED";
     static public final String ACTION_FTPSERVER_STOPPED = BuildConfig.APPLICATION_ID + ".action.FTPSERVER_STOPPED";

@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -53,6 +52,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
 	private static final String TAG = "NonMediaDocumentsProvider";
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".nonmedia.documents";
+    // docId format: root:id
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
@@ -138,8 +138,6 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     public static final String TYPE_APK_ROOT = "apk_root";
     public static final String TYPE_APK = "apk";
 
-    public static final Uri FILE_URI = MediaStore.Files.getContentUri("external");
-
     private static String joinNewline(String[] args) {
         return TextUtils.join("\n", args);
     }
@@ -196,9 +194,9 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     @Override
     public Cursor queryRoots(String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
-        includeFileRoot(result, TYPE_DOCUMENT_ROOT, R.string.root_document, DOCUMENT_MIME_TYPES);
-        includeFileRoot(result, TYPE_ARCHIVE_ROOT, R.string.root_archive, ARCHIVE_MIME_TYPES);
-        includeFileRoot(result, TYPE_APK_ROOT, R.string.root_apk, APK_MIME_TYPES);
+        includeFileRoot(result, TYPE_DOCUMENT_ROOT, R.string.root_document, DOCUMENT_MIME_TYPES, true);
+        includeFileRoot(result, TYPE_ARCHIVE_ROOT, R.string.root_archive, ARCHIVE_MIME_TYPES, false);
+        includeFileRoot(result, TYPE_APK_ROOT, R.string.root_apk, APK_MIME_TYPES, false);
 
         return result;
     }
@@ -411,12 +409,16 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         }
     }
 
-    private void includeFileRoot(MatrixCursor result, String root_type, int name_id, String mime_types) {
-        int flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS;
+    private void includeFileRoot(MatrixCursor result, String root_type, int name_id,
+                                 String mime_types, boolean supports_recent) {
+        int flags = Root.FLAG_LOCAL_ONLY;
         if (isEmpty(FILE_URI, root_type)) {
             flags |= Root.FLAG_EMPTY;
         }
 
+        if(supports_recent){
+            flags |= Root.FLAG_SUPPORTS_RECENTS;
+        }
         final RowBuilder row = result.newRow();
         row.add(Root.COLUMN_ROOT_ID, root_type);
         row.add(Root.COLUMN_FLAGS, flags);
@@ -435,7 +437,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     }
 
     private interface FileQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 FileColumns._ID,
                 FileColumns.TITLE,
                 FileColumns.MIME_TYPE,
@@ -443,12 +445,12 @@ public class NonMediaDocumentsProvider extends StorageProvider {
                 FileColumns.DATA,
                 FileColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int TITLE = 1;
-        final int MIME_TYPE = 2;
-        final int SIZE = 3;
-        final int DATA = 4;
-        final int DATE_MODIFIED = 5;
+        int _ID = 0;
+        int TITLE = 1;
+        int MIME_TYPE = 2;
+        int SIZE = 3;
+        int DATA = 4;
+        int DATE_MODIFIED = 5;
     }
 
     private void includeFile(MatrixCursor result, Cursor cursor) {

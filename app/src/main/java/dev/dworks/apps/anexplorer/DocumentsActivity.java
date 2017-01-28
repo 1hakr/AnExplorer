@@ -105,6 +105,7 @@ import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper.PINDialogFragment;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -131,6 +132,7 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_OPEN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_OPEN_TREE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_SIDE;
@@ -138,6 +140,7 @@ import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_UP;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.misc.SAFManager.ADD_STORAGE_REQUEST_CODE;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.isDownloadAuthority;
 
@@ -175,11 +178,10 @@ public class DocumentsActivity extends BaseActivity {
     private RootsCache mRoots;
     private State mState;
 	private boolean mAuthenticated;
-	private FrameLayout mSaveContainer;
     private FrameLayout mRateContainer;
     private boolean mActionMode;
-    private LruCache<String, Long> mFileSizeCache;
     private FloatingActionsMenu mActionMenu;
+    private RootInfo mParentRoot;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -204,8 +206,6 @@ public class DocumentsActivity extends BaseActivity {
 
 		mRoots = DocumentsApplication.getRootsCache(this);
 
-        mFileSizeCache = new LruCache<String, Long>(100);
-
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
 
@@ -214,7 +214,6 @@ public class DocumentsActivity extends BaseActivity {
         mShowAsDialog = res.getBoolean(R.bool.show_as_dialog);
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
-        mSaveContainer = (FrameLayout) findViewById(R.id.container_save);
         mRateContainer = (FrameLayout) findViewById(R.id.container_rate);
 
         initControls();
@@ -324,17 +323,17 @@ public class DocumentsActivity extends BaseActivity {
         if(Utils.hasMarshmallow()) {
             RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
             mRoots = DocumentsApplication.getRootsCache(this);
-
-            //TODO refactor once home is added
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mRoots.updateAsync();
-                    onRootPicked(mRoots.getDefaultRoot(), true);
+                    final RootInfo root = getCurrentRoot();
+                    if(root.isHome()){
+                        HomeFragment.get(getFragmentManager()).reloadData();
+                    }
                 }
             }, 500);
-            //mRoots.updateAsync();
         }
     }
 
@@ -379,13 +378,13 @@ public class DocumentsActivity extends BaseActivity {
                 else {
                     showError(R.string.incorrect_pin);
                 }
-            };
-            
+            }
+
             public void onCancel() {
                 super.onCancel();
                 finish();
                 d.dismiss();
-            };
+            }
         }.getView(), new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         
         PINDialogFragment pinFragment = new PINDialogFragment();
@@ -691,7 +690,7 @@ public class DocumentsActivity extends BaseActivity {
                     mToolbar.setTitle(root.title);
                     mToolbarStack.setVisibility(View.GONE);
                     mToolbarStack.setAdapter(null);
-                    AnalyticsManager.setCurrentScreen(this, root.title);
+                    AnalyticsManager.setCurrentScreen(this, root.derivedTag);
                 } else {
                     mToolbar.setTitle(null);
                     mToolbarStack.setVisibility(View.VISIBLE);
@@ -719,7 +718,7 @@ public class DocumentsActivity extends BaseActivity {
                 onCurrentDirectoryChanged(ANIM_NONE);
                 Bundle params = new Bundle();
                 params.putString("query", query);
-                AnalyticsManager.logEvent("search", params);
+                AnalyticsManager.logEvent("search", getCurrentRoot(), params);
                 return true;
             }
 
@@ -783,7 +782,7 @@ public class DocumentsActivity extends BaseActivity {
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
 
-        if(Utils.isTelevision(this)) {
+        if(isTelevision()) {
             menu.findItem(R.id.menu_create_dir).setVisible(showActionMenu());
             menu.findItem(R.id.menu_create_file).setVisible(showActionMenu());
         }
@@ -888,43 +887,43 @@ public class DocumentsActivity extends BaseActivity {
             setUserSortOrder(State.SORT_ORDER_DISPLAY_NAME);
             Bundle params = new Bundle();
             params.putString("type", "name");
-            AnalyticsManager.logEvent("sort", params);
+            AnalyticsManager.logEvent("sort_name", params);
             return true;
         } else if (id == R.id.menu_sort_date) {
             setUserSortOrder(State.SORT_ORDER_LAST_MODIFIED);
             Bundle params = new Bundle();
             params.putString("type", "modified");
-            AnalyticsManager.logEvent("sort", params);
+            AnalyticsManager.logEvent("sort_modified", params);
             return true;
         } else if (id == R.id.menu_sort_size) {
             setUserSortOrder(State.SORT_ORDER_SIZE);
             Bundle params = new Bundle();
             params.putString("type", "size");
-            AnalyticsManager.logEvent("sort", params);
+            AnalyticsManager.logEvent("sort_size", params);
             return true;
         } else if (id == R.id.menu_grid) {
             setUserMode(State.MODE_GRID);
             Bundle params = new Bundle();
             params.putString("type", "grid");
-            AnalyticsManager.logEvent("display", params);
+            AnalyticsManager.logEvent("display_grid", params);
             return true;
         } else if (id == R.id.menu_list) {
             setUserMode(State.MODE_LIST);
             Bundle params = new Bundle();
             params.putString("type", "list");
-            AnalyticsManager.logEvent("display", params);
+            AnalyticsManager.logEvent("display_list", params);
             return true;
         } else if (id == R.id.menu_settings) {
             startActivityForResult(new Intent(this, SettingsActivity.class), CODE_SETTINGS);
-            AnalyticsManager.logEvent("open_setting");
+            AnalyticsManager.logEvent("setting_open");
             return true;
         } else if (id == R.id.menu_about) {
             startActivity(new Intent(this, AboutActivity.class));
-            AnalyticsManager.logEvent("open_about");
+            AnalyticsManager.logEvent("about_open");
             return true;
         } else if (id == R.id.menu_exit) {
             Bundle params = new Bundle();
-            AnalyticsManager.logEvent("exit_app");
+            AnalyticsManager.logEvent("app_exit");
             android.os.Process.killProcess(android.os.Process.myPid());
             return true;
         } else {
@@ -936,14 +935,14 @@ public class DocumentsActivity extends BaseActivity {
         CreateDirectoryFragment.show(getSupportFragmentManager());
         Bundle params = new Bundle();
         params.putString(FILE_TYPE, "folder");
-        AnalyticsManager.logEvent("create", params);
+        AnalyticsManager.logEvent("create_folder", params);
     }
 
     private void createFile() {
         CreateFileFragment.show(getSupportFragmentManager(), "text/plain", "File");
         Bundle params = new Bundle();
         params.putString(FILE_TYPE, "file");
-        AnalyticsManager.logEvent("create", params);
+        AnalyticsManager.logEvent("create_file", params);
     }
 
     /**
@@ -1023,8 +1022,18 @@ public class DocumentsActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
             // TODO: open root drawer once we can capture back key
+            if(null != mParentRoot){
+                onRootPicked(mParentRoot, true);
+                mParentRoot = null;
+                return;
+            }
             super.onBackPressed();
         } else {
+            if(null != mParentRoot){
+                onRootPicked(mParentRoot, true);
+                mParentRoot = null;
+                return;
+            }
             super.onBackPressed();
         }
     }
@@ -1130,7 +1139,7 @@ public class DocumentsActivity extends BaseActivity {
         if (mState.stack.root != null) {
             return mState.stack.root;
         } else {
-            return mRoots.getDefaultRoot();
+            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getPrimaryRoot();
         }
     }
     
@@ -1277,7 +1286,7 @@ public class DocumentsActivity extends BaseActivity {
         invalidateMenu();
         dumpStack();
 
-        if(!Utils.isOtherBuild() && !Utils.isTelevision(this)){
+        if(!Utils.isOtherBuild() && !isTelevision()){
             AppRate.with(this, mRateContainer).listener(mOnShowListener).checkAndShow();
         }
     }
@@ -1295,7 +1304,7 @@ public class DocumentsActivity extends BaseActivity {
 
         @Override
         public void onRateAppClicked() {
-            AnalyticsManager.logEvent("rate_app");
+            AnalyticsManager.logEvent("app_rate");
         }
     };
 
@@ -1312,6 +1321,10 @@ public class DocumentsActivity extends BaseActivity {
             Log.w(TAG, "Failed to restore stack: " + e);
             CrashReportingManager.logException(e);
         }
+    }
+    public void onRootPicked(RootInfo root, RootInfo parentRoot) {
+        mParentRoot = parentRoot;
+        onRootPicked(root, true);
     }
 
     public void onRootPicked(RootInfo root, boolean closeDrawer) {
@@ -1397,6 +1410,8 @@ public class DocumentsActivity extends BaseActivity {
         	if(resultCode == RESULT_FIRST_USER){
         		recreate();
         	}
+        }  else if(requestCode == ADD_STORAGE_REQUEST_CODE){
+            SAFManager.onActivityResult(this, requestCode, resultCode, data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -1416,27 +1431,15 @@ public class DocumentsActivity extends BaseActivity {
         	// Explicit file picked, return
             new ExistingFinishTask(doc.derivedUri).executeOnExecutor(getCurrentExecutor());
         } else if (mState.action == ACTION_BROWSE) {
-            
-        	/*if(doc.isZipFile()){
-                mState.stack.push(doc);
-                mState.stackTouched = true;
-                onCurrentDirectoryChanged(ANIM_DOWN);
-        		return;
-        	}*/
-/*            final long token = Binder.clearCallingIdentity();
-            try {
 
-            } finally {
-                Binder.restoreCallingIdentity(token);
-            }*/        	
             // Fall back to viewing
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             view.setDataAndType(doc.derivedUri, doc.mimeType);
-            if(MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
-                    || !Utils.isIntentAvailable(this, view)){
+            if((MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
+                    || !Utils.isIntentAvailable(this, view)) && !Utils.hasNougat()){
             	try {
                 	File file = new File(doc.path);
     				view.setDataAndType(Uri.fromFile(file), doc.mimeType);
@@ -1724,7 +1727,7 @@ public class DocumentsActivity extends BaseActivity {
             Bundle params2 = new Bundle();
             params2.putBoolean(FILE_MOVE, deleteAfter);
             params2.putInt(FILE_COUNT, docs.size());
-            AnalyticsManager.logEvent("moved", params2);
+            AnalyticsManager.logEvent("files_moved", params2);
 
             return hadTrouble;
         }
@@ -1813,7 +1816,7 @@ public class DocumentsActivity extends BaseActivity {
 
     public void invalidateMenu(){
         supportInvalidateOptionsMenu();
-        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -1864,7 +1867,7 @@ public class DocumentsActivity extends BaseActivity {
         int complimentaryColor = Utils.getComplementaryColor(defaultColor);
         ViewCompat.setNestedScrollingEnabled(currentView, true);
         mActionMenu.show();
-        mActionMenu.setVisibility(!Utils.isTelevision(this) && showActionMenu() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
         mActionMenu.setBackgroundTintList(complimentaryColor);
         mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
     }
@@ -1873,7 +1876,7 @@ public class DocumentsActivity extends BaseActivity {
         final RootInfo root = getCurrentRoot();
         return !RootInfo.isOtherRoot(root) &&
                 isCreateSupported() &&
-                (root.isRootedStorage() ? Utils.isRooted() : true)
+                (!root.isRootedStorage() || Utils.isRooted())
                 && mState.currentSearch == null;
     }
 

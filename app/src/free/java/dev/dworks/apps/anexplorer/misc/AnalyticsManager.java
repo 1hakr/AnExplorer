@@ -23,6 +23,7 @@ import android.os.Bundle;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 
 public class AnalyticsManager {
     private static Context sAppContext = null;
@@ -64,6 +65,17 @@ public class AnalyticsManager {
         if (!canSend()) {
             return;
         }
+        mFirebaseAnalytics.logEvent(eventName, params);
+    }
+
+    public static void logEvent(String eventName, RootInfo rootInfo, Bundle params){
+        if (!canSend()) {
+            return;
+        }
+        if(null != rootInfo){
+            eventName = eventName + "_" + rootInfo.derivedTag;
+        }
+
         mFirebaseAnalytics.logEvent(eventName, params);
     }
 

@@ -63,6 +63,7 @@ public class MediaDocumentsProvider extends StorageProvider {
 	private static final String TAG = "MediaDocumentsProvider";
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".media.documents";
+    // docId format: root:id
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
@@ -584,16 +585,16 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface ImagesBucketQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 ImageColumns.BUCKET_ID,
                 ImageColumns.BUCKET_DISPLAY_NAME,
                 ImageColumns.DATE_MODIFIED };
-        final String SORT_ORDER = ImageColumns.BUCKET_ID + ", " + ImageColumns.DATE_MODIFIED
+        String SORT_ORDER = ImageColumns.BUCKET_ID + ", " + ImageColumns.DATE_MODIFIED
                 + " DESC";
 
-        final int BUCKET_ID = 0;
-        final int BUCKET_DISPLAY_NAME = 1;
-        final int DATE_MODIFIED = 2;
+        int BUCKET_ID = 0;
+        int BUCKET_DISPLAY_NAME = 1;
+        int DATE_MODIFIED = 2;
     }
 
     private void includeImagesBucket(MatrixCursor result, Cursor cursor) {
@@ -613,7 +614,7 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface ImageQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 ImageColumns._ID,
                 ImageColumns.DISPLAY_NAME,
                 ImageColumns.MIME_TYPE,
@@ -621,12 +622,12 @@ public class MediaDocumentsProvider extends StorageProvider {
                 ImageColumns.DATA,
                 ImageColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int DISPLAY_NAME = 1;
-        final int MIME_TYPE = 2;
-        final int SIZE = 3;
-        final int DATA = 4;
-        final int DATE_MODIFIED = 5;
+        int _ID = 0;
+        int DISPLAY_NAME = 1;
+        int MIME_TYPE = 2;
+        int SIZE = 3;
+        int DATA = 4;
+        int DATE_MODIFIED = 5;
     }
 
     private void includeImage(MatrixCursor result, Cursor cursor) {
@@ -645,16 +646,16 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface VideosBucketQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 VideoColumns.BUCKET_ID,
                 VideoColumns.BUCKET_DISPLAY_NAME,
                 VideoColumns.DATE_MODIFIED };
-        final String SORT_ORDER = VideoColumns.BUCKET_ID + ", " + VideoColumns.DATE_MODIFIED
+        String SORT_ORDER = VideoColumns.BUCKET_ID + ", " + VideoColumns.DATE_MODIFIED
                 + " DESC";
 
-        final int BUCKET_ID = 0;
-        final int BUCKET_DISPLAY_NAME = 1;
-        final int DATE_MODIFIED = 2;
+        int BUCKET_ID = 0;
+        int BUCKET_DISPLAY_NAME = 1;
+        int DATE_MODIFIED = 2;
     }
 
     private void includeVideosBucket(MatrixCursor result, Cursor cursor) {
@@ -674,7 +675,7 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface VideoQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 VideoColumns._ID,
                 VideoColumns.DISPLAY_NAME,
                 VideoColumns.MIME_TYPE,
@@ -682,12 +683,12 @@ public class MediaDocumentsProvider extends StorageProvider {
                 VideoColumns.DATA,
                 VideoColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int DISPLAY_NAME = 1;
-        final int MIME_TYPE = 2;
-        final int SIZE = 3;
-        final int DATA = 4;
-        final int DATE_MODIFIED = 5;
+        int _ID = 0;
+        int DISPLAY_NAME = 1;
+        int MIME_TYPE = 2;
+        int SIZE = 3;
+        int DATA = 4;
+        int DATE_MODIFIED = 5;
     }
 
     private void includeVideo(MatrixCursor result, Cursor cursor) {
@@ -706,12 +707,12 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface ArtistQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 BaseColumns._ID,
                 ArtistColumns.ARTIST };
 
-        final int _ID = 0;
-        final int ARTIST = 1;
+        int _ID = 0;
+        int ARTIST = 1;
     }
 
     private void includeArtist(MatrixCursor result, Cursor cursor) {
@@ -725,12 +726,12 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface AlbumQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 BaseColumns._ID,
                 AlbumColumns.ALBUM };
 
-        final int _ID = 0;
-        final int ALBUM = 1;
+        int _ID = 0;
+        int ALBUM = 1;
     }
 
     private void includeAlbum(MatrixCursor result, Cursor cursor) {
@@ -747,7 +748,7 @@ public class MediaDocumentsProvider extends StorageProvider {
     }
 
     private interface SongQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 AudioColumns._ID,
                 AudioColumns.TITLE,
                 AudioColumns.MIME_TYPE,
@@ -755,12 +756,12 @@ public class MediaDocumentsProvider extends StorageProvider {
                 AudioColumns.DATA,
                 AudioColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int TITLE = 1;
-        final int MIME_TYPE = 2;
-        final int SIZE = 3;
-        final int DATA = 4;
-        final int DATE_MODIFIED = 5;
+        int _ID = 0;
+        int TITLE = 1;
+        int MIME_TYPE = 2;
+        int SIZE = 3;
+        int DATA = 4;
+        int DATE_MODIFIED = 5;
     }
 
     private void includeAudio(MatrixCursor result, Cursor cursor) {

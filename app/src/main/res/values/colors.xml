@@ -62,6 +62,7 @@
     <color name="item_doc_image">#00838F</color>
 
     <color name="item_doc_apk">#8BC34A</color>
+    <color name="item_doc_apps">#795548</color>
 
     <color name="item_doc_pdf">#FFDB4437</color>
     <color name="item_doc_doc">#FF4883F3</color>
@@ -83,7 +84,10 @@
 
     <color name="divider_light">#97dddddd</color>
 
+    <color name="window_background">#fff1f1f1</color>
+    <color name="drawer_background">#fff1f1f1</color>
+    <color name="directory_background">#fff7f7f7</color>
+
     <color name="item_connection_server">#4CAF50</color>
     <color name="item_connection_client">#00838F</color>
-
 </resources>

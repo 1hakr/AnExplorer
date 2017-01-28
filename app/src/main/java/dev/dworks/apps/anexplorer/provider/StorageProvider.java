@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.AudioColumns;
 import android.provider.MediaStore.Images;
@@ -26,16 +27,18 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 public abstract class StorageProvider extends DocumentsProvider{
 
 	private static final String TAG = "StorageProvider";
-    
-	protected interface AudioAlbumThumbnailQuery {
-        final String[] PROJECTION = new String[] {
+
+    public static final Uri FILE_URI = MediaStore.Files.getContentUri("external");
+
+    protected interface AudioAlbumThumbnailQuery {
+        String[] PROJECTION = new String[] {
         		Audio.Media._ID,
         		Audio.Media.ALBUM_ID,
         		Audio.Media.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int ALBUM_ID = 1;
-        final int DATE_MODIFIED = 2;
+        int _ID = 0;
+        int ALBUM_ID = 1;
+        int DATE_MODIFIED = 2;
     }
 
     protected long getAlbumForPathCleared(String path) throws FileNotFoundException {
@@ -71,10 +74,10 @@ public abstract class StorageProvider extends DocumentsProvider{
     }
 
     protected interface AudioThumbnailQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 Audio.Albums.ALBUM_ART };
 
-        final int _DATA = 0;
+        int _DATA = 0;
     }
 
     protected ParcelFileDescriptor openAudioThumbnailCleared(long id, CancellationSignal signal)
@@ -132,14 +135,14 @@ public abstract class StorageProvider extends DocumentsProvider{
 
 
     protected interface ImagesBucketThumbnailQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 ImageColumns._ID,
                 ImageColumns.BUCKET_ID,
                 ImageColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int BUCKET_ID = 1;
-        final int DATE_MODIFIED = 2;
+        int _ID = 0;
+        int BUCKET_ID = 1;
+        int DATE_MODIFIED = 2;
     }
 
     protected long getImageForPathCleared(String path) throws FileNotFoundException {
@@ -175,10 +178,10 @@ public abstract class StorageProvider extends DocumentsProvider{
     }
     
     protected interface ImageThumbnailQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 Images.Thumbnails.DATA };
 
-        final int _DATA = 0;
+        int _DATA = 0;
     }
 
     protected ParcelFileDescriptor openImageThumbnailCleared(long id, CancellationSignal signal)
@@ -235,14 +238,14 @@ public abstract class StorageProvider extends DocumentsProvider{
     }
 
     protected interface VideosBucketThumbnailQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 VideoColumns._ID,
                 VideoColumns.BUCKET_ID,
                 VideoColumns.DATE_MODIFIED };
 
-        final int _ID = 0;
-        final int BUCKET_ID = 1;
-        final int DATE_MODIFIED = 2;
+        int _ID = 0;
+        int BUCKET_ID = 1;
+        int DATE_MODIFIED = 2;
     }
 
     protected long getVideoForPathCleared(String path)throws FileNotFoundException {
@@ -280,10 +283,10 @@ public abstract class StorageProvider extends DocumentsProvider{
     }
 
     protected interface VideoThumbnailQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 Video.Thumbnails.DATA };
 
-        final int _DATA = 0;
+        int _DATA = 0;
     }
 
     protected AssetFileDescriptor openVideoThumbnailCleared(long id, CancellationSignal signal)
@@ -325,10 +328,10 @@ public abstract class StorageProvider extends DocumentsProvider{
     }
 
     protected interface ImageOrientationQuery {
-        final String[] PROJECTION = new String[] {
+        String[] PROJECTION = new String[] {
                 ImageColumns.ORIENTATION };
 
-        final int ORIENTATION = 0;
+        int ORIENTATION = 0;
     }
 
     protected int queryOrientationForImage(long id, CancellationSignal signal) {

@@ -1,11 +1,13 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -18,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,8 +33,12 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
+import static dev.dworks.apps.anexplorer.provider.StorageProvider.FILE_URI;
 
 public class FileUtils {
 
@@ -256,11 +264,11 @@ public class FileUtils {
         return totalList;
     }
 
-    public static boolean moveFile(File fileFrom, File fileTo, String name) {
+    public static boolean moveDocument(File fileFrom, File fileTo, String name) {
 
         if (fileTo.isDirectory() && fileTo.canWrite()) {
             if (fileFrom.isFile()) {
-                return copyFile(fileFrom, fileTo, name);
+                return copyDocument(fileFrom, fileTo, name);
             } else if (fileFrom.isDirectory()) {
                 File[] filesInDir = fileFrom.listFiles();
                 File filesToDir = new File(fileTo, fileFrom.getName());
@@ -269,7 +277,7 @@ public class FileUtils {
                 }
 
                 for (int i = 0; i < filesInDir.length; i++) {
-                    moveFile(filesInDir[i], filesToDir, null);
+                    moveDocument(filesInDir[i], filesToDir, null);
                 }
                 return true;
             }
@@ -279,9 +287,9 @@ public class FileUtils {
         return false;
     }
 
-    public static boolean copyFile(File file, File dest, String name) {
+    public static boolean copyDocument(File file, File dest, String name) {
         if (!file.exists() || file.isDirectory()) {
-            Log.v(TAG, "copyFile: file not exist or is directory, " + file);
+            Log.v(TAG, "copyDocument: file not exist or is directory, " + file);
             return false;
         }
         BufferedOutputStream bos = null;
@@ -319,10 +327,10 @@ public class FileUtils {
 
             return true;
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "copyFile: file not found, " + file);
+            Log.e(TAG, "copyDocument: file not found, " + file);
             e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "copyFile: " + e.toString());
+            Log.e(TAG, "copyDocument: " + e.toString());
         } finally {
             try {
                 //FIXME
@@ -455,6 +463,14 @@ public class FileUtils {
 
 
     public static String getTypeForFile(File file) {
+        if (file.isDirectory()) {
+            return Document.MIME_TYPE_DIR;
+        } else {
+            return getTypeForName(file.getName());
+        }
+    }
+
+    private static String getTypeForFile(DocumentFile file) {
         if (file.isDirectory()) {
             return Document.MIME_TYPE_DIR;
         } else {
@@ -612,7 +628,7 @@ public class FileUtils {
         return new File(parentFile, name).getPath();
     }
 
-    public static void updateMedia(Context context, String... pathsArray){
+    public static void updateMediaStore(Context context, String... pathsArray){
         MediaScannerConnection.scanFile(context, pathsArray, null, new MediaScannerConnection.OnScanCompletedListener() {
             @Override
             public void onScanCompleted(String s, Uri uri) {
@@ -622,7 +638,7 @@ public class FileUtils {
         });
     }
 
-    public static void updateMedia(Context context, ArrayList<DocumentInfo> docs, String parentPath) {
+    public static void updateMediaStore(Context context, ArrayList<DocumentInfo> docs, String parentPath) {
         try {
             if(Utils.hasKitKat()){
                 ArrayList<String> paths = new ArrayList<>();
@@ -630,7 +646,7 @@ public class FileUtils {
                     paths.add(parentPath + File.separator + doc.displayName);
                 }
                 String[] pathsArray = paths.toArray(new String[paths.size()]);
-                FileUtils.updateMedia(context, pathsArray);
+                FileUtils.updateMediaStore(context, pathsArray);
             }
             else{
                 Uri contentUri = Uri.fromFile(new File(parentPath).getParentFile());
@@ -643,16 +659,40 @@ public class FileUtils {
         }
     }
 
-    public static void updateMedia(Context context, String path) {
+    public static void updateMediaStore(Context context, String path) {
         try {
             if(Utils.hasKitKat()){
-                FileUtils.updateMedia(context, new String[]{path});
+                FileUtils.updateMediaStore(context, new String[]{path});
             }
             else{
                 Uri contentUri = Uri.fromFile(new File(path).getParentFile());
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, contentUri);
                 context.sendBroadcast(mediaScanIntent);
             }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeMediaStore(Context context, File file) {
+        try {
+            final ContentResolver resolver = context.getContentResolver();
+
+            // Remove media store entries for any files inside this directory, using
+            // path prefix match. Logic borrowed from MtpDatabase.
+            if (file.isDirectory()) {
+                final String path = file.getAbsolutePath() + "/";
+                resolver.delete(FILE_URI,
+                        "_data LIKE ?1 AND lower(substr(_data,1,?2))=lower(?3)",
+                        new String[] { path + "%", Integer.toString(path.length()), path });
+            }
+
+            // Remove media store entry for this exact file.
+            final String path = file.getAbsolutePath();
+            resolver.delete(FILE_URI,
+                    "_data LIKE ?1 AND lower(_data)=lower(?2)",
+                    new String[] { path, path });
         }
         catch (Exception e){
             e.printStackTrace();
@@ -692,7 +732,7 @@ public class FileUtils {
                 mimeTypeFromExt = null;
             }
             if (mimeTypeFromExt == null) {
-                mimeTypeFromExt = "application/octet-stream";
+                mimeTypeFromExt = BASIC_MIME_TYPE;
             }
             final String extFromMimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(
                     mimeType);
@@ -732,5 +772,104 @@ public class FileUtils {
         } else {
             return EMPTY;
         }
+    }
+
+    public static boolean copy(InputStream inputStream, OutputStream outputStream){
+        boolean successful = false;
+        try {
+            IoUtils.copy(inputStream, outputStream);
+            outputStream.flush();
+            successful = true;
+        } catch (IOException e) {
+            Log.e("TransferThread", "writing failed");
+            CrashReportingManager.logException(e);
+        } finally {
+            IoUtils.closeQuietly(inputStream);
+            IoUtils.closeQuietly(outputStream);
+        }
+
+        return successful;
+    }
+
+    public static boolean moveDocument(Context context, DocumentFile fileFrom, DocumentFile fileTo) {
+
+        if (fileTo.isDirectory() /*&& fileTo.canWrite()*/) {
+            if (fileFrom.isFile()) {
+                return copyDocument(context, fileFrom, fileTo);
+            } else if (fileFrom.isDirectory()) {
+                DocumentFile[] filesInDir = fileFrom.listFiles();
+                DocumentFile filesToDir = fileTo.createDirectory(fileFrom.getName());
+                if (!filesToDir.exists()) {
+                    return false;
+                }
+
+                for (int i = 0; i < filesInDir.length; i++) {
+                    moveDocument(context, filesInDir[i], filesToDir);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean copyDocument(Context context, DocumentFile file, DocumentFile dest) {
+        if (!file.exists() || file.isDirectory()) {
+            Log.v(TAG, "copyDocument: file not exist or is directory, " + file);
+            return false;
+        }
+        BufferedOutputStream bos = null;
+        BufferedInputStream bis = null;
+        byte[] data = new byte[BUFFER];
+        int read = 0;
+        try {
+            if (!dest.exists()) {
+                dest = dest.getParentFile().createDirectory(dest.getName());
+                if(!dest.exists()){
+                    return false;
+                }
+            }
+
+            String mimeType = getTypeForFile(file);
+            String displayName = FileUtils.getNameFromFilename(file.getName());
+            DocumentFile destFile = dest.createFile(mimeType, displayName);
+
+            int n = 0;
+            while (destFile == null && n++ < 32){
+                String destName = displayName + " (" + n + ")";
+                destFile = dest.createFile(mimeType, destName);
+            }
+
+            if(destFile == null){
+                return false;
+            }
+
+            bos = new BufferedOutputStream(getOutputStream(context, destFile));
+            bis = new BufferedInputStream(getInputStream(context, file));
+            while ((read = bis.read(data, 0, BUFFER)) != -1) {
+                bos.write(data, 0, read);
+            }
+            return true;
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "copyDocument: file not found, " + file);
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "copyDocument: " + e.toString());
+        } finally {
+            //flush and close
+            IoUtils.flushQuietly(bos);
+            IoUtils.closeQuietly(bos);
+            IoUtils.closeQuietly(bis);
+        }
+
+        return false;
+    }
+
+
+    public static OutputStream getOutputStream(Context context, DocumentFile documentFile) throws FileNotFoundException {
+        return context.getContentResolver().openOutputStream(documentFile.getUri());
+    }
+
+    public static InputStream getInputStream(Context context, DocumentFile documentFile) throws FileNotFoundException {
+        return context.getContentResolver().openInputStream(documentFile.getUri());
     }
 }

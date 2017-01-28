@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v7.widget.AppCompatEditText;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
@@ -13,7 +14,7 @@ import dev.dworks.apps.anexplorer.R;
  * Defines a custom EditText View that draws lines between each line of text
  * that is displayed.
  */
-public class LinedEditText extends EditText {
+public class LinedEditText extends AppCompatEditText {
 	private Rect mRect;
 	private Paint mPaint;
 
