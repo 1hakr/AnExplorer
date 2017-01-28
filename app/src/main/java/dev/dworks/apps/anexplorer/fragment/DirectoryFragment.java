@@ -1031,6 +1031,10 @@ public class DirectoryFragment extends ListFragment {
 									});
 				}
 			}
+
+			if (mType == TYPE_RECENT_OPEN) {
+				onUserSortOrderChanged();
+			}
 		}
 	}
 
