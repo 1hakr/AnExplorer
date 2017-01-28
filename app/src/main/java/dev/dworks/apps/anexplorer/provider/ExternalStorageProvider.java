@@ -1005,7 +1005,7 @@ public class ExternalStorageProvider extends StorageProvider {
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
                 throw new IllegalStateException("Failed to copy " + source);
             }
-            afterDocId = getDocIdForFile(new File(targetDirectory.getUri().getPath()));
+            afterDocId = targetParentDocumentId;
         } else {
             if (!FileUtils.moveDocument(source, target, null)) {
                 throw new IllegalStateException("Failed to copy " + source);
@@ -1036,7 +1036,7 @@ public class ExternalStorageProvider extends StorageProvider {
                     throw new IllegalStateException("Failed to move " + source);
                 }
             }
-            afterDocId = getDocIdForFile(new File(targetDirectory.getUri().getPath()));
+            afterDocId = targetParentDocumentId;
         } else {
             final File after = new File(target, source.getName());
 
