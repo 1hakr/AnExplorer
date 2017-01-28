@@ -161,7 +161,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
             final String rootId;
             final String title;
-            if (storageVolume.isPrimary() && storageVolume.isEmulated()) {
+            if (storageVolume.isPrimary()) {
                 rootId = ROOT_ID_PRIMARY_EMULATED;
                 title = getContext().getString(R.string.root_internal_storage);
             } else if (storageVolume.getUuid() != null) {

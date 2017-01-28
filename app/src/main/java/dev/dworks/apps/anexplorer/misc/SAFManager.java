@@ -45,11 +45,18 @@ public class SAFManager {
             throws FileNotFoundException {
 
         DocumentFile documentFile = null;
+        if(null != file && file.canWrite()){
+            documentFile = DocumentFile.fromFile(file);
+            return documentFile;
+        }
         if(docId.startsWith(ROOT_ID_SECONDARY)){
             String newDocId = docId.substring(ROOT_ID_SECONDARY.length());
             Uri uri = getRootUri(newDocId);
             if(null == uri){
-                return DocumentFile.fromFile(file);
+                if(null != file) {
+                    documentFile = DocumentFile.fromFile(file);
+                }
+                return documentFile;
             }
             Uri fileUri = buildDocumentUriMaybeUsingTree(uri, newDocId);
             documentFile = BasicDocumentFile.fromUri(mContext, fileUri);
