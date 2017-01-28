@@ -194,9 +194,9 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     @Override
     public Cursor queryRoots(String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
-        includeFileRoot(result, TYPE_DOCUMENT_ROOT, R.string.root_document, DOCUMENT_MIME_TYPES);
-        includeFileRoot(result, TYPE_ARCHIVE_ROOT, R.string.root_archive, ARCHIVE_MIME_TYPES);
-        includeFileRoot(result, TYPE_APK_ROOT, R.string.root_apk, APK_MIME_TYPES);
+        includeFileRoot(result, TYPE_DOCUMENT_ROOT, R.string.root_document, DOCUMENT_MIME_TYPES, true);
+        includeFileRoot(result, TYPE_ARCHIVE_ROOT, R.string.root_archive, ARCHIVE_MIME_TYPES, false);
+        includeFileRoot(result, TYPE_APK_ROOT, R.string.root_apk, APK_MIME_TYPES, false);
 
         return result;
     }
@@ -409,12 +409,16 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         }
     }
 
-    private void includeFileRoot(MatrixCursor result, String root_type, int name_id, String mime_types) {
-        int flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_RECENTS;
+    private void includeFileRoot(MatrixCursor result, String root_type, int name_id,
+                                 String mime_types, boolean supports_recent) {
+        int flags = Root.FLAG_LOCAL_ONLY;
         if (isEmpty(FILE_URI, root_type)) {
             flags |= Root.FLAG_EMPTY;
         }
 
+        if(supports_recent){
+            flags |= Root.FLAG_SUPPORTS_RECENTS;
+        }
         final RowBuilder row = result.newRow();
         row.add(Root.COLUMN_ROOT_ID, root_type);
         row.add(Root.COLUMN_FLAGS, flags);
