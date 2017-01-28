@@ -15,26 +15,29 @@ import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
-import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.GuardedBy;
-import dev.dworks.apps.anexplorer.network.FTPInputStream;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.network.NetworkFile;
-import dev.dworks.apps.anexplorer.root.ParcelFileDescriptorUtil;
 
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 import static dev.dworks.apps.anexplorer.provider.ExplorerProvider.ConnectionColumns;
@@ -47,6 +50,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
     private static final String TAG = NetworkStorageProvider.class.getSimpleName();
 
     public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".networkstorage.documents";
+    // docId format: adress:/path/to/file
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
@@ -176,9 +180,26 @@ public class NetworkStorageProvider extends DocumentsProvider {
         final NetworkConnection connection = getNetworkConnection(documentId);
 
         try {
-            return ParcelFileDescriptorUtil.pipeFrom(
-                    new FTPInputStream(connection.getInputStream(file), connection.getClient()));
-            //return ParcelFileDescriptorUtil.pipeFrom(connection.getInputStream(file));
+            final boolean isWrite = (mode.indexOf('w') != -1);
+            if (isWrite) {
+                return null;
+            } else {
+                Uri ftpUri = connection.toUri(file);
+                URL url = new URL(ftpUri.toString());
+                URLConnection conn = url.openConnection();
+                InputStream inputStream = conn.getInputStream();
+                if(null != inputStream){
+                    return ParcelFileDescriptorUtil.pipeFrom(inputStream);
+                }
+/*            InputStream inputStream = connection.getConnectedClient().getInputStream(file.getName(), file.getParentFile().getAbsolutePath());
+            if(null != inputStream){
+                return ParcelFileDescriptorUtil.pipeFrom(
+                        new FTPInputStream(inputStream, connection.getClient()));
+                //return ParcelFileDescriptorUtil.pipeFrom(connection.getInputStream(file));
+            }*/
+            }
+
+            return null;
         } catch (Exception e) {
             throw new FileNotFoundException("Failed to open document with id " + documentId +
                     " and mode " + mode);
@@ -255,7 +276,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
                 return mime;
             }
         }
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 
     /**
@@ -411,7 +432,6 @@ public class NetworkStorageProvider extends DocumentsProvider {
     }
 
     public static Uri addConnection(Context context, NetworkConnection connection) {
-        AnalyticsManager.logEvent("add_connection");
         ContentValues contentValues = new ContentValues();
         contentValues.put(ConnectionColumns.NAME, connection.getName());
         contentValues.put(ConnectionColumns.SCHEME, connection.getScheme());

@@ -18,6 +18,8 @@ import android.provider.BaseColumns;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,11 +30,13 @@ import android.widget.PopupMenu;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
@@ -41,6 +45,7 @@ import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
@@ -57,6 +62,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     private MaterialProgressBar mProgressBar;
     private CompatTextView mEmptyView;
     private FloatingActionButton fab;
+    private RootInfo mConnectionsRoot;
 
     public static void show(FragmentManager fm) {
         final ConnectionsFragment fragment = new ConnectionsFragment();
@@ -72,7 +78,8 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(isTelevision());
+        mConnectionsRoot = DocumentsApplication.getRootsCache(getActivity()).getConnectionsRoot();
     }
 
     @Override
@@ -91,11 +98,17 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         fab = (FloatingActionButton)view.findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(complimentaryColor));
         fab.setOnClickListener(this);
+        if(isTelevision()){
+            fab.setVisibility(View.GONE);
+        }
 
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
         mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
         mListView = (ListView) view.findViewById(R.id.list);
         mListView.setOnItemClickListener(mItemListener);
+        if(isTelevision()) {
+            mListView.setOnItemLongClickListener(mItemLongClickListener);
+        }
         fab.attachToListView(mListView);
 
         // Indent our list divider to align with text
@@ -174,6 +187,30 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         }
     };
 
+    private AdapterView.OnItemLongClickListener mItemLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+            showPopupMenu(view, position);
+            return false;
+        }
+    };
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.connections_options, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_add:
+                addConnection();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public void onClick(final View view) {
         switch (view.getId()){
@@ -232,12 +269,12 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     private void addConnection() {
         CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager());
-        AnalyticsManager.logEvent("add_connection");
+        AnalyticsManager.logEvent("connection_add");
     }
 
     private void editConnection(int connection_id) {
         CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager(), connection_id);
-        AnalyticsManager.logEvent("edit_connection");
+        AnalyticsManager.logEvent("connection_edit");
     }
 
     private void deleteConnection(final int connection_id) {
@@ -256,11 +293,11 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
             }
         });
         DialogFragment.showThemedDialog(builder);
-        AnalyticsManager.logEvent("delete_connection");
+        AnalyticsManager.logEvent("connection_delete");
     }
 
     public void openConnectionRoot(NetworkConnection connection) {
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(activity.getRoots().getRootInfo(connection), true);
+        activity.onRootPicked(activity.getRoots().getRootInfo(connection), mConnectionsRoot);
     }
 }

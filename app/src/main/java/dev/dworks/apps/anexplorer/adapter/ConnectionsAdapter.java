@@ -14,6 +14,8 @@ import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+
 public class ConnectionsAdapter extends BaseAdapter{
     private Cursor mCursor;
     private int mCursorCount;
@@ -53,6 +55,7 @@ public class ConnectionsAdapter extends BaseAdapter{
         final ImageView icon1 = (ImageView) convertView.findViewById(android.R.id.icon1);
         final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
         final View popupButton = convertView.findViewById(R.id.button_popup);
+        popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
 
         popupButton.setOnClickListener(mListener);
         title.setText(networkConnection.getName());

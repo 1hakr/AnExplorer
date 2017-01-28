@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import java.io.DataInputStream;
@@ -75,6 +76,8 @@ public class RootInfo implements Durable, Parcelable {
     public String derivedPackageName;
     public String[] derivedMimeTypes;
     public int derivedIcon;
+    public int derivedColor;
+    public String derivedTag;
 
     public RootInfo() {
         reset();
@@ -97,6 +100,7 @@ public class RootInfo implements Durable, Parcelable {
         derivedPackageName = null;
         derivedMimeTypes = null;
         derivedIcon = 0;
+        derivedColor = 0;
     }
 
     @Override
@@ -181,29 +185,31 @@ public class RootInfo implements Durable, Parcelable {
 
     public void deriveFields() {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
+        derivedColor = R.color.item_doc_doc;
+        derivedTag = title;
 
         // TODO: remove these special case icons
         if (isInternalStorage()) {
             derivedIcon = R.drawable.ic_root_internal;
+            derivedTag = "storage";
         } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
+            derivedTag = "external storage";
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
         } else if (isPhoneStorage()) {
             derivedIcon = R.drawable.ic_root_phone;
         } else if (isSecondaryStorage()) {
-	        if (isSecondaryStorageSD()) {
-	            derivedIcon = R.drawable.ic_root_sdcard;
-	        } else if (isSecondaryStorageUSB()) {
+            derivedIcon = R.drawable.ic_root_sdcard;
+            if (isSecondaryStorageUSB()) {
 	            derivedIcon = R.drawable.ic_root_usb;
 	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;
 	        }
-            else {
-                derivedIcon = R.drawable.ic_root_sdcard;
-            }
+            derivedTag = "secondary storage";
         } else if (isUsbStorage()) {
             derivedIcon = R.drawable.ic_root_usb;
+            derivedTag = "usb storage";
         } else if (isDownloadsFolder()) {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isBluetoothFolder()) {
@@ -218,18 +224,28 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_download;
         } else if (isImages()) {
             derivedIcon = R.drawable.ic_root_image;
+            derivedColor = R.color.item_doc_image;
         } else if (isVideos()) {
             derivedIcon = R.drawable.ic_root_video;
+            derivedColor = R.color.item_doc_video;
         } else if (isAudio()) {
             derivedIcon = R.drawable.ic_root_audio;
+            derivedColor = R.color.item_doc_audio;
         } else if (isDocument()) {
             derivedIcon = R.drawable.ic_root_document;
+            derivedColor = R.color.item_doc_pdf;
         } else if (isArchive()) {
             derivedIcon = R.drawable.ic_root_archive;
+            derivedColor = R.color.item_doc_compressed;
         } else if (isApk()) {
             derivedIcon = R.drawable.ic_root_apk;
-        } else if (isAppPackage()) {
+            derivedColor = R.color.item_doc_apk;
+        } else if (isUserApp()) {
             derivedIcon = R.drawable.ic_root_apps;
+            derivedColor = R.color.item_doc_apps;
+        } else if (isSystemApp()) {
+            derivedIcon = R.drawable.ic_root_system_apps;
+            derivedColor = R.color.item_doc_apps;
         } else if (isAppProcess()) {
             derivedIcon = R.drawable.ic_root_process;
         } else if (isRecents()) {
@@ -240,8 +256,12 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_connections;
         } else if (isServerStorage()) {
             derivedIcon = R.drawable.ic_root_server;
+            derivedColor = R.color.item_connection_server;
+            derivedTag = "server";
         } else if (isNetworkStorage()) {
             derivedIcon = R.drawable.ic_root_network;
+            derivedColor = R.color.item_connection_client;
+            derivedTag = "network";
         }
     }
 
@@ -261,7 +281,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isRecents() {
-        return RecentsProvider.AUTHORITY.equals(authority) && rootId == null;
+        return RecentsProvider.AUTHORITY.equals(authority) && "recents".equals(rootId);
     }
 
     public boolean isStorage() {
@@ -293,15 +313,15 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public boolean isSecondaryStorageSD() {
-        return contains(path, "sd", "card", "emmc");
+        return contains(path, "sd", "card", "emmc") || contains(title, "sd", "card", "emmc");
     }
     
     public boolean isSecondaryStorageUSB() {
-        return contains(path, "usb");
+        return contains(path, "usb") || contains(title, "usb");
     }
     
     public boolean isSecondaryStorageHDD() {
-        return contains(path, "hdd");
+        return contains(path, "hdd") || contains(title, "hdd");
     }
 
     public boolean isDownloadsFolder() {
@@ -369,7 +389,18 @@ public class RootInfo implements Durable, Parcelable {
     
     public boolean isAppPackage() {
         return AppsProvider.AUTHORITY.equals(authority)
-                && AppsProvider.ROOT_ID_APP.equals(rootId);
+                && (AppsProvider.ROOT_ID_USER_APP.equals(rootId)
+                || AppsProvider.ROOT_ID_SYSTEM_APP.equals(rootId));
+    }
+
+    public boolean isUserApp() {
+        return AppsProvider.AUTHORITY.equals(authority)
+                && AppsProvider.ROOT_ID_USER_APP.equals(rootId);
+    }
+
+    public boolean isSystemApp() {
+        return AppsProvider.AUTHORITY.equals(authority)
+                && AppsProvider.ROOT_ID_SYSTEM_APP.equals(rootId);
     }
     
     public boolean isAppProcess() {
@@ -474,6 +505,16 @@ public class RootInfo implements Durable, Parcelable {
         }
     }
 
+
+    public Drawable loadShortcutIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTint(context, derivedIcon,
+                    ContextCompat.getColor(context, android.R.color.white));
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof RootInfo) {
@@ -529,9 +570,12 @@ public class RootInfo implements Durable, Parcelable {
         return root.isHome() || root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
     }
 
-    public static boolean isLibrary(RootInfo root){
-        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio()
-                || root.isDocument() || root.isArchive() || root.isApk();
+    public static boolean isLibraryMedia(RootInfo root){
+        return root.isRecents() || root.isImages() || root.isVideos() || root.isAudio();
+    }
+
+    public static boolean isLibraryNonMedia(RootInfo root){
+        return root.isDocument() || root.isArchive() || root.isApk();
     }
 
     public static boolean isFolder(RootInfo root){

@@ -62,6 +62,8 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
+import static dev.dworks.apps.anexplorer.misc.SAFManager.DOCUMENT_AUTHORITY;
+
 /**
  * Defines the contract between a documents provider and the platform.
  * <p>
@@ -421,6 +423,8 @@ public final class DocumentsContract {
         public static final int FLAG_DIR_HIDE_GRID_TITLES = 1 << 17;
         
         public static final int FLAG_SUPPORTS_EDIT = 1 << 18;
+        public static final int FLAG_SUPPORTS_ARCHIVE = 1 << 19;
+        public static final int FLAG_SUPPORTS_BOOKMARK = 1 << 20;
     }
 
     /**
@@ -729,7 +733,7 @@ public final class DocumentsContract {
     public static Uri buildHomeUri() {
         // TODO: Avoid this type of interpackage copying. Added here to avoid
         // direct coupling, but not ideal.
-        return DocumentsContract.buildRootUri("com.android.externalstorage.documents", "home");
+        return DocumentsContract.buildRootUri(DOCUMENT_AUTHORITY, "home");
     }
 
     /**

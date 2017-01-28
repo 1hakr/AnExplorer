@@ -94,6 +94,7 @@ import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor.Preemptable;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
+import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DirectoryResult;
@@ -119,6 +120,7 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
@@ -183,7 +185,6 @@ public class DirectoryFragment extends ListFragment {
     private int mDefaultColor;
     private MaterialProgressBar mProgressBar;
     private boolean isOperationSupported;
-    private boolean hasLeanback;
 	private ContentProviderClient mExternalStorageClient;
 
 	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
@@ -293,7 +294,12 @@ public class DirectoryFragment extends ListFragment {
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
-        hasLeanback = Utils.isTelevision(getActivity());
+
+		if(null != root && root.isSecondaryStorage()){
+			if(!doc.isWriteSupported()){
+				SAFManager.takeCardUriPermission(getActivity(), new File(doc.path));
+			}
+		}
 		isApp = root != null && root.isApp();
         isOperationSupported = root != null && (root.isRootedStorage() || root.isUsbStorage());
 
@@ -375,7 +381,7 @@ public class DirectoryFragment extends ListFragment {
 				}
 
 				mLastSortOrder = state.derivedSortOrder;
-				if(Utils.isTelevision(getActivity())){
+				if(isTelevision()){
 					mCurrentView.requestFocus();
 				}
 			}
@@ -538,8 +544,13 @@ public class DirectoryFragment extends ListFragment {
 					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 					((BaseActivity) getActivity()).onDocumentPicked(doc);
 					Bundle params = new Bundle();
-					params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
-					AnalyticsManager.logEvent(doc.isDirectory() ? "browse" : "open", params);
+					String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+					params.putString(FILE_TYPE, type);
+					if(doc.isDirectory()) {
+						AnalyticsManager.logEvent("browse", root, params);
+					} else {
+						AnalyticsManager.logEvent("open" + "_" + type, params);
+					}
 				}
 			}
 		}
@@ -620,7 +631,7 @@ public class DirectoryFragment extends ListFragment {
 				compress.setVisible(editMode && !isOperationSupported);
 
 				info.setVisible(count == 1);
-				bookmark.setVisible(Utils.isTelevision(getActivity()) && count == 1);
+				bookmark.setVisible(isTelevision() && count == 1);
 			}
 			return true;
 		}
@@ -687,7 +698,7 @@ public class DirectoryFragment extends ListFragment {
 				selectAll = !selectAll;
 				Bundle params = new Bundle();
 				params.putInt(FILE_COUNT, count);
-				AnalyticsManager.logEvent("detail", params);
+				AnalyticsManager.logEvent("select", params);
 				return true;
 
 			case R.id.menu_info:
@@ -783,9 +794,10 @@ public class DirectoryFragment extends ListFragment {
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
 			Bundle params = new Bundle();
-			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+			String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+			params.putString(FILE_TYPE, type);
 			params.putInt(FILE_COUNT, docs.size());
-			AnalyticsManager.logEvent("share", params);
+			AnalyticsManager.logEvent("share"+"_"+type, params);
 
 		} else if (docs.size() > 1) {
 			intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
@@ -1020,17 +1032,9 @@ public class DirectoryFragment extends ListFragment {
 				}
 			}
 
-            if(mType == TYPE_RECENT_OPEN){
-                onUserSortOrderChanged();
-            }
-            else if (null != root && root.isAppProcess()) {
-                AppsProvider.notifyDocumentsChanged(getActivity(), root.rootId);
-                AppsProvider.notifyRootsChanged(getActivity());
-            }
-
-            if(id == R.id.menu_delete && isOperationSupported){
-                onUserSortOrderChanged();
-            }
+			if (mType == TYPE_RECENT_OPEN) {
+				onUserSortOrderChanged();
+			}
 		}
 	}
 
@@ -1088,7 +1092,7 @@ public class DirectoryFragment extends ListFragment {
         final ContentResolver resolver = context.getContentResolver();
 
         boolean hadTrouble = false;
-        if (!parent.isEditSupported()) {
+        if (!parent.isArchiveSupported()) {
             Log.w(TAG, "Skipping " + doc);
             hadTrouble = true;
         }
@@ -1114,7 +1118,7 @@ public class DirectoryFragment extends ListFragment {
 
         boolean hadTrouble = false;
         for (DocumentInfo doc : docs) {
-            if (!doc.isEditSupported()) {
+            if (!doc.isArchiveSupported()) {
                 Log.w(TAG, "Skipping " + doc);
                 hadTrouble = true;
                 continue;
@@ -1309,7 +1313,7 @@ public class DirectoryFragment extends ListFragment {
 			final View popupButton = convertView.findViewById(R.id.button_popup);
 
 			popupButton.setOnClickListener(this);
-            popupButton.setVisibility(hasLeanback ? View.INVISIBLE : View.VISIBLE);
+            popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
             if(state.action == ACTION_BROWSE){
                 final View iconView = convertView.findViewById(android.R.id.icon);
                 if (null != iconView) {
@@ -1800,7 +1804,7 @@ public class DirectoryFragment extends ListFragment {
 			final MenuItem save = popup.getMenu().findItem(R.id.menu_save);
             open.setVisible(root.isAppPackage());
 			save.setVisible(root.isAppPackage());
-			delete.setVisible(root.isAppPackage());
+			delete.setVisible(root.isUserApp());
 		}
 		else{
 			final State state = getDisplayState(DirectoryFragment.this);
@@ -1816,22 +1820,21 @@ public class DirectoryFragment extends ListFragment {
             final Cursor cursor = mAdapter.getItem(position);
             final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 			final boolean manageMode = state.action == ACTION_BROWSE;
-			final boolean canEdit = doc != null && doc.isEditSupported();
-			final boolean canDelete = doc != null && doc.isDeleteSupported();
-			final boolean canRename = doc != null && doc.isRenameSupported();
-            final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
-            if(null != compress)
-                compress.setVisible(manageMode && canEdit && !isCompressed && !isOperationSupported);
-            if(null != uncompress)
-                uncompress.setVisible(manageMode && canEdit && isCompressed && !isOperationSupported);
-            if(null != bookmark) {
-                bookmark.setVisible(manageMode && canEdit && Utils.isDir(doc.mimeType) && !isOperationSupported);
-            }
-			share.setVisible(manageMode);
-			delete.setVisible(manageMode && canDelete);
-			rename.setVisible(manageMode && canRename);
-			copy.setVisible(manageMode && canEdit);
-			cut.setVisible(manageMode && canEdit);
+			if(null != doc){
+				final boolean isCompressed = doc != null && MimePredicate.mimeMatches(MimePredicate.COMPRESSED_MIMES, doc.mimeType);
+				if(null != compress)
+					compress.setVisible(manageMode && doc.isArchiveSupported() && !isCompressed && !isOperationSupported);
+				if(null != uncompress)
+					uncompress.setVisible(manageMode && doc.isArchiveSupported() && isCompressed && !isOperationSupported);
+				if(null != bookmark) {
+					bookmark.setVisible(manageMode && doc.isBookmarkSupported() && Utils.isDir(doc.mimeType) && !isOperationSupported);
+				}
+				share.setVisible(manageMode);
+				delete.setVisible(manageMode && doc.isDeleteSupported());
+				rename.setVisible(manageMode && doc.isRenameSupported());
+				copy.setVisible(manageMode && doc.isCopySupported());
+				cut.setVisible(manageMode && doc.isMoveSupported());
+			}
 		}
 
 		popup.show();
@@ -1880,7 +1883,8 @@ public class DirectoryFragment extends ListFragment {
                 getActivity().startActivity(intent2);
             }
             Bundle params = new Bundle();
-			params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType));
+			String type = IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType);
+			params.putString(FILE_TYPE, type);
 			AnalyticsManager.logEvent("details", params);
             return true;
 		case R.id.menu_info:
@@ -1911,7 +1915,7 @@ public class DirectoryFragment extends ListFragment {
 			RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
 		}
 		Bundle params = new Bundle();
-		AnalyticsManager.logEvent("bookmark", params);
+		AnalyticsManager.logEvent("bookmarked", root, params);
 	}
 
 	private void stopDocument(ArrayList<DocumentInfo> docs, int type) {
@@ -1950,8 +1954,9 @@ public class DirectoryFragment extends ListFragment {
 			((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
 		}
 		Bundle params = new Bundle();
-		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
-		AnalyticsManager.logEvent("open", params);
+		String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+		params.putString(FILE_TYPE, type);
+		AnalyticsManager.logEvent("open"+"_"+type, params);
 	}
 
 	private void moveDocument(ArrayList<DocumentInfo> docs, boolean move) {
@@ -1959,7 +1964,7 @@ public class DirectoryFragment extends ListFragment {
 		Bundle params = new Bundle();
 		params.putBoolean(FILE_MOVE, move);
 		params.putInt(FILE_COUNT, docs.size());
-		AnalyticsManager.logEvent("move", params);
+		AnalyticsManager.logEvent("move_"+move, params);
 	}
 
 	private void renameDocument(DocumentInfo doc){
@@ -1978,7 +1983,8 @@ public class DirectoryFragment extends ListFragment {
 			DetailFragment.show(activity.getSupportFragmentManager(), doc);
 		}
 		Bundle params = new Bundle();
-		params.putString(FILE_TYPE, IconUtils.getTypeNameFromMimeType(doc.mimeType));
+		String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
+		params.putString(FILE_TYPE, type);
 		AnalyticsManager.logEvent("details", params);
 	}
 

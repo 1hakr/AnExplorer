@@ -56,12 +56,12 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
                 }
                 showError(R.string.pin_mismatch);
                 setInstruction(R.string.pin_mismatch);
-            };
-            
+            }
+
             public void onCancel() {
                 super.onCancel();
                 d.dismiss();
-            };
+            }
         };
         View view = pinViewHelper.getView();
         view.findViewById(R.id.logo).setVisibility(View.GONE);
@@ -78,12 +78,12 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
                 super.onEnter(password);
                 confirmPin(password);
                 d.dismiss();
-            };
-            
+            }
+
             public void onCancel() {
                 super.onCancel();
                 d.dismiss();
-            };
+            }
         }.getView();
         view.findViewById(R.id.logo).setVisibility(View.GONE);
 		d.setContentView(view);
@@ -107,12 +107,12 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
                     }
                     showError(R.string.incorrect_pin);
                     setInstruction(R.string.incorrect_pin);
-                };
-                
+                }
+
                 public void onCancel() {
                     super.onCancel();
                     d.dismiss();
-                };
+                }
             }.getView();
             view.findViewById(R.id.logo).setVisibility(View.GONE);
 			d.setContentView(view);

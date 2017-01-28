@@ -17,7 +17,7 @@
         <FrameLayout
             android:id="@android:id/icon"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:background="#323232"
             android:foregroundGravity="fill"
@@ -43,6 +43,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@null"
+                android:minHeight="200dp"
+                android:layout_gravity="center"
                 android:scaleType="centerCrop" />
         </FrameLayout>
 

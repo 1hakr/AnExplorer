@@ -17,6 +17,8 @@
 package dev.dworks.apps.anexplorer.model;
 
 import android.content.ContentResolver;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -30,8 +32,7 @@ import java.util.LinkedList;
  * Representation of a stack of {@link DocumentInfo}, usually the result of a
  * user-driven traversal.
  */
-@SuppressWarnings("serial")
-public class DocumentStack extends LinkedList<DocumentInfo> implements Durable {
+public class DocumentStack extends LinkedList<DocumentInfo> implements Durable, Parcelable {
     private static final int VERSION_INIT = 1;
     private static final int VERSION_ADD_ROOT = 2;
 
@@ -135,4 +136,28 @@ public class DocumentStack extends LinkedList<DocumentInfo> implements Durable {
             doc.write(out);
         }
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        DurableUtils.writeToParcel(dest, this);
+    }
+
+    public static final Creator<DocumentStack> CREATOR = new Creator<DocumentStack>() {
+        @Override
+        public DocumentStack createFromParcel(Parcel in) {
+            final DocumentStack stack = new DocumentStack();
+            DurableUtils.readFromParcel(in, stack);
+            return stack;
+        }
+
+        @Override
+        public DocumentStack[] newArray(int size) {
+            return new DocumentStack[size];
+        }
+    };
 }

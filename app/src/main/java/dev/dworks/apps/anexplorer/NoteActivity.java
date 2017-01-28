@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -148,7 +149,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 break;
             case R.id.menu_save:
                 save(false);
-                AnalyticsManager.logEvent("save_text");
+                AnalyticsManager.logEvent("text_save");
                 break;
             case R.id.menu_revert:
                 setSaveProgress(true);
@@ -158,7 +159,7 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                     showError("Unable to Load file");
                 }
                 setSaveProgress(false);
-                AnalyticsManager.logEvent("revert_text");
+                AnalyticsManager.logEvent("text_revert");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -383,7 +384,10 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         String scheme = uri.getScheme();
         if (scheme.startsWith(ContentResolver.SCHEME_CONTENT)) {
             try {
-                return getContentResolver().openOutputStream(uri);
+                DocumentFile documentFile = DocumentsApplication.getSAFManager(
+                        getApplicationContext()).getDocumentFile(uri);
+                Uri finalUri = null == documentFile ? uri : documentFile.getUri();
+                return getContentResolver().openOutputStream(finalUri);
             } catch (Exception e) {
                 CrashReportingManager.logException(e);
             }

@@ -1,73 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
     android:clipToPadding="false"
     android:paddingBottom="20dp"
     android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
-        android:id="@+id/stats_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/accentColor"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="5dp">
+
+        <dev.dworks.apps.anexplorer.ui.HomeItem
+            android:id="@+id/storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <dev.dworks.apps.anexplorer.ui.HomeItem
+            android:id="@+id/seconday_storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <dev.dworks.apps.anexplorer.ui.HomeItem
+            android:id="@+id/usb_storage_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <dev.dworks.apps.anexplorer.ui.HomeItem
+            android:id="@+id/memory_stats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+            android:id="@+id/shortcuts_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:clipToPadding="false"
+            android:padding="10dp"
+            app:columnWidth="100dp"
+            app:type="gallery" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/recents_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="20dp">
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <RelativeLayout
-                android:id="@+id/arc_left"
-                android:layout_width="wrap_content"
-                android:layout_height="160dip"
-                android:layout_centerVertical="true">
-
-                <dev.dworks.apps.anexplorer.ui.ArcProgress
-                    android:id="@+id/storage_stats"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:padding="10dp"
-                    custom:arc_bottom_text="STORAGE"
-                    custom:arc_bottom_text_size="16dp"
-                    custom:arc_progress="10"
-                    custom:arc_stroke_width="8dip"
-                    custom:arc_text_color="#ffffff"
-                    custom:arc_text_size="32dip"
-                    custom:arc_unfinished_color="#89000000" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/storage_summary"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="55dip"
-                    android:text=""
-                    android:textColor="@android:color/white"
-                    android:textSize="12dp" />
-            </RelativeLayout>
+                    android:layout_gravity="start"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="36dp"
+                    android:paddingStart="10dp"
+                    android:text="Recent Media"
+                    android:textAlignment="viewStart"
+                    android:textColor="?android:attr/textColorPrimary" />
 
-            <dev.dworks.apps.anexplorer.ui.ArcProgress
-                android:id="@+id/memory_stats"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="15dip"
-                custom:arc_bottom_text="RAM"
-                custom:arc_bottom_text_size="14dp"
-                custom:arc_progress="10"
-                custom:arc_stroke_width="6dp"
-                custom:arc_text_color="#ffffff"
-                custom:arc_text_size="26dip"
-                custom:arc_unfinished_color="#89000000" />
+                <TextView
+                    android:id="@+id/recents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:clickable="true"
+                    android:gravity="end|center_vertical"
+                    android:minHeight="36dp"
+                    android:paddingEnd="10dp"
+                    android:text="MORE"
+                    android:textAlignment="viewEnd"
+                    android:textAllCaps="true"
+                    android:textColor="@color/accentColor" />
+
+            </FrameLayout>
+
+            <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+                android:id="@+id/recents_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:minHeight="@dimen/grid_item_height"
+                android:paddingEnd="@dimen/list_item_padding"
+                android:paddingStart="10dp"
+                app:columnWidth="@dimen/grid_item_height"
+                app:type="@integer/recycler_type" />
         </LinearLayout>
-
     </LinearLayout>
+
 
 </ScrollView>

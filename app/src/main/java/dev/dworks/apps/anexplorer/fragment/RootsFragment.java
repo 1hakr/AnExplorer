@@ -33,7 +33,6 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -258,7 +257,7 @@ public class RootsFragment extends Fragment {
                 activity.onRootPicked(((RootItem) item).root, true);
                 Bundle params = new Bundle();
                 params.putString("type", ((RootItem) item).root.title);
-                AnalyticsManager.logEvent("navigate", params);
+                AnalyticsManager.logEvent("navigate", ((RootItem) item).root, params);
             } else if (item instanceof AppItem) {
                 activity.onAppPicked(((AppItem) item).info);
             } else {
@@ -411,28 +410,13 @@ public class RootsFragment extends Fragment {
             title.setText(root.title);
 
             // Show available space if no summary
-            String summaryText = root.summary;
-            if (TextUtils.isEmpty(summaryText) && root.availableBytes >= 0) {
-                summaryText = context.getString(R.string.root_available_bytes,
-                        Formatter.formatFileSize(context, root.availableBytes));
-                try {
-                    Long current = 100 * root.availableBytes / root.totalBytes ;
-                    progress.setVisibility(View.VISIBLE);
-                    progress.setMax(100);
-                    progress.setProgress(100 - current.intValue());
-                    progress.setColor(color);
-                }
-                catch (Exception e){
-                    progress.setVisibility(View.GONE);
-                    CrashReportingManager.logException(e);
-                }
+            if(root.isNetworkStorage()) {
+                String summaryText = root.summary;
+                summary.setText(summaryText);
+                summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
+            } else {
+                summary.setVisibility(View.GONE);
             }
-            else{
-                progress.setVisibility(View.GONE);
-            }
-
-            summary.setText(summaryText);
-            summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
         }
     }
 

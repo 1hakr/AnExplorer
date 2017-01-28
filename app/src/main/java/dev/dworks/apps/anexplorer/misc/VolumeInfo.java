@@ -17,6 +17,8 @@ import java.util.Comparator;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 
+import static dev.dworks.apps.anexplorer.misc.SAFManager.DOCUMENT_AUTHORITY;
+
 /**
  * Created by HaKr on 24/08/16.
  */
@@ -287,7 +289,6 @@ public class VolumeInfo {
     }
 
     // TODO: avoid this layering violation
-    private static final String DOCUMENT_AUTHORITY = "com.android.externalstorage.documents";
     private static final String DOCUMENT_ROOT_PRIMARY_EMULATED = "primary";
 
     /**

@@ -411,7 +411,7 @@ public class StandaloneActivity extends BaseActivity {
         Fragment fragment = DirectoryFragment.get(getFragmentManager());
         if(fragment instanceof DirectoryFragment) {
             final DirectoryFragment directory = (DirectoryFragment) fragment;
-            directory.onUserSortOrderChanged();;
+            directory.onUserSortOrderChanged();
         }
     }
     /**
@@ -422,7 +422,7 @@ public class StandaloneActivity extends BaseActivity {
         Fragment fragment = DirectoryFragment.get(getFragmentManager());
         if(fragment instanceof DirectoryFragment) {
             final DirectoryFragment directory = (DirectoryFragment) fragment;
-            directory.onUserModeChanged();;
+            directory.onUserModeChanged();
         }
     }
     @Override

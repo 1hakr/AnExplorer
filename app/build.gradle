@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '25.0.2'
     
     applicationVariants.all { variant -> variant.outputs.each { output -> output.outputFile = new File(output.outputFile.parent, "${applicationId}-v${variant.versionName}.apk") } }
 
     defaultConfig {
-        versionName "3.4"
-        versionCode = 54
+        versionName "3.5"
+        versionCode = 55
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -19,7 +19,7 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            shrinkResources true
+            shrinkResources false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
                     'proguard/proguard-google-play-services.pro'
@@ -90,10 +90,13 @@ dependencies {
     compile 'org.apache.ftpserver:ftpserver-core:+'
     compile 'commons-net:commons-net:+'
     compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:cardview-v7:${supportLibVersion}"
     compile "com.android.support:design:${supportLibVersion}"
     compile "com.android.support:exifinterface:${supportLibVersion}"
     freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
     freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:+'
 }
 
 def props = new Properties()

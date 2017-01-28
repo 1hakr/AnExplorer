@@ -141,6 +141,9 @@ import static dev.dworks.apps.anexplorer.model.DocumentsContract.isTreeUri;
 public abstract class DocumentsProvider extends ContentProvider {
     private static final String TAG = "DocumentsProvider";
 
+    public static final String DIRECTORY_SEPERATOR = "/";
+    public static final String ROOT_SEPERATOR = ":";
+
     private static final int MATCH_ROOTS = 1;
     private static final int MATCH_ROOT = 2;
     private static final int MATCH_RECENT = 3;
@@ -1098,5 +1101,23 @@ public abstract class DocumentsProvider extends ContentProvider {
 
     public void updateRoots(){
 
+    }
+
+    public static String getParentRootIdForDocId(String docId){
+        final int splitIndex = docId.indexOf(':', 1);
+        final String rootId = docId.substring(0, splitIndex);
+        final String path = docId.substring(splitIndex + 1);
+        final int pathSplitIndex = path.lastIndexOf(DIRECTORY_SEPERATOR);
+        String parentPath = "";
+        if (pathSplitIndex >= 0) {
+            parentPath = path.substring(0, pathSplitIndex);
+        }
+        return rootId + ROOT_SEPERATOR + parentPath;
+    }
+
+    public static String getRootIdForDocId(String docId){
+        final int splitIndex = docId.indexOf(':', 1);
+        final String rootId = docId.substring(0, splitIndex);
+        return rootId;
     }
 }

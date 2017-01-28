@@ -3,17 +3,21 @@ package dev.dworks.apps.anexplorer.root;
 import java.io.File;
 
 import dev.dworks.apps.anexplorer.misc.FileUtils;
+import dev.dworks.apps.anexplorer.misc.LogUtils;
 
+import static dev.dworks.apps.anexplorer.root.RootCommands.getTimeinMillis;
 import static java.io.File.separatorChar;
 
 public class RootFile {
 
-	private String  name = "", permission = "", trimName = "";
-	private int length = 0;
-    private boolean isValid = true;
+	private String[] array;
+	private boolean isValid = true;
+	private String  name = "";
+	private String permission = "";
+	private long length = 0;
     private int type = 0;
-    private String[] flds;
     private String path;
+    private long lastModified = 0;
 
     public RootFile(String path) {
     	this.path = fixSlashes(path);
@@ -21,14 +25,36 @@ public class RootFile {
 	}
     
 	public RootFile(RootFile target, String result) {
-    	flds= result.split("\\s+");
-        if(flds.length > 3) {
-        	permission = flds[0];
-        	length = flds[flds.length - 1].length();
-        	trimName = flds[flds.length - 1]; 
-        	type = permission.startsWith("d") || permission.startsWith("l") ? 0 : 1;
-        	name = permission.startsWith("l") ? flds[flds.length - 3] : trimName.endsWith("/") ? trimName.substring(0, length-1) : trimName;
-        	path = fixSlashes(target.getAbsolutePath() + File.separator + name);
+    	array = result.split("\\s+");
+		int arrayLength = array.length;
+		LogUtils.LOGD("root", result+":"+ array.length);
+        if(array.length > 3) {
+			String trimName = "";
+			String date = "";
+        	permission = array[0];
+        	
+			boolean isDirectory = permission.startsWith("d");
+			boolean isLink = permission.startsWith("l");
+			if(isDirectory){
+				trimName = array[arrayLength - 1];
+				//name = trimName.endsWith("/") ? trimName.substring(0, length -1) : trimName;
+				name = trimName;
+				type = 0;
+				date = array[arrayLength - 3] + " " + array[arrayLength - 2];
+			} else if(isLink){
+				trimName = array[arrayLength - 3];
+				name = trimName;
+				type = 0;
+				date = array[arrayLength - 5] + " " + array[arrayLength - 4];
+			} else {
+				trimName = array[arrayLength - 1];
+				name = trimName;
+				type = 1;
+				length = Long.valueOf(array[arrayLength - 4]);
+				date = array[arrayLength - 3] + " " + array[arrayLength - 2];
+			}
+			lastModified = getTimeinMillis(date);
+			path = fixSlashes(target.getAbsolutePath() + File.separator + name);
         }
         else{
         	isValid =  false;
@@ -56,7 +82,7 @@ public class RootFile {
 		return type == 1;
 	}
 
-	public int length() {
+	public long length() {
 		return length;
 	}
 
@@ -138,5 +164,9 @@ public class RootFile {
 
 	public String getPath() {
 		return path;
+	}
+
+	public long getLastModified() {
+		return lastModified;
 	}
 }

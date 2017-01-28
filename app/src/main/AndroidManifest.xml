@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission
@@ -161,10 +162,10 @@
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="dev.dworks.apps.anexplorer.action.START_FTPSERVER" />
-                <action android:name="dev.dworks.apps.anexplorer.action.STOP_FTPSERVER" />
-                <action android:name="dev.dworks.apps.anexplorer.action.FTPSERVER_STARTED" />
-                <action android:name="dev.dworks.apps.anexplorer.action.FTPSERVER_STOPPED" />
+                <action android:name="${applicationId}.action.START_FTPSERVER" />
+                <action android:name="${applicationId}.action.STOP_FTPSERVER" />
+                <action android:name="${applicationId}.action.FTPSERVER_STARTED" />
+                <action android:name="${applicationId}.action.FTPSERVER_STOPPED" />
             </intent-filter>
         </receiver>
 
@@ -172,9 +173,9 @@
             android:name=".service.ConnectionsService"
             android:enabled="true"
             android:exported="false" />
-<!--        <service
+        <service
             android:name=".service.AppStopperService"
-            android:enabled="true"
+            android:enabled="false"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
@@ -184,17 +185,127 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_config" />
-        </service>-->
-
+        </service>
         <service
             android:name=".service.ServerService"
-            android:icon="@drawable/ic_root_server"
             android:label="@string/toggle_messages"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"
+            android:authorities="${applicationId}.recents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.ExternalStorageProvider"
+            android:authorities="${applicationId}.externalstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider"
+            android:authorities="${applicationId}.media.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider"
+            android:authorities="${applicationId}.nonmedia.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.AppsProvider"
+            android:authorities="${applicationId}.apps.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.RootedStorageProvider"
+            android:authorities="${applicationId}.rootedstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.HeatMapProvider"
+            android:authorities="${applicationId}.heatmap.documents"
+            android:exported="false"
+            android:enabled="false"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.DownloadStorageProvider"
+            android:authorities="${applicationId}.downloads.documents"
+            android:exported="false"
+            android:enabled="false"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.ExplorerProvider"
+            android:authorities="${applicationId}.explorer"
+            android:enabled="true"
+            android:exported="false" />
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.UsbStorageProvider"
+            android:authorities="${applicationId}.usbstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" >
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.NetworkStorageProvider"
+            android:authorities="${applicationId}.networkstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" >
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
 
     </application>
 

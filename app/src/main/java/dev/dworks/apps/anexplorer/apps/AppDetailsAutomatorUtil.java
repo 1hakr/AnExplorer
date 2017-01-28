@@ -65,12 +65,12 @@ public class AppDetailsAutomatorUtil {
 		if (Utils.hasJellyBeanMR2()) {
 			foundNodeInfos = accessibilityNodeInfo.findAccessibilityNodeInfosByViewId(stringResName);
 			if ((foundNodeInfos != null) && (!foundNodeInfos.isEmpty())) {
-				foundNodeInfo = (AccessibilityNodeInfo)foundNodeInfos.get(0);
+				foundNodeInfo = foundNodeInfos.get(0);
 			} else {
 				LogUtils.LOGD(TAG, "(getAccessibilityNodeInfo) Not found : " + stringResName);
 			}
 			while (foundNodeInfos.size() > 1) {
-				((AccessibilityNodeInfo)foundNodeInfos.remove(-1 + foundNodeInfos.size())).recycle();
+				foundNodeInfos.remove(-1 + foundNodeInfos.size()).recycle();
 			}
 		}
 		return foundNodeInfo;
@@ -133,9 +133,6 @@ public class AppDetailsAutomatorUtil {
 				return true;
 			}
 		}
-		if (processName != null && processName.startsWith(context.getPackageName())) {
-			return true;
-		}
-		return false;
-	}
+        return processName != null && processName.startsWith(context.getPackageName());
+    }
 }

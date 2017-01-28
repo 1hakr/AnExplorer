@@ -53,8 +53,7 @@ public final class ErrnoException extends Exception {
     }
 
     public IOException rethrowAsIOException() throws IOException {
-        IOException newException = new IOException(getMessage());
-        newException.initCause(this);
+        IOException newException = new IOException(getMessage(), this);
         throw newException;
     }
 }

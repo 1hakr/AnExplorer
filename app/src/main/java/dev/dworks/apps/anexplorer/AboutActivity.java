@@ -24,7 +24,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
@@ -33,6 +32,9 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
+import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
+import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
+import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
 public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -41,12 +43,15 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(Utils.hasKitKat() && !Utils.hasLollipop()){
+			setTheme(R.style.Theme_Document_Translucent);
+		}
 		setContentView(R.layout.activity_about);
 
 		Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		mToolbar.setTitleTextAppearance(this, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
 		if(Utils.hasKitKat() && !Utils.hasLollipop()) {
-			((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
+			//((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
 			mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
 		}
 		int color = SettingsActivity.getActionBarColor(this);
@@ -83,7 +88,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
 			action_support.setVisibility(View.GONE);
-		} else if(Utils.isTelevision(this)){
+		} else if(DocumentsApplication.isTelevision()){
 			action_share.setVisibility(View.GONE);
 			action_feedback.setVisibility(View.GONE);
 		}
@@ -106,11 +111,6 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
         }
     }
 
-    private String getSuffix(){
-        return Utils.isProVersion() ? " Pro" : ""
-				+ (Utils.isTelevision(this)? " for Android TV" : "");
-    }
-
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
@@ -127,26 +127,17 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						Uri.parse("https://twitter.com/1HaKr")));
 				break;
 			case R.id.action_feedback:
-				ShareCompat.IntentBuilder
-						.from(this)
-						.setEmailTo(new String[]{"hakr@dworks.in"})
-						.setSubject("AnExplorer Feedback" + getSuffix())
-						.setType("text/email")
-						.setChooserTitle("Send Feedback")
-						.startChooser();
-				AnalyticsManager.logEvent("feedback");
+				openFeedback(this);
 				break;
 			case R.id.action_rate:
-				Intent intentMarket = new Intent("android.intent.action.VIEW");
-				intentMarket.setData(Utils.getAppUri());
-				startActivity(intentMarket);
-				AnalyticsManager.logEvent("rate_app");
+				openPlaystore(this);
+				AnalyticsManager.logEvent("app_rate");
 				break;
 			case R.id.action_support:
 				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
 				intentMarketAll.setData(Utils.getAppStoreUri());
 				startActivity(intentMarketAll);
-				AnalyticsManager.logEvent("love_app");
+				AnalyticsManager.logEvent("app_love");
 				break;
 			case R.id.action_share:
 
@@ -158,7 +149,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 						.setType("text/plain")
 						.setChooserTitle("Share AnExplorer")
 						.startChooser();
-				AnalyticsManager.logEvent("share_app");
+				AnalyticsManager.logEvent("app_share");
 				break;
 		}
 	}
