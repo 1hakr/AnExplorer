@@ -1438,8 +1438,8 @@ public class DocumentsActivity extends BaseActivity {
             view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             view.setDataAndType(doc.derivedUri, doc.mimeType);
-            if(MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
-                    || !Utils.isIntentAvailable(this, view)){
+            if((MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
+                    || !Utils.isIntentAvailable(this, view)) && !Utils.hasNougat()){
             	try {
                 	File file = new File(doc.path);
     				view.setDataAndType(Uri.fromFile(file), doc.mimeType);
