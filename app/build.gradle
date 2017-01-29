@@ -4,9 +4,16 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     
-    applicationVariants.all { variant -> variant.outputs.each { output -> output.outputFile = new File(output.outputFile.parent, "${appName}-{flavour}-v${variant.versionName}.apk") } }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(output.outputFile.parent,
+                         "${APP_TAG}-v${variant.versionName}.apk")
+    
+    }
+      }
 
     defaultConfig {
+        APP_TAG = "AnExplorer"
         versionName "3.5"
         versionCode = 55
         minSdkVersion 17
