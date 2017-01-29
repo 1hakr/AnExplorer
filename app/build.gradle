@@ -6,20 +6,8 @@ android {
     
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            def project = "AnExplorer"
-            def SEP = "_"
-            def flavor = variant.productFlavors[0].name
-            def buildType = variant.variantData.variantConfiguration.buildType.name
-            def version = variant.versionName
-            def date = new Date();
-            def formattedDate = date.format('ddMMyy_HHmm')
-
-            def newApkName = project + SEP + flavor + SEP + buildType + SEP + version + SEP + formattedDate + ".apk"
-
-            output.outputFile = new File(output.outputFile.parent, newApkName)
-    
-    }
-      }
+            output.outputFile = new File(output.outputFile.parent,
+        "${variantFilter}-v${variant.versionName}.apk")
 
     defaultConfig {
         versionName "3.5"
