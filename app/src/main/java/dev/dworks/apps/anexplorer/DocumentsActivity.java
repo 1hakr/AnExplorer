@@ -330,7 +330,10 @@ public class DocumentsActivity extends BaseActivity {
                     mRoots.updateAsync();
                     final RootInfo root = getCurrentRoot();
                     if(root.isHome()){
-                        HomeFragment.get(getFragmentManager()).reloadData();
+                        HomeFragment homeFragment = HomeFragment.get(getFragmentManager());
+                        if(null != homeFragment) {
+                            homeFragment.reloadData();
+                        }
                     }
                 }
             }, 500);

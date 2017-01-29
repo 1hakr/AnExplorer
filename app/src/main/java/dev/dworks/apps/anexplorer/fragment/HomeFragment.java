@@ -172,30 +172,8 @@ public class HomeFragment extends Fragment {
                     openRoot(primaryRoot);
                 }
             });
-            try {
-                final double percentStore = (((primaryRoot.totalBytes - primaryRoot.availableBytes) / (double) primaryRoot.totalBytes) * 100);
-                storageStats.setProgress(0);
-                storageTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (storageStats.getProgress() >= (int) percentStore) {
-                                    storageTimer.cancel();
-                                } else {
-                                    storageStats.setProgress(storageStats.getProgress() + 1);
-                                }
-
-                            }
-                        });
-                    }
-                }, 50, 20);
-            }
-            catch (Exception e){
-                storageStats.setVisibility(View.GONE);
-                CrashReportingManager.logException(e);
-            }
+            storageTimer = new Timer();
+            animateProgress(storageStats, storageTimer, primaryRoot);
         } else {
             storageStats.setVisibility(View.GONE);
         }
@@ -213,30 +191,8 @@ public class HomeFragment extends Fragment {
                     openRoot(secondaryRoot);
                 }
             });
-            try {
-                final double percentStore = (((secondaryRoot.totalBytes - secondaryRoot.availableBytes) / (double) secondaryRoot.totalBytes) * 100);
-                secondayStorageStats.setProgress(0);
-                secondatyStorageTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (secondayStorageStats.getProgress() >= (int) percentStore) {
-                                    secondatyStorageTimer.cancel();
-                                } else {
-                                    secondayStorageStats.setProgress(storageStats.getProgress() + 1);
-                                }
-
-                            }
-                        });
-                    }
-                }, 50, 20);
-            }
-            catch (Exception e){
-                secondayStorageStats.setVisibility(View.GONE);
-                CrashReportingManager.logException(e);
-            }
+            secondatyStorageTimer = new Timer();
+            animateProgress(secondayStorageStats, secondatyStorageTimer, secondaryRoot);
         } else {
             secondayStorageStats.setVisibility(View.GONE);
         }
@@ -251,30 +207,8 @@ public class HomeFragment extends Fragment {
                     openRoot(usbRoot);
                 }
             });
-            try {
-                final double percentStore = (((usbRoot.totalBytes - usbRoot.availableBytes) / (double) usbRoot.totalBytes) * 100);
-                usbStorageStats.setProgress(0);
-                usbStorageTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (usbStorageStats.getProgress() >= (int) percentStore) {
-                                    usbStorageTimer.cancel();
-                                } else {
-                                    usbStorageStats.setProgress(storageStats.getProgress() + 1);
-                                }
-
-                            }
-                        });
-                    }
-                }, 50, 20);
-            }
-            catch (Exception e){
-                usbStorageStats.setVisibility(View.GONE);
-                CrashReportingManager.logException(e);
-            }
+            usbStorageTimer = new Timer();
+            animateProgress(usbStorageStats, usbStorageTimer, usbRoot);
         } else {
             usbStorageStats.setVisibility(View.GONE);
         }
@@ -308,30 +242,8 @@ public class HomeFragment extends Fragment {
                 ((DocumentsActivity) getActivity()).showInfo(summaryText);
             }
 
-            try {
-                final double percentStore = (((processRoot.totalBytes - processRoot.availableBytes) / (double) processRoot.totalBytes) * 100);
-                memoryStats.setProgress(0);
-                processTimer = new Timer();
-                processTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (memoryStats.getProgress() >= (int) percentStore) {
-                                    processTimer.cancel();
-                                } else {
-                                    memoryStats.setProgress(memoryStats.getProgress() + 1);
-                                }
-                            }
-                        });
-                    }
-                }, 50, 20);
-            }
-            catch (Exception e){
-                memoryStats.setVisibility(View.GONE);
-                CrashReportingManager.logException(e);
-            }
+            processTimer = new Timer();
+            animateProgress(memoryStats, processTimer, processRoot);
         }
     }
 
@@ -405,7 +317,6 @@ public class HomeFragment extends Fragment {
         processTimer.cancel();
     }
 
-
     private class OperationTask extends AsyncTask<Void, Void, Boolean> {
 
         private MaterialProgressDialog progressDialog;
@@ -454,6 +365,34 @@ public class HomeFragment extends Fragment {
                     progressDialog.dismiss();
                 }
             }, 500);
+        }
+    }
+
+    private void animateProgress(final HomeItem item, final Timer timer, RootInfo root){
+        try {
+            final double percent = (((root.totalBytes - root.availableBytes) / (double) root.totalBytes) * 100);
+            item.setProgress(0);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if(Utils.isActivityAlive(getActivity())){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (item.getProgress() >= (int) percent) {
+                                    timer.cancel();
+                                } else {
+                                    item.setProgress(item.getProgress() + 1);
+                                }
+                            }
+                        });
+                    }
+                }
+            }, 50, 20);
+        }
+        catch (Exception e){
+            item.setVisibility(View.GONE);
+            CrashReportingManager.logException(e);
         }
     }
 
