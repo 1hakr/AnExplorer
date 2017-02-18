@@ -2,6 +2,7 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,18 +11,24 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
+import android.support.design.widget.Snackbar;
 import android.support.v4.provider.BasicDocumentFile;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.provider.UsbDocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
+import android.text.Spanned;
+
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 
 import static android.app.Activity.RESULT_OK;
@@ -121,22 +128,34 @@ public class SAFManager {
         return treeUri;
     }
 
-    public static void takeCardUriPermission(final Activity activity, File rootFile) {
+    public static void takeCardUriPermission(final Activity activity, RootInfo root, DocumentInfo doc) {
 
         if(Utils.hasNougat()){
             StorageManager storageManager = (StorageManager) activity.getSystemService(Context.STORAGE_SERVICE);
-            StorageVolume storageVolume = storageManager.getStorageVolume(rootFile);
+            StorageVolume storageVolume = storageManager.getStorageVolume(new File(doc.path));
             Intent intent = storageVolume.createAccessIntent(null);
-            activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
+            try {
+                activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
+            } catch (ActivityNotFoundException e){
+                FirebaseCrash.report(e);
+            }
         } else if(Utils.hasLollipop()){
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setTitle("Grant AnExplorer Storage Accesss")
-                    .setMessage("Select root (outermost) folder of storage you want to add from next screen")
+            Spanned message = Utils.fromHtml("Select root (outermost) folder of storage "
+                    + "<b>" + root.title + "</b>"
+                    + " to grant access from next screen");
+            builder.setTitle("Grant accesss to External Storage")
+                    .setMessage(message)
                     .setPositiveButton("Give Access", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterfaceParam, int iParam) {
-                            Intent _intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                            activity.startActivityForResult(_intent, ADD_STORAGE_REQUEST_CODE);
+                        public void onClick(DialogInterface dialogInterfaceParam, int code) {
+                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                            intent.setPackage("com.android.documentsui");
+                            try {
+                                activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
+                            } catch (ActivityNotFoundException e){
+                                FirebaseCrash.report(e);
+                            }
                         }
                     })
                     .setNegativeButton("Cancel", null);
@@ -145,18 +164,30 @@ public class SAFManager {
     }
 
     public static boolean onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_STORAGE_REQUEST_CODE && resultCode == RESULT_OK){
-            if(data != null && data.getData() != null) {
-                Uri uri = data.getData();
-                if (Utils.hasKitKat()) {
-                    activity.getContentResolver().takePersistableUriPermission(uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    String rootId = ExternalStorageProvider.ROOT_ID_SECONDARY + getRootUri(uri);
-                    ExternalStorageProvider.notifyDocumentsChanged(activity, rootId);
-                    return true;
+        boolean accessGranted = false;
+        boolean primaryStorage = false;
+        if (requestCode == ADD_STORAGE_REQUEST_CODE ){
+            if(resultCode == RESULT_OK) {
+                if (data != null && data.getData() != null) {
+                    Uri uri = data.getData();
+                    if (Utils.hasKitKat()) {
+                        activity.getContentResolver().takePersistableUriPermission(uri,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        String rootId = getRootUri(uri);
+                        if(!rootId.startsWith(ExternalStorageProvider.ROOT_ID_PRIMARY_EMULATED)){
+                            String secondaryRootId = ExternalStorageProvider.ROOT_ID_SECONDARY + rootId;
+                            ExternalStorageProvider.notifyDocumentsChanged(activity, rootId);
+                            accessGranted = true;
+                        } else {
+                            primaryStorage = true;
+                        }
+                    }
                 }
             }
         }
-        return false;
+        Utils.showSnackBar(activity, "Access"+ (accessGranted ? "" : " was not") +" granted"
+                        + (primaryStorage ? ". Choose the external storage." : ""),
+                Snackbar.LENGTH_SHORT, null, null);
+        return accessGranted;
     }
 }

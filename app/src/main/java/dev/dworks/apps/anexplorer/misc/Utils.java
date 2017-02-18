@@ -42,6 +42,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AppCompatDelegate;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
@@ -400,6 +402,15 @@ public class Utils {
         snackbar.show();
     }
 
+    public static void showSnackBar(Activity activity, String text, int duration, String action, View.OnClickListener listener){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
+        if (null != listener) {
+            snackbar.setAction(action, listener)
+                    .setActionTextColor(SettingsActivity.getActionBarColor(activity));
+        }
+        snackbar.show();
+    }
+
     public static Bitmap getVector2Bitmap(Context context, int id) {
         VectorDrawableCompat vectorDrawable = VectorDrawableCompat.create(context.getResources(), id, context.getTheme());
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
@@ -522,6 +533,14 @@ public class Utils {
         Intent intent = new Intent(Intent.ACTION_VIEW, Utils.getAppUri());
         if(Utils.isIntentAvailable(çontext, intent)) {
             çontext.startActivity(intent);
+        }
+    }
+
+    public static Spanned fromHtml(String text) {
+        if(Utils.hasNougat()){
+            return Html.fromHtml(text, 0);
+        } else {
+            return Html.fromHtml(text);
         }
     }
 }

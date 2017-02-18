@@ -276,7 +276,8 @@ public class DocumentsActivity extends BaseActivity {
             moreApps.setComponent(null);
             moreApps.setPackage(null);
             RootsFragment.show(getFragmentManager(), moreApps);
-        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
+        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE
+                || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_OPEN_TREE) {
             RootsFragment.show(getFragmentManager(), new Intent());
         }
 

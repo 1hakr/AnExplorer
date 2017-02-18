@@ -295,9 +295,9 @@ public class DirectoryFragment extends ListFragment {
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
 
-		if(null != root && root.isSecondaryStorage()){
+		if(null != root && root.isSecondaryStorage() && state.action == ACTION_BROWSE){
 			if(!doc.isWriteSupported()){
-				SAFManager.takeCardUriPermission(getActivity(), new File(doc.path));
+				SAFManager.takeCardUriPermission(getActivity(), root, doc);
 			}
 		}
 		isApp = root != null && root.isApp();

@@ -90,7 +90,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         if(!network.isEmpty()){
             network.addAll(connection);
             groupRoots.add(new GroupInfo("Network", network));
-        } else {
+        } else if(!connection.isEmpty()){
             groupRoots.add(new GroupInfo("Network", connection));
         }
 
