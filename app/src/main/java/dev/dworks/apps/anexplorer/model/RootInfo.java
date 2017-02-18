@@ -620,7 +620,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isOtherRoot(RootInfo root){
-        return root.isHome() || root.isConnections() || root.isNetworkStorage();
+        return null != root && (root.isHome() || root.isConnections() || root.isNetworkStorage());
     }
 
 }

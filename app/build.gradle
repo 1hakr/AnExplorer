@@ -12,8 +12,8 @@ android {
     }
 
     defaultConfig {
-        versionName "3.5"
-        versionCode = 55
+        versionName "3.6"
+        versionCode = 57
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -84,8 +84,8 @@ android {
 }
 
 ext {
-    supportLibVersion = '25.1.0'
-    gmsVersion = '10.0.1'
+    supportLibVersion = '25.1.1'
+    gmsVersion = '10.2.0'
 }
 
 dependencies {

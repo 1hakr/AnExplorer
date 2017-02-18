@@ -43,7 +43,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.LruCache;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -508,6 +507,9 @@ public class DocumentsActivity extends BaseActivity {
             }
             else{
             	RootInfo root = getCurrentRoot();
+                if(null == root){
+                    return null;
+                }
                 final Uri uri = DocumentsContract.buildDocumentUri(root.authority, root.documentId);
                 DocumentInfo result;
 				try {
@@ -690,10 +692,12 @@ public class DocumentsActivity extends BaseActivity {
                 mToolbarStack.setAdapter(null);
             } else {
                 if (mState.stack.size() <= 1) {
-                    mToolbar.setTitle(root.title);
+                    if(null != root){
+                        mToolbar.setTitle(root.title);
+                        AnalyticsManager.setCurrentScreen(this, root.derivedTag);
+                    }
                     mToolbarStack.setVisibility(View.GONE);
                     mToolbarStack.setAdapter(null);
-                    AnalyticsManager.setCurrentScreen(this, root.derivedTag);
                 } else {
                     mToolbar.setTitle(null);
                     mToolbarStack.setVisibility(View.VISIBLE);
@@ -1142,7 +1146,7 @@ public class DocumentsActivity extends BaseActivity {
         if (mState.stack.root != null) {
             return mState.stack.root;
         } else {
-            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getPrimaryRoot();
+            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getStorageRoot();
         }
     }
     

@@ -419,25 +419,29 @@ public class FileUtils {
             destFolder.mkdirs();
             while ((entry = zis.getNextEntry()) != null) {
                 File dest = new File(destFolder, entry.getName());
-                //dest.getParentFile().mkdirs();
-                if (entry.isDirectory()) {
+                dest.getParentFile().mkdirs();
+
+                if(entry.isDirectory()) {
                     if (!dest.exists()) {
                         dest.mkdirs();
                     }
-                    continue;
+                } else {
+                    int size;
+                    byte[] buffer = new byte[2048];
+                    FileOutputStream fos = new FileOutputStream(dest);
+                    BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length);
+                    while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+                        bos.write(buffer, 0, size);
+                    }
+                    bos.flush();
+                    bos.close();
+                    IoUtils.flushQuietly(bos);
+                    IoUtils.closeQuietly(bos);
                 }
-                int size;
-                byte[] buffer = new byte[2048];
-                FileOutputStream fos = new FileOutputStream(dest);
-                BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length);
-                while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
-                    bos.write(buffer, 0, size);
-                }
-                bos.flush();
-                bos.close();
+                zis.closeEntry();
             }
-            zis.close();
-            fis.close();
+            IoUtils.closeQuietly(zis);
+            IoUtils.closeQuietly(fis);
             success = true;
         } catch (Exception e) {
             e.printStackTrace();

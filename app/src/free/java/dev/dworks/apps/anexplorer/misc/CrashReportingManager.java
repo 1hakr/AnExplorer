@@ -1,7 +1,5 @@
 package dev.dworks.apps.anexplorer.misc;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import dev.dworks.apps.anexplorer.BuildConfig;
 
 /**
@@ -14,7 +12,7 @@ public class CrashReportingManager {
         if(BuildConfig.DEBUG){
             e.printStackTrace();
         } else {
-            FirebaseCrash.report(e);
+            //FirebaseCrash.report(e);
         }
     }
 }
