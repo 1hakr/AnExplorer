@@ -44,6 +44,7 @@
         android:allowBackup="true"
         android:banner="@drawable/banner"
         android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher_round"
         android:label="AnExplorer"
         android:supportsRtl="true">
 
