@@ -48,7 +48,7 @@ public class ExplorerProvider extends ContentProvider {
     }
 
     public static final String TABLE_CONNECTION = "connection";
-    public static class ConnectionColumns {
+    public static class ConnectionColumns implements BaseColumns{
         public static final String NAME = "title";
         public static final String TYPE = "type";
         public static final String SCHEME = "scheme";
@@ -210,7 +210,13 @@ public class ExplorerProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("Unsupported Uri " + uri);
+        final SQLiteDatabase db = mHelper.getWritableDatabase();
+        switch (sMatcher.match(uri)) {
+            case URI_CONNECTION:
+                return db.update(TABLE_CONNECTION, values, selection, selectionArgs);
+            default:
+                throw new UnsupportedOperationException("Unsupported Uri " + uri);
+        }
     }
 
     @Override

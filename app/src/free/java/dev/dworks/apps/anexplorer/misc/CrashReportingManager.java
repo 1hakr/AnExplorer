@@ -1,5 +1,7 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import dev.dworks.apps.anexplorer.BuildConfig;
 
 /**

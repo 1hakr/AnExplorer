@@ -21,7 +21,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -198,7 +197,7 @@ public class CreateConnectionFragment extends DialogFragment {
         return isValid;
     }
 
-    private class CreateConnectionTask extends AsyncTask<Void, Void, Uri> {
+    private class CreateConnectionTask extends AsyncTask<Void, Void, Boolean> {
         private final BaseActivity mActivity;
         private final NetworkConnection mNetworkConnection;
 
@@ -214,13 +213,13 @@ public class CreateConnectionFragment extends DialogFragment {
         }
 
         @Override
-        protected Uri doInBackground(Void... params) {
-            return NetworkStorageProvider.addConnection(mActivity, mNetworkConnection);
+        protected Boolean doInBackground(Void... params) {
+            return NetworkStorageProvider.addUpdateConnection(mActivity, mNetworkConnection, connection_id);
         }
 
         @Override
-        protected void onPostExecute(Uri result) {
-            if (result != null) {
+        protected void onPostExecute(Boolean result) {
+            if (result) {
                 RootsCache.updateRoots(mActivity, NetworkStorageProvider.AUTHORITY);
                 ConnectionsFragment connectionsFragment = ConnectionsFragment.get(mActivity.getFragmentManager());
                 if(null != connectionsFragment){
