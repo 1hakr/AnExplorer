@@ -8,4 +8,7 @@ public class CrashReportingManager {
 
     public static void logException(Exception e) {
     }
+
+    public static void logException(Exception e, boolean log) {
+    }
 }

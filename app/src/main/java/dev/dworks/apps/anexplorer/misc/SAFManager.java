@@ -19,8 +19,6 @@ import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.Spanned;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -137,7 +135,7 @@ public class SAFManager {
             try {
                 activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
             } catch (ActivityNotFoundException e){
-                FirebaseCrash.report(e);
+                CrashReportingManager.logException(e, true);
             }
         } else if(Utils.hasLollipop()){
             AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -154,7 +152,7 @@ public class SAFManager {
                             try {
                                 activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
                             } catch (ActivityNotFoundException e){
-                                FirebaseCrash.report(e);
+                                CrashReportingManager.logException(e, true);
                             }
                         }
                     })
