@@ -189,6 +189,7 @@
         </service>
         <service
             android:name=".service.ServerService"
+            android:icon="@drawable/ic_root_server"
             android:label="@string/toggle_messages"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
