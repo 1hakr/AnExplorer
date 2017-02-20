@@ -219,7 +219,7 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_bluetooth;
             derivedTag = "bluetooth";
         } else if (isAppBackupFolder()) {
-            derivedIcon = R.drawable.ic_root_folder;
+            derivedIcon = R.drawable.ic_root_appbackup;
             derivedTag = "appbackup";
         } else if (isBookmarkFolder()) {
             derivedIcon = R.drawable.ic_root_bookmark;
