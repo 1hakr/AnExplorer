@@ -190,16 +190,11 @@ public class NetworkStorageProvider extends DocumentsProvider {
                 if(null != inputStream){
                     return ParcelFileDescriptorUtil.pipeFrom(inputStream);
                 }
-/*            InputStream inputStream = connection.getConnectedClient().getInputStream(file.getName(), file.getParentFile().getAbsolutePath());
-            if(null != inputStream){
-                return ParcelFileDescriptorUtil.pipeFrom(
-                        new FTPInputStream(inputStream, connection.getClient()));
-                //return ParcelFileDescriptorUtil.pipeFrom(connection.getInputStream(file));
-            }*/
             }
 
             return null;
         } catch (Exception e) {
+            CrashReportingManager.logException(e);
             throw new FileNotFoundException("Failed to open document with id " + documentId +
                     " and mode " + mode);
         }
