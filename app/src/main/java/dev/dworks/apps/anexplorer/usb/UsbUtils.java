@@ -11,12 +11,11 @@ import dev.dworks.apps.anexplorer.misc.Utils;
  * Created by HaKr on 17/01/15.
  */
 public class UsbUtils {
-        /* Helper Methods to Provide Readable Names for USB Constants */
 
-    private String nameForClass(int classType) {
+    /* Helper Methods to Provide Readable Names for USB Constants */
+    private static String nameForClass(UsbDevice usbDevice) {
+        int classType = usbDevice.getDeviceClass();
         switch (classType) {
-            case UsbConstants.USB_CLASS_APP_SPEC:
-                return String.format("Application Specific 0x%02x", classType);
             case UsbConstants.USB_CLASS_AUDIO:
                 return "Audio";
             case UsbConstants.USB_CLASS_CDC_DATA:
@@ -35,8 +34,6 @@ public class UsbUtils {
                 return "Mass Storage";
             case UsbConstants.USB_CLASS_MISC:
                 return "Wireless Miscellaneous";
-            case UsbConstants.USB_CLASS_PER_INTERFACE:
-                return "(Defined Per Interface)";
             case UsbConstants.USB_CLASS_PHYSICA:
                 return "Physical";
             case UsbConstants.USB_CLASS_PRINTER:
@@ -50,13 +47,13 @@ public class UsbUtils {
             case UsbConstants.USB_CLASS_WIRELESS_CONTROLLER:
                 return "Wireless Controller";
             default:
-                return String.format("0x%02x", classType);
+                return "";
         }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static String getName(UsbDevice device){
-        return Utils.hasLollipop() ? device.getProductName() : device.getDeviceName();
+        return Utils.hasLollipop() ? device.getManufacturerName() : nameForClass(device);
     }
 
     public static String getPath(UsbDevice device){

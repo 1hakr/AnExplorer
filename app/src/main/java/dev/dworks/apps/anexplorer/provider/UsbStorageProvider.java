@@ -174,12 +174,7 @@ public class UsbStorageProvider extends DocumentsProvider {
                 documentId = getDocIdForFile(rootDirectory);
             }
 
-            String title = "";
-            if (Utils.hasLollipop()) {
-                title = usbDevice.getManufacturerName();
-            } else {
-                title = usbDevice.getDeviceName();
-            }
+            String title = UsbUtils.getName(usbDevice);
             if(TextUtils.isEmpty(title)) {
                 title = getContext().getString(R.string.root_usb);
             }
