@@ -1,17 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <dev.dworks.apps.anexplorer.ui.ColorPreference
-        android:defaultValue="@color/defaultColor"
-        android:dialogTitle="@string/pref_foreground_color_title"
-        android:key="actionBarColor"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:summary="@string/pref_foreground_color_description"
-        android:title="@string/pref_foreground_color_title"
-        app:itemLayout="@layout/pref_layout_color"
-        app:numColumns="5" />
-
     <ListPreference
         android:defaultValue="1"
         android:entries="@array/theme_style_names"
@@ -20,5 +9,27 @@
         android:persistent="true"
         android:summary="%s"
         android:title="@string/pref_theme_style_title" />
+
+    <dev.dworks.apps.anexplorer.ui.MaterialColorPreference
+        android:defaultValue="@color/defaultColor"
+        android:dialogTitle="@string/pref_foreground_color_title"
+        android:key="primaryColor"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:summary="@string/pref_foreground_color_description"
+        android:title="@string/pref_foreground_color_title"
+        app:itemLayout="@layout/pref_layout_color"
+        app:color_type="primary" />
+
+    <dev.dworks.apps.anexplorer.ui.MaterialColorPreference
+        android:defaultValue="@color/material_red"
+        android:dialogTitle="@string/pref_foreground_color_title"
+        android:key="accentColor"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:summary="@string/pref_accent_color_description"
+        android:title="@string/pref_accent_color_title"
+        app:itemLayout="@layout/pref_layout_color"
+        app:color_type="accent" />
 
 </PreferenceScreen>

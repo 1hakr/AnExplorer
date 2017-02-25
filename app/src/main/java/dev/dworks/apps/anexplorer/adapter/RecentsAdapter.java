@@ -32,7 +32,7 @@ public class RecentsAdapter extends CursorRecyclerViewAdapter<RecentsAdapter.Vie
         super(context, cursor);
         mContext = context;
         mIconHelper = new IconHelper(context);
-        mDefaultColor = SettingsActivity.getActionBarColor();
+        mDefaultColor = SettingsActivity.getPrimaryColor();
     }
 
     @Override

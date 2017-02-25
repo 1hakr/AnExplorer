@@ -56,7 +56,7 @@ public class NotificationUtils {
                 .setTicker(tickerText)
                 .setWhen(when)
                 .setOngoing(true)
-                .setColor(SettingsActivity.getActionBarColor())
+                .setColor(SettingsActivity.getPrimaryColor())
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setPriority(Notification.PRIORITY_MAX)

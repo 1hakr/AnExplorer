@@ -155,8 +155,8 @@ public class DetailFragment extends DialogFragment {
 		}
 		
 		name.setText(doc.displayName);
-        name.setTextColor(Utils.getLightColor(SettingsActivity.getActionBarColor(getActivity())));
-        iconMimeBackground.setBackgroundColor(IconColorUtils.loadMimeColor(getActivity(), doc.mimeType, doc.authority, doc.documentId, SettingsActivity.getActionBarColor(getActivity())));
+        name.setTextColor(Utils.getLightColor(SettingsActivity.getPrimaryColor(getActivity())));
+        iconMimeBackground.setBackgroundColor(IconColorUtils.loadMimeColor(getActivity(), doc.mimeType, doc.authority, doc.documentId, SettingsActivity.getPrimaryColor(getActivity())));
 		path.setText(doc.path);
         if(!TextUtils.isEmpty(doc.path)){
             path.setText(doc.path);

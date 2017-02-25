@@ -54,7 +54,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 			//((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
 			mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
 		}
-		int color = SettingsActivity.getActionBarColor(this);
+		int color = SettingsActivity.getPrimaryColor(this);
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(null);
@@ -71,7 +71,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 	private void initControls() {
 
 		TextView logo = (TextView)findViewById(R.id.logo);
-		logo.setTextColor(Utils.getComplementaryColor(SettingsActivity.getActionBarColor(this)));
+		logo.setTextColor(SettingsActivity.getAccentColor());
 		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 

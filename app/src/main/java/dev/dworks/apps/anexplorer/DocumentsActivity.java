@@ -1780,7 +1780,7 @@ public class DocumentsActivity extends BaseActivity {
 
     private void changeActionBarColor() {
 
-		int color = SettingsActivity.getActionBarColor(this);
+		int color = SettingsActivity.getPrimaryColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
 
 		if (oldBackground == null) {
@@ -1829,7 +1829,7 @@ public class DocumentsActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpStatusBar() {
-        int color = Utils.getStatusBarColor(SettingsActivity.getActionBarColor(this));
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor(this));
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }
@@ -1871,12 +1871,11 @@ public class DocumentsActivity extends BaseActivity {
 
         mActionMenu.attachToListView(currentView);
 
-        int defaultColor = SettingsActivity.getActionBarColor(this);
-        int complimentaryColor = Utils.getComplementaryColor(defaultColor);
+        int defaultColor = SettingsActivity.getPrimaryColor(this);
         ViewCompat.setNestedScrollingEnabled(currentView, true);
         mActionMenu.show();
         mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
-        mActionMenu.setBackgroundTintList(complimentaryColor);
+        mActionMenu.setBackgroundTintList(SettingsActivity.getAccentColor());
         mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
     }
 

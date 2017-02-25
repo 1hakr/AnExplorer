@@ -216,7 +216,7 @@ public abstract class BaseActivity extends ActionBarActivity {
                 snackbar.dismiss();
             }
         });
-        snackbar.setActionTextColor(SettingsActivity.getActionBarColor()).show();
+        snackbar.setActionTextColor(SettingsActivity.getPrimaryColor()).show();
     }
 
     public void showSnackBar(String text, int duration, String action, int actionColor){
@@ -237,7 +237,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
     public void showSnackBar(String text, int duration, String action, View.OnClickListener listener){
         Snackbar.make(findViewById(R.id.content_view), text, duration).setAction(action, listener)
-                .setActionTextColor(SettingsActivity.getActionBarColor()).show();
+                .setActionTextColor(SettingsActivity.getPrimaryColor()).show();
     }
 
     public boolean isSAFIssue(String docId){

@@ -111,8 +111,10 @@
     <string name="pin_disabled">PIN protection disabled</string>
     <string name="pin_protection">PIN Protection</string>
     <string name="loading">Loading...</string>
-    <string name="pref_foreground_color_title">Theme Color</string>
-    <string name="pref_foreground_color_description">The color of theme</string>
+    <string name="pref_foreground_color_title">Primary Color</string>
+    <string name="pref_foreground_color_description">The main color of actionbar</string>
+    <string name="pref_accent_color_title">Accent Color</string>
+    <string name="pref_accent_color_description">The secondary color</string>
 
     <string name="pref_theme_style_title">Theme Style</string>
     <string name="pref_theme_style_description">The style of theme</string>
@@ -193,4 +195,7 @@
         <item>FTP</item>
         <item>FTPS</item>
     </string-array>
+
+    <string name="primary_color">Primary Color</string>
+    <string name="accent_color">Accent Color</string>
 </resources>

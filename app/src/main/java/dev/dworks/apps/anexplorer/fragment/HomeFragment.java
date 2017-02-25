@@ -150,8 +150,8 @@ public class HomeFragment extends Fragment {
     private void updateUI() {
         recents_container.setVisibility(SettingsActivity.getDisplayRecentMedia() ? View.VISIBLE : View.GONE);
         roots = DocumentsApplication.getRootsCache(getActivity());
-        int complimentaryColor = Utils.getComplementaryColor(SettingsActivity.getActionBarColor());
-        recents.setTextColor(complimentaryColor);
+        int accentColor = SettingsActivity.getAccentColor();
+        recents.setTextColor(accentColor);
         storageStats.updateColor();
         memoryStats.updateColor();
         secondayStorageStats.updateColor();
@@ -342,7 +342,7 @@ public class HomeFragment extends Fragment {
             progressDialog = new MaterialProgressDialog(getActivity());
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setIndeterminate(true);
-            progressDialog.setColor(SettingsActivity.getActionBarColor());
+            progressDialog.setColor(SettingsActivity.getPrimaryColor());
             progressDialog.setCancelable(false);
             progressDialog.setMessage("Cleaning up RAM...");
             this.root = root;

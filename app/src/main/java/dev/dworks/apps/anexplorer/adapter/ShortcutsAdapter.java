@@ -26,7 +26,7 @@ public class ShortcutsAdapter extends RecyclerView.Adapter<ShortcutsAdapter.View
     public ShortcutsAdapter(Context context, ArrayList<RootInfo> data){
         mContext = context;
         mData = data;
-        mDefaultColor = SettingsActivity.getActionBarColor();
+        mDefaultColor = SettingsActivity.getPrimaryColor();
     }
 
     public void setData(ArrayList<RootInfo> data) {

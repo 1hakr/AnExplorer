@@ -388,7 +388,7 @@ public class Utils {
         Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
             snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+                    .setActionTextColor(SettingsActivity.getPrimaryColor(view.getContext()));
         }
         snackbar.show();
     }
@@ -397,7 +397,7 @@ public class Utils {
         Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
             snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getActionBarColor(activity));
+                    .setActionTextColor(SettingsActivity.getPrimaryColor(activity));
         }
         snackbar.show();
     }
@@ -406,7 +406,7 @@ public class Utils {
         Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
         if (null != listener) {
             snackbar.setAction(action, listener)
-                    .setActionTextColor(SettingsActivity.getActionBarColor(activity));
+                    .setActionTextColor(SettingsActivity.getPrimaryColor(activity));
         }
         snackbar.show();
     }
@@ -434,11 +434,11 @@ public class Utils {
     }
 
     public static void tintWidget(View view) {
-        tintWidget(view, SettingsActivity.getActionBarColor(view.getContext()));
+        tintWidget(view, SettingsActivity.getPrimaryColor(view.getContext()));
     }
 
     public static void tintButton(Button view) {
-        view.setTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+        view.setTextColor(SettingsActivity.getPrimaryColor(view.getContext()));
     }
 
     public static void tintWidget(View view, int color) {

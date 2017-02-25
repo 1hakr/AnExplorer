@@ -472,7 +472,7 @@ public class DirectoryFragment extends ListFragment {
 	private void updateDisplayState() {
 		final State state = getDisplayState(this);
 
-        mDefaultColor = SettingsActivity.getActionBarColor(getActivity());
+        mDefaultColor = SettingsActivity.getPrimaryColor(getActivity());
         if (mLastMode == state.derivedMode &&  mLastSortOrder == state.derivedSortOrder
                 && mLastShowSize == state.showSize
                 && mLastShowFolderSize == state.showFolderSize

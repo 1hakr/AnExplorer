@@ -183,7 +183,7 @@ public class AppRate implements View.OnClickListener{
         Button action_rate = (Button) mainView.findViewById(R.id.action_rate);
         Button action_feedback = (Button) mainView.findViewById(R.id.action_feedback);
 
-        int color = Utils.getComplementaryColor(SettingsActivity.getActionBarColor(activity));
+        int color = SettingsActivity.getAccentColor();
         action_rate.setTextColor(color);
         action_feedback.setTextColor(color);
 

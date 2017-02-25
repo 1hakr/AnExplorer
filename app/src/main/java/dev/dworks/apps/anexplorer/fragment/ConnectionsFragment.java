@@ -92,11 +92,11 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         final Resources res = getActivity().getResources();
 
-        int defaultColor = SettingsActivity.getActionBarColor();
-        int complimentaryColor = Utils.getComplementaryColor(defaultColor);
+        int defaultColor = SettingsActivity.getPrimaryColor();
+        int accentColor = SettingsActivity.getAccentColor();
 
         fab = (FloatingActionButton)view.findViewById(R.id.fab);
-        fab.setBackgroundTintList(ColorStateList.valueOf(complimentaryColor));
+        fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
         fab.setOnClickListener(this);
         if(isTelevision()){
             fab.setVisibility(View.GONE);
