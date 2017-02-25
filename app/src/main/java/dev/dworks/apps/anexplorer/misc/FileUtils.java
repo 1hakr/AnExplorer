@@ -492,7 +492,7 @@ public class FileUtils {
             }
         }
 
-        return "application/octet-stream";
+        return BASIC_MIME_TYPE;
     }
 
     /**

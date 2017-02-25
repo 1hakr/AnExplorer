@@ -54,7 +54,7 @@ public class SAFManager {
             documentFile = DocumentFile.fromFile(file);
             return documentFile;
         }
-        if(docId.startsWith(ROOT_ID_SECONDARY)){
+        if(docId.startsWith(ROOT_ID_SECONDARY) && Utils.hasLollipop()){
             String newDocId = docId.substring(ROOT_ID_SECONDARY.length());
             Uri uri = getRootUri(newDocId);
             if(null == uri){
