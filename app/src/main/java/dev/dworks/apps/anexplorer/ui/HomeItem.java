@@ -30,6 +30,7 @@ public class HomeItem extends FrameLayout {
     private ImageButton action;
     private View action_layout;
     private View card_view;
+    private int mActionDrawable;
 
     public HomeItem(Context context) {
         super(context);
@@ -99,12 +100,20 @@ public class HomeItem extends FrameLayout {
     }
 
     public void setAction(int drawableId, OnClickListener listener){
+        mActionDrawable = drawableId;
         action_layout.setVisibility(View.VISIBLE);
-        action.setImageDrawable(IconUtils.applyTint(mContext, drawableId, complimentaryColor));
+        action.setImageDrawable(IconUtils.applyTint(mContext, mActionDrawable, complimentaryColor));
         action.setOnClickListener(listener);
     }
 
     public void setCardListener(OnClickListener listener){
         card_view.setOnClickListener(listener);
+    }
+
+    public void updateColor(){
+        color = SettingsActivity.getActionBarColor();
+        complimentaryColor = Utils.getComplementaryColor(color);
+        progress.setColor(color);
+        action.setImageDrawable(IconUtils.applyTint(mContext, mActionDrawable, complimentaryColor));
     }
 }

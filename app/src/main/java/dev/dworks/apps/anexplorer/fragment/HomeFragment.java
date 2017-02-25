@@ -132,15 +132,30 @@ public class HomeFragment extends Fragment {
         showData();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     public void showData(){
-        roots = DocumentsApplication.getRootsCache(getActivity());
-        int complimentaryColor = Utils.getComplementaryColor(SettingsActivity.getActionBarColor());
-        recents.setTextColor(complimentaryColor);
+        updateUI();
         showStorage();
         showOtherStorage();
         showMemory(0);
         showShortcuts();
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+    }
+
+    private void updateUI() {
+        recents_container.setVisibility(SettingsActivity.getDisplayRecentMedia() ? View.VISIBLE : View.GONE);
+        roots = DocumentsApplication.getRootsCache(getActivity());
+        int complimentaryColor = Utils.getComplementaryColor(SettingsActivity.getActionBarColor());
+        recents.setTextColor(complimentaryColor);
+        storageStats.updateColor();
+        memoryStats.updateColor();
+        secondayStorageStats.updateColor();
+        usbStorageStats.updateColor();
     }
 
     public void reloadData(){
@@ -293,9 +308,9 @@ public class HomeFragment extends Fragment {
                 if (!isAdded())
                     return;
                 if(null == result.cursor || (null != result.cursor && result.cursor.getCount() == 0)) {
-                    recents_container.setVisibility(View.GONE);
+                    //recents_container.setVisibility(View.GONE);
                 } else {
-                    recents_container.setVisibility(View.VISIBLE);
+                    //recents_container.setVisibility(View.VISIBLE);
                     mRecentsAdapter.swapCursor(new LimitCursorWrapper(result.cursor, MAX_RECENT_COUNT));
                 }
             }

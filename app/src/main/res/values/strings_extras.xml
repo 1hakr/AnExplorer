@@ -91,6 +91,7 @@
     <string name="pref_translucent_mode">Display Translucent Mode</string>
     <string name="pref_as_dialog">Display as Dialog</string>
     <string name="pref_folder_animations">Enable folder animations</string>
+    <string name="pref_recent_media">Show recent media</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

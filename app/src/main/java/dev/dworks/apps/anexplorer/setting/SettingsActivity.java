@@ -55,7 +55,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
     public static final String KEY_THEME_STYLE = "themeStyle";
     public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
-	
+    public static final String KEY_RECENT_MEDIA = "recentMedia";
+
 	private Resources res;
 	private int actionBarColor;
     private final Handler handler = new Handler();
@@ -85,6 +86,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static boolean getDisplayFileHidden(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_FILE_HIDDEN, false);
+    }
+
+    public static boolean getDisplayRecentMedia() {
+        return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
+                .getBoolean(KEY_RECENT_MEDIA, true);
     }
 
     public static boolean getRootMode(Context context) {
