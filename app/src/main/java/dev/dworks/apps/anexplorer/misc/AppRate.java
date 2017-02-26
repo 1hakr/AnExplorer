@@ -179,11 +179,13 @@ public class AppRate implements View.OnClickListener{
             mainView = (ViewGroup) inflater.inflate(R.layout.layout_app_feedback, null);
         }
 
+        ImageView icon = (ImageView) mainView.findViewById(android.R.id.icon);
         ImageView action_close = (ImageView) mainView.findViewById(R.id.action_close);
         Button action_rate = (Button) mainView.findViewById(R.id.action_rate);
         Button action_feedback = (Button) mainView.findViewById(R.id.action_feedback);
 
         int color = SettingsActivity.getAccentColor();
+        icon.setImageDrawable(IconUtils.applyTint(activity, R.drawable.ic_support, color));
         action_rate.setTextColor(color);
         action_feedback.setTextColor(color);
 
