@@ -9,11 +9,13 @@ import android.graphics.Rect;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Palette;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class LineColorPicker extends View {
 
@@ -40,6 +42,7 @@ public class LineColorPicker extends View {
 	boolean isColorSelected = false;
 
 	private int selectedColor = colors[0];
+	private int selectedColorIndex = 0;
 
 	private OnColorChangedListener onColorChanged;
 
@@ -205,6 +208,31 @@ public class LineColorPicker extends View {
 		return true;
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		int increment = selectedColorIndex;
+		switch (keyCode) {
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+			case KeyEvent.KEYCODE_MINUS:
+				increment = Utils.isRTL() ? increment + 1 : increment -1;
+				if(increment < 0){
+					return false;
+				}
+				setSelectedColorPosition(increment);
+				return true;
+
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+			case KeyEvent.KEYCODE_PLUS:
+				increment =  Utils.isRTL() ? increment - 1  : increment + 1;
+				if(increment >= colors.length){
+					return false;
+				}
+				setSelectedColorPosition(increment);
+				return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
 	/**
 	 * Return color at x,y coordinate of view.
 	 */
@@ -251,6 +279,7 @@ public class LineColorPicker extends View {
 		// end
 
 		ss.selectedColor = this.selectedColor;
+		ss.selectedColorIndex = this.selectedColorIndex;
 		ss.isColorSelected = this.isColorSelected;
 
 		return ss;
@@ -269,11 +298,13 @@ public class LineColorPicker extends View {
 		// end
 
 		this.selectedColor = ss.selectedColor;
+		this.selectedColorIndex = ss.selectedColorIndex;
 		this.isColorSelected = ss.isColorSelected;
 	}
 
 	static class SavedState extends BaseSavedState {
 		int selectedColor;
+		int selectedColorIndex;
 		boolean isColorSelected;
 
 		SavedState(Parcelable superState) {
@@ -283,6 +314,7 @@ public class LineColorPicker extends View {
 		private SavedState(Parcel in) {
 			super(in);
 			this.selectedColor = in.readInt();
+			this.selectedColorIndex = in.readInt();
 			this.isColorSelected = in.readInt() == 1;
 		}
 
@@ -290,6 +322,7 @@ public class LineColorPicker extends View {
 		public void writeToParcel(Parcel out, int flags) {
 			super.writeToParcel(out, flags);
 			out.writeInt(this.selectedColor);
+			out.writeInt(this.selectedColorIndex);
 			out.writeInt(this.isColorSelected ? 1 : 0);
 		}
 
@@ -342,14 +375,15 @@ public class LineColorPicker extends View {
 	public void setSelectedColor(int color) {
 
 		// not from current palette
-		if (!containsColor(colors, color)) {
+		int index = containsColor(colors, color);
+		if (index == -1) {
 			return;
 		}
 
 		// do we need to re-draw view?
 		if (!isColorSelected || selectedColor != color) {
 			this.selectedColor = color;
-
+			selectedColorIndex = index;
 			isColorSelected = true;
 
 			invalidate();
@@ -362,7 +396,8 @@ public class LineColorPicker extends View {
 	 * Set selected color as index from palete
 	 */
 	public void setSelectedColorPosition(int position) {
-		setSelectedColor(colors[position]);
+		selectedColorIndex = position;
+		setSelectedColor(colors[selectedColorIndex]);
 	}
 
 	/**
@@ -373,7 +408,7 @@ public class LineColorPicker extends View {
 		// FIXME: colors can be null
 		this.colors = colors;
 
-		if (!containsColor(colors, selectedColor)) {
+		if (containsColor(colors, selectedColor) == - 1) {
 			selectedColor = colors[0];
 		}
 
@@ -400,17 +435,18 @@ public class LineColorPicker extends View {
 		return colors;
 	}
 
+
 	/**
-	 * Return true if palette contains this color
+	 * Return position if palette contains this color or else - 1
 	 */
-	private boolean containsColor(int[] colors, int c) {
+	private int containsColor(int[] colors, int c) {
 		for (int i = 0; i < colors.length; i++) {
 			if (colors[i] == c)
-				return true;
+				return i;
 
 		}
 
-		return false;
+		return -1;
 	}
 
 	/**
