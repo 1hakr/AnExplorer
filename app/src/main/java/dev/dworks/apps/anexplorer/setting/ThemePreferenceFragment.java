@@ -25,6 +25,13 @@ public class ThemePreferenceFragment extends PreferenceFragment implements OnPre
 		preferencePrimaryColor.setOnPreferenceChangeListener(this);
 
 		Preference preferenceAccentColor = findPreference(KEY_ACCENT_COLOR);
+		preferenceAccentColor.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object o) {
+				SettingsActivity.logSettingEvent(preference.getKey());
+				return false;
+			}
+		});
 
 		Preference preferenceThemeStyle = findPreference(KEY_THEME_STYLE);
 		preferenceThemeStyle.setOnPreferenceChangeListener(this);
@@ -33,6 +40,7 @@ public class ThemePreferenceFragment extends PreferenceFragment implements OnPre
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
+		SettingsActivity.logSettingEvent(preference.getKey());
         ((SettingsActivity)getActivity()).changeActionBarColor(Integer.valueOf(newValue.toString()));
 		getActivity().recreate();
 		return true;

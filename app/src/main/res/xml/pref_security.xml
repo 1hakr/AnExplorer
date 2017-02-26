@@ -6,8 +6,8 @@
         android:title="@string/pref_title_pin_enable" />
 
     <Preference
-        android:dependency="pin_enable"
         android:key="pin_set"
+        android:dependency="pin_enable"
         android:summary="@string/pref_default_pin_set"
         android:title="@string/pref_title_pin_set" />
 

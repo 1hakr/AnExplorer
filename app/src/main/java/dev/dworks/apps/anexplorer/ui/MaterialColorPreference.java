@@ -229,6 +229,7 @@ public class MaterialColorPreference extends Preference {
                     if(colorType == 0) {
                         mShadePicker.setColors(ColorPalette.getColors(context, mColorPicker.getColor()));
                         mShadePicker.setSelectedColor(mColorPicker.getColor());
+                        ((SettingsActivity)getActivity()).changeActionBarColor(mColorPicker.getColor());
                     }
                 }
             });
@@ -253,7 +254,15 @@ public class MaterialColorPreference extends Preference {
                     dismiss();
                 }
             });
-            builder.setNegativeButton(android.R.string.cancel, null);
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if(colorType == 0) {
+                        ((SettingsActivity)getActivity()).changeActionBarColor(SettingsActivity.getPrimaryColor());
+                    }
+                    dismiss();
+                }
+            });
             return builder.create();
         }
     }

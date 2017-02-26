@@ -36,6 +36,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -45,13 +46,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final int FRAGMENT_OPEN = 99;
 
     private static final String EXTRA_RECREATE = "recreate";
-    private static final String KEY_ADVANCED_DEVICES = "advancedDevices";
-    private static final String KEY_FILE_SIZE = "fileSize";
-    private static final String KEY_FOLDER_SIZE = "folderSize";
-    private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
-    private static final String KEY_FILE_HIDDEN = "fileHidden";
+    public static final String KEY_ADVANCED_DEVICES = "advancedDevices";
+    public static final String KEY_FILE_SIZE = "fileSize";
+    public static final String KEY_FOLDER_SIZE = "folderSize";
+    public static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
+    public static final String KEY_FILE_HIDDEN = "fileHidden";
     private static final String KEY_PIN = "pin";
-    private static final String PIN_ENABLED = "pin_enable";
+    public static final String KEY_PIN_ENABLED = "pin_enable";
+    public static final String KEY_PIN_SET = "pin_set";
     public static final String KEY_ROOT_MODE = "rootMode";
     public static final String KEY_PRIMARY_COLOR = "primaryColor";
     public static final String KEY_ACCENT_COLOR = "accentColor";
@@ -163,7 +165,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
     
 	public static final boolean isPinEnabled(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PIN_ENABLED, false)
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(KEY_PIN_ENABLED, false)
         		&& isPinProtected(context);
     }
 	
@@ -272,5 +274,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 		oldBackground = colorDrawable;
 	}
+
+	public static void logSettingEvent(String key){
+        AnalyticsManager.logEvent("settings_"+key.toLowerCase());
+    }
 
 }
