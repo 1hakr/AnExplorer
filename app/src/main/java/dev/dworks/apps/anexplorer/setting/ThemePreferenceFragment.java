@@ -11,7 +11,8 @@ import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACCENT_COL
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_PRIMARY_COLOR;
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_THEME_STYLE;
 
-public class ThemePreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
+public class ThemePreferenceFragment extends PreferenceFragment
+		implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
 	public ThemePreferenceFragment() {
 	}
@@ -23,18 +24,13 @@ public class ThemePreferenceFragment extends PreferenceFragment implements OnPre
 		
 		Preference preferencePrimaryColor = findPreference(KEY_PRIMARY_COLOR);
 		preferencePrimaryColor.setOnPreferenceChangeListener(this);
+		preferencePrimaryColor.setOnPreferenceClickListener(this);
 
-		Preference preferenceAccentColor = findPreference(KEY_ACCENT_COLOR);
-		preferenceAccentColor.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object o) {
-				SettingsActivity.logSettingEvent(preference.getKey());
-				return false;
-			}
-		});
+		findPreference(KEY_ACCENT_COLOR).setOnPreferenceClickListener(this);
 
 		Preference preferenceThemeStyle = findPreference(KEY_THEME_STYLE);
 		preferenceThemeStyle.setOnPreferenceChangeListener(this);
+		preferenceThemeStyle.setOnPreferenceClickListener(this);
 
 	}
 
@@ -44,5 +40,11 @@ public class ThemePreferenceFragment extends PreferenceFragment implements OnPre
         ((SettingsActivity)getActivity()).changeActionBarColor(Integer.valueOf(newValue.toString()));
 		getActivity().recreate();
 		return true;
+	}
+
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		SettingsActivity.logSettingEvent(preference.getKey());
+		return false;
 	}
 }

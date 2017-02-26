@@ -166,6 +166,7 @@ public class DirectoryFragment extends ListFragment {
 	private boolean mLastShowFolderSize = false;
 	private boolean mLastShowThumbnail = false;
     private int mLastShowColor = 0;
+    private int mLastShowAccentColor = 0;
     private boolean mLastShowHiddenFiles = false;
 
 	private boolean mHideGridTitles = false;
@@ -473,12 +474,14 @@ public class DirectoryFragment extends ListFragment {
 		final State state = getDisplayState(this);
 
         mDefaultColor = SettingsActivity.getPrimaryColor(getActivity());
+        int accentColor = SettingsActivity.getAccentColor();
         if (mLastMode == state.derivedMode &&  mLastSortOrder == state.derivedSortOrder
                 && mLastShowSize == state.showSize
                 && mLastShowFolderSize == state.showFolderSize
 				&& mLastShowThumbnail == state.showThumbnail
 				&& mLastShowHiddenFiles == state.showHiddenFiles
-                && (mLastShowColor != 0 && mLastShowColor == mDefaultColor))
+                && (mLastShowColor != 0 && mLastShowColor == mDefaultColor)
+                && (mLastShowAccentColor != 0 && mLastShowAccentColor == accentColor))
 			return;
         boolean refreshData = mLastShowHiddenFiles != state.showHiddenFiles;
 		mLastMode = state.derivedMode;

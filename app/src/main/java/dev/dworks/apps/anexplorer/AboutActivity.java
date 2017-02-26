@@ -20,7 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,7 +54,8 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 			//((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
 			mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
 		}
-		int color = SettingsActivity.getPrimaryColor(this);
+		int color = SettingsActivity.getPrimaryColor();
+		mToolbar.setBackgroundColor(color);
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(null);
@@ -70,8 +71,10 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 
 	private void initControls() {
 
+		int accentColor = ColorUtils.setAlphaComponent(SettingsActivity.getAccentColor(), 200);
+
 		TextView logo = (TextView)findViewById(R.id.logo);
-		logo.setTextColor(SettingsActivity.getAccentColor());
+		logo.setTextColor(accentColor);
 		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
 		logo.setText(header);
 
@@ -155,7 +158,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 	}
 
 	public void setUpDefaultStatusBar() {
-		int color = ContextCompat.getColor(this, R.color.material_blue_grey_800);
+		int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
 		if(Utils.hasLollipop()){
 			getWindow().setStatusBarColor(color);
 		}

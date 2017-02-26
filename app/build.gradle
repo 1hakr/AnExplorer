@@ -3,12 +3,12 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
-    
-   applicationVariants.all { variant -> 
-   variant.outputs.each { output -> 
-   def newApkName = "${parent.name}-${output.baseName}-${variant.versionName}.apk" 
-   output.outputFile = new File(output.outputFile.parent, newApkName) 
-   } 
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def newApkName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
+            output.outputFile = new File(output.outputFile.parent, newApkName)
+        }
     }
 
     defaultConfig {
@@ -26,7 +26,7 @@ android {
             minifyEnabled false
             shrinkResources false
             useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),'proguard/proguard-project.pro',
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard/proguard-project.pro',
                     'proguard/proguard-google-play-services.pro'
         }
         release {

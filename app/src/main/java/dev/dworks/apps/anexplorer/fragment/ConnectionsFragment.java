@@ -63,6 +63,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     private CompatTextView mEmptyView;
     private FloatingActionButton fab;
     private RootInfo mConnectionsRoot;
+    private int mLastShowAccentColor;
 
     public static void show(FragmentManager fm) {
         final ConnectionsFragment fragment = new ConnectionsFragment();
@@ -92,11 +93,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         final Resources res = getActivity().getResources();
 
-        int defaultColor = SettingsActivity.getPrimaryColor();
-        int accentColor = SettingsActivity.getAccentColor();
-
         fab = (FloatingActionButton)view.findViewById(R.id.fab);
-        fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
         fab.setOnClickListener(this);
         if(isTelevision()){
             fab.setVisibility(View.GONE);
@@ -120,6 +117,15 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         } else {
             mListView.setDivider(new InsetDrawable(divider, 0, 0, insetSize, 0));
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int accentColor = SettingsActivity.getAccentColor();
+        if ((mLastShowAccentColor != 0 && mLastShowAccentColor == accentColor))
+            return;
+        fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
     }
 
     @Override

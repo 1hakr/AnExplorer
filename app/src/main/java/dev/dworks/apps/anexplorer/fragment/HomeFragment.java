@@ -308,7 +308,7 @@ public class HomeFragment extends Fragment {
                 if (!isAdded())
                     return;
                 if(null == result.cursor || (null != result.cursor && result.cursor.getCount() == 0)) {
-                    //recents_container.setVisibility(View.GONE);
+                    recents_container.setVisibility(View.GONE);
                 } else {
                     //recents_container.setVisibility(View.VISIBLE);
                     mRecentsAdapter.swapCursor(new LimitCursorWrapper(result.cursor, MAX_RECENT_COUNT));
