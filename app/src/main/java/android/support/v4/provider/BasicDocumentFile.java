@@ -117,7 +117,7 @@ public class BasicDocumentFile extends DocumentFile {
         if (Utils.hasLollipop()) {
             return new BasicDocumentFile(null, context, treeUri);
         } else {
-            return null;
+            return new BasicStorageDocumentFile(null, context, treeUri);
         }
     }
 

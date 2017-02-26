@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.Map;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
@@ -191,16 +190,11 @@ public class NetworkStorageProvider extends DocumentsProvider {
                 if(null != inputStream){
                     return ParcelFileDescriptorUtil.pipeFrom(inputStream);
                 }
-/*            InputStream inputStream = connection.getConnectedClient().getInputStream(file.getName(), file.getParentFile().getAbsolutePath());
-            if(null != inputStream){
-                return ParcelFileDescriptorUtil.pipeFrom(
-                        new FTPInputStream(inputStream, connection.getClient()));
-                //return ParcelFileDescriptorUtil.pipeFrom(connection.getInputStream(file));
-            }*/
             }
 
             return null;
         } catch (Exception e) {
+            CrashReportingManager.logException(e);
             throw new FileNotFoundException("Failed to open document with id " + documentId +
                     " and mode " + mode);
         }
@@ -431,7 +425,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
         }
     }
 
-    public static Uri addConnection(Context context, NetworkConnection connection) {
+    public static boolean addUpdateConnection(Context context, NetworkConnection connection, int id) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(ConnectionColumns.NAME, connection.getName());
         contentValues.put(ConnectionColumns.SCHEME, connection.getScheme());
@@ -442,7 +436,14 @@ public class NetworkStorageProvider extends DocumentsProvider {
         contentValues.put(ConnectionColumns.USERNAME, connection.getUserName());
         contentValues.put(ConnectionColumns.PASSWORD, connection.getPassword());
         contentValues.put(ConnectionColumns.ANONYMOUS_LOGIN, connection.isAnonymousLogin());
-        Uri uri = context.getContentResolver().insert(ExplorerProvider.buildConnection(), contentValues);
-        return uri;
+        Uri uri = null;
+        int updated_id = 0;
+        if(id == 0) {
+            uri = context.getContentResolver().insert(ExplorerProvider.buildConnection(), contentValues);
+        } else {
+            updated_id  = context.getContentResolver().update(ExplorerProvider.buildConnection(), contentValues,
+                    ConnectionColumns._ID + " = ? ", new String[]{String.valueOf(id)});
+        }
+        return null != uri || 0 != updated_id;
     }
 }

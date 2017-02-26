@@ -5,6 +5,10 @@
         <attr name="itemLayout" format="reference" />
         <attr name="choices" format="reference" />
         <attr name="numColumns" format="integer" />
+        <attr name="color_type" format="enum">
+            <enum name="primary" value="0"/>
+            <enum name="accent" value="1"/>
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="View">
@@ -61,5 +65,14 @@
             <enum name="grid" value="1"/>
             <enum name="gallery" value="2"/>
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="LineColorPicker">
+        <attr name="orientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <attr name="colors" format="reference" />
+        <attr name="selectedColorIndex" format="integer" />
     </declare-styleable>
 </resources>

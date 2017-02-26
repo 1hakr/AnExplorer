@@ -42,6 +42,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AppCompatDelegate;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
@@ -386,7 +388,7 @@ public class Utils {
         Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
             snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+                    .setActionTextColor(SettingsActivity.getPrimaryColor(view.getContext()));
         }
         snackbar.show();
     }
@@ -395,7 +397,16 @@ public class Utils {
         Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
             snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getActionBarColor(activity));
+                    .setActionTextColor(SettingsActivity.getPrimaryColor(activity));
+        }
+        snackbar.show();
+    }
+
+    public static void showSnackBar(Activity activity, String text, int duration, String action, View.OnClickListener listener){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
+        if (null != listener) {
+            snackbar.setAction(action, listener)
+                    .setActionTextColor(SettingsActivity.getPrimaryColor(activity));
         }
         snackbar.show();
     }
@@ -423,11 +434,11 @@ public class Utils {
     }
 
     public static void tintWidget(View view) {
-        tintWidget(view, SettingsActivity.getActionBarColor(view.getContext()));
+        tintWidget(view, SettingsActivity.getPrimaryColor(view.getContext()));
     }
 
     public static void tintButton(Button view) {
-        view.setTextColor(SettingsActivity.getActionBarColor(view.getContext()));
+        view.setTextColor(SettingsActivity.getPrimaryColor(view.getContext()));
     }
 
     public static void tintWidget(View view, int color) {
@@ -522,6 +533,14 @@ public class Utils {
         Intent intent = new Intent(Intent.ACTION_VIEW, Utils.getAppUri());
         if(Utils.isIntentAvailable(çontext, intent)) {
             çontext.startActivity(intent);
+        }
+    }
+
+    public static Spanned fromHtml(String text) {
+        if(Utils.hasNougat()){
+            return Html.fromHtml(text, 0);
+        } else {
+            return Html.fromHtml(text);
         }
     }
 }

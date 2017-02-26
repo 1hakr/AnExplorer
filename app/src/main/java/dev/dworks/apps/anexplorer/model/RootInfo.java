@@ -194,11 +194,13 @@ public class RootInfo implements Durable, Parcelable {
             derivedTag = "storage";
         } else if (isExternalStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
-            derivedTag = "external storage";
+            derivedTag = "external_storage";
         } else if (isRootedStorage()) {
             derivedIcon = R.drawable.ic_root_root;
+            derivedTag = "root";
         } else if (isPhoneStorage()) {
             derivedIcon = R.drawable.ic_root_phone;
+            derivedTag = "phone";
         } else if (isSecondaryStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
             if (isSecondaryStorageUSB()) {
@@ -206,54 +208,72 @@ public class RootInfo implements Durable, Parcelable {
 	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;
 	        }
-            derivedTag = "secondary storage";
+            derivedTag = "secondary_storage";
         } else if (isUsbStorage()) {
             derivedIcon = R.drawable.ic_root_usb;
-            derivedTag = "usb storage";
+            derivedTag = "usb_storage";
         } else if (isDownloadsFolder()) {
             derivedIcon = R.drawable.ic_root_download;
+            derivedTag = "downloads";
         } else if (isBluetoothFolder()) {
             derivedIcon = R.drawable.ic_root_bluetooth;
+            derivedTag = "bluetooth";
         } else if (isAppBackupFolder()) {
-            derivedIcon = R.drawable.ic_root_folder;
+            derivedIcon = R.drawable.ic_root_appbackup;
+            derivedTag = "appbackup";
         } else if (isBookmarkFolder()) {
             derivedIcon = R.drawable.ic_root_bookmark;
+            derivedTag = "bookmark";
         } else if (isHiddenFolder()) {
             derivedIcon = R.drawable.ic_root_hidden;
+            derivedTag = "hidden";
         } else if (isDownloads()) {
             derivedIcon = R.drawable.ic_root_download;
+            derivedTag = "downloads";
         } else if (isImages()) {
             derivedIcon = R.drawable.ic_root_image;
             derivedColor = R.color.item_doc_image;
+            derivedTag = "images";
         } else if (isVideos()) {
             derivedIcon = R.drawable.ic_root_video;
             derivedColor = R.color.item_doc_video;
+            derivedTag = "videos";
         } else if (isAudio()) {
             derivedIcon = R.drawable.ic_root_audio;
             derivedColor = R.color.item_doc_audio;
+            derivedTag = "audio";
         } else if (isDocument()) {
             derivedIcon = R.drawable.ic_root_document;
             derivedColor = R.color.item_doc_pdf;
+            derivedTag = "document";
         } else if (isArchive()) {
             derivedIcon = R.drawable.ic_root_archive;
             derivedColor = R.color.item_doc_compressed;
+            derivedTag = "archive";
         } else if (isApk()) {
             derivedIcon = R.drawable.ic_root_apk;
             derivedColor = R.color.item_doc_apk;
+            derivedTag = "apk";
         } else if (isUserApp()) {
             derivedIcon = R.drawable.ic_root_apps;
             derivedColor = R.color.item_doc_apps;
+            derivedTag = "user_apps";
         } else if (isSystemApp()) {
             derivedIcon = R.drawable.ic_root_system_apps;
             derivedColor = R.color.item_doc_apps;
+            derivedTag = "system_apps";
         } else if (isAppProcess()) {
             derivedIcon = R.drawable.ic_root_process;
+            derivedTag = "process";
         } else if (isRecents()) {
             derivedIcon = R.drawable.ic_root_recent;
+            derivedTag = "recent";
         } else if (isHome()) {
             derivedIcon = R.drawable.ic_root_home;
+            derivedTag = "home";
         } else if (isConnections()) {
             derivedIcon = R.drawable.ic_root_connections;
+            derivedTag = "connections";
         } else if (isServerStorage()) {
             derivedIcon = R.drawable.ic_root_server;
             derivedColor = R.color.item_connection_server;
@@ -600,7 +620,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isOtherRoot(RootInfo root){
-        return root.isHome() || root.isConnections() || root.isNetworkStorage();
+        return null != root && (root.isHome() || root.isConnections() || root.isNetworkStorage());
     }
 
 }

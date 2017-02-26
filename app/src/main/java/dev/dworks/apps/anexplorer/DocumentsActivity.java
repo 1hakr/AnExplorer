@@ -43,7 +43,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.LruCache;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -277,7 +276,8 @@ public class DocumentsActivity extends BaseActivity {
             moreApps.setComponent(null);
             moreApps.setPackage(null);
             RootsFragment.show(getFragmentManager(), moreApps);
-        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE || mState.action == ACTION_GET_CONTENT) {
+        } else if (mState.action == ACTION_OPEN || mState.action == ACTION_CREATE
+                || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_OPEN_TREE) {
             RootsFragment.show(getFragmentManager(), new Intent());
         }
 
@@ -330,7 +330,10 @@ public class DocumentsActivity extends BaseActivity {
                     mRoots.updateAsync();
                     final RootInfo root = getCurrentRoot();
                     if(root.isHome()){
-                        HomeFragment.get(getFragmentManager()).reloadData();
+                        HomeFragment homeFragment = HomeFragment.get(getFragmentManager());
+                        if(null != homeFragment) {
+                            homeFragment.reloadData();
+                        }
                     }
                 }
             }, 500);
@@ -505,6 +508,9 @@ public class DocumentsActivity extends BaseActivity {
             }
             else{
             	RootInfo root = getCurrentRoot();
+                if(null == root){
+                    return null;
+                }
                 final Uri uri = DocumentsContract.buildDocumentUri(root.authority, root.documentId);
                 DocumentInfo result;
 				try {
@@ -687,10 +693,12 @@ public class DocumentsActivity extends BaseActivity {
                 mToolbarStack.setAdapter(null);
             } else {
                 if (mState.stack.size() <= 1) {
-                    mToolbar.setTitle(root.title);
+                    if(null != root){
+                        mToolbar.setTitle(root.title);
+                        AnalyticsManager.setCurrentScreen(this, root.derivedTag);
+                    }
                     mToolbarStack.setVisibility(View.GONE);
                     mToolbarStack.setAdapter(null);
-                    AnalyticsManager.setCurrentScreen(this, root.derivedTag);
                 } else {
                     mToolbar.setTitle(null);
                     mToolbarStack.setVisibility(View.VISIBLE);
@@ -1139,7 +1147,7 @@ public class DocumentsActivity extends BaseActivity {
         if (mState.stack.root != null) {
             return mState.stack.root;
         } else {
-            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getPrimaryRoot();
+            return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getStorageRoot();
         }
     }
     
@@ -1772,7 +1780,7 @@ public class DocumentsActivity extends BaseActivity {
 
     private void changeActionBarColor() {
 
-		int color = SettingsActivity.getActionBarColor(this);
+		int color = SettingsActivity.getPrimaryColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
 
 		if (oldBackground == null) {
@@ -1821,7 +1829,7 @@ public class DocumentsActivity extends BaseActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setUpStatusBar() {
-        int color = Utils.getStatusBarColor(SettingsActivity.getActionBarColor(this));
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor(this));
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }
@@ -1863,12 +1871,11 @@ public class DocumentsActivity extends BaseActivity {
 
         mActionMenu.attachToListView(currentView);
 
-        int defaultColor = SettingsActivity.getActionBarColor(this);
-        int complimentaryColor = Utils.getComplementaryColor(defaultColor);
+        int defaultColor = SettingsActivity.getPrimaryColor(this);
         ViewCompat.setNestedScrollingEnabled(currentView, true);
         mActionMenu.show();
         mActionMenu.setVisibility(!isTelevision() && showActionMenu() ? View.VISIBLE : View.GONE);
-        mActionMenu.setBackgroundTintList(complimentaryColor);
+        mActionMenu.setBackgroundTintList(SettingsActivity.getAccentColor());
         mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
     }
 

@@ -19,6 +19,7 @@ package dev.dworks.apps.anexplorer.setting;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -35,6 +36,7 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -44,18 +46,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final int FRAGMENT_OPEN = 99;
 
     private static final String EXTRA_RECREATE = "recreate";
-    private static final String KEY_ADVANCED_DEVICES = "advancedDevices";
-    private static final String KEY_FILE_SIZE = "fileSize";
-    private static final String KEY_FOLDER_SIZE = "folderSize";
-    private static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
-    private static final String KEY_FILE_HIDDEN = "fileHidden";
+    public static final String KEY_ADVANCED_DEVICES = "advancedDevices";
+    public static final String KEY_FILE_SIZE = "fileSize";
+    public static final String KEY_FOLDER_SIZE = "folderSize";
+    public static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
+    public static final String KEY_FILE_HIDDEN = "fileHidden";
     private static final String KEY_PIN = "pin";
-    private static final String PIN_ENABLED = "pin_enable";
+    public static final String KEY_PIN_ENABLED = "pin_enable";
+    public static final String KEY_PIN_SET = "pin_set";
     public static final String KEY_ROOT_MODE = "rootMode";
-    public static final String KEY_ACTIONBAR_COLOR = "actionBarColor";
+    public static final String KEY_PRIMARY_COLOR = "primaryColor";
+    public static final String KEY_ACCENT_COLOR = "accentColor";
     public static final String KEY_THEME_STYLE = "themeStyle";
     public static final String KEY_FOLDER_ANIMATIONS = "folderAnimations";
-	
+    public static final String KEY_RECENT_MEDIA = "recentMedia";
+
 	private Resources res;
 	private int actionBarColor;
     private final Handler handler = new Handler();
@@ -87,20 +92,37 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 .getBoolean(KEY_FILE_HIDDEN, false);
     }
 
+    public static boolean getDisplayRecentMedia() {
+        return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
+                .getBoolean(KEY_RECENT_MEDIA, true);
+    }
+
     public static boolean getRootMode(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_ROOT_MODE, true);
     }
     
-    public static int getActionBarColor(Context context) {
+    public static int getPrimaryColor(Context context) {
     	int newColor = ContextCompat.getColor(context, R.color.defaultColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(KEY_ACTIONBAR_COLOR, newColor);
+                .getInt(KEY_PRIMARY_COLOR, newColor);
     }
 
-    public static int getActionBarColor() {
+    public static int getPrimaryColor() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
-                .getInt(KEY_ACTIONBAR_COLOR, Color.parseColor("#0288D1"));
+                .getInt(KEY_PRIMARY_COLOR, Color.parseColor("#0288D1"));
+    }
+
+    public static int getAccentColor() {
+        return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
+                .getInt(KEY_ACCENT_COLOR, Color.parseColor("#EF3A0F"));
+    }
+
+    public static void setAccentColor(int color) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext());
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(KEY_ACCENT_COLOR, color);
+        editor.commit();
     }
 
     public static String getThemeStyle() {
@@ -120,7 +142,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         changeActionBarColor(0);
         res = getResources();
-        actionBarColor = getActionBarColor(this);
+        actionBarColor = getPrimaryColor(this);
     }
 
 	@Override
@@ -143,7 +165,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
     
 	public static final boolean isPinEnabled(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PIN_ENABLED, false)
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(KEY_PIN_ENABLED, false)
         		&& isPinProtected(context);
     }
 	
@@ -238,7 +260,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public void changeActionBarColor(int newColor) {
 
-		int color = newColor != 0 ? newColor : SettingsActivity.getActionBarColor(this);
+		int color = newColor != 0 ? newColor : SettingsActivity.getPrimaryColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);
 
 		if (oldBackground == null) {
@@ -253,21 +275,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		oldBackground = colorDrawable;
 	}
 
+	public static void logSettingEvent(String key){
+        AnalyticsManager.logEvent("settings_"+key.toLowerCase());
+    }
 
-    private Drawable.Callback drawableCallback = new Drawable.Callback() {
-		@Override
-		public void invalidateDrawable(Drawable who) {
-            getSupportActionBar().setBackgroundDrawable(who);
-		}
-
-		@Override
-		public void scheduleDrawable(Drawable who, Runnable what, long when) {
-			handler.postAtTime(what, when);
-		}
-
-		@Override
-		public void unscheduleDrawable(Drawable who, Runnable what) {
-			handler.removeCallbacks(what);
-		}
-	};
 }

@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/accentColor"
+        android:padding="@dimen/big_spacing"
+        android:text="@string/primary_color"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/container_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/big_spacing">
+
+        <dev.dworks.apps.anexplorer.ui.LineColorPicker
+            android:id="@+id/color_picker"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:focusable="true"
+            android:background="?selectableItemBackground"
+            app:orientation="horizontal"
+            app:selectedColorIndex="0" />
+
+        <dev.dworks.apps.anexplorer.ui.LineColorPicker
+            android:id="@+id/shade_picker"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:focusable="true"
+            android:background="?selectableItemBackground"
+            app:orientation="horizontal"
+            app:selectedColorIndex="0" />
+
+    </LinearLayout>
+
+</LinearLayout>

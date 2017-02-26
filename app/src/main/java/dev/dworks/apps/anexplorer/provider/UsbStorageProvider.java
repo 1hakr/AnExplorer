@@ -57,7 +57,6 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
-import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -65,6 +64,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForName;
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
 public class UsbStorageProvider extends DocumentsProvider {
@@ -174,12 +174,7 @@ public class UsbStorageProvider extends DocumentsProvider {
                 documentId = getDocIdForFile(rootDirectory);
             }
 
-            String title = "";
-            if (Utils.hasLollipop()) {
-                title = usbDevice.getManufacturerName();
-            } else {
-                title = usbDevice.getDeviceName();
-            }
+            String title = UsbUtils.getName(usbDevice);
             if(TextUtils.isEmpty(title)) {
                 title = getContext().getString(R.string.root_usb);
             }
@@ -368,13 +363,8 @@ public class UsbStorageProvider extends DocumentsProvider {
         if (file.isDirectory()) {
             return Document.MIME_TYPE_DIR;
         } else {
-            String extension = MimeTypeMap.getFileExtensionFromUrl(file.getName()).toLowerCase();
-            if (extension != null) {
-                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-                return mimeType;
-            }
+            return getTypeForName(file.getName());
         }
-        return BASIC_MIME_TYPE;
     }
 
     private static String getFileName(String mimeType, String displayName) {
@@ -425,7 +415,7 @@ public class UsbStorageProvider extends DocumentsProvider {
 
         row.add(Document.COLUMN_DOCUMENT_ID, getDocIdForFile(file));
         row.add(Document.COLUMN_DISPLAY_NAME, displayName);
-        row.add(Document.COLUMN_MIME_TYPE, getMimeType(file));
+        row.add(Document.COLUMN_MIME_TYPE, mimeType);
         row.add(Document.COLUMN_FLAGS, flags);
         row.add(Document.COLUMN_SIZE, file.isDirectory() ? 0 : file.getLength());
 
@@ -664,7 +654,7 @@ public class UsbStorageProvider extends DocumentsProvider {
         boolean isSourceUSB = sourceDocumentId.startsWith(ROOT_ID_USB);
         boolean isTargetUSB = targetParentDocumentId.startsWith(ROOT_ID_USB);
 
-        if(!(isSourceUSB && isTargetUSB) && Utils.hasLollipop()){
+        if(!(isSourceUSB && isTargetUSB)){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
@@ -697,7 +687,7 @@ public class UsbStorageProvider extends DocumentsProvider {
         boolean isSourceUSB = sourceDocumentId.startsWith(ROOT_ID_USB);
         boolean isTargetUSB = targetParentDocumentId.startsWith(ROOT_ID_USB);
 
-        if(!(isSourceUSB && isTargetUSB) && Utils.hasLollipop()){
+        if(!(isSourceUSB && isTargetUSB)){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {

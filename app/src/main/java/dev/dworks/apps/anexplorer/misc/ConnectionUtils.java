@@ -169,7 +169,11 @@ public class ConnectionUtils {
     }
 
     public static String getFTPAddress(Context context){
-        return "ftp://"+ getLocalInetAddress(context).getHostAddress()+":"+FTP_SERVER_PORT;
+        InetAddress inetAddress = getLocalInetAddress(context);
+        if(null != inetAddress) {
+            return "ftp://" + inetAddress.getHostAddress() + ":" + FTP_SERVER_PORT;
+        }
+        return "";
     }
 
     public static int getAvailablePortForFTP(){

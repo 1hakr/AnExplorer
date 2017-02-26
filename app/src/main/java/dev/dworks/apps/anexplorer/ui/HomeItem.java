@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
-import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
@@ -26,10 +25,11 @@ public class HomeItem extends FrameLayout {
     private TextView summary;
     private NumberProgressBar progress;
     private int color;
-    private int complimentaryColor;
+    private int accentColor;
     private ImageButton action;
     private View action_layout;
     private View card_view;
+    private int mActionDrawable;
 
     public HomeItem(Context context) {
         super(context);
@@ -48,8 +48,8 @@ public class HomeItem extends FrameLayout {
 
     private void init(Context context, AttributeSet attrs) {
         mContext = context;
-        color = SettingsActivity.getActionBarColor();
-        complimentaryColor = Utils.getComplementaryColor(color);
+        color = SettingsActivity.getPrimaryColor();
+        accentColor = SettingsActivity.getAccentColor();
         LayoutInflater.from(context).inflate(R.layout.item_home, this, true);
         card_view = findViewById(R.id.card_view);
         icon = (ImageView) findViewById(android.R.id.icon);
@@ -99,12 +99,20 @@ public class HomeItem extends FrameLayout {
     }
 
     public void setAction(int drawableId, OnClickListener listener){
+        mActionDrawable = drawableId;
         action_layout.setVisibility(View.VISIBLE);
-        action.setImageDrawable(IconUtils.applyTint(mContext, drawableId, complimentaryColor));
+        action.setImageDrawable(IconUtils.applyTint(mContext, mActionDrawable, accentColor));
         action.setOnClickListener(listener);
     }
 
     public void setCardListener(OnClickListener listener){
         card_view.setOnClickListener(listener);
+    }
+
+    public void updateColor(){
+        color = SettingsActivity.getPrimaryColor();
+        accentColor = SettingsActivity.getAccentColor();
+        progress.setColor(color);
+        action.setImageDrawable(IconUtils.applyTint(mContext, mActionDrawable, accentColor));
     }
 }

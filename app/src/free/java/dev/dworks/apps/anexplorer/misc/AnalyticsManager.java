@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
@@ -45,6 +46,7 @@ public class AnalyticsManager {
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
 
         setProperty("DeviceType", Utils.getDeviceType(context));
+        setProperty("Rooted", Boolean.toString(Utils.isRooted()));
     }
 
     public static void setProperty(String propertyName, String propertyValue){

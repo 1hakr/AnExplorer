@@ -25,7 +25,7 @@ public class RootsAdapter extends ArrayAdapter<Item> {
     public RootsAdapter(Context context, Collection<RootInfo> roots, Intent includeAppss) {
         super(context, 0);
 
-        int defaultColor = SettingsActivity.getActionBarColor(context);
+        int defaultColor = SettingsActivity.getPrimaryColor(context);
         RootItem recents = null;
         RootItem images = null;
         RootItem videos = null;

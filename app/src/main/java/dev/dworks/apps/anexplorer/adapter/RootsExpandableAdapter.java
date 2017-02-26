@@ -27,6 +27,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
 
     private void processRoots(Collection<RootInfo> roots) {
         List<GroupInfo> groupRoots = new ArrayList<>();
+        final List<Item> home = new ArrayList<>();
         final List<Item> phone = new ArrayList<>();
         final List<Item> recent = new ArrayList<>();
         final List<Item> connection = new ArrayList<>();
@@ -44,7 +45,9 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> bookmarks = new ArrayList<>();
 
         for (RootInfo root : roots) {
-            if (root.isRecents()) {
+            if (root.isHome()) {
+                home.add(new RootItem(root));
+            } else if (root.isRecents()) {
                 if(recent.size() == 0) {
                     recent.add(new RootItem(root));
                 }
@@ -79,18 +82,19 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        if(!storage.isEmpty() || !phone.isEmpty() || !rooted.isEmpty()){
-            storage.addAll(secondaryStorage);
-            storage.addAll(usb);
-            storage.addAll(phone);
-            storage.addAll(rooted);
-            groupRoots.add(new GroupInfo("Storage", storage));
+        if(!home.isEmpty() || !storage.isEmpty() || !phone.isEmpty() || !rooted.isEmpty()){
+            home.addAll(storage);
+            home.addAll(secondaryStorage);
+            home.addAll(usb);
+            home.addAll(phone);
+            home.addAll(rooted);
+            groupRoots.add(new GroupInfo("Storage", home));
         }
 
         if(!network.isEmpty()){
             network.addAll(connection);
             groupRoots.add(new GroupInfo("Network", network));
-        } else {
+        } else if(!connection.isEmpty()){
             groupRoots.add(new GroupInfo("Network", connection));
         }
 

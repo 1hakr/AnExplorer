@@ -7,10 +7,12 @@ import android.preference.PreferenceFragment;
 
 import dev.dworks.apps.anexplorer.R;
 
-import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACTIONBAR_COLOR;
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACCENT_COLOR;
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_PRIMARY_COLOR;
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_THEME_STYLE;
 
-public class ThemePreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
+public class ThemePreferenceFragment extends PreferenceFragment
+		implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
 	public ThemePreferenceFragment() {
 	}
@@ -20,20 +22,29 @@ public class ThemePreferenceFragment extends PreferenceFragment implements OnPre
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.pref_theme);
 		
-		Preference preferenceActionBar = findPreference(KEY_ACTIONBAR_COLOR);
-		preferenceActionBar.setOnPreferenceChangeListener(this);
+		Preference preferencePrimaryColor = findPreference(KEY_PRIMARY_COLOR);
+		preferencePrimaryColor.setOnPreferenceChangeListener(this);
+		preferencePrimaryColor.setOnPreferenceClickListener(this);
+
+		findPreference(KEY_ACCENT_COLOR).setOnPreferenceClickListener(this);
 
 		Preference preferenceThemeStyle = findPreference(KEY_THEME_STYLE);
 		preferenceThemeStyle.setOnPreferenceChangeListener(this);
+		preferenceThemeStyle.setOnPreferenceClickListener(this);
 
 	}
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
+		SettingsActivity.logSettingEvent(preference.getKey());
         ((SettingsActivity)getActivity()).changeActionBarColor(Integer.valueOf(newValue.toString()));
-		if(preference.getKey().contains(KEY_THEME_STYLE)){
-			getActivity().recreate();
-		}
+		getActivity().recreate();
 		return true;
+	}
+
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+		SettingsActivity.logSettingEvent(preference.getKey());
+		return false;
 	}
 }

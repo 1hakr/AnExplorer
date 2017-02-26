@@ -38,7 +38,7 @@ public class PinViewHelper {
         final TextView password = (TextView)ret.findViewById(R.id.password);
         passwordInstruction = (TextView)ret.findViewById(R.id.passwordInstruction);
         passwordInstruction.setText(R.string.enter_pin);
-        int color = SettingsActivity.getActionBarColor(inflater.getContext());
+        int color = SettingsActivity.getPrimaryColor(inflater.getContext());
         password.setTextColor(color);
         passwordInstruction.setTextColor(color);
         final ShapeDrawable pinEntered = new ShapeDrawable(new OvalShape());

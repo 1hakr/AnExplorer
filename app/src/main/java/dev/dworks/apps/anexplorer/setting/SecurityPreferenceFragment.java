@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.Snackbar;
@@ -15,7 +16,10 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.PinViewHelper;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class SecurityPreferenceFragment extends PreferenceFragment {
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_PIN_ENABLED;
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_PIN_SET;
+
+public class SecurityPreferenceFragment extends PreferenceFragment implements OnPreferenceClickListener {
     private Preference pin_set_preference;
     
     public SecurityPreferenceFragment() {
@@ -25,12 +29,16 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_security);
-        
-		pin_set_preference = findPreference("pin_set");
+
+        findPreference(KEY_PIN_ENABLED).setOnPreferenceClickListener(this);
+
+
+        pin_set_preference = findPreference(KEY_PIN_SET);
 		pin_set_preference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
+                SettingsActivity.logSettingEvent(preference.getKey());
 				checkPin();
 				return false;
 			}
@@ -142,5 +150,11 @@ public class SecurityPreferenceFragment extends PreferenceFragment {
             }
         })
                 .setActionTextColor(actionColor).show();
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        SettingsActivity.logSettingEvent(preference.getKey());
+        return false;
     }
 }

@@ -403,7 +403,7 @@ public class ExternalStorageProvider extends StorageProvider {
 	}
 
     private boolean isEmpty(File file) {
-        return !file.isDirectory() || null == file || null == file.list() || file.list().length == 0;
+        return null != file  && (!file.isDirectory() || null == file.list() || file.list().length == 0);
     }
 
     private void includeBookmarkRoot() {
@@ -999,7 +999,7 @@ public class ExternalStorageProvider extends StorageProvider {
         boolean isSourceOther = isFromOtherProvider(sourceDocumentId);
         boolean isTargetOther = isFromOtherProvider(targetParentDocumentId);
 
-        if((isSourceOther || isTargetOther) && Utils.hasLollipop()){
+        if((isSourceOther || isTargetOther)){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {
@@ -1026,7 +1026,7 @@ public class ExternalStorageProvider extends StorageProvider {
         boolean isSourceOther = isFromOtherProvider(sourceDocumentId);
         boolean isTargetOther = isFromOtherProvider(targetParentDocumentId);
 
-        if((isSourceOther || isTargetOther) && Utils.hasLollipop()){
+        if((isSourceOther || isTargetOther)){
             DocumentFile sourceDirectory = getDocumentFile(sourceDocumentId, source);
             DocumentFile targetDirectory = getDocumentFile(targetParentDocumentId, target);
             if (!FileUtils.moveDocument(getContext(), sourceDirectory, targetDirectory)) {

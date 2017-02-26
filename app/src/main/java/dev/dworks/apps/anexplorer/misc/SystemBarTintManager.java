@@ -571,7 +571,7 @@ public class SystemBarTintManager {
         if (Utils.hasKitKat()) {
             SystemBarTintManager tintManager = new SystemBarTintManager(context);
             tintManager.setStatusBarTintEnabled(true);
-            tintManager.setStatusBarTintColor(SettingsActivity.getActionBarColor(context));
+            tintManager.setStatusBarTintColor(SettingsActivity.getPrimaryColor(context));
         }
     }
 

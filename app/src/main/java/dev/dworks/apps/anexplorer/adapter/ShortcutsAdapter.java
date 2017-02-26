@@ -26,7 +26,7 @@ public class ShortcutsAdapter extends RecyclerView.Adapter<ShortcutsAdapter.View
     public ShortcutsAdapter(Context context, ArrayList<RootInfo> data){
         mContext = context;
         mData = data;
-        mDefaultColor = SettingsActivity.getActionBarColor();
+        mDefaultColor = SettingsActivity.getPrimaryColor();
     }
 
     public void setData(ArrayList<RootInfo> data) {
@@ -94,9 +94,11 @@ public class ShortcutsAdapter extends RecyclerView.Adapter<ShortcutsAdapter.View
         public void setData(int position){
             mPosition = position;
             mRoot = mData.get(position);
-            iconBackground.setColor(ContextCompat.getColor(mContext, mRoot.derivedColor));
-            icon.setImageDrawable(mRoot.loadShortcutIcon(mContext));
-            title.setText(mRoot.title);
+            if(null != mRoot) {
+                iconBackground.setColor(ContextCompat.getColor(mContext, mRoot.derivedColor));
+                icon.setImageDrawable(mRoot.loadShortcutIcon(mContext));
+                title.setText(mRoot.title);
+            }
         }
     }
 

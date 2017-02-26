@@ -389,7 +389,7 @@ public class RootsFragment extends Fragment {
         public RootItem(RootInfo root) {
             super(R.layout.item_root);
             this.root = root;
-            this.color = SettingsActivity.getActionBarColor();
+            this.color = SettingsActivity.getPrimaryColor();
         }
 
         public RootItem(RootInfo root, int color) {

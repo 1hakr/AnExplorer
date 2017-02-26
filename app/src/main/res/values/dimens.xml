@@ -78,4 +78,5 @@
     <dimen name="expander_inset">8dp</dimen>
 
     <integer name="recycler_type">2</integer>
+    <dimen name="big_spacing">24dp</dimen>
 </resources>
