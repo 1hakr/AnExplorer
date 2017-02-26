@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
-import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,11 +29,13 @@ import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.misc.ColorUtils;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
 import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
+import static dev.dworks.apps.anexplorer.misc.ColorUtils.MIN_CONTRAST_TITLE_TEXT;
 
 public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -71,8 +72,8 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 
 	private void initControls() {
 
-		int accentColor = ColorUtils.setAlphaComponent(SettingsActivity.getAccentColor(), 200);
-
+		int accentColor = ColorUtils.getTextColorForBackground(SettingsActivity.getPrimaryColor(),
+				MIN_CONTRAST_TITLE_TEXT);
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setTextColor(accentColor);
 		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
