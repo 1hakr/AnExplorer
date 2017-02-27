@@ -90,4 +90,6 @@
 
     <color name="item_connection_server">#4CAF50</color>
     <color name="item_connection_client">#00838F</color>
+
+    <color name="material_black_protected">#88000000</color>
 </resources>

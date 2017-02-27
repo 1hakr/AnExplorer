@@ -12,6 +12,7 @@
         android:padding="@dimen/big_spacing"
         android:text="@string/primary_color"
         android:textSize="18sp"
+        android:textColor="@color/material_black_protected"
         android:textStyle="bold" />
 
     <LinearLayout

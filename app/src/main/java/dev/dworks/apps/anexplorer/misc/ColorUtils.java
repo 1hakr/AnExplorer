@@ -125,6 +125,10 @@ public final class ColorUtils {
         return maxAlpha;
     }
 
+    public static int getTextColorForBackground(int backgroundColor) {
+        return getTextColorForBackground(backgroundColor, MIN_CONTRAST_TITLE_TEXT);
+    }
+
     public static int getTextColorForBackground(int backgroundColor, float minContrastRatio) {
         // First we will check white as most colors will be dark
         final int whiteMinAlpha = ColorUtils

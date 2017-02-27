@@ -92,7 +92,7 @@ public class MoveFragment extends Fragment implements OnClickListener{
 		//final Context context = inflater.getContext();
 
 		final View view = inflater.inflate(R.layout.fragment_move, container, false);
-		view.findViewById(R.id.background).setBackgroundColor(SettingsActivity.getPrimaryColor(getActivity()));
+		view.findViewById(R.id.background).setBackgroundColor(SettingsActivity.getPrimaryColor());
 
 		mCancel = (ImageButton) view.findViewById(android.R.id.button2);
 		mCancel.setOnClickListener(this);

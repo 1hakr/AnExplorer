@@ -342,7 +342,7 @@ public class HomeFragment extends Fragment {
             progressDialog = new MaterialProgressDialog(getActivity());
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setIndeterminate(true);
-            progressDialog.setColor(SettingsActivity.getPrimaryColor());
+            progressDialog.setColor(SettingsActivity.getAccentColor());
             progressDialog.setCancelable(false);
             progressDialog.setMessage("Cleaning up RAM...");
             this.root = root;
