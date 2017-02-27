@@ -42,6 +42,11 @@ Other Features
 Feedback is greatly appreciated. Any issues please report through mail only to hakr@dworks.in
 
 
+Discussion
+============
+Join [G+ community](https://plus.google.com/communities/104595695007143504224) for discussions
+
+
 Developed By
 ============
 
