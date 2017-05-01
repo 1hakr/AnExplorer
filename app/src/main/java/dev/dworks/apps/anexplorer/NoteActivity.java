@@ -421,8 +421,10 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
                 name = uri.getLastPathSegment();
             }
         }
-        else if (uri.getScheme().startsWith(ContentResolver.SCHEME_FILE)) {
+        else if (!TextUtils.isEmpty(scheme) && scheme.startsWith(ContentResolver.SCHEME_FILE)) {
             name = uri.getLastPathSegment();
+        } else {
+            CrashReportingManager.log(TAG, uri.toString());
         }
         getSupportActionBar().setTitle(FileUtils.getName(name));
         getSupportActionBar().setSubtitle("");

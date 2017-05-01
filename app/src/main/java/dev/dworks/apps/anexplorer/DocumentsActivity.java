@@ -1211,7 +1211,7 @@ public class DocumentsActivity extends BaseActivity {
         DocumentInfo cwd = getCurrentDirectory();
 
         //TODO : this has to be done nicely
-        if(cwd == null && !root.isServerStorage()){
+        if(cwd == null && (null != root && !root.isServerStorage())){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
 	                root.authority, root.documentId);
 	        DocumentInfo result;
@@ -1274,8 +1274,8 @@ public class DocumentsActivity extends BaseActivity {
         if (mState.action == ACTION_OPEN_TREE) {
             final PickFragment pick = PickFragment.get(fm);
             if (pick != null) {
-                final CharSequence displayName = (mState.stack.size() <= 1) ? root.title
-                        : cwd.displayName;
+                    final CharSequence displayName = (mState.stack.size() <= 1) && null != root
+                            ? root.title : cwd.displayName;
                 pick.setPickTarget(cwd, displayName);
             }
         }
@@ -1883,7 +1883,7 @@ public class DocumentsActivity extends BaseActivity {
         final RootInfo root = getCurrentRoot();
         return !RootInfo.isOtherRoot(root) &&
                 isCreateSupported() &&
-                (!root.isRootedStorage() || Utils.isRooted())
+                (null != root && (!root.isRootedStorage() || Utils.isRooted()))
                 && mState.currentSearch == null;
     }
 
