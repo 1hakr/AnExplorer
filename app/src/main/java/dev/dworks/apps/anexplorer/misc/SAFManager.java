@@ -103,8 +103,9 @@ public class SAFManager {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private Uri getRootUri(String docId){
         Uri treeUri;
-        final int splitIndex = docId.indexOf(':', 1);
-        final String tag = docId.substring(0, splitIndex);
+//        final int splitIndex = docId.indexOf(':', 1);
+//        final String tag = docId.substring(0, splitIndex);
+        final String tag = docId;
 
         //check in cache
         treeUri = secondaryRoots.get(tag);
