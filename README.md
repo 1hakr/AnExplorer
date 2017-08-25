@@ -53,7 +53,6 @@ Developed By
 
 * Hari Krishna Dulipudi - <hakr@dworks.in>
 
-
 License
 =======
 
