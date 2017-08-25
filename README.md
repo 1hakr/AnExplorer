@@ -3,6 +3,7 @@ AnExplorer All-in-One File Manager
 [<img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=dev.dworks.apps.anexplorer&referrer=github)
 [<img alt="Get it on Amazon" height="60" style="margin-left: 8px;" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-underground-app-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=dev.dworks.apps.anexplorer)
 
+<a href="https://app.codesponsor.io/link/DDouVAHvg5bDgXhVeHCW8XH1/1hakr/AnExplorer" rel="nofollow"><img src="https://app.codesponsor.io/embed/DDouVAHvg5bDgXhVeHCW8XH1/1hakr/AnExplorer.svg" style="width: 888px; height: 68px;" alt="Sponsor" /></a>
 
 ![AnExplorer](https://github.com/DWorkS/AnExplorer/raw/master/header.jpg)
 
@@ -51,7 +52,6 @@ Developed By
 ============
 
 * Hari Krishna Dulipudi - <hakr@dworks.in>
-
 
 License
 =======
