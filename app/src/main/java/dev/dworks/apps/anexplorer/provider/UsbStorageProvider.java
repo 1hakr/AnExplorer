@@ -27,7 +27,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import android.support.v4.provider.DocumentFile;
+import android.support.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;

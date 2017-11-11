@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package android.support.v4.provider;
+package android.support.provider;
 
 import android.content.ContentResolver;
 import android.content.Context;

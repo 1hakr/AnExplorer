@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.google.android.gms.common.api.BooleanResult;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import dev.dworks.apps.anexplorer.BuildConfig;

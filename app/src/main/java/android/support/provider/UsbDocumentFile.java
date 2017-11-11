@@ -1,19 +1,24 @@
-package android.support.v4.provider;
+package android.support.provider;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 
-import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
+
 
 /**
  * Created by HaKr on 25/01/17.
  */
-
-public class BasicStorageDocumentFile extends DocumentFile {
+@TargetApi(Build.VERSION_CODES.KITKAT)
+public class UsbDocumentFile extends DocumentFile {
     private Context mContext;
     private Uri mUri;
 
-    BasicStorageDocumentFile(DocumentFile parent, Context context, Uri uri) {
+    public UsbDocumentFile(DocumentFile parent, Context context, Uri uri) {
         super(parent);
         mContext = context;
         mUri = uri;
@@ -22,13 +27,13 @@ public class BasicStorageDocumentFile extends DocumentFile {
     @Override
     public DocumentFile createFile(String mimeType, String displayName) {
         final Uri result = DocumentsContractCompat.createFile(mContext, mUri, mimeType, displayName);
-        return (result != null) ? new TreeDocumentFile(this, mContext, result) : null;
+        return (result != null) ? new UsbDocumentFile(this, mContext, result) : null;
     }
 
     @Override
     public DocumentFile createDirectory(String displayName) {
         final Uri result = DocumentsContractCompat.createDirectory(mContext, mUri, displayName);
-        return (result != null) ? new TreeDocumentFile(this, mContext, result) : null;
+        return (result != null) ? new UsbDocumentFile(this, mContext, result) : null;
     }
 
     @Override
@@ -78,7 +83,7 @@ public class BasicStorageDocumentFile extends DocumentFile {
 
     @Override
     public boolean canWrite() {
-        return DocumentsContractCompat.canWrite(mContext, mUri);
+        return true;
     }
 
     @Override
@@ -91,12 +96,13 @@ public class BasicStorageDocumentFile extends DocumentFile {
         return DocumentsContractCompat.exists(mContext, mUri);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public DocumentFile[] listFiles() {
         final Uri[] result = DocumentsContractCompat.listFiles(mContext, mUri);
         final DocumentFile[] resultFiles = new DocumentFile[result.length];
         for (int i = 0; i < result.length; i++) {
-            resultFiles[i] = new TreeDocumentFile(this, mContext, result[i]);
+            resultFiles[i] = new UsbDocumentFile(this, mContext, result[i]);
         }
         return resultFiles;
     }
@@ -112,11 +118,13 @@ public class BasicStorageDocumentFile extends DocumentFile {
         }
     }
 
+
     public static DocumentFile fromUri(Context context, Uri treeUri) {
-        if (Utils.hasLollipop()) {
-            return new BasicDocumentFile(null, context, treeUri);
-        } else {
-            return new BasicStorageDocumentFile(null, context, treeUri);
-        }
+        return new UsbDocumentFile(null, context, treeUri);
+    }
+
+    public static DocumentFile fromUri(Context context, String documentId) {
+        return UsbDocumentFile.fromUri(context,
+                DocumentsContract.buildDocumentUri(UsbStorageProvider.AUTHORITY, documentId));
     }
 }
