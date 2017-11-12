@@ -7,7 +7,7 @@ import android.content.res.Resources;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.provider.DocumentFile;
+import android.support.provider.DocumentFile;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;

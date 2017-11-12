@@ -34,7 +34,7 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.support.v4.os.EnvironmentCompat;
-import android.support.v4.provider.DocumentFile;
+import android.support.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
