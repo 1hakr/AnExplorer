@@ -82,7 +82,7 @@ public class SaveFragment extends Fragment implements OnClickListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.fragment_save, container, false);
 
-		view.findViewById(R.id.background).setBackgroundColor(SettingsActivity.getPrimaryColor(getActivity()));
+		view.findViewById(R.id.background).setBackgroundColor(SettingsActivity.getPrimaryColor());
 
 		mCancel = (ImageButton) view.findViewById(android.R.id.button2);
 		mCancel.setOnClickListener(this);

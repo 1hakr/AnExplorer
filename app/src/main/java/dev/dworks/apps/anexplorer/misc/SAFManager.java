@@ -30,6 +30,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 
 import static android.app.Activity.RESULT_OK;
+import static dev.dworks.apps.anexplorer.misc.IntentUtils.ACTION_OPEN_DOCUMENT_TREE;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.ROOT_ID_SECONDARY;
 import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
 
@@ -147,7 +148,7 @@ public class SAFManager {
                     .setPositiveButton("Give Access", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterfaceParam, int code) {
-                            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                            Intent intent = new Intent(ACTION_OPEN_DOCUMENT_TREE);
                             intent.setPackage("com.android.documentsui");
                             try {
                                 activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
