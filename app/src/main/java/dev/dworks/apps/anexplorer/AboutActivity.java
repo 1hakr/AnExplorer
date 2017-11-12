@@ -26,16 +26,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.ColorUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.misc.ColorUtils;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
 import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
-import static dev.dworks.apps.anexplorer.misc.ColorUtils.MIN_CONTRAST_TITLE_TEXT;
 
 public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
 
@@ -72,8 +71,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 
 	private void initControls() {
 
-		int accentColor = ColorUtils.getTextColorForBackground(SettingsActivity.getPrimaryColor(),
-				MIN_CONTRAST_TITLE_TEXT);
+		int accentColor = ColorUtils.getTextColorForBackground(SettingsActivity.getPrimaryColor());
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setTextColor(accentColor);
 		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;

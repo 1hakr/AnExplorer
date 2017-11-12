@@ -41,8 +41,11 @@ import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ColorPalette;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+
+import static dev.dworks.apps.anexplorer.DialogFragment.tintButtons;
 
 
 /**
@@ -181,8 +184,21 @@ public class MaterialColorPreference extends Preference {
         }
 
         @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            if(!getShowsDialog()){
+                return;
+            }
+            getDialog().setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    try{
+                        tintButtons(getDialog());
+                    } catch (Exception e){
+                        CrashReportingManager.logException(e);
+                    }
+                }
+            });
         }
 
         @Override

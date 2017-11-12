@@ -18,4 +18,10 @@ public class CrashReportingManager {
         } else if(log) {
         }
     }
+
+    public static void log(String s) {
+    }
+
+    public static void log(String tag, String s) {
+    }
 }

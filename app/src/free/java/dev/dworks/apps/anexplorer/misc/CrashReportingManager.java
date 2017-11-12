@@ -21,4 +21,12 @@ public class CrashReportingManager {
             FirebaseCrash.report(e);
         }
     }
+
+    public static void log(String s) {
+        FirebaseCrash.log(s);
+    }
+
+    public static void log(String tag, String s) {
+        FirebaseCrash.log(tag+":"+s);
+    }
 }
