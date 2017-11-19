@@ -12,9 +12,9 @@ android {
 
     defaultConfig {
         versionName "3.7"
-        versionCode = 59
+        versionCode = 60
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
