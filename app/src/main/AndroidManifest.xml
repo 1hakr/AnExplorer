@@ -37,6 +37,7 @@
         android:icon="@drawable/ic_launcher"
         android:roundIcon="@drawable/ic_launcher_round"
         android:label="@string/name"
+        tools:replace="android:label"
         android:supportsRtl="true">
 
         <!-- TODO: allow rotation when state saving is in better shape -->
@@ -174,6 +175,12 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.ContentProvider"
+            android:authorities="${applicationId}.roots"
+            android:exported="false"
+            android:enabled="true"/>
 
         <provider
             android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"

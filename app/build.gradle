@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         versionName "3.7"
         versionCode = 60
         minSdkVersion 17
-        targetSdkVersion 25
+        targetSdkVersion 27
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
@@ -77,24 +77,27 @@ android {
 }
 
 ext {
-    supportLibVersion = '27.0.0'
-    gmsVersion = '11.8.0'
+    supportLibVersion = '27.1.0'
+    gmsVersion = '12.0.1'
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.jaredrummler:android-processes:+'
-    compile 'com.github.mjdev:libaums:+'
-    compile 'org.apache.ftpserver:ftpserver-core:+'
-    compile 'commons-net:commons-net:+'
-    compile "com.android.support:appcompat-v7:${supportLibVersion}"
-    compile "com.android.support:cardview-v7:${supportLibVersion}"
-    compile "com.android.support:design:${supportLibVersion}"
-    compile "com.android.support:exifinterface:${supportLibVersion}"
-    freeCompile "com.google.firebase:firebase-crash:${gmsVersion}"
-    freeCompile "com.google.firebase:firebase-ads:${gmsVersion}"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.jaredrummler:android-processes:+'
+    implementation 'com.github.mjdev:libaums:+'
+    implementation 'org.apache.ftpserver:ftpserver-core:+'
+    implementation 'commons-net:commons-net:+'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.cloudrail:cloudrail-si-android:2.18.0'
+    implementation 'com.vistrav:ask:2.4'
+    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
+    implementation "com.android.support:cardview-v7:${supportLibVersion}"
+    implementation "com.android.support:design:${supportLibVersion}"
+    implementation "com.android.support:exifinterface:${supportLibVersion}"
+    freeImplementation "com.google.firebase:firebase-crash:${gmsVersion}"
+    freeImplementation "com.google.firebase:firebase-ads:${gmsVersion}"
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:+'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:+'
 }
 
 def props = new Properties()
