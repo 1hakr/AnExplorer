@@ -319,13 +319,7 @@ public class InputStreamBuffer {
 	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 	public static byte[] copyOf(byte[] original, int newLength) {
 		byte[] copy;
-		if(Utils.hasGingerbread()){
-			copy = Arrays.copyOf(original, newLength);
-		}
-		else{
-			copy = new byte[newLength];
-			System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));	
-		}
+        copy = Arrays.copyOf(original, newLength);
 		return copy;
 	}
 	

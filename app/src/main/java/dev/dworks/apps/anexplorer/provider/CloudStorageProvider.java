@@ -2,55 +2,56 @@ package dev.dworks.apps.anexplorer.provider;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
+import android.support.annotation.GuardedBy;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.apache.commons.net.ftp.FTPFile;
+
+import com.cloudrail.si.interfaces.CloudStorage;
+import com.cloudrail.si.types.CloudMetaData;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.cloud.CloudConnection;
+import dev.dworks.apps.anexplorer.cloud.CloudFile;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
-import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import android.support.annotation.GuardedBy;
-import dev.dworks.apps.anexplorer.network.NetworkConnection;
-import dev.dworks.apps.anexplorer.network.NetworkFile;
 
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
-import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_CLOUD;
 import static dev.dworks.apps.anexplorer.provider.ExplorerProvider.ConnectionColumns;
 
 /**
  * Created by HaKr on 31/12/16.
  */
 
-public class NetworkStorageProvider extends DocumentsProvider {
-    private static final String TAG = NetworkStorageProvider.class.getSimpleName();
+public class CloudStorageProvider extends DocumentsProvider {
+    private static final String TAG = CloudStorageProvider.class.getSimpleName();
 
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".networkstorage.documents";
-    // docId format: adress:/path/to/file
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".cloudstorage.documents";
+    // docId format: address:/path/to/file
 
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON, Root.COLUMN_TITLE,
@@ -63,10 +64,16 @@ public class NetworkStorageProvider extends DocumentsProvider {
             Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE, Document.COLUMN_SUMMARY,
     };
 
+    public static final String TYPE_CLOUD = "cloud";
+    public static final String TYPE_GDRIVE = "cloud_gdrive";
+    public static final String TYPE_DROPBOX = "cloud_dropbox";
+    public static final String TYPE_ONEDRIVE = "cloud_onedrive";
+    public static final String TYPE_BOX = "cloud_bobx";
+
     private final Object mRootsLock = new Object();
 
     @GuardedBy("mRootsLock")
-    private ArrayMap<String, NetworkConnection> mRoots = new ArrayMap<>();
+    private ArrayMap<String, CloudConnection> mRoots = new ArrayMap<>();
 
     @Override
     public boolean onCreate() {
@@ -83,14 +90,16 @@ public class NetworkStorageProvider extends DocumentsProvider {
         Cursor cursor = null;
         mRoots.clear();
         try {
-            String mSelectionClause = ConnectionColumns.TYPE + " NOT LIKE ?";
+            String mSelectionClause = ConnectionColumns.TYPE + " LIKE ?";
             String[] mSelectionArgs = {"%"+TYPE_CLOUD+"%"};
             cursor = getContext().getContentResolver().query(ExplorerProvider.buildConnection(),
                     null, mSelectionClause, mSelectionArgs, null);
             while (cursor.moveToNext()) {
                 int id = getCursorInt(cursor, BaseColumns._ID);
-                NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
-                mRoots.put(networkConnection.getHost(), networkConnection);
+                CloudConnection cloudStorage = CloudConnection.fromCursor(getContext(), cursor);
+                if(cloudStorage.isLoggedIn()) {
+                    mRoots.put(cloudStorage.getType()+"_"+id, cloudStorage);
+                }
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to load some roots from " + ExplorerProvider.AUTHORITY + ": " + e);
@@ -117,31 +126,23 @@ public class NetworkStorageProvider extends DocumentsProvider {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
         synchronized (mRootsLock) {
 
-            for (Map.Entry<String, NetworkConnection> root : mRoots.entrySet()) {
-                NetworkConnection networkConnection = root.getValue();
-                String documentId = getDocIdForFile(networkConnection.file);
+            for (Map.Entry<String, CloudConnection> root : mRoots.entrySet()) {
+                CloudConnection connection = root.getValue();
+                String documentId = getDocIdForFile(connection.file);
 
                 int flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                         | Root.FLAG_SUPPORTS_IS_CHILD;
-
-                boolean isServer = networkConnection.getType().compareToIgnoreCase(SERVER) == 0;
-                if(isServer){
-                    if(!Utils.hasWiFi(getContext())) {
-                        continue;
-                    }
-                    flags |= Root.FLAG_CONNECTION_SERVER;
-                }
 
                 final RowBuilder row = result.newRow();
                 // These columns are required
                 row.add(Root.COLUMN_ROOT_ID, root.getKey());
                 row.add(Root.COLUMN_DOCUMENT_ID, documentId);
-                row.add(Root.COLUMN_TITLE, networkConnection.name);
+                row.add(Root.COLUMN_TITLE, connection.getTypeName());
                 row.add(Root.COLUMN_FLAGS, flags);
 
                 // These columns are optional
-                row.add(Root.COLUMN_SUMMARY, isServer ? networkConnection.getPath() : networkConnection.getSummary());
-                row.add(Root.COLUMN_PATH, networkConnection.getPath());
+                row.add(Root.COLUMN_SUMMARY, connection.getSummary());
+                row.add(Root.COLUMN_PATH, connection.getPath());
             }
         }
 
@@ -161,12 +162,11 @@ public class NetworkStorageProvider extends DocumentsProvider {
     public Cursor queryChildDocuments(String parentDocumentId, String[] projection,
                                       String sortOrder) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-        final NetworkFile parent = getFileForDocId(parentDocumentId);
-        final NetworkConnection connection = getNetworkConnection(parentDocumentId);
+        final CloudFile parent = getFileForDocId(parentDocumentId);
+        final CloudConnection connection = getCloudConnection(parentDocumentId);
         try {
-            connection.getConnectedClient().changeWorkingDirectory(parent.getPath());
-            for (FTPFile file : connection.getConnectedClient().listFiles()) {
-                includeFile(result, null, new NetworkFile(parent, file));
+            for (CloudMetaData cloudMetaData : connection.cloudStorage.getChildren(parent.getAbsolutePath())) {
+                includeFile(result, null, new CloudFile(cloudMetaData));
             }
         } catch (IOException e) {
             CrashReportingManager.logException(e);
@@ -179,23 +179,14 @@ public class NetworkStorageProvider extends DocumentsProvider {
                                              CancellationSignal signal)
             throws FileNotFoundException {
 
-        final NetworkFile file = getFileForDocId(documentId);
-        final NetworkConnection connection = getNetworkConnection(documentId);
+        final CloudFile file = getFileForDocId(documentId);
+        final CloudConnection connection = getCloudConnection(documentId);
 
         try {
-            final boolean isWrite = (mode.indexOf('w') != -1);
-            if (isWrite) {
-                return null;
-            } else {
-                Uri ftpUri = connection.toUri(file);
-                URL url = new URL(ftpUri.toString());
-                URLConnection conn = url.openConnection();
-                InputStream inputStream = conn.getInputStream();
-                if(null != inputStream){
-                    return ParcelFileDescriptorUtil.pipeFrom(inputStream);
-                }
+            InputStream inputStream = connection.getInputStream(file);
+            if(null != inputStream){
+                return ParcelFileDescriptorUtil.pipeFrom(inputStream);
             }
-
             return null;
         } catch (Exception e) {
             CrashReportingManager.logException(e);
@@ -205,35 +196,42 @@ public class NetworkStorageProvider extends DocumentsProvider {
     }
 
     @Override
+    public AssetFileDescriptor openDocumentThumbnail(
+            String documentId, Point sizeHint, CancellationSignal signal) throws FileNotFoundException {
+
+        final CloudFile file = getFileForDocId(documentId);
+        final CloudConnection connection = getCloudConnection(documentId);
+
+        final long token = Binder.clearCallingIdentity();
+        try {
+            final ParcelFileDescriptor pfd = openDocument(documentId, "r", signal);
+            return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }
+    }
+
+    @Override
     public String createDocument(String documentId, String mimeType, String displayName)
             throws FileNotFoundException {
 
-        NetworkFile parent = getFileForDocId(documentId);
-        NetworkFile file = new NetworkFile(parent.getPath() + displayName, "");
-        final NetworkConnection connection = getNetworkConnection(documentId);
-        try {
-            connection.getConnectedClient().createDirectories(file.getPath());
-        } catch (IOException e) {
-            throw new FileNotFoundException("Failed to create document with name " +
-                    displayName +" and documentId " + documentId);
-        }
+        CloudFile parent = getFileForDocId(documentId);
+        CloudFile file = new CloudFile(parent.getPath() + displayName);
+        final CloudConnection connection = getCloudConnection(documentId);
+        connection.cloudStorage.createFolder(file.getPath());
         return getDocIdForFile(file);
     }
 
     @Override
     public void deleteDocument(String documentId) throws FileNotFoundException {
-        NetworkFile file = getFileForDocId(documentId);
-        final NetworkConnection connection = getNetworkConnection(documentId);
-        try {
-            connection.getConnectedClient().deleteFile(file.getPath());
-        } catch (IOException e) {
-            throw new FileNotFoundException("Failed to delete document with id " + documentId);
-        }
+        CloudFile file = getFileForDocId(documentId);
+        final CloudConnection connection = getCloudConnection(documentId);
+        connection.cloudStorage.delete(file.getPath());
     }
 
     @Override
     public String getDocumentType(String documentId) throws FileNotFoundException {
-        NetworkFile file = getFileForDocId(documentId);
+        CloudFile file = getFileForDocId(documentId);
         return getTypeForFile(file);
     }
 
@@ -251,7 +249,7 @@ public class NetworkStorageProvider extends DocumentsProvider {
      * @param file the File object whose type we want
      * @return the MIME type of the file
      */
-    private static String getTypeForFile(NetworkFile file) {
+    private static String getTypeForFile(CloudFile file) {
         if (file.isDirectory()) {
             return Document.MIME_TYPE_DIR;
         } else {
@@ -289,20 +287,19 @@ public class NetworkStorageProvider extends DocumentsProvider {
      * @param file the File whose document ID you want
      * @return the corresponding document ID
      */
-    private String getDocIdForFile(NetworkFile file) throws FileNotFoundException {
+    private String getDocIdForFile(CloudFile file) throws FileNotFoundException {
         String path = file.getAbsolutePath();
-        String host = file.getHost();
 
         // Find the most-specific root file
         String mostSpecificId = null;
         String mostSpecificPath = null;
+
         synchronized (mRootsLock) {
             for (int i = 0; i < mRoots.size(); i++) {
                 final String rootId = mRoots.keyAt(i);
-                final String rootPath = mRoots.valueAt(i).file.getPath();
-                final String rootHost = mRoots.valueAt(i).file.getHost();
-                if (host.startsWith(rootHost) && (mostSpecificPath == null
-                        || rootHost.length() > mostSpecificPath.length())) {
+                final String rootPath = mRoots.valueAt(i).file.getAbsolutePath();
+                if (path.startsWith(rootPath) && (mostSpecificPath == null
+                        || rootPath.length() > mostSpecificPath.length())) {
                     mostSpecificId = rootId;
                     mostSpecificPath = rootPath;
                 }
@@ -331,14 +328,14 @@ public class NetworkStorageProvider extends DocumentsProvider {
      *
      * @param docId the document ID representing the desired file
      * @return a File represented by the given document ID
-     * @throws java.io.FileNotFoundException
+     * @throws FileNotFoundException
      */
-    private NetworkFile getFileForDocId(String docId) throws FileNotFoundException {
+    private CloudFile getFileForDocId(String docId) throws FileNotFoundException {
         final int splitIndex = docId.indexOf(':', 1);
         final String tag = docId.substring(0, splitIndex);
         final String path = docId.substring(splitIndex + 1);
 
-        NetworkConnection root;
+        CloudConnection root;
         synchronized (mRootsLock) {
             root = mRoots.get(tag);
         }
@@ -346,11 +343,11 @@ public class NetworkStorageProvider extends DocumentsProvider {
             throw new FileNotFoundException("No root for " + tag);
         }
 
-        NetworkFile target = root.file;
+        CloudFile target = root.file;
         if (target == null) {
             return null;
         }
-        target = new NetworkFile(target.getAbsolutePath() + path, tag);
+        target = new CloudFile(target.getAbsolutePath() + path);
         return target;
     }
 
@@ -366,9 +363,9 @@ public class NetworkStorageProvider extends DocumentsProvider {
      * @param result the cursor to modify
      * @param docId  the document ID representing the desired file (may be null if given file)
      * @param file   the File object representing the desired file (may be null if given docID)
-     * @throws java.io.FileNotFoundException
+     * @throws FileNotFoundException
      */
-    private void includeFile(MatrixCursor result, String docId, NetworkFile file)
+    private void includeFile(MatrixCursor result, String docId, CloudFile file)
             throws FileNotFoundException {
         if (docId == null) {
             docId = getDocIdForFile(file);
@@ -384,10 +381,10 @@ public class NetworkStorageProvider extends DocumentsProvider {
             } else {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
             }
-/*            flags |= Document.FLAG_SUPPORTS_DELETE;
+            flags |= Document.FLAG_SUPPORTS_DELETE;
             flags |= Document.FLAG_SUPPORTS_RENAME;
-            flags |= Document.FLAG_SUPPORTS_MOVE;
-            flags |= Document.FLAG_SUPPORTS_EDIT;*/
+            //flags |= Document.FLAG_SUPPORTS_MOVE;
+            flags |= Document.FLAG_SUPPORTS_EDIT;
         }
 
         final String mimeType = getTypeForFile(file);
@@ -420,34 +417,28 @@ public class NetworkStorageProvider extends DocumentsProvider {
      * Determine whether the user is logged in.
      */
     private boolean isUserLoggedIn(String docId) {
-        return getNetworkConnection(docId).isLoggedIn();
+        return getCloudConnection(docId).isLoggedIn();
     }
 
-    private NetworkConnection getNetworkConnection(String docId){
+    private CloudConnection getCloudConnection(String docId){
         synchronized (mRootsLock) {
             return mRoots.get(getRootId(docId));
         }
     }
 
-    public static boolean addUpdateConnection(Context context, NetworkConnection connection, int id) {
+    public static boolean addUpdateConnection(Context context, CloudConnection connection) {
+        CloudStorage cloudStorage = connection.cloudStorage;
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ConnectionColumns.NAME, connection.getName());
-        contentValues.put(ConnectionColumns.SCHEME, connection.getScheme());
+        contentValues.put(ConnectionColumns.NAME, cloudStorage.getUserName());
+        contentValues.put(ConnectionColumns.SCHEME, "");
         contentValues.put(ConnectionColumns.TYPE, connection.getType());
         contentValues.put(ConnectionColumns.PATH, connection.getPath());
-        contentValues.put(ConnectionColumns.HOST, connection.getHost());
-        contentValues.put(ConnectionColumns.PORT, connection.getPort());
-        contentValues.put(ConnectionColumns.USERNAME, connection.getUserName());
-        contentValues.put(ConnectionColumns.PASSWORD, connection.getPassword());
-        contentValues.put(ConnectionColumns.ANONYMOUS_LOGIN, connection.isAnonymousLogin());
+        contentValues.put(ConnectionColumns.USERNAME, cloudStorage.getUserLogin());
+        contentValues.put(ConnectionColumns.PASSWORD, cloudStorage.saveAsString());
+        contentValues.put(ConnectionColumns.ANONYMOUS_LOGIN, false);
         Uri uri = null;
         int updated_id = 0;
-        if(id == 0) {
-            uri = context.getContentResolver().insert(ExplorerProvider.buildConnection(), contentValues);
-        } else {
-            updated_id  = context.getContentResolver().update(ExplorerProvider.buildConnection(), contentValues,
-                    ConnectionColumns._ID + " = ? ", new String[]{String.valueOf(id)});
-        }
+        uri = context.getContentResolver().insert(ExplorerProvider.buildConnection(), contentValues);
         return null != uri || 0 != updated_id;
     }
 }

@@ -38,6 +38,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> storage = new ArrayList<>();
         final List<Item> secondaryStorage = new ArrayList<>();
         final List<Item> network = new ArrayList<>();
+        final List<Item> cloud = new ArrayList<>();
         final List<Item> apps = new ArrayList<>();
         final List<Item> libraryMedia = new ArrayList<>();
         final List<Item> libraryNonMedia = new ArrayList<>();
@@ -79,6 +80,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 apps.add(new RootItem(root));
             } else if (RootInfo.isNetwork(root)) {
                 network.add(new RootItem(root));
+            } else if (RootInfo.isCloud(root)) {
+                network.add(new RootItem(root));
             }
         }
 
@@ -93,9 +96,9 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
 
         if(!network.isEmpty()){
             network.addAll(connection);
-            groupRoots.add(new GroupInfo("Network", network));
+            groupRoots.add(new GroupInfo("Network & Cloud", network));
         } else if(!connection.isEmpty()){
-            groupRoots.add(new GroupInfo("Network", connection));
+            groupRoots.add(new GroupInfo("Network & Cloud", connection));
         }
 
         if(!apps.isEmpty()){

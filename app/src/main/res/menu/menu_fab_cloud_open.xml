@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="id.appstudioplus.managerplus.PositionSampleActivity">
+
+    <item
+        android:id="@+id/action_refresh"
+        android:title="Refresh"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_menu_rename_file"/>
+    <item
+        android:id="@+id/action_paste"
+        android:title="Paste"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_menu_paste"/>
+    <item
+        android:id="@+id/action_upload"
+        android:title="Upload"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_menu_edit"/>
+    <item
+        android:id="@+id/action_create_folder"
+        android:title="Create folder"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_menu_new_folder" />
+</menu>

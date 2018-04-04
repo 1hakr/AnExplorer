@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.GuardedBy;
 import android.support.v4.util.ArraySet;
 import android.util.Log;
 
@@ -44,12 +45,12 @@ import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.libcore.io.MultiMap;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import dev.dworks.apps.anexplorer.model.GuardedBy;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
@@ -462,6 +463,17 @@ public class RootsCache {
     public RootInfo getRootInfo(NetworkConnection connection){
         for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
             if (root.rootId.equals(connection.getHost())
+                    && root.path.equals(connection.getPath())) {
+                return root;
+            }
+        }
+
+        return null;
+    }
+
+    public RootInfo getRootInfo(CloudConnection connection){
+        for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
+            if (root.rootId.equals(connection.name)
                     && root.path.equals(connection.getPath())) {
                 return root;
             }

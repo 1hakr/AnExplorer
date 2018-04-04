@@ -8,6 +8,10 @@ import dev.dworks.apps.anexplorer.BuildConfig;
 
 public class CrashReportingManager {
 
+    public static void enable(Context context, boolean enable){
+
+
+    }
     public static void logException(Exception e) {
         logException(e, false);
     }

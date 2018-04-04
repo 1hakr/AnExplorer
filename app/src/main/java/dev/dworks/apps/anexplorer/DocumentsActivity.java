@@ -68,6 +68,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.cloudrail.si.CloudRail;
+import com.cloudrail.si.services.GoogleDrive;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,6 +82,7 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
+import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
@@ -122,6 +126,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.fabs.SimpleMenuListenerAdapter;
+import needle.Needle;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
@@ -149,6 +154,7 @@ public class DocumentsActivity extends BaseActivity {
     private static final String EXTRA_AUTHENTICATED = "authenticated";
     private static final String EXTRA_ACTIONMODE = "actionmode";
     private static final String EXTRA_SEARCH_STATE = "searchsate";
+    private static final String BROWSABLE = "android.intent.category.BROWSABLE";
 
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
@@ -311,6 +317,16 @@ public class DocumentsActivity extends BaseActivity {
         if(!PermissionUtil.hasStoragePermission(this)) {
             requestStoragePermissions();
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if(intent.getCategories().contains(BROWSABLE)) {
+            // Here we pass the response to the SDK which will automatically
+            // complete the authentication process
+            CloudRail.setAuthenticationResponse(intent);
+        }
+        super.onNewIntent(intent);
     }
 
     @Override
