@@ -1,0 +1,27 @@
+{
+  "hosting": {
+    "public": "public",
+    "headers": [{
+        "source": "**/*.@(js|html)",
+        "headers": [{
+          "key": "Cache-Control",
+          "value": "max-age=0"
+        }]
+      },
+      {
+        "source": "**/*.@(eot|otf|ttf|ttc|woff|font.css)",
+        "headers": [{
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png)",
+        "headers": [{
+          "key": "Cache-Control",
+          "value": "max-age=7200"
+        }]
+      }
+    ]
+  }
+}
