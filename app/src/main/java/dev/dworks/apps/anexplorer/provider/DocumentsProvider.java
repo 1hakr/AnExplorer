@@ -20,7 +20,6 @@ package dev.dworks.apps.anexplorer.provider;
 import android.annotation.TargetApi;
 import android.app.AppOpsManager;
 import android.content.ClipDescription;
-import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
