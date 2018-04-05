@@ -8,8 +8,8 @@ android {
     buildToolsVersion '27.0.3'
 
     defaultConfig {
-        versionName "3.7"
-        versionCode = 60
+        versionName "3.8"
+        versionCode = 61
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -107,6 +107,7 @@ dependencies {
     implementation "com.android.support:exifinterface:${supportLibVersion}"
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.1'
     freeImplementation "com.google.firebase:firebase-ads:${gmsVersion}"
+    freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:+'
 }

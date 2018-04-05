@@ -51,6 +51,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.webkit.WebView;
 import android.widget.Button;
 
 import java.io.File;
@@ -417,6 +418,12 @@ public class Utils {
 
     public static void changeThemeStyle(AppCompatDelegate delegate) {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
+            try {
+                new WebView(DocumentsApplication.getInstance().getBaseContext());
+            } catch (Exception e) {
+            }
+        }
         AppCompatDelegate.setDefaultNightMode(nightMode);
         delegate.setLocalNightMode(nightMode);
     }

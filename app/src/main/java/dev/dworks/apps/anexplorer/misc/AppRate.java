@@ -12,12 +12,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.R.id.action_close;
 import static dev.dworks.apps.anexplorer.R.id.action_feedback;
 import static dev.dworks.apps.anexplorer.R.id.action_rate;
+import static dev.dworks.apps.anexplorer.R.id.action_support;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
@@ -183,14 +185,20 @@ public class AppRate implements View.OnClickListener{
         ImageView action_close = (ImageView) mainView.findViewById(R.id.action_close);
         Button action_rate = (Button) mainView.findViewById(R.id.action_rate);
         Button action_feedback = (Button) mainView.findViewById(R.id.action_feedback);
+        Button action_support = (Button) mainView.findViewById(R.id.action_support);
+
+        boolean hideSupport = DocumentsApplication.isPurchased() || Utils.isProVersion();
+        action_support.setVisibility(hideSupport ? View.GONE : View.VISIBLE);
 
         int color = SettingsActivity.getAccentColor();
         icon.setImageDrawable(IconUtils.applyTint(activity, R.drawable.ic_support, color));
         action_rate.setTextColor(color);
+        action_support.setTextColor(color);
         action_feedback.setTextColor(color);
 
         action_close.setOnClickListener(this);
         action_rate.setOnClickListener(this);
+        action_support.setOnClickListener(this);
         action_feedback.setOnClickListener(this);
 
         if (delay > 0) {
@@ -269,6 +277,11 @@ public class AppRate implements View.OnClickListener{
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);
                 editor.apply();
+                break;
+
+            case action_support:
+                DocumentsApplication.openPurchaseActivity(activity);
+                hideAllViews(mainView);
                 break;
         }
     }

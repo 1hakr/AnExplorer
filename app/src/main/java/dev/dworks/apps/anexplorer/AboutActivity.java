@@ -136,9 +136,13 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 				AnalyticsManager.logEvent("app_rate");
 				break;
 			case R.id.action_support:
-				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-				intentMarketAll.setData(Utils.getAppStoreUri());
-				startActivity(intentMarketAll);
+				if(Utils.isProVersion()){
+					Intent intentMarketAll = new Intent("android.intent.action.VIEW");
+					intentMarketAll.setData(Utils.getAppStoreUri());
+					startActivity(intentMarketAll);
+				} else {
+					DocumentsApplication.openPurchaseActivity(this);
+				}
 				AnalyticsManager.logEvent("app_love");
 				break;
 			case R.id.action_share:

@@ -41,7 +41,7 @@ import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class DocumentsApplication extends Application {
+public class DocumentsApplication extends AppFlavour {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
     private static DocumentsApplication sInstance;
 
