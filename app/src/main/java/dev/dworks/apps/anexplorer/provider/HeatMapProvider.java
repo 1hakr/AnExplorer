@@ -50,7 +50,7 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import dev.dworks.apps.anexplorer.model.GuardedBy;
+import android.support.annotation.GuardedBy;
 
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
@@ -101,7 +101,7 @@ public class HeatMapProvider extends StorageProvider {
     @Override
     public boolean onCreate() {
         updateVolumes();
-        return true;
+        return super.onCreate();
     }
 
     public void updateVolumes() {

@@ -32,9 +32,8 @@ import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 public class ParcelFileDescriptorUtil {
     public static ParcelFileDescriptor pipeFrom(InputStream inputStream)
             throws IOException {
-        final ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
+        final ParcelFileDescriptor[] pipe = ParcelFileDescriptorUtil.createPipe();
         final OutputStream output = new ParcelFileDescriptor.AutoCloseOutputStream(pipe[1]);
-
         new TransferThread(inputStream, output).start();
 
         return pipe[0];
@@ -43,7 +42,7 @@ public class ParcelFileDescriptorUtil {
     @SuppressWarnings("unused")
     public static ParcelFileDescriptor pipeTo(OutputStream outputStream)
             throws IOException {
-        final ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
+        final ParcelFileDescriptor[] pipe = ParcelFileDescriptorUtil.createPipe();
         final InputStream input = new ParcelFileDescriptor.AutoCloseInputStream(pipe[0]);
 
         new TransferThread(input, outputStream).start();
@@ -66,8 +65,8 @@ public class ParcelFileDescriptorUtil {
         public void run() {
             try {
                 IoUtils.copy(mIn, mOut);
-            } catch (IOException e) {
-                Log.e("TransferThread", "writing failed");
+            } catch (Exception e) {
+                //Log.e("TransferThread", "writing failed");
                 CrashReportingManager.logException(e);
             } finally {
                 IoUtils.flushQuietly(mOut);
@@ -100,5 +99,12 @@ public class ParcelFileDescriptorUtil {
             throw new IllegalArgumentException("Bad mode '" + mode + "'");
         }
         return modeBits;
+    }
+
+    public static ParcelFileDescriptor[] createPipe() throws IOException {
+        if(Utils.hasKitKat()){
+            return ParcelFileDescriptor.createReliablePipe();
+        }
+        return ParcelFileDescriptor.createPipe();
     }
 }

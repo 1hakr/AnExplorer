@@ -51,6 +51,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.webkit.WebView;
 import android.widget.Button;
 
 import java.io.File;
@@ -94,26 +95,6 @@ public class Utils {
 					flags, null).toString();
 		}
 	}
-	
-    public static boolean hasFroyo() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
-    }
-
-    public static boolean hasGingerbread() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
-    }
-
-    public static boolean hasHoneycomb() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-    }
-
-    public static boolean hasHoneycombMR1() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
-    }
-
-    public static boolean hasIceCreamSandwich() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
-    }
 
     public static boolean hasJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -149,6 +130,14 @@ public class Utils {
 
     public static boolean hasNougatMR1() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1;
+    }
+
+    public static boolean hasOreo() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    public static boolean hasOreoMR1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
     }
 
     public static boolean hasMoreHeap(){
@@ -429,6 +418,12 @@ public class Utils {
 
     public static void changeThemeStyle(AppCompatDelegate delegate) {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
+            try {
+                new WebView(DocumentsApplication.getInstance().getBaseContext());
+            } catch (Exception e) {
+            }
+        }
         AppCompatDelegate.setDefaultNightMode(nightMode);
         delegate.setLocalNightMode(nightMode);
     }

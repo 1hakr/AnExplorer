@@ -10,11 +10,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
+import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_CLOUD;
 
 public class ConnectionsAdapter extends BaseAdapter{
     private Cursor mCursor;
@@ -46,8 +50,7 @@ public class ConnectionsAdapter extends BaseAdapter{
         }
 
         final Cursor cursor = getItem(position);
-
-        NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
+        String type = getCursorString(cursor, ExplorerProvider.ConnectionColumns.TYPE);
 
         final ImageView iconMime = (ImageView) convertView.findViewById(R.id.icon_mime);
         final View iconMimeBackground = convertView.findViewById(R.id.icon_mime_background);
@@ -56,16 +59,24 @@ public class ConnectionsAdapter extends BaseAdapter{
         final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
         final View popupButton = convertView.findViewById(R.id.button_popup);
         popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
-
         popupButton.setOnClickListener(mListener);
-        title.setText(networkConnection.getName());
-        summary.setText(networkConnection.getSummary());
 
-        iconMimeBackground.setVisibility(View.VISIBLE);
-        iconMimeBackground.setBackgroundColor(
-                IconColorUtils.loadSchmeColor(context, networkConnection.getType()));
-        iconMime.setImageDrawable(IconUtils.loadSchemeIcon(context, networkConnection.type));
-                //ContextCompat.getDrawable(context, R.drawable.ic_connection_network));
+        NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
+        if(networkConnection.type.startsWith(TYPE_CLOUD)){
+            title.setText(CloudConnection.getTypeName(networkConnection.type));
+            summary.setText(networkConnection.username);
+            iconMimeBackground.setVisibility(View.VISIBLE);
+            iconMimeBackground.setBackgroundColor(
+                    IconColorUtils.loadCloudColor(context, networkConnection.getType()));
+            iconMime.setImageDrawable(IconUtils.loadCloudIcon(context, networkConnection.type));
+        } else {
+            title.setText(networkConnection.getName());
+            summary.setText(networkConnection.getSummary());
+            iconMimeBackground.setVisibility(View.VISIBLE);
+            iconMimeBackground.setBackgroundColor(
+                    IconColorUtils.loadSchmeColor(context, networkConnection.getType()));
+            iconMime.setImageDrawable(IconUtils.loadSchemeIcon(context, networkConnection.type));
+        }
         return convertView;
     }
 

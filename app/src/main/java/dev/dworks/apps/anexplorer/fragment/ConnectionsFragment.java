@@ -15,6 +15,7 @@ import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -33,23 +34,35 @@ import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
+import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
+import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
+import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionButton;
+import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
+import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
+import dev.dworks.apps.anexplorer.ui.fabs.SimpleMenuListenerAdapter;
+import needle.Needle;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_BOX;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_CLOUD;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_DROPBOX;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_GDRIVE;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_ONEDRIVE;
 
-public class ConnectionsFragment extends ListFragment implements View.OnClickListener{
+public class ConnectionsFragment extends ListFragment implements View.OnClickListener, FabSpeedDial.MenuListener {
 
     public static final String TAG = "ConnectionsFragment";
 
@@ -61,7 +74,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     private final int mLoaderId = 42;
     private MaterialProgressBar mProgressBar;
     private CompatTextView mEmptyView;
-    private FloatingActionButton fab;
+    private FloatingActionsMenu mActionMenu;
     private RootInfo mConnectionsRoot;
     private int mLastShowAccentColor;
 
@@ -93,11 +106,13 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         final Resources res = getActivity().getResources();
 
-        fab = (FloatingActionButton)view.findViewById(R.id.fab);
-        fab.setOnClickListener(this);
         if(isTelevision()){
-            fab.setVisibility(View.GONE);
+            mActionMenu.setVisibility(View.GONE);
         }
+
+        mActionMenu = (FloatingActionsMenu) view.findViewById(R.id.fabs);
+        mActionMenu.setMenuListener(this);
+        mActionMenu.setVisibility(!isTelevision() ? View.VISIBLE : View.GONE);
 
         mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
         mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
@@ -106,7 +121,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         if(isTelevision()) {
             mListView.setOnItemLongClickListener(mItemLongClickListener);
         }
-        fab.attachToListView(mListView);
+        mActionMenu.attachToListView(mListView);
 
         // Indent our list divider to align with text
         final Drawable divider = mListView.getDivider();
@@ -125,7 +140,9 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         int accentColor = SettingsActivity.getAccentColor();
         if ((mLastShowAccentColor != 0 && mLastShowAccentColor == accentColor))
             return;
-        fab.setBackgroundTintList(ColorStateList.valueOf(accentColor));
+        int defaultColor = SettingsActivity.getPrimaryColor(getActivity());
+        mActionMenu.setBackgroundTintList(SettingsActivity.getAccentColor());
+        mActionMenu.setSecondaryBackgroundTintList(Utils.getActionButtonColor(defaultColor));
     }
 
     @Override
@@ -180,6 +197,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     public void reload(){
         getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
         RootsCache.updateRoots(getActivity(), NetworkStorageProvider.AUTHORITY);
+        RootsCache.updateRoots(getActivity(), CloudStorageProvider.AUTHORITY);
     }
 
     private AdapterView.OnItemClickListener mItemListener = new AdapterView.OnItemClickListener() {
@@ -187,8 +205,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             final Cursor cursor = mAdapter.getItem(position);
             if (cursor != null) {
-                NetworkConnection connection = NetworkConnection.fromConnectionsCursor(cursor);
-                openConnectionRoot(connection);
+                openConnectionRoot(cursor);
             }
         }
     };
@@ -257,7 +274,13 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         final int id = item.getItemId();
         switch (id) {
             case R.id.menu_edit:
-                editConnection(connection_id);
+                if(!networkConnection.type.startsWith(TYPE_CLOUD)) {
+                    editConnection(connection_id);
+                } else {
+                    ((BaseActivity)getActivity())
+                            .showSnackBar("Cloud storage connection can't be edited",
+                                    Snackbar.LENGTH_SHORT);
+                }
                 return true;
             case R.id.menu_delete:
                 if(!networkConnection.type.equals(SERVER)) {
@@ -302,8 +325,72 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         AnalyticsManager.logEvent("connection_delete");
     }
 
+    public void openConnectionRoot(Cursor cursor) {
+        NetworkConnection connection = NetworkConnection.fromConnectionsCursor(cursor);
+        DocumentsActivity activity = ((DocumentsActivity)getActivity());
+        if (connection.type.startsWith(TYPE_CLOUD)){
+            activity.onRootPicked(activity.getRoots().getRootInfo(CloudConnection.fromCursor(getActivity(), cursor)), mConnectionsRoot);
+        } else {
+            activity.onRootPicked(activity.getRoots().getRootInfo(connection), mConnectionsRoot);
+        }
+    }
+
     public void openConnectionRoot(NetworkConnection connection) {
         DocumentsActivity activity = ((DocumentsActivity)getActivity());
         activity.onRootPicked(activity.getRoots().getRootInfo(connection), mConnectionsRoot);
+    }
+
+    public void openConnectionRoot(CloudConnection connection) {
+        DocumentsActivity activity = ((DocumentsActivity)getActivity());
+        activity.onRootPicked(activity.getRoots().getRootInfo(connection), mConnectionsRoot);
+    }
+
+    @Override
+    public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+        return true;
+    }
+
+    public boolean onMenuItemSelected(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.cloud_gridve:
+                addCloudConnection(TYPE_GDRIVE);
+                break;
+
+            case R.id.cloud_dropbox:
+                addCloudConnection(TYPE_DROPBOX);
+                break;
+
+            case R.id.cloud_onedrive:
+                addCloudConnection(TYPE_ONEDRIVE);
+                break;
+
+            case R.id.cloud_box:
+                addCloudConnection(TYPE_BOX);
+                break;
+
+            case R.id.network_ftp:
+                addConnection();
+                AnalyticsManager.logEvent("add_ftp");
+                break;
+        }
+        mActionMenu.closeMenu();
+        return false;
+    }
+
+    @Override
+    public void onMenuClosed() {
+
+    }
+
+    public void addCloudConnection(String cloudType){
+        final BaseActivity activity = (BaseActivity) getActivity();
+        if(!DocumentsApplication.isPurchased()){
+            DocumentsApplication.openPurchaseActivity(activity);
+            return;
+        }
+        CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
+        new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
+                ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
+        AnalyticsManager.logEvent("add_cloud");
     }
 }

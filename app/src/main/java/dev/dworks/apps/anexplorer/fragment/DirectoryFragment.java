@@ -103,6 +103,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
+import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
@@ -321,7 +322,7 @@ public class DirectoryFragment extends ListFragment {
 			@Override
 			public Loader<DirectoryResult> onCreateLoader(int id, Bundle args) {
 				final String query = getArguments().getString(EXTRA_QUERY);
-
+				setListShown(false);
 				Uri contentsUri;
 				switch (mType) {
 				case TYPE_NORMAL:
@@ -349,6 +350,7 @@ public class DirectoryFragment extends ListFragment {
 				if (!isAdded())
 					return;
 
+				saveDisplayState();
 				mAdapter.swapResult(result);
 
 				// Push latest state up to UI
@@ -372,14 +374,6 @@ public class DirectoryFragment extends ListFragment {
 				} else {
 					setListShownNoAnimation(true);
 				}
-				// Restore any previous instance state
-				final SparseArray<Parcelable> container = state.dirState.remove(mStateKey);
-				if (container != null && !getArguments().getBoolean(EXTRA_IGNORE_STATE, false)) {
-					getView().restoreHierarchyState(container);
-				} else if (mLastSortOrder != state.derivedSortOrder) {
-					mListView.smoothScrollToPosition(0);
-					mGridView.smoothScrollToPosition(0);
-				}
 
 				mLastSortOrder = state.derivedSortOrder;
 				if(isTelevision()){
@@ -400,15 +394,27 @@ public class DirectoryFragment extends ListFragment {
 		updateDisplayState();
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-
+	public void saveDisplayState(){
 		// Remember last scroll location
 		final SparseArray<Parcelable> container = new SparseArray<Parcelable>();
 		getView().saveHierarchyState(container);
 		final State state = getDisplayState(this);
 		state.dirState.put(mStateKey, container);
+	}
+
+	// Restore any previous instance state
+	public void restoreDisplaySate(){
+		final State state = getDisplayState(this);
+		final SparseArray<Parcelable> container = state.dirState.remove(mStateKey);
+		if (container != null && !getArguments().getBoolean(EXTRA_IGNORE_STATE, false)) {
+			getView().restoreHierarchyState(container);
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		saveDisplayState();
 	}
 
 	@Override
@@ -427,6 +433,8 @@ public class DirectoryFragment extends ListFragment {
 		// Sort order change always triggers reload; we'll trigger state change
 		// on the flip side.
 		getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+		mListView.smoothScrollToPosition(0);
+		mGridView.smoothScrollToPosition(0);
 	}
 
     public void onUserModeChanged() {
@@ -506,24 +514,29 @@ public class DirectoryFragment extends ListFragment {
 		final int thumbSize;
 		if (state.derivedMode == MODE_GRID) {
 			thumbSize = getResources().getDimensionPixelSize(R.dimen.grid_width);
-			mListView.setAdapter(null);
-			mListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
-			mGridView.setAdapter(mAdapter);
-			mGridView.setColumnWidth(thumbSize);
-			mGridView.setNumColumns(GridView.AUTO_FIT);
-			mGridView.setChoiceMode(choiceMode);
-			mCurrentView = mGridView;
+			if(!(mCurrentView instanceof GridView)){
+				mListView.setAdapter(null);
+				mListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
+				mGridView.setAdapter(mAdapter);
+				mGridView.setColumnWidth(thumbSize);
+				mGridView.setNumColumns(GridView.AUTO_FIT);
+				mGridView.setChoiceMode(choiceMode);
+				mCurrentView = mGridView;
+			}
 		} else if (state.derivedMode == MODE_LIST) {
 			thumbSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
-			mGridView.setAdapter(null);
-			mGridView.setChoiceMode(ListView.CHOICE_MODE_NONE);
-			mListView.setAdapter(mAdapter);
-			mListView.setChoiceMode(choiceMode);
-			mCurrentView = mListView;
+			if(!(mCurrentView instanceof ListView)){
+				mGridView.setAdapter(null);
+				mGridView.setChoiceMode(ListView.CHOICE_MODE_NONE);
+				mListView.setAdapter(mAdapter);
+				mListView.setChoiceMode(choiceMode);
+				mCurrentView = mListView;
+			}
 		} else {
 			throw new IllegalStateException("Unknown state " + state.derivedMode);
 		}
 
+		restoreDisplaySate();
         ((BaseActivity) getActivity()).upadateActionItems(mCurrentView);
 		mThumbSize = new Point(thumbSize, thumbSize);
 

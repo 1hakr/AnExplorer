@@ -22,7 +22,7 @@ import static android.support.annotation.RestrictTo.Scope.GROUP_ID;
 
 /**
  */
-@RestrictTo(GROUP_ID)
+
 public class ParsedDocumentId {
     public final String mArchiveId;
     public final String mPath;

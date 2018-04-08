@@ -31,14 +31,17 @@ import android.os.RemoteException;
 import android.support.v7.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
+import com.cloudrail.si.CloudRail;
+
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class DocumentsApplication extends Application {
+public class DocumentsApplication extends AppFlavour {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
     private static DocumentsApplication sInstance;
 
@@ -89,6 +92,8 @@ public class DocumentsApplication extends Application {
         sInstance = this;
         final ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         final int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
+        CloudRail.setAppKey(BuildConfig.LICENSE_KEY);
+        CrashReportingManager.enable(getApplicationContext(), true);
 
         mRoots = new RootsCache(this);
         mRoots.updateAsync();

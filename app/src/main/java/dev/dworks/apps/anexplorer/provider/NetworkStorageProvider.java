@@ -32,13 +32,14 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import dev.dworks.apps.anexplorer.model.GuardedBy;
+import android.support.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.network.NetworkFile;
 
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_CLOUD;
 import static dev.dworks.apps.anexplorer.provider.ExplorerProvider.ConnectionColumns;
 
 /**
@@ -82,7 +83,10 @@ public class NetworkStorageProvider extends DocumentsProvider {
         Cursor cursor = null;
         mRoots.clear();
         try {
-            cursor = getContext().getContentResolver().query(ExplorerProvider.buildConnection(), null, null, null, null);
+            String mSelectionClause = ConnectionColumns.TYPE + " NOT LIKE ?";
+            String[] mSelectionArgs = {"%"+TYPE_CLOUD+"%"};
+            cursor = getContext().getContentResolver().query(ExplorerProvider.buildConnection(),
+                    null, mSelectionClause, mSelectionArgs, null);
             while (cursor.moveToNext()) {
                 int id = getCursorInt(cursor, BaseColumns._ID);
                 NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
