@@ -31,6 +31,7 @@ import android.support.media.ExifInterface;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,6 +53,8 @@ import java.util.zip.ZipFile;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.MimePredicate;
+import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.misc.Preconditions;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -372,64 +375,30 @@ public class DocumentArchive implements Closeable {
             throw new FileNotFoundException();
         }
 
-        ParcelFileDescriptor[] pipe;
         InputStream inputStream = null;
         try {
-            pipe = ParcelFileDescriptor.createPipe();
-            inputStream = mZipFile.getInputStream(entry);
-        } catch (IOException e) {
-            if (inputStream != null) {
+            try {
+                inputStream = mZipFile.getInputStream(entry);
+            } catch (IOException e) {
                 IoUtils.closeQuietly(inputStream);
+                // Ideally we'd simply throw IOException to the caller, but for consistency
+                // with DocumentsProvider::openDocument, converting it to IllegalStateException.
+                throw new IllegalStateException("Failed to open the document.", e);
             }
-            // Ideally we'd simply throw IOException to the caller, but for consistency
-            // with DocumentsProvider::openDocument, converting it to IllegalStateException.
-            throw new IllegalStateException("Failed to open the document.", e);
+            if(null == inputStream){
+                return null;
+            }
+            final boolean isWrite = (mode.indexOf('w') != -1);
+            if (isWrite) {
+                return null;//ParcelFileDescriptorUtil.pipeTo(new UsbFileOutputStream(file));
+            } else {
+                return ParcelFileDescriptorUtil.pipeFrom(new BufferedInputStream(inputStream));
+            }
+        } catch (Exception e) {
+            CrashReportingManager.logException(e);
+            throw new FileNotFoundException("Failed to open document with id " + documentId +
+                    " and mode " + mode);
         }
-        final ParcelFileDescriptor outputPipe = pipe[1];
-        final InputStream finalInputStream = inputStream;
-        mExecutor.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            final ParcelFileDescriptor.AutoCloseOutputStream outputStream =
-                                    new ParcelFileDescriptor.AutoCloseOutputStream(outputPipe);
-                            try {
-                                final byte buffer[] = new byte[32 * 1024];
-                                int bytes;
-                                while ((bytes = finalInputStream.read(buffer)) != -1) {
-                                    if (Thread.interrupted()) {
-                                        throw new InterruptedException();
-                                    }
-                                    if (signal != null) {
-                                        signal.throwIfCanceled();
-                                    }
-                                    outputStream.write(buffer, 0, bytes);
-                                }
-                            } catch (IOException | InterruptedException e) {
-                                // Catch the exception before the outer try-with-resource closes the
-                                // pipe with close() instead of closeWithError().
-                                try {
-                                    if(Utils.hasKitKat()) {
-                                        outputPipe.closeWithError(e.getMessage());
-                                    } else {
-                                        outputPipe.close();
-                                    }
-                                } catch (IOException e2) {
-                                    Log.e(TAG, "Failed to close the pipe after an error.", e2);
-                                    CrashReportingManager.logException(e);
-                                }
-                            }
-                        } catch (OperationCanceledException e) {
-                            // Cancelled gracefully.
-                            CrashReportingManager.logException(e);
-                        } finally {
-                            IoUtils.closeQuietly(finalInputStream);
-                        }
-                    }
-                });
-
-        return pipe[0];
     }
 
     /**
@@ -440,11 +409,11 @@ public class DocumentArchive implements Closeable {
             String documentId, Point sizeHint, final CancellationSignal signal)
             throws FileNotFoundException {
         final ParsedDocumentId parsedId = ParsedDocumentId.fromDocumentId(documentId, mIdDelimiter);
-        Preconditions.checkArgumentEquals(mDocumentId, parsedId.mArchiveId,
-                "Mismatching document ID. Expected: %s, actual: %s.");
-        Preconditions.checkArgumentNotNull(parsedId.mPath, "Not a document within an archive.");
-        Preconditions.checkArgument(getDocumentType(documentId).startsWith("image/"),
-                "Thumbnails only supported for image/* MIME type.");
+//        Preconditions.checkArgumentEquals(mDocumentId, parsedId.mArchiveId,
+//                "Mismatching document ID. Expected: %s, actual: %s.");
+//        Preconditions.checkArgumentNotNull(parsedId.mPath, "Not a document within an archive.");
+//        Preconditions.checkArgument(getDocumentType(documentId).startsWith("image/"),
+//                "Thumbnails only supported for image/* MIME type.");
 
         final ZipEntry entry = mEntries.get(parsedId.mPath);
         if (entry == null) {
@@ -519,11 +488,14 @@ public class DocumentArchive implements Closeable {
         final File file = new File(entry.getName());
         row.add(Document.COLUMN_DISPLAY_NAME, file.getName());
         row.add(Document.COLUMN_SIZE, entry.getSize());
+        row.add(Document.COLUMN_PATH, file.getAbsolutePath());
 
         final String mimeType = getMimeTypeForEntry(entry);
         row.add(Document.COLUMN_MIME_TYPE, mimeType);
-
-        final int flags = mimeType.startsWith("image/") ? Document.FLAG_SUPPORTS_THUMBNAIL : 0;
+        int flags = 0;//mimeType.startsWith("image/") ? Document.FLAG_SUPPORTS_THUMBNAIL : 0;
+        if(MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType)){
+            flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
+        }
         row.add(Document.COLUMN_FLAGS, flags);
     }
 

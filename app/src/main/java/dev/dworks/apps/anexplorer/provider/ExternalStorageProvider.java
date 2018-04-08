@@ -115,7 +115,6 @@ public class ExternalStorageProvider extends StorageProvider {
     private static final String DIR_ROOT = "/";
 
     private Handler mHandler;
-    private DocumentArchiveHelper mArchiveHelper;
 
     private final Object mRootsLock = new Object();
 
@@ -128,11 +127,10 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public boolean onCreate() {
         mHandler = new Handler();
-        mArchiveHelper = new DocumentArchiveHelper(this, (char) 0);
         updateRoots();
         updateSettings();
 
-        return true;
+        return super.onCreate();
     }
 
     @Override

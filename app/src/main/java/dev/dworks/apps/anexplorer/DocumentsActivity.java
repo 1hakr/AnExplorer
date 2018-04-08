@@ -52,6 +52,7 @@ import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -1535,7 +1536,7 @@ public class DocumentsActivity extends BaseActivity {
                 view.setDataAndType(MediaDocumentsProvider.getMediaUriForDocumentId(doc.documentId), doc.mimeType);
             } else {
                 Uri contentUri = null;
-                if(getCurrentRoot().isExternalStorage()){
+                if(getCurrentRoot().isExternalStorage() && !TextUtils.isEmpty(doc.path)){
                     contentUri = FileUtils.getContentUriFromFilePath(this, new File(doc.path).getAbsolutePath());
                 }
                 if(null == contentUri){

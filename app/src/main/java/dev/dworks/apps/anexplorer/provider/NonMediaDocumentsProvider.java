@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
@@ -148,7 +149,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
 
     @Override
     public boolean onCreate() {
-        return true;
+        return super.onCreate();
     }
 
     public static void notifyRootsChanged(Context context) {
@@ -207,6 +208,10 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
         final Ident ident = getIdentForDocId(docId);
 
+        if (mArchiveHelper.isArchivedDocument(docId)) {
+            return mArchiveHelper.queryDocument(docId, projection);
+        }
+
         final long token = Binder.clearCallingIdentity();
         Cursor cursor = null;
 
@@ -214,15 +219,15 @@ public class NonMediaDocumentsProvider extends StorageProvider {
             if (TYPE_DOCUMENT_ROOT.equals(ident.type)) {
                 includeFileRootDocument(result, TYPE_DOCUMENT_ROOT, R.string.root_document);
             } else if (TYPE_DOCUMENT.equals(ident.type)) {
-                queryFile(resolver, cursor, result, DOCUMENT_MIMES, "text");
+                queryLikeFile(resolver, cursor, result, DOCUMENT_MIMES, "text");
             } else if (TYPE_ARCHIVE_ROOT.equals(ident.type)) {
                 includeFileRootDocument(result, TYPE_ARCHIVE_ROOT, R.string.root_archive);
             } else if (TYPE_ARCHIVE.equals(ident.type)) {
-                queryFile(resolver, cursor, result, ARCHIVE_MIMES);
+                queryFile(resolver, cursor, result, ARCHIVE_MIMES, TYPE_ARCHIVE);
             } else if (TYPE_APK_ROOT.equals(ident.type)) {
                 includeFileRootDocument(result, TYPE_APK_ROOT, R.string.root_apk);
             } else if (TYPE_APK.equals(ident.type)) {
-                queryFile(resolver, cursor, result, APK_MIMES);
+                queryFile(resolver, cursor, result, APK_MIMES, TYPE_APK);
             } else {
                 throw new UnsupportedOperationException("Unsupported document " + docId);
             }
@@ -238,17 +243,21 @@ public class NonMediaDocumentsProvider extends StorageProvider {
             throws FileNotFoundException {
         final ContentResolver resolver = getContext().getContentResolver();
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
-        final Ident ident = getIdentForDocId(docId);
+        if (mArchiveHelper.isArchivedDocument(docId) ||
+                DocumentArchiveHelper.isSupportedArchiveType(getDocumentType(docId))) {
+            return mArchiveHelper.queryChildDocuments(docId, projection, sortOrder);
+        }
 
+        final Ident ident = getIdentForDocId(docId);
         final long token = Binder.clearCallingIdentity();
         Cursor cursor = null;
         try {
             if (TYPE_DOCUMENT_ROOT.equals(ident.type)) {
-                queryFile(resolver, cursor, result, DOCUMENT_MIMES, "text");
+                queryLikeFile(resolver, cursor, result, DOCUMENT_MIMES, "text");
             } else if (TYPE_ARCHIVE_ROOT.equals(ident.type)) {
-                queryFile(resolver, cursor, result, ARCHIVE_MIMES);
+                queryFile(resolver, cursor, result, ARCHIVE_MIMES, TYPE_ARCHIVE);
             } else if (TYPE_APK_ROOT.equals(ident.type)) {
-                queryFile(resolver, cursor, result, APK_MIMES);
+                queryFile(resolver, cursor, result, APK_MIMES, TYPE_APK);
             } else {
                 throw new UnsupportedOperationException("Unsupported document " + docId);
             }
@@ -280,7 +289,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         return result;
     }
 
-    private void queryFile(ContentResolver resolver, Cursor cursor, MatrixCursor result, String[] mimeType, String like) {
+    private void queryLikeFile(ContentResolver resolver, Cursor cursor, MatrixCursor result, String[] mimeType, String like) {
         // single file
         cursor = resolver.query(FILE_URI,
                 FileQuery.PROJECTION,
@@ -290,18 +299,18 @@ public class NonMediaDocumentsProvider extends StorageProvider {
                 null);
         copyNotificationUri(result, FILE_URI);
         while (cursor.moveToNext()) {
-            includeFile(result, cursor);
+            includeFile(result, cursor, TYPE_DOCUMENT);
         }
     }
 
-    private void queryFile(ContentResolver resolver, Cursor cursor, MatrixCursor result, String[] mimeType) {
+    private void queryFile(ContentResolver resolver, Cursor cursor, MatrixCursor result, String[] mimeType, String type) {
         // single file
         cursor = resolver.query(FILE_URI,
                 FileQuery.PROJECTION, FileColumns.MIME_TYPE + " IN "+ "("+toString(mimeType)+")" , null,
                 null);
         copyNotificationUri(result, FILE_URI);
         while (cursor.moveToNext()) {
-            includeFile(result, cursor);
+            includeFile(result, cursor, type);
         }
     }
 
@@ -312,7 +321,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
                 FileQuery.DATE_MODIFIED + " DESC");
         copyNotificationUri(result, FILE_URI);
         while (cursor.moveToNext() && result.getCount() < 64) {
-            includeFile(result, cursor);
+            includeFile(result, cursor, TYPE_DOCUMENT);
         }
     }
 
@@ -324,6 +333,10 @@ public class NonMediaDocumentsProvider extends StorageProvider {
             throw new IllegalArgumentException("Media is read-only");
         }
 
+        if (mArchiveHelper.isArchivedDocument(docId)) {
+            return mArchiveHelper.openDocument(docId, mode, signal);
+        }
+
         final Uri target = getUriForDocumentId(docId);
 
         // Delegate to real provider
@@ -333,6 +346,26 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         } finally {
             Binder.restoreCallingIdentity(token);
         }
+    }
+
+    @Override
+    public String getDocumentType(String documentId) throws FileNotFoundException {
+        if (mArchiveHelper.isArchivedDocument(documentId)) {
+            return mArchiveHelper.getDocumentType(documentId);
+        }
+        return super.getDocumentType(documentId);
+    }
+
+    @Override
+    public boolean isChildDocument(String parentDocumentId, String documentId) {
+        if (mArchiveHelper.isArchivedDocument(documentId)) {
+            return mArchiveHelper.isChildDocument(parentDocumentId, documentId);
+        }
+        // Archives do not contain regular files.
+        if (mArchiveHelper.isArchivedDocument(parentDocumentId)) {
+            return false;
+        }
+        return super.isChildDocument(parentDocumentId, documentId);
     }
 
     private Uri getUriForDocumentId(String docId) {
@@ -364,15 +397,15 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     @Override
     public AssetFileDescriptor openDocumentThumbnail(
             String docId, Point sizeHint, CancellationSignal signal) throws FileNotFoundException {
-//        final ContentResolver resolver = getContext().getContentResolver();
+        if (mArchiveHelper.isArchivedDocument(docId)) {
+            return mArchiveHelper.openDocumentThumbnail(docId, sizeHint, signal);
+        }
         final Ident ident = getIdentForDocId(docId);
 
         final long token = Binder.clearCallingIdentity();
         try {
-             if (TYPE_DOCUMENT.equals(ident.type)) {
+            if (TYPE_DOCUMENT.equals(ident.type)) {
                 return openOrCreateImageThumbnailCleared(ident.id, signal);
-            } else if (TYPE_ARCHIVE.equals(ident.type)) {
-                return openOrCreateVideoThumbnailCleared(ident.id, signal);
             } else if (TYPE_APK.equals(ident.type)) {
                 final long id = getAlbumForAudioCleared(ident.id);
                 return openOrCreateAudioThumbnailCleared(id, signal);
@@ -453,9 +486,9 @@ public class NonMediaDocumentsProvider extends StorageProvider {
         int DATE_MODIFIED = 5;
     }
 
-    private void includeFile(MatrixCursor result, Cursor cursor) {
+    private void includeFile(MatrixCursor result, Cursor cursor, String type) {
         final long id = cursor.getLong(FileQuery._ID);
-        final String docId = getDocIdForIdent(TYPE_APK, id);
+        final String docId = getDocIdForIdent(type, id);
 
         final RowBuilder row = result.newRow();
         row.add(Document.COLUMN_DOCUMENT_ID, docId);

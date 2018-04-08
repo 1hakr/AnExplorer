@@ -88,7 +88,7 @@ public class RootedStorageProvider extends StorageProvider {
     public boolean onCreate() {
 
         updateRoots();
-        return true;
+        return super.onCreate();
     }
 
     @Override

@@ -101,7 +101,7 @@ public class HeatMapProvider extends StorageProvider {
     @Override
     public boolean onCreate() {
         updateVolumes();
-        return true;
+        return super.onCreate();
     }
 
     public void updateVolumes() {

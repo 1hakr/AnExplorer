@@ -109,7 +109,7 @@ public class MediaDocumentsProvider extends StorageProvider {
 
     @Override
     public boolean onCreate() {
-        return true;
+        return super.onCreate();
     }
 
     public static void notifyRootsChanged(Context context) {
