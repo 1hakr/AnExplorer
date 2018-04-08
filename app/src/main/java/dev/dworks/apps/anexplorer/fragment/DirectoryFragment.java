@@ -1051,11 +1051,6 @@ public class DirectoryFragment extends ListFragment {
 			if (mType == TYPE_RECENT_OPEN) {
 				onUserSortOrderChanged();
 			}
-
-			if(root.isCloudStorage()){
-				CloudStorageProvider.notifyDocumentsChanged(getActivity(), root.rootId);
-				CloudStorageProvider.notifyRootsChanged(getActivity());
-			}
 		}
 	}
 

@@ -169,7 +169,7 @@ public class CloudStorageProvider extends DocumentsProvider {
     @Override
     public Cursor queryChildDocuments(String parentDocumentId, String[] projection,
                                       String sortOrder) throws FileNotFoundException {
-        final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
+        final MatrixCursor result = new DocumentCursor(resolveDocumentProjection(projection), parentDocumentId);
         final CloudFile parent = getFileForDocId(parentDocumentId);
         final CloudConnection connection = getCloudConnection(parentDocumentId);
         try {
@@ -243,7 +243,7 @@ public class CloudStorageProvider extends DocumentsProvider {
             final CloudConnection connection = getCloudConnection(documentId);
             if (Document.MIME_TYPE_DIR.equals(mimeType)) {
                 connection.cloudStorage.createFolder(file.getPath());
-                notifyDocumentsChanged(getContext(), documentId);
+                notifyDocumentsChanged(documentId);
             }
         } catch (Exception e) {
             throw new FileNotFoundException("Failed to create document with name " +
@@ -266,6 +266,7 @@ public class CloudStorageProvider extends DocumentsProvider {
                 long size = resolver.openAssetFileDescriptor(uploadDocumentUri, "r").getLength();
                 String currentPath = file.getAbsolutePath();
                 connection.cloudStorage.upload(currentPath, fs, size, true);
+                notifyDocumentsChanged(getContext(), documentId);
             }
         } catch (Exception e) {
             throw new FileNotFoundException("Failed to create document with name " +
@@ -280,7 +281,7 @@ public class CloudStorageProvider extends DocumentsProvider {
         final CloudConnection connection = getCloudConnection(documentId);
         try {
             connection.cloudStorage.delete(file.getPath());
-            notifyDocumentsChanged(getContext(), documentId);
+            notifyDocumentsChanged(documentId);
         } catch (Exception e) {
             throw new FileNotFoundException("Failed to delete document with id " + documentId);
         }
@@ -497,5 +498,24 @@ public class CloudStorageProvider extends DocumentsProvider {
         int updated_id = 0;
         uri = context.getContentResolver().insert(ExplorerProvider.buildConnection(), contentValues);
         return null != uri || 0 != updated_id;
+    }
+
+    private class DocumentCursor extends MatrixCursor {
+        public DocumentCursor(String[] columnNames, String docId) {
+            super(columnNames);
+
+            final Uri notifyUri = DocumentsContract.buildChildDocumentsUri(AUTHORITY, docId);
+            setNotificationUri(getContext().getContentResolver(), notifyUri);
+        }
+
+        @Override
+        public void close() {
+            super.close();
+        }
+    }
+
+    private void notifyDocumentsChanged(String docId){
+        final String rootId = getParentRootIdForDocId(docId);
+        notifyDocumentsChanged(getContext(), rootId);
     }
 }
