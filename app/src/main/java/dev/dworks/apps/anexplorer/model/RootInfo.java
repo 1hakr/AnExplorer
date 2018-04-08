@@ -664,4 +664,8 @@ public class RootInfo implements Durable, Parcelable {
         return null != root && (root.isHome() || root.isConnections() || root.isNetworkStorage());
     }
 
+    public static boolean isMedia(RootInfo root){
+        return root.isImages() || root.isVideos() || root.isAudio();
+    }
+
 }

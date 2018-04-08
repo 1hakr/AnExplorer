@@ -44,6 +44,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -119,6 +120,7 @@ import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
@@ -1500,20 +1502,9 @@ public class DocumentsActivity extends BaseActivity {
         } else if(requestCode == UPLOAD_FILE) {
             if(resultCode == Activity.RESULT_OK) {
                 final Uri uri = data.getData();
-                final String name;
-                String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
-                Cursor metaCursor = getContentResolver().query(uri, projection,
-                        null, null, null);
-                try {
-                    metaCursor.moveToFirst();
-                    name = metaCursor.getString(0);
-                } catch (Exception e){
-                    throw new RuntimeException("Could not read file name");
-                } finally {
-                    metaCursor.close();
-                }
-
-                new UploadFileTask(uri, name, FileUtils.getTypeForName(name)).executeOnExecutor(getCurrentExecutor());
+                final String name = FileUtils.getFilenameFromContentUri(this, uri);
+                new UploadFileTask(uri, name,
+                        FileUtils.getTypeForName(name)).executeOnExecutor(getCurrentExecutor());
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -1540,7 +1531,18 @@ public class DocumentsActivity extends BaseActivity {
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            view.setDataAndType(doc.derivedUri, doc.mimeType);
+            if(RootInfo.isMedia(getCurrentRoot())){
+                view.setDataAndType(MediaDocumentsProvider.getMediaUriForDocumentId(doc.documentId), doc.mimeType);
+            } else {
+                Uri contentUri = null;
+                if(getCurrentRoot().isExternalStorage()){
+                    contentUri = FileUtils.getContentUriFromFilePath(this, new File(doc.path).getAbsolutePath());
+                }
+                if(null == contentUri){
+                    contentUri = doc.derivedUri;
+                }
+                view.setDataAndType(contentUri, doc.mimeType);
+            }
             if((MimePredicate.mimeMatches(MimePredicate.SPECIAL_MIMES, doc.mimeType)
                     || !Utils.isIntentAvailable(this, view)) && !Utils.hasNougat()){
             	try {

@@ -1,13 +1,18 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.provider.DocumentFile;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -875,5 +880,59 @@ public class FileUtils {
 
     public static InputStream getInputStream(Context context, DocumentFile documentFile) throws FileNotFoundException {
         return context.getContentResolver().openInputStream(documentFile.getUri());
+    }
+
+
+    public static String getFilenameFromContentUri(Context context, Uri uri) {
+        String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
+        Cursor cursor = null;
+        String name = "";
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+            }
+        } catch (Exception e){
+            CrashReportingManager.logException(e);
+        } finally {
+            IoUtils.closeQuietly(cursor);
+        }
+        return name;
+    }
+
+    public static Uri getContentUriFromFilePath(Context context, String path) {
+        String[] projection = { MediaStore.MediaColumns._ID };
+        String selection = MediaStore.MediaColumns.DATA + "= ?";
+        String[] selectionArgs = { path };
+        Cursor cursor = null;
+        try {
+            Uri uri = getContentUri(path);
+            cursor = context.getContentResolver().query(uri, null,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+                return Uri.withAppendedPath(uri, String.valueOf(id));
+            }
+        } catch (Exception e){
+            CrashReportingManager.logException(e);
+        } finally {
+            IoUtils.closeQuietly(cursor);
+        }
+        return null;
+    }
+
+    public static Uri getContentUri(String path) {
+        String mimeType = getTypeForFile(new File(path));
+        final String typeOnly = mimeType.split("/")[0];
+        if ("audio".equals(typeOnly)) {
+            return MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        } else if ("image".equals(typeOnly)) {
+            return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }else if ("video".equals(typeOnly)) {
+            return MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        } else {
+            return MediaStore.Files.getContentUri("external");
+        }
     }
 }

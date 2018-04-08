@@ -175,6 +175,21 @@ public class MediaDocumentsProvider extends StorageProvider {
         return ident;
     }
 
+    public static Uri getMediaUriForDocumentId(String docId) {
+        final Ident ident = getIdentForDocId(docId);
+        if (TYPE_IMAGE.equals(ident.type) && ident.id != -1) {
+            return ContentUris.withAppendedId(
+                    Images.Media.EXTERNAL_CONTENT_URI, ident.id);
+        } else if (TYPE_VIDEO.equals(ident.type) && ident.id != -1) {
+            return ContentUris.withAppendedId(
+                    Video.Media.EXTERNAL_CONTENT_URI, ident.id);
+        } else if (TYPE_AUDIO.equals(ident.type) && ident.id != -1) {
+            return ContentUris.withAppendedId(
+                    Audio.Media.EXTERNAL_CONTENT_URI, ident.id);
+        }
+        return null;
+    }
+
     private static String getDocIdForIdent(String type, long id) {
         return type + ":" + id;
     }
