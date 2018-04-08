@@ -7,6 +7,12 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${parent.name}-${variant.name}-${variant.versionName}.apk"
+        }
+    }
+
     defaultConfig {
         versionName "3.8"
         versionCode = 61
