@@ -187,7 +187,7 @@ public class AppRate implements View.OnClickListener{
         Button action_feedback = (Button) mainView.findViewById(R.id.action_feedback);
         Button action_support = (Button) mainView.findViewById(R.id.action_support);
 
-        boolean hideSupport = DocumentsApplication.isPurchased() || Utils.isProVersion();
+        boolean hideSupport = DocumentsApplication.isPurchased();
         action_support.setVisibility(hideSupport ? View.GONE : View.VISIBLE);
 
         int color = SettingsActivity.getAccentColor();

@@ -5,6 +5,7 @@
 
     <dev.dworks.apps.anexplorer.ui.ProWrapper
         android:id="@+id/proWrapper"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

@@ -108,23 +108,4 @@
     <string name="cloud_onedrive">One Drive</string>
     <string name="cloud_box">Box</string>
     <string name="network_ftp">FTP</string>
-
-    //PRO
-    <string name="app_pro">AnExplorer Pro</string>
-    <string name="app_pro_content">Unlocks extra features, such as the Network &amp; Cloud Storages,
-        removes ads.\n\nThe source code of AnExplorer is available on GitHub.
-        You are welcome to compile the pro version yourself for free. However, if you want to
-        support the development and receive updates through the Play Store, consider purchasing
-        AnExplorer Pro.\nThank you,\nHari</string>
-    <string name="license_key">jhh</string>
-    <string name="merchant_id">jh</string>
-    <string name="restoring_purchase">Restoring purchase…</string>
-    <string name="could_not_restore_purchase">Could not restore purchase.</string>
-    <string name="purchase">Purchase</string>
-    <string name="restore">Restore</string>
-    <string name="no_purchase_found">No purchase found.</string>
-    <string name="thank_you">Thank you!</string>
-    <string name="support_app">Support AnExplorer</string>
-    <string name="restored_previous_purchase_please_restart">Restored previous purchase. Please restart the app to make use of all features.</string>
-
 </resources>

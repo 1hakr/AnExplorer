@@ -351,40 +351,26 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     }
 
     public boolean onMenuItemSelected(MenuItem menuItem) {
-        Bundle params = new Bundle();
-        final BaseActivity activity = (BaseActivity) getActivity();
-        CloudConnection cloudStorage = null;
         switch (menuItem.getItemId()){
             case R.id.cloud_gridve:
-                cloudStorage = CloudConnection.createCloudConnections(getActivity(), TYPE_GDRIVE);
-                new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
-                        ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
-                AnalyticsManager.logEvent("add_cloud");
+                addCloudConnection(TYPE_GDRIVE);
                 break;
 
             case R.id.cloud_dropbox:
-                cloudStorage = CloudConnection.createCloudConnections(getActivity(), TYPE_DROPBOX);
-                new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
-                        ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
-                AnalyticsManager.logEvent("add_cloud");
+                addCloudConnection(TYPE_DROPBOX);
                 break;
 
             case R.id.cloud_onedrive:
-                cloudStorage = CloudConnection.createCloudConnections(getActivity(), TYPE_ONEDRIVE);
-                new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
-                        ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
-                AnalyticsManager.logEvent("add_cloud");
+                addCloudConnection(TYPE_ONEDRIVE);
                 break;
 
             case R.id.cloud_box:
-                cloudStorage = CloudConnection.createCloudConnections(getActivity(), TYPE_BOX);
-                new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
-                        ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
-                AnalyticsManager.logEvent("add_cloud");
+                addCloudConnection(TYPE_BOX);
                 break;
 
             case R.id.network_ftp:
                 addConnection();
+                AnalyticsManager.logEvent("add_ftp");
                 break;
         }
         mActionMenu.closeMenu();
@@ -394,5 +380,17 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     @Override
     public void onMenuClosed() {
 
+    }
+
+    public void addCloudConnection(String cloudType){
+        final BaseActivity activity = (BaseActivity) getActivity();
+        if(!DocumentsApplication.isPurchased()){
+            DocumentsApplication.openPurchaseActivity(activity);
+            return;
+        }
+        CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
+        new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
+                ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
+        AnalyticsManager.logEvent("add_cloud");
     }
 }

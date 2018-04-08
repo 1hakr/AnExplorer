@@ -87,6 +87,7 @@ public class RootsFragment extends Fragment {
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;
     private ArrayList<Long> expandedIds = new ArrayList<>();
+    private View proWrapper;
 
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();
@@ -109,6 +110,7 @@ public class RootsFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_roots, container, false);
+        proWrapper = view.findViewById(R.id.proWrapper);
         mList = (ExpandableListView) view.findViewById(android.R.id.list);
         mList.setOnChildClickListener(mItemListener);
         mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -206,7 +208,9 @@ public class RootsFragment extends Fragment {
             mList.setOnItemLongClickListener(null);
             mList.setLongClickable(false);
         }
-
+        if(null != proWrapper) {
+            proWrapper.setVisibility(DocumentsApplication.isPurchased() ? View.GONE : View.VISIBLE);
+        }
         getLoaderManager().restartLoader(2, null, mCallbacks);
     }
 

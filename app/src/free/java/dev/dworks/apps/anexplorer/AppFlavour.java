@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
+import io.fabric.sdk.android.services.common.BackgroundPriorityRunnable;
 import needle.Needle;
 import needle.UiRelatedTask;
 
@@ -27,7 +29,7 @@ import needle.UiRelatedTask;
 public abstract class AppFlavour extends Application implements BillingProcessor.IBillingHandler {
 	private static final String PURCHASE_PRODUCT_ID = "purchase_product_id";
     public static final String PURCH_ID = BuildConfig.APPLICATION_ID + ".purch";
-    private static final String PURCHASED = "purchased";
+    public static final String PURCHASED = "purchased";
     private static final int IAP_ID_CODE = 1;
 
 	private BillingProcessor bp;
@@ -45,7 +47,7 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 	}
 
 	public static boolean isPurchased() {
-		return PreferenceUtils.getBooleanPrefs(PURCHASED);
+		return Utils.isProVersion() || PreferenceUtils.getBooleanPrefs(PURCHASED);
 	}
 
 	@Override
@@ -67,18 +69,12 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 			return;
 		}
 
-		Needle.onBackgroundThread().execute(new UiRelatedTask<Void>() {
+		Needle.onBackgroundThread().execute(new BackgroundPriorityRunnable() {
 			@Override
-			protected Void doWork() {
+			protected void onRun() {
 				getPurchSkuDetails();
 				boolean isPurchased = getBillingProcessor().isPurchased(getPurchasedProductId());
 				PreferenceUtils.set(PURCHASED, isPurchased);
-				return null;
-			}
-
-			@Override
-			protected void thenDoUiRelatedWork(Void result) {
-				//LocalBurst.getInstance().emit(BILLING_ACTION);
 			}
 		});
 	}

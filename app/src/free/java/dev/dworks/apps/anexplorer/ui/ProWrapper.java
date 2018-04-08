@@ -37,9 +37,6 @@ public class ProWrapper extends FrameLayout {
     }
 
     private void init(Context context) {
-        if(AppFlavour.isPurchased()){
-            return;
-        }
         View view = LayoutInflater.from(context).inflate(R.layout.pro_wrapper, this, true);
         view.findViewById(R.id.action_layout).setOnClickListener(new OnClickListener() {
             @Override
@@ -47,6 +44,7 @@ public class ProWrapper extends FrameLayout {
                 DocumentsApplication.openPurchaseActivity(getContext());
             }
         });
+        setVisibility(AppFlavour.isPurchased() ? GONE : VISIBLE);
     }
 
 }

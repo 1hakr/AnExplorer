@@ -12,9 +12,11 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
+import static dev.dworks.apps.anexplorer.AppFlavour.PURCHASED;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
 
 public class PurchaseActivity extends ActionBarActivity {
@@ -126,7 +128,6 @@ public class PurchaseActivity extends ActionBarActivity {
             if (purchaseActivity != null) {
                 DocumentsApplication.getInstance().loadOwnedPurchasesFromGoogle();
             }
-            cancel(false);
             return null;
         }
 
