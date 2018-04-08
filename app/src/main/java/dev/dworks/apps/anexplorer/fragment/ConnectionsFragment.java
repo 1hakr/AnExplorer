@@ -205,8 +205,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             final Cursor cursor = mAdapter.getItem(position);
             if (cursor != null) {
-                NetworkConnection connection = NetworkConnection.fromConnectionsCursor(cursor);
-                openConnectionRoot(connection);
+                openConnectionRoot(cursor);
             }
         }
     };
@@ -324,6 +323,16 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         });
         DialogFragment.showThemedDialog(builder);
         AnalyticsManager.logEvent("connection_delete");
+    }
+
+    public void openConnectionRoot(Cursor cursor) {
+        NetworkConnection connection = NetworkConnection.fromConnectionsCursor(cursor);
+        DocumentsActivity activity = ((DocumentsActivity)getActivity());
+        if (connection.type.startsWith(TYPE_CLOUD)){
+            activity.onRootPicked(activity.getRoots().getRootInfo(CloudConnection.fromCursor(getActivity(), cursor)), mConnectionsRoot);
+        } else {
+            activity.onRootPicked(activity.getRoots().getRootInfo(connection), mConnectionsRoot);
+        }
     }
 
     public void openConnectionRoot(NetworkConnection connection) {

@@ -166,11 +166,7 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
 
         setOrientation(VERTICAL);
 
-        newNavigationMenu();
-
-        int menuItemCount = navigationMenu.size();
-        fabMenuItemMap = new ArrayMap<>(menuItemCount);
-        cardViewMenuItemMap = new ArrayMap<>(menuItemCount);
+        newNavigationMenu(menuId);
         setupFab();
 
     }
@@ -303,7 +299,8 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
         });
     }
 
-    private void newNavigationMenu() {
+    public void newNavigationMenu(int menuId) {
+        this.menuId = menuId;
         navigationMenu = new NavigationMenu(getContext());
         new SupportMenuInflater(getContext()).inflate(menuId, navigationMenu);
 
@@ -317,6 +314,9 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
             public void onMenuModeChange(MenuBuilder menu) {
             }
         });
+        int menuItemCount = navigationMenu.size();
+        fabMenuItemMap = new ArrayMap<>(menuItemCount);
+        cardViewMenuItemMap = new ArrayMap<>(menuItemCount);
     }
 
     @Override
@@ -352,7 +352,7 @@ public class FabSpeedDial extends VisibilityAwareLinearLayout implements View.On
 
         boolean showMenu = true;
         if (menuListener != null) {
-            newNavigationMenu();
+            newNavigationMenu(menuId);
             showMenu = menuListener.onPrepareMenu(navigationMenu);
         }
 

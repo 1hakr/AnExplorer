@@ -74,7 +74,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		int accentColor = ColorUtils.getTextColorForBackground(SettingsActivity.getPrimaryColor());
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setTextColor(accentColor);
-		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
+		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? " Debug" : "");
 		logo.setText(header);
 
 		TextView action_rate = (TextView)findViewById(R.id.action_rate);

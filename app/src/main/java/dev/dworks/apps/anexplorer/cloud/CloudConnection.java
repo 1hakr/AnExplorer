@@ -2,6 +2,7 @@ package dev.dworks.apps.anexplorer.cloud;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import com.cloudrail.si.CloudRail;
@@ -53,7 +54,7 @@ public class CloudConnection {
     public String name;
     public String username;
     public boolean isLoggedIn = false;
-    private String result;
+    public String id;
 
     public CloudConnection(CloudStorage cloudStorage, String name, String path){
         this.cloudStorage = cloudStorage;
@@ -63,6 +64,7 @@ public class CloudConnection {
     }
 
     public static CloudConnection fromCursor(Context context, Cursor cursor){
+        int id = getCursorInt(cursor, BaseColumns._ID);
         String name = getCursorString(cursor, ExplorerProvider.ConnectionColumns.NAME);
         String username = getCursorString(cursor, ExplorerProvider.ConnectionColumns.USERNAME);
         String result = getCursorString(cursor, ExplorerProvider.ConnectionColumns.PASSWORD);
@@ -73,6 +75,7 @@ public class CloudConnection {
         CloudConnection cloudConnection = new CloudConnection(createCloudStorage(context, type), type, path);
         cloudConnection.username = username;
         cloudConnection.name = name;
+        cloudConnection.id = CloudConnection.getCloudStorageId(type, id);
         cloudConnection.load(context, result);
         return cloudConnection;
     }
@@ -158,7 +161,6 @@ public class CloudConnection {
             ((Dropbox) cloudStorage).useAdvancedAuthentication();
         }
         cloudStorage.login();
-        result = cloudStorage.saveAsString();
     }
 
     public boolean load(Context context, String result){
@@ -175,6 +177,10 @@ public class CloudConnection {
     }
 
     public InputStream getInputStream(CloudFile file) {
+        return cloudStorage.download(file.getAbsolutePath());
+    }
+
+    public InputStream getThumbnailInputStream(CloudFile file) {
         return cloudStorage.getThumbnail(file.getAbsolutePath());
     }
 
@@ -211,5 +217,9 @@ public class CloudConnection {
                 }
             }
         }
+    }
+
+    public static String getCloudStorageId(String type, int id){
+        return type+"_"+id;
     }
 }

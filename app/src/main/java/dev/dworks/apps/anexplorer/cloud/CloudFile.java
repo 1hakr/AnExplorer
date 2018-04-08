@@ -1,6 +1,10 @@
 package dev.dworks.apps.anexplorer.cloud;
 
+import android.text.TextUtils;
+
 import com.cloudrail.si.types.CloudMetaData;
+
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 
 public class CloudFile {
 
@@ -9,6 +13,14 @@ public class CloudFile {
     public CloudFile(String path) {
         file = new CloudMetaData();
         file.setPath(path);
+        file.setFolder(true);
+    }
+
+    public CloudFile(CloudFile parent, String path) {
+        String parentPath = parent.getPath();
+        String newPath = parent.getPath() + (TextUtils.isEmpty(path) ? "" : (parentPath.endsWith("/") ? "" : "/") + path);
+        file = new CloudMetaData();
+        file.setPath(newPath);
         file.setFolder(true);
     }
 
@@ -25,7 +37,9 @@ public class CloudFile {
     }
 
     public String getName() {
-        return file.getName();
+        String name = file.getName();
+        name = TextUtils.isEmpty(name) ? FileUtils.getName(getPath()) : name;
+        return name;
     }
 
     public boolean isDirectory() {
@@ -44,6 +58,7 @@ public class CloudFile {
         if(getPath().equals("/")){
             return 0;
         }
-        return file.getModifiedAt();
+        Long lastModified = file.getModifiedAt();
+        return null != lastModified ? lastModified : 0;
     }
 }

@@ -1,5 +1,6 @@
 package dev.dworks.apps.anexplorer.provider;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -11,14 +12,20 @@ import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
 import android.support.annotation.GuardedBy;
+import android.support.provider.DocumentFile;
 import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import com.cloudrail.si.interfaces.CloudStorage;
 import com.cloudrail.si.types.CloudMetaData;
+import com.github.mjdev.libaums.fs.UsbFileInputStream;
+import com.github.mjdev.libaums.fs.UsbFileOutputStream;
 
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +38,7 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
@@ -98,7 +106,7 @@ public class CloudStorageProvider extends DocumentsProvider {
                 int id = getCursorInt(cursor, BaseColumns._ID);
                 CloudConnection cloudStorage = CloudConnection.fromCursor(getContext(), cursor);
                 if(cloudStorage.isLoggedIn()) {
-                    mRoots.put(cloudStorage.getType()+"_"+id, cloudStorage);
+                    mRoots.put(CloudConnection.getCloudStorageId(cloudStorage.getType(), id), cloudStorage);
                 }
             }
         } catch (Exception e) {
@@ -184,10 +192,15 @@ public class CloudStorageProvider extends DocumentsProvider {
 
         try {
             InputStream inputStream = connection.getInputStream(file);
-            if(null != inputStream){
-                return ParcelFileDescriptorUtil.pipeFrom(inputStream);
+            if(null == inputStream){
+                return null;
             }
-            return null;
+            final boolean isWrite = (mode.indexOf('w') != -1);
+            if (isWrite) {
+                return null;//ParcelFileDescriptorUtil.pipeTo(new UsbFileOutputStream(file));
+            } else {
+                return ParcelFileDescriptorUtil.pipeFrom(new BufferedInputStream(inputStream));
+            }
         } catch (Exception e) {
             CrashReportingManager.logException(e);
             throw new FileNotFoundException("Failed to open document with id " + documentId +
@@ -203,9 +216,18 @@ public class CloudStorageProvider extends DocumentsProvider {
         final CloudConnection connection = getCloudConnection(documentId);
 
         final long token = Binder.clearCallingIdentity();
+
         try {
-            final ParcelFileDescriptor pfd = openDocument(documentId, "r", signal);
+            InputStream inputStream = connection.getThumbnailInputStream(file);
+            if(null == inputStream){
+                return null;
+            }
+            final ParcelFileDescriptor pfd = ParcelFileDescriptorUtil.pipeFrom(inputStream);
             return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
+        } catch (Exception e) {
+            CrashReportingManager.logException(e);
+            throw new FileNotFoundException("Failed to open document with id " + documentId +
+                    " and");
         } finally {
             Binder.restoreCallingIdentity(token);
         }
@@ -216,17 +238,52 @@ public class CloudStorageProvider extends DocumentsProvider {
             throws FileNotFoundException {
 
         CloudFile parent = getFileForDocId(documentId);
-        CloudFile file = new CloudFile(parent.getPath() + displayName);
-        final CloudConnection connection = getCloudConnection(documentId);
-        connection.cloudStorage.createFolder(file.getPath());
+        CloudFile file = new CloudFile(parent, displayName);
+        try {
+            final CloudConnection connection = getCloudConnection(documentId);
+            if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+                connection.cloudStorage.createFolder(file.getPath());
+                notifyDocumentsChanged(getContext(), documentId);
+            }
+        } catch (Exception e) {
+            throw new FileNotFoundException("Failed to create document with name " +
+                    displayName +" and documentId " + documentId);
+        }
         return getDocIdForFile(file);
+    }
+
+    @Override
+    public boolean uploadDocument(String documentId, Uri uploadDocumentUri, String mimeType, String displayName)
+            throws FileNotFoundException {
+
+        ContentResolver resolver = getContext().getContentResolver();
+        CloudFile parent = getFileForDocId(documentId);
+        CloudFile file = new CloudFile(parent, displayName);
+        try {
+            final CloudConnection connection = getCloudConnection(documentId);
+            if (!Document.MIME_TYPE_DIR.equals(mimeType)) {
+                InputStream fs = resolver.openInputStream(uploadDocumentUri);
+                long size = resolver.openAssetFileDescriptor(uploadDocumentUri, "r").getLength();
+                String currentPath = file.getAbsolutePath();
+                connection.cloudStorage.upload(currentPath, fs, size, true);
+            }
+        } catch (Exception e) {
+            throw new FileNotFoundException("Failed to create document with name " +
+                    displayName +" and documentId " + documentId);
+        }
+        return true;
     }
 
     @Override
     public void deleteDocument(String documentId) throws FileNotFoundException {
         CloudFile file = getFileForDocId(documentId);
         final CloudConnection connection = getCloudConnection(documentId);
-        connection.cloudStorage.delete(file.getPath());
+        try {
+            connection.cloudStorage.delete(file.getPath());
+            notifyDocumentsChanged(getContext(), documentId);
+        } catch (Exception e) {
+            throw new FileNotFoundException("Failed to delete document with id " + documentId);
+        }
     }
 
     @Override
@@ -347,7 +404,7 @@ public class CloudStorageProvider extends DocumentsProvider {
         if (target == null) {
             return null;
         }
-        target = new CloudFile(target.getAbsolutePath() + path);
+        target = new CloudFile(target, path);
         return target;
     }
 
@@ -382,9 +439,9 @@ public class CloudStorageProvider extends DocumentsProvider {
                 flags |= Document.FLAG_SUPPORTS_WRITE;
             }
             flags |= Document.FLAG_SUPPORTS_DELETE;
-            flags |= Document.FLAG_SUPPORTS_RENAME;
+            //flags |= Document.FLAG_SUPPORTS_RENAME;
             //flags |= Document.FLAG_SUPPORTS_MOVE;
-            flags |= Document.FLAG_SUPPORTS_EDIT;
+            //flags |= Document.FLAG_SUPPORTS_EDIT;
         }
 
         final String mimeType = getTypeForFile(file);

@@ -54,6 +54,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
+import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
@@ -472,8 +473,8 @@ public class RootsCache {
     }
 
     public RootInfo getRootInfo(CloudConnection connection){
-        for (RootInfo root : mRoots.get(NetworkStorageProvider.AUTHORITY)) {
-            if (root.rootId.equals(connection.name)
+        for (RootInfo root : mRoots.get(CloudStorageProvider.AUTHORITY)) {
+            if (root.rootId.equals(connection.id)
                     && root.path.equals(connection.getPath())) {
                 return root;
             }

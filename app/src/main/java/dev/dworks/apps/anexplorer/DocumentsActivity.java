@@ -42,6 +42,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewCompat;
@@ -69,7 +70,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.cloudrail.si.CloudRail;
-import com.cloudrail.si.services.GoogleDrive;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,7 +82,6 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
-import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateFileFragment;
@@ -101,6 +100,7 @@ import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
@@ -126,7 +126,6 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.fabs.SimpleMenuListenerAdapter;
-import needle.Needle;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
@@ -155,6 +154,7 @@ public class DocumentsActivity extends BaseActivity {
     private static final String EXTRA_ACTIONMODE = "actionmode";
     private static final String EXTRA_SEARCH_STATE = "searchsate";
     private static final String BROWSABLE = "android.intent.category.BROWSABLE";
+    private static final int UPLOAD_FILE = 99;
 
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
@@ -969,6 +969,20 @@ public class DocumentsActivity extends BaseActivity {
         AnalyticsManager.logEvent("create_file", params);
     }
 
+    private void uploadFile(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            this.startActivityForResult(Intent.createChooser(intent, "Select a File to Upload"), UPLOAD_FILE);
+        } catch(android.content.ActivityNotFoundException e) {
+            showError(R.string.upload_error);
+        }
+        Bundle params = new Bundle();
+        params.putString(FILE_TYPE, "file");
+        AnalyticsManager.logEvent("upload_file", params);
+    }
+
     /**
      * Update UI to reflect internal state changes not from user.
      */
@@ -1405,6 +1419,53 @@ public class DocumentsActivity extends BaseActivity {
         }
     }
 
+    private class UploadFileTask extends AsyncTask<Void, Void, Boolean> {
+        private final DocumentInfo mCwd;
+        private final String mMimeType;
+        private final String mDisplayName;
+        private final Uri mUri;
+
+        public UploadFileTask(Uri uri, String name, String mimeType) {
+            mCwd = getCurrentDirectory();
+            mDisplayName = name;
+            mMimeType = mimeType;
+            mUri = uri;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            setPending(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            final ContentResolver resolver = getContentResolver();
+            ContentProviderClient client = null;
+            Boolean hadTrouble = false;
+            try {
+                client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                        resolver, mCwd.derivedUri.getAuthority());
+                hadTrouble = !DocumentsContract.uploadDocument(
+                        resolver, mCwd.derivedUri, mUri, mMimeType, mDisplayName);
+            } catch (Exception e) {
+                Log.w(DocumentsActivity.TAG, "Failed to upload document", e);
+                CrashReportingManager.logException(e);
+            } finally {
+                ContentProviderClientCompat.releaseQuietly(client);
+            }
+
+            return hadTrouble;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                showError(R.string.upload_error);
+            }
+            setPending(false);
+        }
+    }
+
     public void onAppPicked(ResolveInfo info) {
         final Intent intent = new Intent(getIntent());
         intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_FORWARD_RESULT);
@@ -1436,6 +1497,24 @@ public class DocumentsActivity extends BaseActivity {
         	}
         }  else if(requestCode == ADD_STORAGE_REQUEST_CODE){
             SAFManager.onActivityResult(this, requestCode, resultCode, data);
+        } else if(requestCode == UPLOAD_FILE) {
+            if(resultCode == Activity.RESULT_OK) {
+                final Uri uri = data.getData();
+                final String name;
+                String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
+                Cursor metaCursor = getContentResolver().query(uri, projection,
+                        null, null, null);
+                try {
+                    metaCursor.moveToFirst();
+                    name = metaCursor.getString(0);
+                } catch (Exception e){
+                    throw new RuntimeException("Could not read file name");
+                } finally {
+                    metaCursor.close();
+                }
+
+                new UploadFileTask(uri, name, FileUtils.getTypeForName(name)).executeOnExecutor(getCurrentExecutor());
+            }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -1886,7 +1965,9 @@ public class DocumentsActivity extends BaseActivity {
     public void upadateActionItems(AbsListView currentView) {
 
         mActionMenu.attachToListView(currentView);
-
+        if(getCurrentRoot().isCloudStorage()){
+            mActionMenu.newNavigationMenu(R.menu.menu_fab_cloud);
+        }
         int defaultColor = SettingsActivity.getPrimaryColor(this);
         ViewCompat.setNestedScrollingEnabled(currentView, true);
         mActionMenu.show();
@@ -1912,6 +1993,12 @@ public class DocumentsActivity extends BaseActivity {
                 case R.id.fab_create_file:
                     onStateChanged();
                     createFile();
+                    mActionMenu.closeMenu();
+                    break;
+
+                case R.id.fab_upload_file:
+                    onStateChanged();
+                    uploadFile();
                     mActionMenu.closeMenu();
                     break;
 
