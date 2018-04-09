@@ -37,6 +37,7 @@ android {
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard/proguard-project.pro',
                     'proguard/proguard-google-play-services.pro'
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_DEBUG_CLIENT_ID"
         }
         release {
             signingConfig signingConfigs.release
@@ -47,6 +48,7 @@ android {
                     getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard/proguard-project.pro',
                     'proguard/proguard-google-play-services.pro'
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_CLIENT_ID"
         }
     }
     flavorDimensions "release", "default"
@@ -54,12 +56,10 @@ android {
         free {
             applicationId "dev.dworks.apps.anexplorer"
             dimension "default"
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_CLIENT_ID"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
             dimension "default"
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         underground {
             applicationId "dev.dworks.apps.anexplorer.underground"
