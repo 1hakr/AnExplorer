@@ -51,6 +51,9 @@ public class PurchaseActivity extends ActionBarActivity {
         restoreButton.setEnabled(true);
         purchaseButton.setEnabled(true);
 
+        if(Utils.isTelevision(this)){
+            restoreButton.setVisibility(View.GONE);
+        }
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,7 +66,15 @@ public class PurchaseActivity extends ActionBarActivity {
         purchaseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DocumentsApplication.getInstance().purchase(PurchaseActivity.this, DocumentsApplication.getPurchaseId());
+                if(Utils.isTelevision(PurchaseActivity.this)){
+                    Intent intentMarketAll = new Intent("android.intent.action.VIEW");
+                    intentMarketAll.setData(Utils.getAppProStoreUri());
+                    if(Utils.isIntentAvailable(PurchaseActivity.this, intentMarketAll)) {
+                        startActivity(intentMarketAll);
+                    }
+                } else {
+                    DocumentsApplication.getInstance().purchase(PurchaseActivity.this, DocumentsApplication.getPurchaseId());
+                }
             }
         });
     }

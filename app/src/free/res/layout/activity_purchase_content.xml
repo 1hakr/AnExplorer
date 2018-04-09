@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/card_padding"
+    android:paddingBottom="8dp"
     android:paddingLeft="@dimen/card_padding"
     android:paddingRight="@dimen/card_padding"
     android:paddingTop="8dp"
@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:scaleType="fitStart"
+                android:scaleType="fitCenter"
                 android:src="@drawable/promo" />
 
             <LinearLayout
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="@string/purchase"
-                    android:textColor="@color/md_blue_600" />
+                    android:textColor="@color/md_pink_500" />
 
             </LinearLayout>
 

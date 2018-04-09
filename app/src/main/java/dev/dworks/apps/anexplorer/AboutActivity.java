@@ -138,7 +138,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 			case R.id.action_support:
 				if(Utils.isProVersion()){
 					Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-					intentMarketAll.setData(Utils.getAppStoreUri());
+					intentMarketAll.setData(Utils.getAppProStoreUri());
 					startActivity(intentMarketAll);
 				} else {
 					DocumentsApplication.openPurchaseActivity(this);

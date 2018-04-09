@@ -202,12 +202,12 @@
 
     //PRO
     <string name="app_pro">AnExplorer Pro</string>
-    <string name="app_pro_content">Unlocks extra features, such as the Network &amp; Cloud Storages
-        and removes ads. \n\nThe source code of AnExplorer is available on GitHub.
+    <string name="app_pro_content">Unlocks extra features, such as the Network &amp; Cloud Storage,
+        Root Storage, USB Storage and removes ads. \n\nThe source code of AnExplorer is available on GitHub.
         You are welcome to compile the pro version yourself for free.
-        \n\nHowever if you like what I do and want AnExplorer to survive and want new features,
+        \n\nHowever if you like what I do and love AnExplorer and want us to survive,
         please support the development and receive updates through the Play Store, consider purchasing
-        AnExplorer Pro
+        AnExplorer Pro.
         \n\nThank you,\nHari</string>
     <string name="license_key">jhh</string>
     <string name="merchant_id">jh</string>

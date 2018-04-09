@@ -258,10 +258,15 @@ public class RootsFragment extends Fragment {
             if (item instanceof RootItem) {
                     int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
                 parent.setItemChecked(index, true);
-                activity.onRootPicked(((RootItem) item).root, true);
+                RootInfo rootInfo = ((RootItem) item).root;
+                if(RootInfo.isProFeature(rootInfo) && !DocumentsApplication.isPurchased()){
+                    DocumentsApplication.openPurchaseActivity(activity);
+                    return false;
+                }
+                activity.onRootPicked(rootInfo, true);
                 Bundle params = new Bundle();
-                params.putString("type", ((RootItem) item).root.title);
-                AnalyticsManager.logEvent("navigate", ((RootItem) item).root, params);
+                params.putString("type", rootInfo.title);
+                AnalyticsManager.logEvent("navigate", rootInfo, params);
             } else if (item instanceof AppItem) {
                 activity.onAppPicked(((AppItem) item).info);
             } else {

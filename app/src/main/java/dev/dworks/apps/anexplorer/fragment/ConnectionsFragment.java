@@ -106,10 +106,6 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         final Resources res = getActivity().getResources();
 
-        if(isTelevision()){
-            mActionMenu.setVisibility(View.GONE);
-        }
-
         mActionMenu = (FloatingActionsMenu) view.findViewById(R.id.fabs);
         mActionMenu.setMenuListener(this);
         mActionMenu.setVisibility(!isTelevision() ? View.VISIBLE : View.GONE);
@@ -351,6 +347,11 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     }
 
     public boolean onMenuItemSelected(MenuItem menuItem) {
+        final BaseActivity activity = (BaseActivity) getActivity();
+        if(!DocumentsApplication.isPurchased()){
+            DocumentsApplication.openPurchaseActivity(activity);
+            return false;
+        }
         switch (menuItem.getItemId()){
             case R.id.cloud_gridve:
                 addCloudConnection(TYPE_GDRIVE);
@@ -384,10 +385,6 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     public void addCloudConnection(String cloudType){
         final BaseActivity activity = (BaseActivity) getActivity();
-        if(!DocumentsApplication.isPurchased()){
-            DocumentsApplication.openPurchaseActivity(activity);
-            return;
-        }
         CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
         new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
                 ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));

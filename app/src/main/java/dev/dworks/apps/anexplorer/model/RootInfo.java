@@ -668,4 +668,8 @@ public class RootInfo implements Durable, Parcelable {
         return root.isImages() || root.isVideos() || root.isAudio();
     }
 
+    public static boolean isProFeature(RootInfo root){
+        return root.isUsbStorage() || root.isRootedStorage();
+    }
+
 }
