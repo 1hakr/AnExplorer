@@ -16,7 +16,6 @@
         android:icon="@drawable/ic_root_dropbox"
         android:orderInCategory="100"
         android:title="@string/cloud_dropbox"
-        android:visible="false"
         app:showAsAction="never" />
 
     <item
@@ -24,7 +23,6 @@
         android:icon="@drawable/ic_root_onedrive"
         android:orderInCategory="100"
         android:title="@string/cloud_onedrive"
-        android:visible="false"
         app:showAsAction="never" />
 
     <item
@@ -32,7 +30,6 @@
         android:icon="@drawable/ic_root_box"
         android:orderInCategory="100"
         android:title="@string/cloud_box"
-        android:visible="false"
         app:showAsAction="never" />
 
     <item

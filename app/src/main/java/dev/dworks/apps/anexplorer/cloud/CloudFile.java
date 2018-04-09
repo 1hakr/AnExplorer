@@ -9,11 +9,13 @@ import dev.dworks.apps.anexplorer.misc.FileUtils;
 public class CloudFile {
 
     CloudMetaData file;
+    String clientId;
 
-    public CloudFile(String path) {
+    public CloudFile(String path, String id) {
         file = new CloudMetaData();
         file.setPath(path);
         file.setFolder(true);
+        clientId = id;
     }
 
     public CloudFile(CloudFile parent, String path) {
@@ -22,10 +24,12 @@ public class CloudFile {
         file = new CloudMetaData();
         file.setPath(newPath);
         file.setFolder(true);
+        clientId = parent.clientId;
     }
 
-    public CloudFile(CloudMetaData cloudMetaData) {
-        file =cloudMetaData;
+    public CloudFile(CloudMetaData cloudMetaData, String id) {
+        file = cloudMetaData;
+        clientId = id;
     }
 
     public String getAbsolutePath() {
@@ -60,5 +64,9 @@ public class CloudFile {
         }
         Long lastModified = file.getModifiedAt();
         return null != lastModified ? lastModified : 0;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 }

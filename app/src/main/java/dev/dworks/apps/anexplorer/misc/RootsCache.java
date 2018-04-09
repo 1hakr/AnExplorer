@@ -474,7 +474,7 @@ public class RootsCache {
 
     public RootInfo getRootInfo(CloudConnection connection){
         for (RootInfo root : mRoots.get(CloudStorageProvider.AUTHORITY)) {
-            if (root.rootId.equals(connection.id)
+            if (root.rootId.equals(connection.clientId)
                     && root.path.equals(connection.getPath())) {
                 return root;
             }

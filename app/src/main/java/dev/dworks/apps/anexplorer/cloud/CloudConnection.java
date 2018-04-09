@@ -54,13 +54,14 @@ public class CloudConnection {
     public String name;
     public String username;
     public boolean isLoggedIn = false;
-    public String id;
+    public String clientId;
 
-    public CloudConnection(CloudStorage cloudStorage, String name, String path){
+    public CloudConnection(CloudStorage cloudStorage, String name, String path, String id){
         this.cloudStorage = cloudStorage;
         this.path = path;
-        this.file = new CloudFile(path);
+        this.file = new CloudFile(path, id);
         this.name = name;
+        this.clientId = id;
     }
 
     public static CloudConnection fromCursor(Context context, Cursor cursor){
@@ -72,16 +73,17 @@ public class CloudConnection {
         String type = getCursorString(cursor, ExplorerProvider.ConnectionColumns.TYPE);
         CloudRail.setAppKey(BuildConfig.LICENSE_KEY);
 
-        CloudConnection cloudConnection = new CloudConnection(createCloudStorage(context, type), type, path);
+        String clientId = CloudConnection.getCloudStorageId(type, id);
+        CloudConnection cloudConnection = new CloudConnection(createCloudStorage(context, type), type, path, clientId);
         cloudConnection.username = username;
         cloudConnection.name = name;
-        cloudConnection.id = CloudConnection.getCloudStorageId(type, id);
+        cloudConnection.clientId = clientId;
         cloudConnection.load(context, result);
         return cloudConnection;
     }
 
     public static CloudConnection createCloudConnections(Context context, String type){
-        CloudConnection cloudConnection = new CloudConnection(createCloudStorage(context, type), getTypeName(type), "/");
+        CloudConnection cloudConnection = new CloudConnection(createCloudStorage(context, type), getTypeName(type), "/", "");
         cloudConnection.load(context, "");
         return cloudConnection;
     }

@@ -174,7 +174,7 @@ public class CloudStorageProvider extends DocumentsProvider {
         final CloudConnection connection = getCloudConnection(parentDocumentId);
         try {
             for (CloudMetaData cloudMetaData : connection.cloudStorage.getChildren(parent.getAbsolutePath())) {
-                includeFile(result, null, new CloudFile(cloudMetaData));
+                includeFile(result, null, new CloudFile(cloudMetaData, connection.clientId));
             }
         } catch (IOException e) {
             CrashReportingManager.logException(e);
@@ -347,6 +347,7 @@ public class CloudStorageProvider extends DocumentsProvider {
      */
     private String getDocIdForFile(CloudFile file) throws FileNotFoundException {
         String path = file.getAbsolutePath();
+        String clientId = file.getClientId();
 
         // Find the most-specific root file
         String mostSpecificId = null;
@@ -356,7 +357,8 @@ public class CloudStorageProvider extends DocumentsProvider {
             for (int i = 0; i < mRoots.size(); i++) {
                 final String rootId = mRoots.keyAt(i);
                 final String rootPath = mRoots.valueAt(i).file.getAbsolutePath();
-                if (path.startsWith(rootPath) && (mostSpecificPath == null
+                final String rootClientId = mRoots.valueAt(i).file.getClientId();
+                if (clientId.startsWith(rootClientId) && path.startsWith(rootPath) && (mostSpecificPath == null
                         || rootPath.length() > mostSpecificPath.length())) {
                     mostSpecificId = rootId;
                     mostSpecificPath = rootPath;
