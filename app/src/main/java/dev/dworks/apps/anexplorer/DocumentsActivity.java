@@ -1282,13 +1282,15 @@ public class DocumentsActivity extends BaseActivity {
         	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
                 RecentsCreateFragment.show(fm);
             } else {
-                if(root.isHome()){
-                    HomeFragment.show(fm);
-                }
-                else if(root.isConnections()){
-                    ConnectionsFragment.show(fm);
-                } else if(root.isServerStorage()){
-                    ServerFragment.show(fm, root);
+        	    if(null != root){
+                    if(root.isHome()){
+                        HomeFragment.show(fm);
+                    }
+                    else if(root.isConnections()){
+                        ConnectionsFragment.show(fm);
+                    } else if(root.isServerStorage()){
+                        ServerFragment.show(fm, root);
+                    }
                 } else {
                     DirectoryFragment.showRecentsOpen(fm, anim);
 
