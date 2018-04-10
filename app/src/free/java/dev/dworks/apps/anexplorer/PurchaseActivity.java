@@ -1,7 +1,6 @@
 package dev.dworks.apps.anexplorer;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -10,19 +9,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
 
-import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import needle.Needle;
+import needle.UiRelatedTask;
 
-import static dev.dworks.apps.anexplorer.AppFlavour.PURCHASED;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
 
 public class PurchaseActivity extends ActionBarActivity {
 
     public static final String TAG = PurchaseActivity.class.getSimpleName();
-    private AsyncTask restorePurchaseAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +42,6 @@ public class PurchaseActivity extends ActionBarActivity {
 
     private void initControls() {
 
-
         Button restoreButton = (Button) findViewById(R.id.restore_button);
         Button purchaseButton = (Button) findViewById(R.id.purchase_button);
         restoreButton.setEnabled(true);
@@ -54,12 +50,11 @@ public class PurchaseActivity extends ActionBarActivity {
         if(Utils.isTelevision(this)){
             restoreButton.setVisibility(View.GONE);
         }
+
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (restorePurchaseAsyncTask == null || restorePurchaseAsyncTask.getStatus() != AsyncTask.Status.RUNNING) {
-                    restorePurchase();
-                }
+                restorePurchase();
             }
         });
 
@@ -73,7 +68,11 @@ public class PurchaseActivity extends ActionBarActivity {
                         startActivity(intentMarketAll);
                     }
                 } else {
-                    DocumentsApplication.getInstance().purchase(PurchaseActivity.this, DocumentsApplication.getPurchaseId());
+                    if(DocumentsApplication.isPurchased()){
+                        Utils.showSnackBar(PurchaseActivity.this, R.string.thank_you);
+                    } else {
+                        DocumentsApplication.getInstance().purchase(PurchaseActivity.this, DocumentsApplication.getPurchaseId());
+                    }
                 }
             }
         });
@@ -85,10 +84,28 @@ public class PurchaseActivity extends ActionBarActivity {
     }
 
     private void restorePurchase() {
-        if (restorePurchaseAsyncTask != null) {
-            restorePurchaseAsyncTask.cancel(false);
+        Utils.showSnackBar(this, R.string.restoring_purchase);
+        Needle.onBackgroundThread().execute(new UiRelatedTask<Boolean>(){
+            @Override
+            protected Boolean doWork() {
+                DocumentsApplication.getInstance().loadOwnedPurchasesFromGoogle();
+                DocumentsApplication.getInstance().onPurchaseHistoryRestored();
+                return true;
+            }
+
+            @Override
+            protected void thenDoUiRelatedWork(Boolean aBoolean) {
+                onPurchaseRestored();
+            }
+        });
+    }
+
+    public void onPurchaseRestored(){
+        if (DocumentsApplication.isPurchased()) {
+            Utils.showSnackBar(this, R.string.restored_previous_purchase_please_restart);
+        } else {
+            Utils.showSnackBar(this, R.string.could_not_restore_purchase);
         }
-        restorePurchaseAsyncTask = new RestorePurchaseAsyncTask(this).execute();
     }
 
     @Override
@@ -115,49 +132,8 @@ public class PurchaseActivity extends ActionBarActivity {
         super.onDestroy();
     }
 
-    private static class RestorePurchaseAsyncTask extends AsyncTask<Void, Void, Boolean> {
-        private final WeakReference<PurchaseActivity> buyActivityWeakReference;
-
-        public RestorePurchaseAsyncTask(PurchaseActivity purchaseActivity) {
-            this.buyActivityWeakReference = new WeakReference<>(purchaseActivity);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            PurchaseActivity purchaseActivity = buyActivityWeakReference.get();
-            if (purchaseActivity != null) {
-                Toast.makeText(purchaseActivity, R.string.restoring_purchase, Toast.LENGTH_SHORT).show();
-            } else {
-                cancel(false);
-            }
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            PurchaseActivity purchaseActivity = buyActivityWeakReference.get();
-            if (purchaseActivity != null) {
-                DocumentsApplication.getInstance().loadOwnedPurchasesFromGoogle();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-            super.onPostExecute(b);
-            PurchaseActivity purchaseActivity = buyActivityWeakReference.get();
-            if (purchaseActivity == null || b == null) return;
-
-            if (b) {
-                DocumentsApplication.getInstance().onPurchaseHistoryRestored();
-            } else {
-                Toast.makeText(purchaseActivity, R.string.could_not_restore_purchase, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     public void setUpDefaultStatusBar() {
-        int color = ContextCompat.getColor(this, R.color.md_blue_500);
+        int color = ContextCompat.getColor(this, R.color.defaultColor);
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }

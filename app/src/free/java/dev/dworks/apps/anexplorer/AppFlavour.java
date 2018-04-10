@@ -20,7 +20,6 @@ import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import io.fabric.sdk.android.services.common.BackgroundPriorityRunnable;
 import needle.Needle;
-import needle.UiRelatedTask;
 
 /**
  * Created by HaKr on 16/05/17.
@@ -53,7 +52,7 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 	@Override
 	public void onBillingInitialized() {
 		loadOwnedPurchasesFromGoogle();
-		reloadSubscription();
+		reloadPurchase();
 	}
 	public void loadOwnedPurchasesFromGoogle() {
 		if(!isBillingSupported() || null == bp
@@ -63,7 +62,7 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 		bp.loadOwnedPurchasesFromGoogle();
 	}
 
-	public void reloadSubscription() {
+	public void reloadPurchase() {
 		if(!isBillingSupported() || null == bp
 				|| (bp != null && !bp.isInitialized())){
 			return;
@@ -102,17 +101,12 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 		Toast.makeText(getApplicationContext(), R.string.thank_you, Toast.LENGTH_SHORT).show();
 		PreferenceUtils.set(PURCHASE_PRODUCT_ID, productId);
 		PreferenceUtils.set(PURCHASED, true);
-		reloadSubscription();
+		reloadPurchase();
 	}
 
 	@Override
 	public void onPurchaseHistoryRestored() {
-		if (AppFlavour.isProVersion()) {
-			Toast.makeText(this, R.string.restored_previous_purchase_please_restart, Toast.LENGTH_LONG).show();
-			reloadSubscription();
-		} else {
-			Toast.makeText(this, R.string.no_purchase_found, Toast.LENGTH_SHORT).show();
-		}
+		reloadPurchase();
 	}
 
 	private static boolean isProVersion() {
@@ -125,7 +119,7 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 			case Constants.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED:
 				if(!TextUtils.isEmpty(currentProductId)) {
 					PreferenceUtils.set(PURCHASE_PRODUCT_ID, currentProductId);
-					reloadSubscription();
+					reloadPurchase();
 				}
 				break;
 			case Constants.BILLING_RESPONSE_RESULT_USER_CANCELED:

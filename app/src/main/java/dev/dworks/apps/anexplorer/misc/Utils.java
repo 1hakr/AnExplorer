@@ -398,6 +398,11 @@ public class Utils {
         snackbar.show();
     }
 
+    public static void showSnackBar(Activity activity, int text){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
     public static void showSnackBar(Activity activity, String text, int duration, String action, View.OnClickListener listener){
         Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
         if (null != listener) {

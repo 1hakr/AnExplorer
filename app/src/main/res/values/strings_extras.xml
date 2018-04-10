@@ -218,6 +218,6 @@
     <string name="no_purchase_found">No purchase found.</string>
     <string name="thank_you">Thank you!</string>
     <string name="support_app">Support AnExplorer</string>
-    <string name="restored_previous_purchase_please_restart">Restored previous purchase. Please restart the app to make use of all features.</string>
+    <string name="restored_previous_purchase_please_restart">Restored previous purchase.</string>
 
 </resources>
