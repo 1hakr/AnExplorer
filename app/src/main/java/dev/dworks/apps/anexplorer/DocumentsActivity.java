@@ -709,9 +709,9 @@ public class DocumentsActivity extends BaseActivity {
             if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT
                     || mState.action == ACTION_BROWSE || mState.action == ACTION_OPEN_TREE) {
                 //mToolbar.setTitle(R.string.title_open);
-                mToolbar.setTitle(R.string.app_name);
+                setTitle(R.string.app_name);
             } else if (mState.action == DocumentsActivity.State.ACTION_CREATE) {
-                mToolbar.setTitle(R.string.title_save);
+                setTitle(R.string.title_save);
             }
             mToolbarStack.setVisibility(View.GONE);
             mToolbarStack.setAdapter(null);
@@ -720,19 +720,19 @@ public class DocumentsActivity extends BaseActivity {
             //mToolbar.setNavigationIcon(R.drawable.ic_drawer_glyph);
 
             if (mSearchExpanded) {
-                mToolbar.setTitle(null);
+                setTitle(null);
                 mToolbarStack.setVisibility(View.GONE);
                 mToolbarStack.setAdapter(null);
             } else {
                 if (mState.stack.size() <= 1) {
                     if(null != root){
-                        mToolbar.setTitle(root.title);
+                        setTitle(root.title);
                         AnalyticsManager.setCurrentScreen(this, root.derivedTag);
                     }
                     mToolbarStack.setVisibility(View.GONE);
                     mToolbarStack.setAdapter(null);
                 } else {
-                    mToolbar.setTitle(null);
+                    setTitle(null);
                     mToolbarStack.setVisibility(View.VISIBLE);
                     mToolbarStack.setAdapter(mStackAdapter);
                     mIgnoreNextNavigation = true;
@@ -740,6 +740,14 @@ public class DocumentsActivity extends BaseActivity {
                 }
             }
         }
+    }
+
+    public void setTitle(String title){
+        if(isTelevision()){
+            mToolbar.setTitle(null);
+            return;
+        }
+        mToolbar.setTitle(title);
     }
 
     @Override
@@ -1892,6 +1900,10 @@ public class DocumentsActivity extends BaseActivity {
 	private Drawable oldBackground;
 
     private void changeActionBarColor() {
+
+        if(isTelevision()){
+            return;
+        }
 
 		int color = SettingsActivity.getPrimaryColor(this);
 		Drawable colorDrawable = new ColorDrawable(color);

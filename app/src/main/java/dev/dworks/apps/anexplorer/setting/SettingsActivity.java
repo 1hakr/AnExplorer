@@ -38,6 +38,8 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -128,6 +130,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static String getThemeStyle() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
                 .getString(KEY_THEME_STYLE, "1");
+    }
+
+    public static void setThemeStyle(int style) {
+        PreferenceUtils.set(KEY_THEME_STYLE, String.valueOf(style));
     }
     
     public static boolean getFolderAnimation(Context context) {

@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACCENT_COLOR;
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_PRIMARY_COLOR;
@@ -21,6 +24,7 @@ public class ThemePreferenceFragment extends PreferenceFragment
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.pref_theme);
+		PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("ThemePreferenceScreen");
 		
 		Preference preferencePrimaryColor = findPreference(KEY_PRIMARY_COLOR);
 		preferencePrimaryColor.setOnPreferenceChangeListener(this);
@@ -31,6 +35,9 @@ public class ThemePreferenceFragment extends PreferenceFragment
 		Preference preferenceThemeStyle = findPreference(KEY_THEME_STYLE);
 		preferenceThemeStyle.setOnPreferenceChangeListener(this);
 		preferenceThemeStyle.setOnPreferenceClickListener(this);
+		if(DocumentsApplication.isTelevision()){
+			preferenceScreen.removePreference(preferenceThemeStyle);
+		}
 
 	}
 

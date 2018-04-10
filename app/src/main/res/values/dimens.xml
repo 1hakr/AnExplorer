@@ -81,5 +81,6 @@
     <dimen name="big_spacing">24dp</dimen>
 
     <dimen name="card_padding">8dp</dimen>
+    <dimen name="margin_top">8dp</dimen>
 </resources>
 

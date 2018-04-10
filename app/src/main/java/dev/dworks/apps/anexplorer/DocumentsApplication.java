@@ -40,6 +40,7 @@ import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class DocumentsApplication extends AppFlavour {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
@@ -115,6 +116,9 @@ public class DocumentsApplication extends AppFlavour {
         registerReceiver(mCacheReceiver, localeFilter);
 
         isTelevision = Utils.isTelevision(this);
+        if(isTelevision && Integer.valueOf(SettingsActivity.getThemeStyle()) != AppCompatDelegate.MODE_NIGHT_YES){
+            SettingsActivity.setThemeStyle(AppCompatDelegate.MODE_NIGHT_YES);
+        }
     }
 
     public static synchronized DocumentsApplication getInstance() {
