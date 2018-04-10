@@ -35,7 +35,7 @@
         android:allowBackup="true"
         android:banner="@drawable/banner"
         android:icon="@drawable/ic_launcher"
-        android:roundIcon="@drawable/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher"
         android:label="@string/name"
         tools:replace="android:label"
         android:supportsRtl="true">
