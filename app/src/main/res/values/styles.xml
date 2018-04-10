@@ -28,7 +28,6 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
-
     </style>
 
     <style name="Theme.Document" parent="@style/DocumentsTheme">
