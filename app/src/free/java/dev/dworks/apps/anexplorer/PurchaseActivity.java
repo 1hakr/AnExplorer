@@ -2,6 +2,7 @@ package dev.dworks.apps.anexplorer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import needle.Needle;
 import needle.UiRelatedTask;
 
@@ -27,10 +29,14 @@ public class PurchaseActivity extends ActionBarActivity {
         setContentView(R.layout.activity_purchase);
 
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         mToolbar.setTitleTextAppearance(this, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
         if(Utils.hasKitKat() && !Utils.hasLollipop()) {
             mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
         }
+        int color = SettingsActivity.getPrimaryColor();
+        mToolbar.setBackgroundColor(color);
+        appBarLayout.setBackgroundColor(color);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getString(R.string.support_app));
@@ -50,6 +56,8 @@ public class PurchaseActivity extends ActionBarActivity {
         if(Utils.isTelevision(this)){
             restoreButton.setVisibility(View.GONE);
         }
+
+        purchaseButton.setTextColor(SettingsActivity.getAccentColor());
 
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +141,7 @@ public class PurchaseActivity extends ActionBarActivity {
     }
 
     public void setUpDefaultStatusBar() {
-        int color = ContextCompat.getColor(this, R.color.defaultColor);
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
         if(Utils.hasLollipop()){
             getWindow().setStatusBarColor(color);
         }

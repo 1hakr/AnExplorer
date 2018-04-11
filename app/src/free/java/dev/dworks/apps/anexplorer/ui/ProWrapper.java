@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -16,6 +17,7 @@ import dev.dworks.apps.anexplorer.AppFlavour;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 

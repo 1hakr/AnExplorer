@@ -197,12 +197,11 @@ public class DocumentsActivity extends BaseActivity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate(Bundle icicle) {
-        setTheme(R.style.Theme_Document);
+        setTheme(R.style.DocumentsTheme_Document);
         if(Utils.hasLollipop()){
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        }
-        else if(Utils.hasKitKat()){
-            setTheme(R.style.Theme_Document_Translucent);
+        } else if(Utils.hasKitKat()){
+            setTheme(R.style.DocumentsTheme_Translucent);
         }
         setUpStatusBar();
     	
@@ -211,7 +210,7 @@ public class DocumentsActivity extends BaseActivity {
 				.build());
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll()
 				.penaltyLog()
-				.build());
+				.build())x;
 */
         super.onCreate(icicle);
 
@@ -402,7 +401,7 @@ public class DocumentsActivity extends BaseActivity {
 		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
 			return;
 		}
-        final Dialog d = new Dialog(this, R.style.Theme_Document_DailogPIN);
+        final Dialog d = new Dialog(this, R.style.DocumentsTheme_DailogPIN);
         d.setContentView(new PinViewHelper((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
             public void onEnter(String password) {
                 super.onEnter(password);

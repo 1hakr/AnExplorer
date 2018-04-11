@@ -44,7 +44,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(Utils.hasKitKat() && !Utils.hasLollipop()){
-			setTheme(R.style.Theme_Document_Translucent);
+			setTheme(R.style.DocumentsTheme_Translucent);
 		}
 		setContentView(R.layout.activity_about);
 

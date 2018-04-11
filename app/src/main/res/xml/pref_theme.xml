@@ -12,7 +12,7 @@
         android:title="@string/pref_theme_style_title" />
 
     <dev.dworks.apps.anexplorer.ui.MaterialColorPreference
-        android:defaultValue="@color/defaultColor"
+        android:defaultValue="@color/primaryColor"
         android:dialogTitle="@string/pref_foreground_color_title"
         android:key="primaryColor"
         android:negativeButtonText="@null"
@@ -23,7 +23,7 @@
         app:color_type="primary" />
 
     <dev.dworks.apps.anexplorer.ui.MaterialColorPreference
-        android:defaultValue="@color/material_red"
+        android:defaultValue="@color/accentColor"
         android:dialogTitle="@string/pref_foreground_color_title"
         android:key="accentColor"
         android:negativeButtonText="@null"

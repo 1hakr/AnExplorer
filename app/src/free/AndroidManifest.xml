@@ -5,7 +5,7 @@
     <application>
         <activity
             android:name=".PurchaseActivity"
-            android:theme="@style/Theme.Document" />
+            android:theme="@style/DocumentsTheme.Document" />
         <!-- AdMob -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"

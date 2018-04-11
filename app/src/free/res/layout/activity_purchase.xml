@@ -13,7 +13,7 @@
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="128dp"
-            android:background="@color/md_blue_500"
+            android:background="@color/primaryColor"
             android:elevation="4dp">
 
             <android.support.v7.widget.Toolbar
@@ -21,7 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
-                android:elevation="8dp"
                 app:contentInsetLeft="@dimen/second_keyline_default"
                 app:contentInsetStart="@dimen/second_keyline_default"
                 app:popupTheme="?attr/actionBarPopupTheme"

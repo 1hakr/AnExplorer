@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer.setting;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -39,6 +41,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
@@ -105,7 +108,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
     
     public static int getPrimaryColor(Context context) {
-    	int newColor = ContextCompat.getColor(context, R.color.defaultColor);
+    	int newColor = ContextCompat.getColor(context, R.color.primaryColor);
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(KEY_PRIMARY_COLOR, newColor);
     }
@@ -279,7 +282,20 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 		}
 
 		oldBackground = colorDrawable;
+        setUpStatusBar();
 	}
+
+    public void setUpStatusBar() {
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor(this));
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
+    }
 
 	public static void logSettingEvent(String key){
         AnalyticsManager.logEvent("settings_"+key.toLowerCase());

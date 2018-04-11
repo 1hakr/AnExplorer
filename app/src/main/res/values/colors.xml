@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="primaryColor">#0288D1</color>
+    <color name="primaryDarkColor">#025f91</color>
+    <color name="accentColor">#EF3A0F</color>
+
     <color name="actionbar_color">#222222</color>
     <color name="contextual_actionbar_color">#002E3E</color>
     <color name="chip">#ddd</color>
     <color name="item_root_pressed">#33cccccc</color>
     <color name="item_root_focused">#66cccccc</color>
-    <color name="accentColor">#03a9f4</color>
     <color name="statusBarColor">#28000000</color>
-    <color name="defaultColor">#0288D1</color>
     <color name="alertColor">#323232</color>
     <color name="alertDarkColor">#ff242424</color>
-    <color name="material_red">#EF3A0F</color>
+
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
         <item>#0288D1</item>
