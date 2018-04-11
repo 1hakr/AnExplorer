@@ -36,7 +36,7 @@ import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
-public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
+public class AboutActivity extends AboutFlavour implements View.OnClickListener {
 
 	public static final String TAG = "About";
 
@@ -60,7 +60,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(null);
 		setUpDefaultStatusBar();
-
+		initAd();
 		initControls();
 	}
 
@@ -81,11 +81,13 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		TextView action_support = (TextView)findViewById(R.id.action_support);
 		TextView action_share = (TextView)findViewById(R.id.action_share);
 		TextView action_feedback = (TextView)findViewById(R.id.action_feedback);
+		TextView action_sponsor = (TextView)findViewById(R.id.action_sponsor);
 
 		action_rate.setOnClickListener(this);
 		action_support.setOnClickListener(this);
 		action_share.setOnClickListener(this);
 		action_feedback.setOnClickListener(this);
+		action_sponsor.setOnClickListener(this);
 
 		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
@@ -93,6 +95,10 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		} else if(DocumentsApplication.isTelevision()){
 			action_share.setVisibility(View.GONE);
 			action_feedback.setVisibility(View.GONE);
+		}
+
+		if(!DocumentsApplication.isPurchased()){
+			action_sponsor.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -134,6 +140,10 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 			case R.id.action_rate:
 				openPlaystore(this);
 				AnalyticsManager.logEvent("app_rate");
+				break;
+			case R.id.action_sponsor:
+				showAd();
+				AnalyticsManager.logEvent("app_sponsor");
 				break;
 			case R.id.action_support:
 				if(Utils.isProVersion()){

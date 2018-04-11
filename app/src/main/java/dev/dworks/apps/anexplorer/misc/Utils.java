@@ -70,6 +70,8 @@ import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENC
 public class Utils {
 
     public static final long KB_IN_BYTES = 1024;
+    public static final String INTERSTITIAL_APP_UNIT_ID = "ca-app-pub-6407484780907805/9134520474";
+
     public static final String DIRECTORY_APPBACKUP = "AppBackup";
 
     public static final String EXTRA_TYPE = "type";

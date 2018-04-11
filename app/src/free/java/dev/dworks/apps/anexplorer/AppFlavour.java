@@ -142,7 +142,7 @@ public abstract class AppFlavour extends Application implements BillingProcessor
 		}
 		if(null == bp) {
 			bp = BillingProcessor.newBillingProcessor(this,
-					getString(R.string.license_key), getString(R.string.merchant_id), this);
+					BuildConfig.PLAYSTORE_LICENSE_KEY, BuildConfig.MERCHANT_ID, this);
 		}
 		if(!bp.isInitialized()) {
 			bp.initialize();

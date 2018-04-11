@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         versionName "3.8"
-        versionCode = 61
+        versionCode = 62
         minSdkVersion 17
         targetSdkVersion 25
         vectorDrawables.useSupportLibrary = true
@@ -26,6 +26,8 @@ android {
         buildConfigField "String", "ONEDRIVE_CLIENT_KEY",  "$props.ONEDRIVE_CLIENT_KEY"
         buildConfigField "String", "BOX_CLIENT_ID",  "$props.BOX_CLIENT_ID"
         buildConfigField "String", "BOX_CLIENT_KEY",  "$props.BOX_CLIENT_KEY"
+        buildConfigField "String", "PLAYSTORE_LICENSE_KEY",  "$props.PLAYSTORE_LICENSE_KEY"
+        buildConfigField "String", "MERCHANT_ID",  "$props.MERCHANT_ID"
     }
     signingConfigs {
         release

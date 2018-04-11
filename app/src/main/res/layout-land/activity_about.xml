@@ -97,6 +97,25 @@
                     app:drawableStart="@drawable/ic_support" />
 
                 <dev.dworks.apps.anexplorer.ui.CompatTextView
+                    android:id="@+id/action_sponsor"
+                    style="@style/ButtonAppTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:adjustViewBounds="true"
+                    android:drawablePadding="16dp"
+                    android:ellipsize="end"
+                    android:gravity="start|center_vertical"
+                    android:minHeight="?attr/actionBarSize"
+                    android:padding="16dp"
+                    android:text="Our Sponsor"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:visibility="gone"
+                    app:drawableStart="@drawable/ic_sponsor" />
+
+                <dev.dworks.apps.anexplorer.ui.CompatTextView
                     android:id="@+id/action_share"
                     style="@style/ButtonAppTheme"
                     android:layout_width="match_parent"
