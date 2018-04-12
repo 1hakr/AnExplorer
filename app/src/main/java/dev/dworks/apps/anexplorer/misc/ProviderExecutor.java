@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import dev.dworks.apps.anexplorer.model.GuardedBy;
+import android.support.annotation.GuardedBy;
 
 public class ProviderExecutor extends Thread implements Executor {
 

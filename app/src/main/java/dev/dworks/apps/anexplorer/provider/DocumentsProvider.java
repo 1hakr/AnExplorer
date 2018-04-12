@@ -20,7 +20,6 @@ package dev.dworks.apps.anexplorer.provider;
 import android.annotation.TargetApi;
 import android.app.AppOpsManager;
 import android.content.ClipDescription;
-import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -51,6 +50,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
 import static android.support.v4.app.AppOpsManagerCompat.MODE_ALLOWED;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.EXTRA_INFO;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_COMPRESS_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_COPY_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_CREATE_DOCUMENT;
@@ -60,6 +60,7 @@ import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_MOVE_DOC
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_REMOVE_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_RENAME_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_UNCOMPRESS_DOCUMENT;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_UPLOAD_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.buildDocumentUri;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.buildDocumentUriMaybeUsingTree;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.buildTreeDocumentUri;
@@ -68,6 +69,7 @@ import static dev.dworks.apps.anexplorer.model.DocumentsContract.getRootId;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getSearchDocumentsQuery;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.getTreeDocumentId;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.isTreeUri;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.uploadDocument;
 
 /**
  * Base class for a document provider. A document provider offers read and write
@@ -338,6 +340,10 @@ public abstract class DocumentsProvider extends ContentProvider {
 
     public String uncompressDocument(String parentDocumentId) throws FileNotFoundException {
         throw new UnsupportedOperationException("Move not supported");
+    }
+
+    public boolean uploadDocument(String parentDocumentId, Uri uploadDocumentUri, String mimeType, String displayName) throws FileNotFoundException {
+        throw new UnsupportedOperationException("Upload not supported");
     }
 
 
@@ -889,6 +895,13 @@ public abstract class DocumentsProvider extends ContentProvider {
             // Document no longer exists, clean up any grants
             revokeDocumentPermission(documentId);
 
+        } else if (METHOD_UPLOAD_DOCUMENT.equals(method)) {
+            enforceWritePermissionInner(documentUri, null);
+            final Uri uploadDocumentUri = extras.getParcelable(DocumentsContract.EXTRA_UPLOAD_URI);
+            final String mimeType = extras.getString(Document.COLUMN_MIME_TYPE);
+            final String displayName = extras.getString(Document.COLUMN_DISPLAY_NAME);
+            final boolean success = uploadDocument(documentId, uploadDocumentUri, mimeType, displayName);
+            out.putBoolean(DocumentsContract.EXTRA_RESULT, success);
         } else {
             throw new UnsupportedOperationException("Method not supported " + method);
         }

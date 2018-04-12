@@ -140,6 +140,7 @@
     <string name="rename_error">Failed to rename</string>
     <string name="compress_error">Failed to compress</string>
     <string name="uncompress_error">Failed to uncompress</string>
+    <string name="upload_error">Failed to upload</string>
     <string name="add">Add</string>
     <string name="made_with_love">Made with Love</string>
     <string name="dworks_logo">DWorkS logo</string>
@@ -198,4 +199,25 @@
 
     <string name="primary_color">Primary Color</string>
     <string name="accent_color">Accent Color</string>
+
+    //PRO
+    <string name="app_pro">AnExplorer Pro</string>
+    <string name="app_pro_content">Unlocks extra features, such as the Network &amp; Cloud Storage,
+        Root Storage, USB Storage and removes ads. \n\nThe source code of AnExplorer is available on GitHub.
+        You are welcome to compile the pro version yourself for free.
+        \n\nHowever if you like what I do and love AnExplorer and want us to survive,
+        please support the development and receive updates through the Play Store, consider purchasing
+        AnExplorer Pro.
+        \n\nThank you,\nHari</string>
+    <string name="license_key">jhh</string>
+    <string name="merchant_id">jh</string>
+    <string name="restoring_purchase">Restoring purchase…</string>
+    <string name="could_not_restore_purchase">Could not restore purchase.</string>
+    <string name="purchase">Purchase</string>
+    <string name="restore">Restore</string>
+    <string name="no_purchase_found">No purchase found.</string>
+    <string name="thank_you">Thank you!</string>
+    <string name="support_app">Support AnExplorer</string>
+    <string name="restored_previous_purchase_please_restart">Restored previous purchase.</string>
+
 </resources>

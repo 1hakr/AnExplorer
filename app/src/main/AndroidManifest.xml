@@ -35,14 +35,16 @@
         android:allowBackup="true"
         android:banner="@drawable/banner"
         android:icon="@drawable/ic_launcher"
-        android:roundIcon="@drawable/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher"
         android:label="@string/name"
+        tools:replace="android:label"
         android:supportsRtl="true">
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
             android:name=".DocumentsActivity"
-            android:theme="@style/Theme.Splash">
+            android:theme="@style/DocumentsTheme.Splash"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
 
@@ -101,19 +103,27 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
+
+            <intent-filter>
+                <data android:scheme="${applicationId}" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".StandaloneActivity"
-            android:theme="@style/Theme.Document" />
+            android:theme="@style/DocumentsTheme.Document" />
         <activity
             android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
-            android:theme="@style/Theme.Setting" />
+            android:theme="@style/DocumentsTheme.Setting" />
         <activity
             android:name=".AboutActivity"
             android:label="About"
-            android:theme="@style/Theme.Document" />
+            android:theme="@style/DocumentsTheme.Document" />
 
         <receiver android:name=".receiver.PackageReceiver">
             <intent-filter>
@@ -139,7 +149,7 @@
             android:name=".NoteActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="sensor"
-            android:theme="@style/Theme.Note">
+            android:theme="@style/DocumentsTheme.Note">
             <intent-filter android:label="Text Viewer">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -174,6 +184,12 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.ContentProvider"
+            android:authorities="${applicationId}.roots"
+            android:exported="false"
+            android:enabled="true"/>
 
         <provider
             android:name="dev.dworks.apps.anexplorer.provider.RecentsProvider"
@@ -279,6 +295,17 @@
         <provider
             android:name="dev.dworks.apps.anexplorer.provider.NetworkStorageProvider"
             android:authorities="${applicationId}.networkstorage.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS" >
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.CloudStorageProvider"
+            android:authorities="${applicationId}.cloudstorage.documents"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="android.permission.MANAGE_DOCUMENTS" >

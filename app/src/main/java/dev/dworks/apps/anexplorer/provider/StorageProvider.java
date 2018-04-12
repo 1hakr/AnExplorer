@@ -21,6 +21,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 
@@ -29,6 +30,13 @@ public abstract class StorageProvider extends DocumentsProvider{
 	private static final String TAG = "StorageProvider";
 
     public static final Uri FILE_URI = MediaStore.Files.getContentUri("external");
+    protected DocumentArchiveHelper mArchiveHelper;
+
+    @Override
+    public boolean onCreate() {
+        mArchiveHelper = new DocumentArchiveHelper(this, (char) 0);
+        return super.onCreate();
+    }
 
     protected interface AudioAlbumThumbnailQuery {
         String[] PROJECTION = new String[] {

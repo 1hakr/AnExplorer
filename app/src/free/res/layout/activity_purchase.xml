@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:background="@color/primaryColor"
+            android:elevation="4dp">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:contentInsetLeft="@dimen/second_keyline_default"
+                app:contentInsetStart="@dimen/second_keyline_default"
+                app:popupTheme="?attr/actionBarPopupTheme"
+                app:theme="?attr/actionBarTheme" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-72dp"
+            android:clipToPadding="false"
+            android:elevation="8dp"
+            android:isScrollContainer="true">
+
+            <include layout="@layout/activity_purchase_content" />
+
+        </ScrollView>
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="com.android.vending.BILLING" />
     <application>
+        <activity
+            android:name=".PurchaseActivity"
+            android:theme="@style/DocumentsTheme.Document" />
         <!-- AdMob -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:theme="@android:style/Theme.Translucent"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
-
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
     </application>
 
 </manifest>

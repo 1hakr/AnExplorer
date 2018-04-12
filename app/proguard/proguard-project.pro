@@ -84,8 +84,14 @@
     public <init>(java.util.concurrent.Executor);
     public <init>();
 }
+
+-keep class com.cloudrail.** { *; }
+
 -dontwarn org.apache.**
 -dontwarn org.slf4j.**
+-dontwarn org.slf4j.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
 
 # Application classes that will be serialized/deserialized over Gson
 # or have been blown up by ProGuard in the past

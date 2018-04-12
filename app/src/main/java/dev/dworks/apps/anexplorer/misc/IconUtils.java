@@ -34,6 +34,10 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_BOX;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_DROPBOX;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_GDRIVE;
+import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_ONEDRIVE;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
@@ -315,6 +319,21 @@ public class IconUtils {
             return ContextCompat.getDrawable(context, R.drawable.ic_connection_network);
         } else {
             return ContextCompat.getDrawable(context, R.drawable.ic_connection_server);
+        }
+    }
+
+    public static Drawable loadCloudIcon(Context context, String type) {
+
+        if (TYPE_GDRIVE.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_root_gdrive);
+        } else if (TYPE_DROPBOX.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_root_dropbox);
+        } else if (TYPE_ONEDRIVE.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_root_onedrive);
+        } else if (TYPE_BOX.equals(type)) {
+            return ContextCompat.getDrawable(context, R.drawable.ic_root_box);
+        } else {
+            return ContextCompat.getDrawable(context, R.drawable.ic_root_cloud);
         }
     }
     

@@ -27,6 +27,9 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -70,6 +73,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.R.layout.item_root_spacer;
 
 /**
@@ -87,6 +91,8 @@ public class RootsFragment extends Fragment {
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;
     private ArrayList<Long> expandedIds = new ArrayList<>();
+    private View proWrapper;
+    private View title;
 
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();
@@ -109,6 +115,11 @@ public class RootsFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_roots, container, false);
+        proWrapper = view.findViewById(R.id.proWrapper);
+        title = view.findViewById(android.R.id.title);
+        if(isTelevision()){
+            title.setVisibility(View.VISIBLE);
+        }
         mList = (ExpandableListView) view.findViewById(android.R.id.list);
         mList.setOnChildClickListener(mItemListener);
         mList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -193,7 +204,7 @@ public class RootsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        changeThemeColor();
         final Context context = getActivity();
         final State state = ((BaseActivity) context).getDisplayState();
         state.showAdvanced = state.forceAdvanced
@@ -206,8 +217,19 @@ public class RootsFragment extends Fragment {
             mList.setOnItemLongClickListener(null);
             mList.setLongClickable(false);
         }
-
+        if(null != proWrapper) {
+            proWrapper.setVisibility(DocumentsApplication.isPurchased() ? View.GONE : View.VISIBLE);
+        }
         getLoaderManager().restartLoader(2, null, mCallbacks);
+    }
+
+    private void changeThemeColor() {
+
+        if(isTelevision()){
+            int color = SettingsActivity.getPrimaryColor(getActivity());
+            Drawable colorDrawable = new ColorDrawable(color);
+            getView().setBackground(colorDrawable);
+        }
     }
 
     public void onCurrentRootChanged() {
@@ -254,10 +276,15 @@ public class RootsFragment extends Fragment {
             if (item instanceof RootItem) {
                     int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
                 parent.setItemChecked(index, true);
-                activity.onRootPicked(((RootItem) item).root, true);
+                RootInfo rootInfo = ((RootItem) item).root;
+                if(RootInfo.isProFeature(rootInfo) && !DocumentsApplication.isPurchased()){
+                    DocumentsApplication.openPurchaseActivity(activity);
+                    return false;
+                }
+                activity.onRootPicked(rootInfo, true);
                 Bundle params = new Bundle();
-                params.putString("type", ((RootItem) item).root.title);
-                AnalyticsManager.logEvent("navigate", ((RootItem) item).root, params);
+                params.putString("type", rootInfo.title);
+                AnalyticsManager.logEvent("navigate", rootInfo, params);
             } else if (item instanceof AppItem) {
                 activity.onAppPicked(((AppItem) item).info);
             } else {
@@ -411,6 +438,10 @@ public class RootsFragment extends Fragment {
 
             // Show available space if no summary
             if(root.isNetworkStorage()) {
+                String summaryText = root.summary;
+                summary.setText(summaryText);
+                summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
+            } if(root.isCloudStorage()) {
                 String summaryText = root.summary;
                 summary.setText(summaryText);
                 summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);

@@ -103,5 +103,9 @@
 
     <!-- Title of dialog when prompting user to select an app to share documents with [CHAR LIMIT=32] -->
     <string name="share_via">Share via</string>
-
+    <string name="cloud_gdrive">Google Drive</string>
+    <string name="cloud_dropbox">Dropbox</string>
+    <string name="cloud_onedrive">One Drive</string>
+    <string name="cloud_box">Box</string>
+    <string name="network_ftp">FTP</string>
 </resources>

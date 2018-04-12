@@ -1,0 +1,158 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color: #333;
+  font-family: Lato, 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: 17px;
+  height: 100%;
+  text-align: center;
+  width: 100%;
+}
+
+body {
+  line-height: 1.5;
+}
+
+.container {
+  padding-top: 4em;
+}
+
+.branding {
+  width: 85px;
+  height: 24px;
+  display: inline-block;
+  margin: 0 0 1.4em 0;
+}
+
+p {
+  margin: 0 auto 0.7em auto;
+  width: 100%;
+  display: block;
+}
+p:last-child {
+  margin-bottom: 0;
+}
+
+.btn,
+.btn:active,
+.btn:focus {
+  color: #7d6f67;
+  text-decoration: none;
+  background: rgba(125,111,103,0.1);
+  border-radius: 4px;
+}
+.btn:hover {
+  color: #7d6f67;
+  background: rgba(125,111,103,0.2);
+  text-decoration: none;
+}
+
+.caveman-gif {
+  max-width: 800px;
+  height: auto;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.caveman-gif img {
+  width: 100%;
+  height: auto;
+  position: relative;
+  top: -1px;
+}
+
+@media only screen and (max-width: 620px) {
+  body {
+    padding: 0 20px;
+  }
+
+  .container {
+    padding-top: 2em;
+  }
+
+  .branding {
+    margin: 0 0 0.7em 0;
+  }
+
+  p {
+    margin: 0 auto 0.35em auto;
+  }
+}
+
+body {
+  margin: 0 auto;
+  margin-top: 48px;
+  max-width: 616px;
+  padding: 0 16px;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: rgba(0,0,0,0.87);
+}
+h1, h2, h3 {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  font-weight: 300;
+}
+h1 {
+  margin: 24px 0 16px 0;
+  padding: 0 0 16px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  font-size: 32px;
+  line-height: 36px;
+}
+h2 {
+  margin: 24px 0 16px 0;
+  padding: 0;
+  font-size: 20px;
+  line-height: 32px;
+  color: rgba(0,0,0,0.54);
+}
+p {
+  margin: 0;
+  margin-bottom: 16px;
+}
+ol {
+  margin: 0;
+
+}
+ol li {
+  margin: 0;
+  line-height: 24px;
+  padding-left: 12px;
+}
+a {
+  color: #039BE5;
+  text-decoration: underline;
+}
+a:hover {
+  text-decoration: underline;
+}
+code {
+  display: inline-block;
+  padding: 3px 4px;
+  background-color: #ECEFF1;
+  border-radius: 3px;
+  font-family: 'Roboto Mono',"Liberation Mono",Courier,monospace;
+  font-size: 14px;
+  line-height: 1;
+}
+.logo {
+  display: block;
+  text-align: center;
+  margin-top: 48px;
+  margin-bottom: 24px;
+}
+img {
+  width: 220px;
+}
+@media screen and (max-width: 616px) {
+  body {
+   margin-top: 24px;
+  }
+
+  .logo  {
+    margin: 0;
+  }
+}

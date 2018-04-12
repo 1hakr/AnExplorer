@@ -51,6 +51,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.webkit.WebView;
 import android.widget.Button;
 
 import java.io.File;
@@ -69,6 +70,8 @@ import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENC
 public class Utils {
 
     public static final long KB_IN_BYTES = 1024;
+    public static final String INTERSTITIAL_APP_UNIT_ID = "ca-app-pub-6407484780907805/9134520474";
+
     public static final String DIRECTORY_APPBACKUP = "AppBackup";
 
     public static final String EXTRA_TYPE = "type";
@@ -94,26 +97,6 @@ public class Utils {
 					flags, null).toString();
 		}
 	}
-	
-    public static boolean hasFroyo() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
-    }
-
-    public static boolean hasGingerbread() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
-    }
-
-    public static boolean hasHoneycomb() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-    }
-
-    public static boolean hasHoneycombMR1() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
-    }
-
-    public static boolean hasIceCreamSandwich() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
-    }
 
     public static boolean hasJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
@@ -149,6 +132,14 @@ public class Utils {
 
     public static boolean hasNougatMR1() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1;
+    }
+
+    public static boolean hasOreo() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    public static boolean hasOreoMR1() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
     }
 
     public static boolean hasMoreHeap(){
@@ -364,7 +355,14 @@ public class Utils {
         if(isAmazonBuild()){
             return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID + "&showAll=1");
         }
-        return Uri.parse("https://play.google.com/store/apps/dev?id=8683545855643814241");
+        return Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID);
+    }
+
+    public static Uri getAppProStoreUri(){
+        if(isAmazonBuild()){
+            return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID+".pro" + "&showAll=1");
+        }
+        return Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID+".pro");
     }
 
     public static boolean hasFeature(Context context, String feature) {
@@ -402,6 +400,11 @@ public class Utils {
         snackbar.show();
     }
 
+    public static void showSnackBar(Activity activity, int text){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
     public static void showSnackBar(Activity activity, String text, int duration, String action, View.OnClickListener listener){
         Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
         if (null != listener) {
@@ -429,6 +432,12 @@ public class Utils {
 
     public static void changeThemeStyle(AppCompatDelegate delegate) {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
+            try {
+                new WebView(DocumentsApplication.getInstance().getBaseContext());
+            } catch (Exception e) {
+            }
+        }
         AppCompatDelegate.setDefaultNightMode(nightMode);
         delegate.setLocalNightMode(nightMode);
     }

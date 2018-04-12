@@ -36,7 +36,7 @@ import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
-public class AboutActivity extends ActionBarActivity implements View.OnClickListener {
+public class AboutActivity extends AboutFlavour implements View.OnClickListener {
 
 	public static final String TAG = "About";
 
@@ -44,7 +44,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(Utils.hasKitKat() && !Utils.hasLollipop()){
-			setTheme(R.style.Theme_Document_Translucent);
+			setTheme(R.style.DocumentsTheme_Translucent);
 		}
 		setContentView(R.layout.activity_about);
 
@@ -60,7 +60,7 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(null);
 		setUpDefaultStatusBar();
-
+		initAd();
 		initControls();
 	}
 
@@ -74,18 +74,20 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		int accentColor = ColorUtils.getTextColorForBackground(SettingsActivity.getPrimaryColor());
 		TextView logo = (TextView)findViewById(R.id.logo);
 		logo.setTextColor(accentColor);
-		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME;
+		String header = logo.getText() + getSuffix() + " v" + BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? " Debug" : "");
 		logo.setText(header);
 
 		TextView action_rate = (TextView)findViewById(R.id.action_rate);
 		TextView action_support = (TextView)findViewById(R.id.action_support);
 		TextView action_share = (TextView)findViewById(R.id.action_share);
 		TextView action_feedback = (TextView)findViewById(R.id.action_feedback);
+		TextView action_sponsor = (TextView)findViewById(R.id.action_sponsor);
 
 		action_rate.setOnClickListener(this);
 		action_support.setOnClickListener(this);
 		action_share.setOnClickListener(this);
 		action_feedback.setOnClickListener(this);
+		action_sponsor.setOnClickListener(this);
 
 		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
@@ -93,6 +95,10 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 		} else if(DocumentsApplication.isTelevision()){
 			action_share.setVisibility(View.GONE);
 			action_feedback.setVisibility(View.GONE);
+		}
+
+		if(!DocumentsApplication.isPurchased()){
+			action_sponsor.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -135,10 +141,18 @@ public class AboutActivity extends ActionBarActivity implements View.OnClickList
 				openPlaystore(this);
 				AnalyticsManager.logEvent("app_rate");
 				break;
+			case R.id.action_sponsor:
+				showAd();
+				AnalyticsManager.logEvent("app_sponsor");
+				break;
 			case R.id.action_support:
-				Intent intentMarketAll = new Intent("android.intent.action.VIEW");
-				intentMarketAll.setData(Utils.getAppStoreUri());
-				startActivity(intentMarketAll);
+				if(Utils.isProVersion()){
+					Intent intentMarketAll = new Intent("android.intent.action.VIEW");
+					intentMarketAll.setData(Utils.getAppProStoreUri());
+					startActivity(intentMarketAll);
+				} else {
+					DocumentsApplication.openPurchaseActivity(this);
+				}
 				AnalyticsManager.logEvent("app_love");
 				break;
 			case R.id.action_share:

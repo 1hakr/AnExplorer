@@ -24,9 +24,12 @@ import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.storage.StorageManager;
+import android.provider.Settings;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
@@ -176,7 +179,12 @@ public class HomeFragment extends Fragment {
             storageStats.setAction(R.drawable.ic_analyze, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((DocumentsActivity)getActivity()).showInfo("Coming Soon!");
+                    Intent intent = new Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS);
+                    if(Utils.isIntentAvailable(getActivity(), intent)) {
+                        getActivity().startActivity(intent);
+                    } else  {
+                        ((DocumentsActivity)getActivity()).showInfo("Coming Soon!");
+                    }
                     Bundle params = new Bundle();
                     AnalyticsManager.logEvent("storage_analyze", params);
                 }

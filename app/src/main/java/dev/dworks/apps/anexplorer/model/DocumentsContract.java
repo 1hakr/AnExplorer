@@ -680,6 +680,8 @@ public final class DocumentsContract {
     public static final String METHOD_IS_CHILD_DOCUMENT = "android:isChildDocument";
     /** {@hide} */
     public static final String METHOD_REMOVE_DOCUMENT = "android:removeDocument";
+    /** {@hide} */
+    public static final String METHOD_UPLOAD_DOCUMENT = "android:uploadDocument";
 
     public static final String METHOD_COMPRESS_DOCUMENT = "android:compressDocument";
     public static final String METHOD_UNCOMPRESS_DOCUMENT = "android:uncompressDocument";
@@ -688,6 +690,7 @@ public final class DocumentsContract {
     public static final String EXTRA_PARENT_URI = "parentUri";
     /** {@hide} */
     public static final String EXTRA_URI = "uri";
+    public static final String EXTRA_UPLOAD_URI = "upload_uri";
     public static final String EXTRA_THUMBNAIL_SIZE = "thumbnail_size";
     public static final String EXTRA_DOCUMENT_TO= "document_to";
     public static final String EXTRA_DELETE_AFTER = "delete_after";
@@ -1352,6 +1355,27 @@ public final class DocumentsContract {
             in.putParcelable(DocumentsContract.EXTRA_URI, fromDocumentUri);
 
             resolver.call(fromDocumentUri, METHOD_UNCOMPRESS_DOCUMENT, null, in);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to uncompress document", e);
+            return false;
+        } finally {
+            ContentProviderClientCompat.releaseQuietly(client);
+        }
+    }
+
+    public static boolean uploadDocument(ContentResolver resolver, Uri parentDocumentUri,
+                                         Uri uploadDocumentUri, String mimeType, String displayName) {
+        final ContentProviderClient client = resolver.acquireUnstableContentProviderClient(
+                parentDocumentUri.getAuthority());
+        try {
+            final Bundle in = new Bundle();
+            in.putParcelable(DocumentsContract.EXTRA_URI, parentDocumentUri);
+            in.putParcelable(DocumentsContract.EXTRA_UPLOAD_URI, uploadDocumentUri);
+            in.putString(DocumentsContract.Document.COLUMN_MIME_TYPE, mimeType);
+            in.putString(DocumentsContract.Document.COLUMN_DISPLAY_NAME, displayName);
+
+            resolver.call(parentDocumentUri, METHOD_UPLOAD_DOCUMENT, null, in);
             return true;
         } catch (Exception e) {
             Log.w(TAG, "Failed to uncompress document", e);

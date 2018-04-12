@@ -85,10 +85,6 @@ public class FloatingActionsMenu extends FabSpeedDial {
             } else {
                 setTranslationY(translationY);
             }
-            // On pre-Honeycomb a translated view is still clickable, so we need to disable clicks manually
-            if (!Utils.hasHoneycomb()) {
-                setClickable(visible);
-            }
         }
 
         if(isMenuOpen()) {

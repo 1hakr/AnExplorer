@@ -13,11 +13,45 @@
      limitations under the License.
 -->
 
-<ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/list"
+<dev.dworks.apps.anexplorer.ui.DirectoryView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:divider="@null"
-    android:groupIndicator="@drawable/expander_group"
-    android:paddingTop="8dp" />
+    android:background="?android:attr/windowBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@android:id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:text="@string/app_name"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:fontFamily="sans-serif-condensed"
+            android:visibility="gone"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@android:color/white" />
+
+        <ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:divider="@null"
+            android:groupIndicator="@drawable/expander_group"
+            android:paddingTop="8dp" />
+
+        <include layout="@layout/pro_layout" />
+    </LinearLayout>
+
+</dev.dworks.apps.anexplorer.ui.DirectoryView>

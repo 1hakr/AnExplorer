@@ -47,7 +47,7 @@ public class SecurityPreferenceFragment extends PreferenceFragment implements On
     }
 	
     private void confirmPin(final String pin) {
-    	final Dialog d = new Dialog(getActivity(), R.style.Theme_Document_DailogPIN);
+    	final Dialog d = new Dialog(getActivity(), R.style.DocumentsTheme_DailogPIN);
     	d.getWindow().setWindowAnimations(R.style.DialogEnterNoAnimation);
     	PinViewHelper pinViewHelper = new PinViewHelper((LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
             public void onEnter(String password) {
@@ -79,7 +79,7 @@ public class SecurityPreferenceFragment extends PreferenceFragment implements On
     }
     
     private void setPin() {
-    	final Dialog d = new Dialog(getActivity(), R.style.Theme_Document_DailogPIN);
+    	final Dialog d = new Dialog(getActivity(), R.style.DocumentsTheme_DailogPIN);
     	d.getWindow().setWindowAnimations(R.style.DialogExitNoAnimation);
         View view = new PinViewHelper((LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
             public void onEnter(String password) {
@@ -100,7 +100,7 @@ public class SecurityPreferenceFragment extends PreferenceFragment implements On
 
     private void checkPin() {
         if (SettingsActivity.isPinProtected(getActivity())) {
-            final Dialog d = new Dialog(getActivity(), R.style.Theme_Document_DailogPIN);
+            final Dialog d = new Dialog(getActivity(), R.style.DocumentsTheme_DailogPIN);
             View view = new PinViewHelper((LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
                 public void onEnter(String password) {
                     super.onEnter(password);

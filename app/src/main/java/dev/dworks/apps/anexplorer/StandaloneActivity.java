@@ -108,7 +108,7 @@ public class StandaloneActivity extends BaseActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         }
         else if(Utils.hasKitKat()){
-            setTheme(R.style.Theme_Document_Translucent);
+            setTheme(R.style.DocumentsTheme_Translucent);
         }
         setUpStatusBar();
         // Debug.waitForDebugger();

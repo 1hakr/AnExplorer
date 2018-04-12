@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.dworks.apps.anexplorer.ui.FloatingActionsMenu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fabs"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end"
+    android:layout_margin="10dp"
+    tools:showIn="@layout/activity"
+    app:fabGravity="bottom_end"
+    app:fabMenu="@menu/menu_fab_connections"
+    app:touchGuardDrawable="@drawable/fab_background"
+    android:contentDescription="@string/add">
+</dev.dworks.apps.anexplorer.ui.FloatingActionsMenu>

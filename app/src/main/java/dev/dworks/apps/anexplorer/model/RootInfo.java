@@ -37,6 +37,7 @@ import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
+import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
@@ -282,6 +283,20 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_network;
             derivedColor = R.color.item_connection_client;
             derivedTag = "network";
+        } else if (isCloudStorage()) {
+            if (isCloudGDrive()) {
+                derivedIcon = R.drawable.ic_root_gdrive;
+            } else if (isCloudDropBox()) {
+                derivedIcon = R.drawable.ic_root_dropbox;
+            } else if (isCloudOneDrive()) {
+                derivedIcon = R.drawable.ic_root_onedrive;
+            } else if (isCloudBox()) {
+                derivedIcon = R.drawable.ic_root_box;
+            } else {
+                derivedIcon = R.drawable.ic_root_cloud;
+            }
+            derivedColor = R.color.item_connection_cloud;
+            derivedTag = "cloud";
         }
     }
 
@@ -434,6 +449,28 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isServerStorage() {
         return NetworkStorageProvider.AUTHORITY.equals(authority) && isServer();
+    }
+
+    public boolean isCloudStorage() {
+        return CloudStorageProvider.AUTHORITY.equals(authority);
+    }
+
+    public boolean isCloudGDrive() {
+        return CloudStorageProvider.AUTHORITY.equals(authority)
+                && rootId.startsWith(CloudStorageProvider.TYPE_GDRIVE);
+    }
+
+    public boolean isCloudDropBox() {
+        return CloudStorageProvider.AUTHORITY.equals(authority)
+                && rootId.startsWith(CloudStorageProvider.TYPE_DROPBOX);
+    }
+    public boolean isCloudOneDrive() {
+        return CloudStorageProvider.AUTHORITY.equals(authority)
+                && rootId.startsWith(CloudStorageProvider.TYPE_ONEDRIVE);
+    }
+    public boolean isCloudBox() {
+        return CloudStorageProvider.AUTHORITY.equals(authority)
+                && rootId.startsWith(CloudStorageProvider.TYPE_BOX);
     }
 
     public boolean isUsbStorage() {
@@ -615,12 +652,24 @@ public class RootInfo implements Durable, Parcelable {
         return root.isNetworkStorage();
     }
 
+    public static boolean isCloud(RootInfo root){
+        return root.isCloudStorage();
+    }
+
     public static boolean isApps(RootInfo root){
         return root.isAppPackage() || root.isAppProcess();
     }
 
     public static boolean isOtherRoot(RootInfo root){
         return null != root && (root.isHome() || root.isConnections() || root.isNetworkStorage());
+    }
+
+    public static boolean isMedia(RootInfo root){
+        return root.isImages() || root.isVideos() || root.isAudio();
+    }
+
+    public static boolean isProFeature(RootInfo root){
+        return root.isUsbStorage() || root.isRootedStorage();
     }
 
 }

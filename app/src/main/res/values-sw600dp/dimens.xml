@@ -38,4 +38,5 @@
     <dimen name="toolbar_h_padding">12dp</dimen>
 
     <integer name="recycler_type">1</integer>
+    <dimen name="card_padding">50dp</dimen>
 </resources>

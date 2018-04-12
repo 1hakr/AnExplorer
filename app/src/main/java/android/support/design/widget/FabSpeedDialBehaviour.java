@@ -20,6 +20,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v4.widget.ViewGroupUtils;
 import android.view.View;
 
 import java.util.List;
