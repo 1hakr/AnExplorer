@@ -26,6 +26,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -69,7 +70,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
 
     public abstract boolean isShowAsDialog();
-    public abstract void upadateActionItems(AbsListView mCurrentView);
+    public abstract void upadateActionItems(RecyclerView mCurrentView);
     public abstract void setInfoDrawerOpen(boolean open);
     public abstract void again();
 
@@ -119,6 +120,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         public static final int ACTION_BROWSE = 6;
         public static final int ACTION_MANAGE_ALL = 7;
 
+        public @interface ViewMode {}
         public static final int MODE_UNKNOWN = 0;
         public static final int MODE_LIST = 1;
         public static final int MODE_GRID = 2;

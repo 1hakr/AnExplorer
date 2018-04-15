@@ -34,6 +34,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -561,7 +562,7 @@ public class StandaloneActivity extends BaseActivity {
     }
 
     @Override
-    public void upadateActionItems(AbsListView mCurrentView) {
+    public void upadateActionItems(RecyclerView mCurrentView) {
 
     }
 

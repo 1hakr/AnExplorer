@@ -54,6 +54,7 @@ import dev.dworks.apps.anexplorer.loader.RecentLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -65,6 +66,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.HomeItem;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
@@ -94,6 +96,8 @@ public class HomeFragment extends Fragment {
     private RootInfo mHomeRoot;
     private HomeItem secondayStorageStats;
     private HomeItem usbStorageStats;
+    private BaseActivity mActivity;
+    private IconHelper mIconHelper;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -129,6 +133,9 @@ public class HomeFragment extends Fragment {
         mShortcutsRecycler = (RecyclerView) view.findViewById(R.id.shortcuts_recycler);
         mRecentsRecycler = (RecyclerView) view.findViewById(R.id.recents_recycler);
 
+        mActivity = ((BaseActivity) getActivity());
+        mIconHelper = new IconHelper(mActivity, MODE_GRID);
+
         roots = DocumentsApplication.getRootsCache(getActivity());
         mHomeRoot = roots.getHomeRoot();
         showRecents();
@@ -151,6 +158,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateUI() {
+        mIconHelper.setThumbnailsEnabled(mActivity.getDisplayState().showThumbnail);
         recents_container.setVisibility(SettingsActivity.getDisplayRecentMedia() ? View.VISIBLE : View.GONE);
         roots = DocumentsApplication.getRootsCache(getActivity());
         int accentColor = SettingsActivity.getAccentColor();
@@ -291,7 +299,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        mRecentsAdapter = new RecentsAdapter(getActivity(), null);
+        mRecentsAdapter = new RecentsAdapter(getActivity(), null, mIconHelper);
         mRecentsAdapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(RecentsAdapter.ViewHolder item, int position) {

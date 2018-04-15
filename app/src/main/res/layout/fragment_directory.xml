@@ -57,29 +57,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/list"
+            <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+                android:id="@id/recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:scrollbarStyle="outsideOverlay" />
-
-            <GridView
-                android:id="@+id/grid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:drawSelectorOnTop="true"
-                android:horizontalSpacing="@dimen/grid_item_padding"
-                android:paddingBottom="@dimen/grid_padding_vert"
-                android:paddingEnd="@dimen/grid_padding_horiz"
-                android:paddingLeft="@dimen/grid_padding_horiz"
-                android:paddingRight="@dimen/grid_padding_horiz"
-                android:paddingStart="@dimen/grid_padding_horiz"
-                android:paddingTop="@dimen/grid_padding_vert"
                 android:scrollbarStyle="outsideOverlay"
-                android:verticalSpacing="@dimen/grid_item_padding"
-                android:visibility="gone" />
+                android:horizontalSpacing="@dimen/grid_item_padding"
+                app:type="list"
+                app:columnWidth="@dimen/grid_item_width"
+                android:drawSelectorOnTop="true" />
 
         </FrameLayout>
 
