@@ -81,6 +81,8 @@ public class Utils {
     public static final String EXTRA_CONNECTION_ID = "connection_id";
     public static final String EXTRA_IGNORE_STATE = "ignoreState";
 
+    public static String AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv";
+
     static final String[] BinaryPlaces = { "/data/bin/", "/system/bin/", "/system/xbin/", "/sbin/",
         "/data/local/xbin/", "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/",
         "/data/local/" };
@@ -379,7 +381,8 @@ public class Utils {
 
     public static boolean isTelevision(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
-        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+        boolean isFireTV = hasFeature(context, AMAZON_FEATURE_FIRE_TV);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION || isFireTV;
     }
 
     public static void showRetrySnackBar(View view, String text, View.OnClickListener listener){
