@@ -36,7 +36,7 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
@@ -49,7 +49,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
-import static android.support.v4.app.AppOpsManagerCompat.MODE_ALLOWED;
+import static androidx.core.app.AppOpsManagerCompat.MODE_ALLOWED;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.EXTRA_INFO;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_COMPRESS_DOCUMENT;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.METHOD_COPY_DOCUMENT;

@@ -17,8 +17,8 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.util.ArrayMap;
+import androidx.core.content.ContextCompat;
+import androidx.collection.ArrayMap;
 
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;

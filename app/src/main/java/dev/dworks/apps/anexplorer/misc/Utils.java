@@ -35,13 +35,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
-import android.support.design.widget.Snackbar;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.text.TextUtilsCompat;
-import android.support.v7.app.AppCompatDelegate;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+import androidx.core.app.ShareCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.text.TextUtilsCompat;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
@@ -461,7 +461,7 @@ public class Utils {
 
     public static boolean isRTL() {
         return TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-                == android.support.v4.view.ViewCompat.LAYOUT_DIRECTION_RTL;
+                == androidx.core.view.ViewCompat.LAYOUT_DIRECTION_RTL;
     }
 
     public static File getAppsBackupFile(Context context){

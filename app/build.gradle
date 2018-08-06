@@ -1,7 +1,12 @@
 apply plugin: 'com.android.application'
 
 def props = new Properties()
-props.load(new FileInputStream(rootProject.file("keystore.properties")))
+File keystoreProperties = rootProject.file("keystore.properties")
+if (keystoreProperties.exists()) {
+    props.load(new FileInputStream(keystoreProperties))
+} else {
+    props['keystorefile'] = 'none';
+}
 
 android {
     compileSdkVersion 28
@@ -90,14 +95,6 @@ android {
     lintOptions {
         abortOnError false
     }
-    aaptOptions {
-        noCompress 'apk'
-    }
-}
-
-ext {
-    supportLibVersion = '27.1.1'
-    gmsVersion = '15.0.1'
 }
 
 dependencies {
@@ -108,19 +105,18 @@ dependencies {
     implementation 'commons-net:commons-net:+'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.21.6'
-    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
-    implementation "com.android.support:cardview-v7:${supportLibVersion}"
-    implementation "com.android.support:design:${supportLibVersion}"
-    implementation "com.android.support:exifinterface:${supportLibVersion}"
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.cardview:cardview:1.0.0-beta01'
+    implementation 'com.google.android.material:material:1.0.0-beta01'
+    implementation 'androidx.exifinterface:exifinterface:1.0.0-beta01'
     implementation "com.github.javiersantos:AppUpdater:2.6.5"
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
-    freeImplementation "com.google.firebase:firebase-core:16.0.0"
+    freeImplementation "com.google.firebase:firebase-core:16.0.1"
     freeImplementation "com.google.firebase:firebase-ads:15.0.1"
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:+'
 }
-
 
 android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
 android.signingConfigs.release.storePassword props.keyStorePassword

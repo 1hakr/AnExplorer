@@ -39,8 +39,8 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
-import android.support.media.ExifInterface;
+import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
 import android.util.Log;
 import android.widget.SearchView.OnCloseListener;
 

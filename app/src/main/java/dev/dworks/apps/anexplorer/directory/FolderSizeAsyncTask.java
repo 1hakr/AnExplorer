@@ -1,8 +1,8 @@
 package dev.dworks.apps.anexplorer.directory;
 
 import android.net.Uri;
-import android.support.v4.os.CancellationSignal;
-import android.support.v4.os.OperationCanceledException;
+import androidx.core.os.CancellationSignal;
+import androidx.core.os.OperationCanceledException;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;

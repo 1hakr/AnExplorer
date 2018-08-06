@@ -20,7 +20,7 @@ package dev.dworks.apps.anexplorer.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 

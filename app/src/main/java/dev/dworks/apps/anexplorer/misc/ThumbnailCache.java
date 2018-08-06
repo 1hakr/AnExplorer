@@ -17,14 +17,14 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.os.Looper;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import android.content.ComponentCallbacks2;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import android.support.v4.util.Pair;
-import android.support.v4.util.Pools;
+import androidx.core.util.Pair;
+import androidx.core.util.Pools;
 import android.util.Log;
 import android.util.LruCache;
 

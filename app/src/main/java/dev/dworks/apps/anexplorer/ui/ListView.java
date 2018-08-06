@@ -1,8 +1,8 @@
 package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -30,7 +30,7 @@ public class ListView extends android.widget.ListView implements NestedScrolling
 
     */
 /**
-     * @see android.support.v4.widget.NestedScrollView#onTouchEvent(MotionEvent)
+     * @see androidx.core.widget.NestedScrollView#onTouchEvent(MotionEvent)
      *//*
 
     @Override
