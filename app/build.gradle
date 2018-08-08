@@ -10,7 +10,7 @@ if (keystoreProperties.exists()) {
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
 
     applicationVariants.all { variant ->
         variant.outputs.all {
@@ -105,16 +105,15 @@ dependencies {
     implementation 'commons-net:commons-net:+'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.21.6'
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
-    implementation 'androidx.cardview:cardview:1.0.0-beta01'
-    implementation 'com.google.android.material:material:1.0.0-beta01'
-    implementation 'androidx.exifinterface:exifinterface:1.0.0-beta01'
-    implementation "com.github.javiersantos:AppUpdater:2.6.5"
+    implementation 'androidx.appcompat:appcompat:1.0.0-rc01'
+    implementation 'androidx.cardview:cardview:1.0.0-rc01'
+    implementation 'com.google.android.material:material:1.0.0-rc01'
+    implementation 'androidx.exifinterface:exifinterface:1.0.0-rc01'
+    implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
     freeImplementation "com.google.firebase:firebase-core:16.0.1"
     freeImplementation "com.google.firebase:firebase-ads:15.0.1"
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
-
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:+'
 }
 
