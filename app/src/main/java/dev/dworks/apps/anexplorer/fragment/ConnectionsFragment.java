@@ -222,11 +222,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_add:
-                addConnection();
-                return true;
-        }
+        menuItemAction(item);
         return super.onOptionsItemSelected(item);
     }
 
@@ -352,6 +348,25 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
             DocumentsApplication.openPurchaseActivity(activity);
             return false;
         }
+        menuItemAction(menuItem);
+        mActionMenu.closeMenu();
+        return false;
+    }
+
+    @Override
+    public void onMenuClosed() {
+
+    }
+
+    public void addCloudConnection(String cloudType){
+        final BaseActivity activity = (BaseActivity) getActivity();
+        CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
+        new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
+                ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
+        AnalyticsManager.logEvent("add_cloud");
+    }
+
+    public void menuItemAction(MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.cloud_gridve:
                 addCloudConnection(TYPE_GDRIVE);
@@ -374,20 +389,5 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
                 AnalyticsManager.logEvent("add_ftp");
                 break;
         }
-        mActionMenu.closeMenu();
-        return false;
-    }
-
-    @Override
-    public void onMenuClosed() {
-
-    }
-
-    public void addCloudConnection(String cloudType){
-        final BaseActivity activity = (BaseActivity) getActivity();
-        CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
-        new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
-                ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
-        AnalyticsManager.logEvent("add_cloud");
     }
 }

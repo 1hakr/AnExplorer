@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:support="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="id.appstudioplus.managerplus.PositionSampleActivity">
 
@@ -9,35 +9,35 @@
         android:icon="@drawable/ic_root_gdrive"
         android:orderInCategory="100"
         android:title="@string/cloud_gdrive"
-        app:showAsAction="never" />
+        support:showAsAction="never" />
 
     <item
         android:id="@+id/cloud_dropbox"
         android:icon="@drawable/ic_root_dropbox"
         android:orderInCategory="100"
         android:title="@string/cloud_dropbox"
-        app:showAsAction="never" />
+        support:showAsAction="never" />
 
     <item
         android:id="@+id/cloud_onedrive"
         android:icon="@drawable/ic_root_onedrive"
         android:orderInCategory="100"
         android:title="@string/cloud_onedrive"
-        app:showAsAction="never" />
+        support:showAsAction="never" />
 
     <item
         android:id="@+id/cloud_box"
         android:icon="@drawable/ic_root_box"
         android:orderInCategory="100"
         android:title="@string/cloud_box"
-        app:showAsAction="never" />
+        support:showAsAction="never" />
 
     <item
         android:id="@+id/network_ftp"
         android:icon="@drawable/ic_connection_network"
         android:orderInCategory="100"
         android:title="@string/network_ftp"
-        app:showAsAction="never" />
+        support:showAsAction="never" />
 
 
 </menu>
