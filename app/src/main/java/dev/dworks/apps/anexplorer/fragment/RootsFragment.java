@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -126,10 +127,10 @@ public class RootsFragment extends Fragment {
 
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int width = Utils.dpToPx(302);
+        int width = getResources().getDimensionPixelSize(R.dimen.side_navigation_width);
 
         boolean rtl = Utils.isRTL();
-        int leftPadding = rtl ? 10 : 50;
+        int leftPadding = rtl ? 10 : 60;
         int rightPadding = rtl ? 50 : 10;
         int leftWidth = width - Utils.dpToPx(leftPadding);
         int rightWidth = width - Utils.dpToPx(rightPadding);
