@@ -1070,6 +1070,10 @@ public class DocumentsActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        if(isRootsDrawerOpen() && !mShowAsDialog){
+            mDrawerLayout.closeDrawer(mRootsContainer);
+            return;
+        }
         if(mSearchExpanded){
 
         }
