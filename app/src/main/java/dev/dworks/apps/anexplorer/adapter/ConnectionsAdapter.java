@@ -59,7 +59,9 @@ public class ConnectionsAdapter extends BaseAdapter{
         final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
         final View popupButton = convertView.findViewById(R.id.button_popup);
         popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
-        popupButton.setOnClickListener(mListener);
+        if(null != mListener) {
+            popupButton.setOnClickListener(mListener);
+        }
 
         NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
         if(networkConnection.type.startsWith(TYPE_CLOUD)){
