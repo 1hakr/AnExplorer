@@ -5,13 +5,11 @@
     tools:context="id.appstudioplus.managerplus.PositionSampleActivity">
 
     <item
-        android:id="@+id/action_refresh"
         android:title="Refresh"
         app:showAsAction="ifRoom"
         android:visible="false"
         android:icon="@drawable/ic_menu_rename_file"/>
     <item
-        android:id="@+id/action_paste"
         android:title="Paste"
         app:showAsAction="ifRoom"
         android:visible="false"

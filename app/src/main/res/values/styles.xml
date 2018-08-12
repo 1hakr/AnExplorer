@@ -2,32 +2,12 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <style name="DarkerOverflow" parent="@android:style/Widget.Holo.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/abc_ic_menu_overflow_material</item>
-    </style>
-
-    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:displayOptions">showHome|useLogo</item>
-    </style>
-
     <style name="DialogEnterNoAnimation">
         <item name="android:windowEnterAnimation">@anim/no_animation</item>
     </style>
 
     <style name="DialogExitNoAnimation">
         <item name="android:windowExitAnimation">@anim/no_animation</item>
-    </style>
-
-    <style name="TextAppearance" />
-
-    <style name="TextAppearance.Medium">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
-    </style>
-
-    <style name="TextAppearance.Small">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textColor">?android:attr/textColorTertiary</item>
     </style>
 
 

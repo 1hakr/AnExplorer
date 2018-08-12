@@ -18,7 +18,6 @@
 
 <resources>
     <bool name="show_as_dialog">true</bool>
-    <dimen name="grid_padding_horiz">20dp</dimen>
     <bool name="always_show_summary">true</bool>
 
     <dimen name="list_item_height">64dp</dimen>

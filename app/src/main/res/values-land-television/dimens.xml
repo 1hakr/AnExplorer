@@ -18,7 +18,6 @@
 
 <resources>
     <bool name="show_as_dialog">true</bool>
-    <dimen name="grid_padding_horiz">20dp</dimen>
     <bool name="always_show_summary">true</bool>
 
     <dimen name="list_item_height">64dp</dimen>
@@ -28,5 +27,4 @@
     <dimen name="side_navigation_width">256dp</dimen>
     <integer name="recycler_type">1</integer>
     <dimen name="card_padding">200dp</dimen>
-    <dimen name="margin_top">60dp</dimen>
 </resources>

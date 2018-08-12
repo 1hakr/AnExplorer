@@ -3,7 +3,6 @@
     xmlns:support="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_add"
         android:alphabeticShortcut="s"
         android:icon="@drawable/fab_ic_add"
         android:title="@string/menu_add"
