@@ -66,7 +66,7 @@
 -keep class dev.dworks.apps.anexplorer.BuildConfig { *; }
 
 # Keep the support library
--keep public class androidx.appcompat.widget.SearchView{ *; }
+-keep public class androidx.appcompat.widget.SearchView { *; }
 
 -keep public class * extends androidx.core.view.ActionProvider {
     public <init>(android.content.Context);

@@ -99,23 +99,21 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.jaredrummler:android-processes:+'
-    implementation 'com.github.mjdev:libaums:+'
-    implementation 'org.apache.ftpserver:ftpserver-core:+'
-    implementation 'commons-net:commons-net:+'
+    implementation 'com.jaredrummler:android-processes:1.1.1'
+    implementation 'com.github.mjdev:libaums:0.5.5'
+    implementation 'org.apache.ftpserver:ftpserver-core:1.1.1'
+    implementation 'commons-net:commons-net:3.6'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.21.6'
     implementation 'androidx.appcompat:appcompat:1.0.0-rc01'
     implementation 'androidx.cardview:cardview:1.0.0-rc01'
     implementation 'com.google.android.material:material:1.0.0-rc01'
     implementation 'androidx.exifinterface:exifinterface:1.0.0-rc01'
-    implementation 'androidx.browser:browser:1.0.0-rc01'
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
     freeImplementation "com.google.firebase:firebase-core:16.0.1"
     freeImplementation "com.google.firebase:firebase-ads:15.0.1"
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:+'
 }
 
 android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
