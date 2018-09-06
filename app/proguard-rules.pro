@@ -58,8 +58,8 @@
    *** get*();
 }
 
--keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
+-keepclassmembers class * implements android.os.Parcelable {
+ public <fields>;
 }
 
 # Keep the BuildConfig
@@ -67,6 +67,8 @@
 
 # Keep the support library
 -keep public class androidx.appcompat.widget.SearchView { *; }
+
+-keepclassmembers public class androidx.recyclerview.widget.RecyclerView { *; }
 
 -keep public class * extends androidx.core.view.ActionProvider {
     public <init>(android.content.Context);
