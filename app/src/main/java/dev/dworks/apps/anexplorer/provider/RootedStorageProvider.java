@@ -25,7 +25,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 
 import java.io.BufferedReader;
@@ -47,7 +47,7 @@ import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import android.support.annotation.GuardedBy;
+import androidx.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.root.RootCommands;
 import dev.dworks.apps.anexplorer.root.RootFile;
 

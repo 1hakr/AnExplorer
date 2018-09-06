@@ -203,9 +203,13 @@ public class CloudConnection {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            mCloudConnection.login();
-            mCloudConnection.prepare();
-            return CloudStorageProvider.addUpdateConnection(mActivity, mCloudConnection);
+            try {
+                mCloudConnection.login();
+                mCloudConnection.prepare();
+                return CloudStorageProvider.addUpdateConnection(mActivity, mCloudConnection);
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         @Override

@@ -19,8 +19,8 @@ package dev.dworks.apps.anexplorer;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ShareCompat;
-import android.support.v7.widget.Toolbar;
+import androidx.core.app.ShareCompat;
+import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -122,18 +122,6 @@ public class AboutActivity extends AboutFlavour implements View.OnClickListener 
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
-			case R.id.action_github:
-				startActivity(new Intent("android.intent.action.VIEW",
-						Uri.parse("https://github.com/DWorkS")));
-				break;
-			case R.id.action_gplus:
-				startActivity(new Intent("android.intent.action.VIEW",
-						Uri.parse("https://plus.google.com/+HariKrishnaDulipudi")));
-				break;
-			case R.id.action_twitter:
-				startActivity(new Intent("android.intent.action.VIEW",
-						Uri.parse("https://twitter.com/1HaKr")));
-				break;
 			case R.id.action_feedback:
 				openFeedback(this);
 				break;

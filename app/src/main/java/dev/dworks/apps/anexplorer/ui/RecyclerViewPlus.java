@@ -2,21 +2,23 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import dev.dworks.apps.anexplorer.R;
 
 public class RecyclerViewPlus extends RecyclerView {
-    private LayoutManager layoutManager;
-    private final int type;
-    private int columnWidth = -1;
     public static final int TYPE_LIST = 0;
     public static final int TYPE_GRID = 1;
     public static final int TYPE_GALLERY = 2;
+
+    private LayoutManager layoutManager;
+    private int mType = TYPE_LIST;
+    private int columnWidth = -1;
+    private Context mContext;
 
     public RecyclerViewPlus(Context context) {
         this(context, null);
@@ -29,27 +31,36 @@ public class RecyclerViewPlus extends RecyclerView {
     public RecyclerViewPlus(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
+        mContext = context;
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RecyclerViewPlus,
                 defStyle, 0);
-        type = attributes.getInt(R.styleable.RecyclerViewPlus_type, TYPE_LIST);
+        mType = attributes.getInt(R.styleable.RecyclerViewPlus_type, TYPE_LIST);
         columnWidth = attributes.getDimensionPixelSize(R.styleable.RecyclerViewPlus_columnWidth, -1);
         attributes.recycle();
+        setType(mType);
+    }
 
-        switch (type){
+    public void setType(int type){
+        mType = type;
+        updateLayoutManager();
+    }
+
+    private void updateLayoutManager(){
+        switch (mType){
             case TYPE_LIST:
                 layoutManager =
-                        new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+                        new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
                 break;
             case TYPE_GRID:
-                layoutManager = new GridLayoutManager(context, 1);
+                layoutManager = new GridLayoutManager(mContext, 1);
                 break;
             case TYPE_GALLERY:
                 layoutManager =
-                        new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                        new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
                 break;
             default:
                 layoutManager =
-                        new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+                        new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
                 break;
         }
 
@@ -60,7 +71,7 @@ public class RecyclerViewPlus extends RecyclerView {
     protected void onMeasure(int widthSpec, int heightSpec) {
         super.onMeasure(widthSpec, heightSpec);
 
-        switch (type){
+        switch (mType){
             case TYPE_GRID:
                 if (columnWidth > 0) {
                     //The spanCount will always be at least 1

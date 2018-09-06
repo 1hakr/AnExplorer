@@ -17,43 +17,52 @@
 package dev.dworks.apps.anexplorer.misc;
 
 
-import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.CancellationSignal;
-import android.os.OperationCanceledException;
-import android.util.Log;
+import androidx.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import dev.dworks.apps.anexplorer.DocumentsActivity;
+
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.libcore.util.Consumer;
+import dev.dworks.apps.anexplorer.libcore.util.BiConsumer;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.BaseActivity.State.ViewMode;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
-import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
+import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 
 /**
  * A class to assist with loading and managing the Images (i.e. thumbnails and icons) associated
  * with items in the directory listing.
  */
 public class IconHelper {
-    private static String TAG = "IconHelper";
+    private static final String TAG = "IconHelper";
 
     private final Context mContext;
-    private ThumbnailCache mCache;
-    private Point mThumbSize;
+    private final ThumbnailCache mThumbnailCache;
+
+    // The display mode (MODE_GRID, MODE_LIST, etc).
+    private int mMode;
+    private Point mCurrentSize;
     private boolean mThumbnailsEnabled = true;
 
-    public IconHelper(Context context) {
+    /**
+     * @param context
+     * @param mode MODE_GRID or MODE_LIST
+     */
+    public IconHelper(Context context, int mode) {
         mContext = context;
-        int thumbSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
-        mThumbSize = new Point(thumbSize, thumbSize);
-        mCache = DocumentsApplication.getThumbnailsCache(mContext, mThumbSize);
+        setViewMode(mode);
+        mThumbnailCache = DocumentsApplication.getThumbnailCache(context);
     }
 
     /**
@@ -67,162 +76,202 @@ public class IconHelper {
     }
 
     /**
+     * Sets the current display mode. This affects the thumbnail sizes that are loaded.
+     *
+     * @param mode See {@link State.MODE_LIST} and {@link State.MODE_GRID}.
+     */
+    public void setViewMode(@ViewMode int mode) {
+        mMode = mode;
+        int thumbSize = getThumbSize(mode);
+        mCurrentSize = new Point(thumbSize, thumbSize);
+    }
+
+    private int getThumbSize(int mode) {
+        int thumbSize;
+        switch (mode) {
+            case MODE_GRID:
+                thumbSize = mContext.getResources().getDimensionPixelSize(R.dimen.grid_width);
+                break;
+            case MODE_LIST:
+                thumbSize = mContext.getResources().getDimensionPixelSize(
+                        R.dimen.icon_size);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported layout mode: " + mode);
+        }
+        return thumbSize;
+    }
+
+    /**
      * Cancels any ongoing load operations associated with the given ImageView.
+     *
      * @param icon
      */
     public void stopLoading(ImageView icon) {
-        if(null == icon){
-            return;
-        }
-        final LoaderTask oldTask = (LoaderTask) icon.getTag();
+        final ThumbnailLoader oldTask = (ThumbnailLoader) icon.getTag();
         if (oldTask != null) {
             oldTask.preempt();
             icon.setTag(null);
         }
     }
 
-    /** Internal task for loading thumbnails asynchronously. */
-    private static class LoaderTask
-            extends AsyncTask<Uri, Void, Bitmap>
-            implements ProviderExecutor.Preemptable {
-        private final Uri mUri;
-        private final ImageView mIconThumb;
-        private final ImageView mIconMime;
-        private final View mIconMimeBackground;
-        private final Point mThumbSize;
-        private final CancellationSignal mSignal;
-        private final String mPath;
-        private final String mimeType;
-
-        public LoaderTask(Uri uri, String path, String mime,
-                Point thumbSize, ImageView iconThumb, ImageView iconMime, View iconMimeBackground) {
-            mUri = uri;
-            mIconThumb = iconThumb;
-            mIconMime = iconMime;
-            mThumbSize = thumbSize;
-            mIconMimeBackground = iconMimeBackground;
-            mimeType = mime;
-            mSignal = new CancellationSignal();
-            mPath = path;
-        }
-
-        @Override
-        public void preempt() {
-            cancel(false);
-            mSignal.cancel();
-        }
-
-        @Override
-        protected Bitmap doInBackground(Uri... params) {
-            if (isCancelled())
-                return null;
-
-            final Context context = mIconThumb.getContext();
-            final ContentResolver resolver = context.getContentResolver();
-
-            ContentProviderClient client = null;
-            Bitmap result = null;
-            try {
-                client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mUri.getAuthority());
-                result = DocumentsContract.getDocumentThumbnail(resolver, mUri, mThumbSize, mSignal);
-
-                if (null == result){
-                    result = ImageUtils.getThumbnail(mPath, mimeType, mThumbSize.x, mThumbSize.y);
-                }
-                if (result != null) {
-                    final ThumbnailCache thumbs = DocumentsApplication.getThumbnailsCache(context, mThumbSize);
-                    thumbs.put(mUri, result);
-                }
-            } catch (Exception e) {
-                if (!(e instanceof OperationCanceledException)) {
-                    Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
-                }
-                CrashReportingManager.logException(e);
-            } finally {
-                ContentProviderClientCompat.releaseQuietly(client);
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            if (isCancelled()) {
-                result = null;
-            }
-            if (mIconThumb.getTag() == this && result != null) {
-                mIconThumb.setTag(null);
-                mIconThumb.setImageBitmap(result);
-                mIconMimeBackground.setVisibility(View.GONE);
-
-                float alpha = mIconMime.getAlpha();
-                mIconMime.animate().alpha(0f).start();
-                mIconThumb.setAlpha(0f);
-                mIconThumb.animate().alpha(alpha).start();
-            }
-        }
+    /**
+     * Load thumbnails for a directory list item.
+     *
+     * @param doc The document
+     * @param iconThumb The itemview's thumbnail icon.
+     * @param iconMime The itemview's mime icon. Hidden when iconThumb is shown.
+     * @param subIconMime The second itemview's mime icon. Always visible.
+     * @return
+     */
+    public void load(
+            DocumentInfo doc,
+            ImageView iconThumb,
+            ImageView iconMime,
+            @Nullable View subIconMime) {
+        load(doc.derivedUri, doc.path, doc.mimeType, doc.flags, doc.icon, doc.lastModified,
+                iconThumb, iconMime, subIconMime);
     }
 
     /**
      * Load thumbnails for a directory list item.
+     *
      * @param uri The URI for the file being represented.
      * @param mimeType The mime type of the file being represented.
      * @param docFlags Flags for the file being represented.
+     * @param docIcon Custom icon (if any) for the file being requested.
+     * @param docLastModified the last modified value of the file being requested.
      * @param iconThumb The itemview's thumbnail icon.
-     * @param iconMimeBackground
+     * @param iconMime The itemview's mime icon. Hidden when iconThumb is shown.
+     * @param subIconMime The second itemview's mime icon. Always visible.
      * @return
      */
-    public void loadThumbnail(Uri uri, String path, String mimeType, int docFlags, int docIcon,
-                              ImageView iconMime, ImageView iconThumb, View iconMimeBackground) {
-        boolean cacheHit = false;
+    public void load(Uri uri, String docPath, String mimeType, int docFlags, int docIcon, long docLastModified,
+            ImageView iconThumb, ImageView iconMime, @Nullable View subIconMime) {
+        boolean loadedThumbnail = false;
 
         final String docAuthority = uri.getAuthority();
-        String docId = DocumentsContract.getDocumentId(uri);
-        final boolean supportsThumbnail = (docFlags & Document.FLAG_SUPPORTS_THUMBNAIL) != 0;
-        final boolean allowThumbnail = MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType);
+
+        final boolean supportsThumbnail = (docFlags & DocumentsContract.Document.FLAG_SUPPORTS_THUMBNAIL) != 0;
+        final boolean allowThumbnail = (mMode == MODE_GRID)
+                || MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mimeType);
         final boolean showThumbnail = supportsThumbnail && allowThumbnail && mThumbnailsEnabled;
         if (showThumbnail) {
-            final Bitmap cachedResult = mCache.get(uri);
-            if (cachedResult != null) {
-                iconThumb.setImageBitmap(cachedResult);
-                cacheHit = true;
-                iconMimeBackground.setVisibility(View.GONE);
-            } else {
-                iconThumb.setImageDrawable(null);
-                final LoaderTask task = new LoaderTask(uri, path, mimeType, mThumbSize, iconThumb,
-                        iconMime, iconMimeBackground);
-                iconThumb.setTag(task);
-                ProviderExecutor.forAuthority(docAuthority).execute(task);
-            }
+            loadedThumbnail =
+                loadThumbnail(uri, docAuthority, docLastModified, docPath,
+                        mimeType, iconThumb, iconMime, subIconMime);
         }
 
-        if (cacheHit) {
-            iconMime.setImageDrawable(null);
-            iconMime.setAlpha(0f);
+        final String docId = DocumentsContract.getDocumentId(uri);
+        final Drawable mimeIcon = getDocumentIcon(mContext, docAuthority,
+                docId, mimeType, docIcon);
+
+        if (subIconMime != null) {
+            setMimeBackground(subIconMime, getDocumentColor(mContext, docAuthority, docId, mimeType));
+        }
+
+        if (loadedThumbnail) {
+            hideImageView(iconMime);
             iconThumb.setAlpha(1f);
+            subIconMime.setVisibility(View.INVISIBLE);
         } else {
-            // Add a mime icon if the thumbnail is being loaded in the background.
-            iconThumb.setImageDrawable(null);
-            iconMime.setImageDrawable(getDocumentIcon(mContext, docAuthority, docId, mimeType, docIcon));
-            iconMime.setAlpha(1f);
+            // Add a mime icon if the thumbnail is not shown.
+            setMimeIcon(iconMime, mimeIcon);
+            hideImageView(iconThumb);
             iconThumb.setAlpha(0f);
+            subIconMime.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean loadThumbnail(Uri uri, String docAuthority, long docLastModified, final String docPath,
+                                  final String mimeType, final ImageView iconThumb,
+                                  final ImageView iconMime, final View subIconMime) {
+        final ThumbnailCache.Result result = mThumbnailCache.getThumbnail(uri, mCurrentSize);
+
+        try {
+            final Bitmap cachedThumbnail = result.getThumbnail();
+            if(result.isExactHit()){
+                setImage(iconThumb, cachedThumbnail, mimeType, docPath);
+                subIconMime.setVisibility(View.INVISIBLE);
+            }
+
+            boolean stale = (docLastModified > result.getLastModified());
+            if (!result.isExactHit() || stale) {
+                final BiConsumer<View, View> animator =
+                        (cachedThumbnail == null ? ThumbnailLoader.ANIM_FADE_IN :
+                                ThumbnailLoader.ANIM_NO_OP);
+
+                Consumer<Bitmap> callback = new Consumer<Bitmap>() {
+                    @Override
+                    public void accept(Bitmap bitmap) {
+                        if (bitmap != null) {
+                            setImage(iconThumb, bitmap, mimeType, docPath);
+                            subIconMime.setVisibility(View.INVISIBLE);
+                            animator.accept(iconMime, iconThumb);
+                        } else {
+                            subIconMime.setVisibility(View.VISIBLE);
+                        }
+                    }
+                };
+
+                final ThumbnailLoader task = new ThumbnailLoader(uri, iconThumb,
+                    mCurrentSize, docLastModified, docPath, mimeType,
+                        callback, true);
+
+                ProviderExecutor.forAuthority(docAuthority).execute(task);
+            }
+
+            return result.isHit();
+        } finally {
+            result.recycle();
+        }
+    }
+
+    private void setMimeIcon(ImageView view, Drawable icon) {
+        view.setImageDrawable(icon);
+        view.setAlpha(1f);
+    }
+
+    private void hideImageView(ImageView view) {
+        view.setImageDrawable(null);
+        view.setAlpha(0f);
+    }
+
+    private void setMimeBackground(View view, int color) {
+        view.setBackgroundColor(color);
+    }
+
+    private Drawable getDocumentIcon(
+        Context context, String authority, String id, String mimeType, int icon) {
+        if (icon != 0) {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        } else {
+            return IconUtils.loadMimeIcon(context, mimeType, authority, id, mMode);
         }
     }
 
     /**
-     * Gets a mime icon or package icon for a file.
-     * @param context
-     * @param authority The authority string of the file.
-     * @param id The document ID of the file.
-     * @param mimeType The mime type of the file.
-     * @param icon The custom icon (if any) of the file.
-     * @return
+     * Returns a mime icon or package icon for a {@link DocumentInfo}.
      */
-    public Drawable getDocumentIcon(Context context, String authority, String id,
-                                    String mimeType, int icon) {
-        if (icon != 0) {
-            return IconUtils.loadPackageIcon(context, authority, icon);
-        } else {
-            return IconUtils.loadMimeIcon(context, mimeType, authority, id, DocumentsActivity.State.MODE_GRID);
-        }
+    public Drawable getDocumentIcon(Context context, DocumentInfo doc) {
+        return getDocumentIcon(
+                context, doc.authority, doc.documentId, doc.mimeType, doc.icon);
+    }
+
+    private int getDocumentColor(
+            Context context, String authority, String id, String mimeType) {
+        int defaultColor = SettingsActivity.getPrimaryColor();
+
+        return IconColorUtils.loadMimeColor(context, mimeType, authority, id, defaultColor);
+    }
+
+    private void setImage(ImageView imageView, Bitmap bitmap, String docMimeType, String docPath){
+        imageView.setImageBitmap(bitmap);
+        imageView.setScaleType(getIconScaleType(docMimeType, docPath));
+    }
+
+    private ImageView.ScaleType getIconScaleType(String docMimeType, String docPath){
+        return Utils.isAPK(docMimeType) && !TextUtils.isEmpty(docPath) ? ImageView.ScaleType.CENTER_INSIDE
+                : ImageView.ScaleType.CENTER_CROP;
     }
 }

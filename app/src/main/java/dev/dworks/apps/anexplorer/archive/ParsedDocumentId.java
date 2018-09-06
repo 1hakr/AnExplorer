@@ -16,9 +16,9 @@
 
 package dev.dworks.apps.anexplorer.archive;
 
-import android.support.annotation.RestrictTo;
+import androidx.annotation.RestrictTo;
 
-import static android.support.annotation.RestrictTo.Scope.GROUP_ID;
+import static androidx.annotation.RestrictTo.Scope.GROUP_ID;
 
 /**
  */

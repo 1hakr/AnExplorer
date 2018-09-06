@@ -33,9 +33,9 @@ import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.support.v4.os.EnvironmentCompat;
+import androidx.core.os.EnvironmentCompat;
 import android.support.provider.DocumentFile;
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -63,7 +63,7 @@ import dev.dworks.apps.anexplorer.misc.VolumeInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import android.support.annotation.GuardedBy;
+import androidx.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;

@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/item_doc_grid_protect_background_light">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
 
                 </LinearLayout>
 
-                <android.support.v7.widget.ButtonBarLayout
+                <androidx.appcompat.widget.ButtonBarLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
@@ -105,7 +105,7 @@
                     android:orientation="horizontal"
                     android:paddingTop="4dp">
 
-                    <android.support.v4.widget.Space
+                    <androidx.legacy.widget.Space
                         android:id="@+id/spacer"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -134,12 +134,12 @@
                         android:visibility="gone"
                         android:text="Support" />
 
-                </android.support.v7.widget.ButtonBarLayout>
+                </androidx.appcompat.widget.ButtonBarLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

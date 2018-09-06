@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 The Android Open Source Project
+ * Copyright (C) 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,312 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
+import android.os.Looper;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import android.content.ComponentCallbacks2;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
-import android.support.v4.util.LruCache;
+import androidx.core.util.Pair;
+import androidx.core.util.Pools;
+import android.util.Log;
+import android.util.LruCache;
 
-public class ThumbnailCache extends LruCache<Uri, Bitmap> {
-    public ThumbnailCache(int maxSizeBytes) {
-        super(maxSizeBytes);
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.TreeMap;
+
+/**
+ * An LRU cache that supports finding the thumbnail of the requested uri with a different size than
+ * the requested one.
+ */
+public class ThumbnailCache {
+
+    private static final SizeComparator SIZE_COMPARATOR = new SizeComparator();
+    private static final String TAG = ThumbnailCache.class.getName();
+
+    /**
+     * A 2-dimensional index into {@link #mCache} entries. Pair<Uri, Point> is the key to
+     * {@link #mCache}. TreeMap is used to search the closest size to a given size and a given uri.
+     */
+    private final HashMap<Uri, TreeMap<Point, Pair<Uri, Point>>> mSizeIndex;
+    private final Cache mCache;
+
+    /**
+     * Creates a thumbnail LRU cache.
+     *
+     * @param maxCacheSizeInBytes the maximum size of thumbnails in bytes this cache can hold.
+     */
+    public ThumbnailCache(int maxCacheSizeInBytes) {
+        mSizeIndex = new HashMap<>();
+        mCache = new Cache(maxCacheSizeInBytes);
     }
 
-    @Override
-    protected int sizeOf(Uri key, Bitmap value) {
-        return value.getByteCount();
+    /**
+     * Obtains thumbnail given a uri and a size.
+     *
+     * @param uri the uri of the thumbnail in need
+     * @param size the desired size of the thumbnail
+     * @return the thumbnail result
+     */
+    public Result getThumbnail(Uri uri, Point size) {
+        TreeMap<Point, Pair<Uri, Point>> sizeMap;
+        sizeMap = mSizeIndex.get(uri);
+        if (sizeMap == null || sizeMap.isEmpty()) {
+            // There is not any thumbnail for this uri.
+            return Result.obtainMiss();
+        }
+
+        // Look for thumbnail of the same size.
+        Pair<Uri, Point> cacheKey = sizeMap.get(size);
+        if (cacheKey != null) {
+            Entry entry = mCache.get(cacheKey);
+            if (entry != null) {
+                return Result.obtain(Result.CACHE_HIT_EXACT, size, entry);
+            }
+        }
+
+        // Look for thumbnail of bigger sizes.
+        Point otherSize = sizeMap.higherKey(size);
+        if (otherSize != null) {
+            cacheKey = sizeMap.get(otherSize);
+
+            if (cacheKey != null) {
+                Entry entry = mCache.get(cacheKey);
+                if (entry != null) {
+                    return Result.obtain(Result.CACHE_HIT_LARGER, otherSize, entry);
+                }
+            }
+        }
+
+        // Look for thumbnail of smaller sizes.
+        otherSize = sizeMap.lowerKey(size);
+        if (otherSize != null) {
+            cacheKey = sizeMap.get(otherSize);
+
+            if (cacheKey != null) {
+                Entry entry = mCache.get(cacheKey);
+                if (entry != null) {
+                    return Result.obtain(Result.CACHE_HIT_SMALLER, otherSize, entry);
+                }
+            }
+        }
+
+        // Cache miss.
+        return Result.obtainMiss();
+    }
+
+    /**
+     * Puts a thumbnail for the given uri and size in to the cache.
+     * @param uri the uri of the thumbnail
+     * @param size the size of the thumbnail
+     * @param thumbnail the thumbnail to put in cache
+     * @param lastModified last modified value of the thumbnail to track its validity
+     */
+    public void putThumbnail(Uri uri, Point size, Bitmap thumbnail, long lastModified) {
+        Pair<Uri, Point> cacheKey = Pair.create(uri, size);
+
+        TreeMap<Point, Pair<Uri, Point>> sizeMap;
+        synchronized (mSizeIndex) {
+            sizeMap = mSizeIndex.get(uri);
+            if (sizeMap == null) {
+                sizeMap = new TreeMap<>(SIZE_COMPARATOR);
+                mSizeIndex.put(uri, sizeMap);
+            }
+        }
+
+        Entry entry = new Entry(thumbnail, lastModified);
+        mCache.put(cacheKey, entry);
+        synchronized (sizeMap) {
+            sizeMap.put(size, cacheKey);
+        }
+    }
+
+    /**
+     * Removes all thumbnail cache associated to the given uri.
+     * @param uri the uri which thumbnail cache to remove
+     */
+    public void removeUri(Uri uri) {
+        TreeMap<Point, Pair<Uri, Point>> sizeMap;
+        synchronized (mSizeIndex) {
+            sizeMap = mSizeIndex.get(uri);
+        }
+
+        if (sizeMap != null) {
+            // Create an array to hold all values to avoid ConcurrentModificationException because
+            // removeKey() will be called by LruCache but we can't modify the map while we're
+            // iterating over the collection of values.
+            for (Pair<Uri, Point> index : sizeMap.values().toArray(new Pair[0])) {
+                mCache.remove(index);
+            }
+        }
+    }
+
+    private void removeKey(Uri uri, Point size) {
+        TreeMap<Point, Pair<Uri, Point>> sizeMap;
+        synchronized (mSizeIndex) {
+            sizeMap = mSizeIndex.get(uri);
+        }
+
+        assert(sizeMap != null);
+        synchronized (sizeMap) {
+            sizeMap.remove(size);
+        }
+    }
+
+    public void onTrimMemory(int level) {
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_MODERATE) {
+            mCache.evictAll();
+        } else if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+            mCache.trimToSize(mCache.size() / 2);
+        }
+    }
+
+    /**
+     * A class that holds thumbnail and cache status.
+     */
+    public static final class Result {
+
+        @Retention(RetentionPolicy.SOURCE)
+        @IntDef({CACHE_MISS, CACHE_HIT_EXACT, CACHE_HIT_SMALLER, CACHE_HIT_LARGER})
+        @interface Status {}
+        /**
+         * Indicates there is no thumbnail for the requested uri. The thumbnail will be null.
+         */
+        public static final int CACHE_MISS = 0;
+        /**
+         * Indicates the thumbnail matches the requested size and requested uri.
+         */
+        public static final int CACHE_HIT_EXACT = 1;
+        /**
+         * Indicates the thumbnail is in a smaller size than the requested one from the requested
+         * uri.
+         */
+        public static final int CACHE_HIT_SMALLER = 2;
+        /**
+         * Indicates the thumbnail is in a larger size than the requested one from the requested
+         * uri.
+         */
+        public static final int CACHE_HIT_LARGER = 3;
+
+        private static final Pools.SimplePool<Result> sPool = new Pools.SimplePool<>(1);
+
+        private @Status int mStatus;
+        private @Nullable Bitmap mThumbnail;
+        private @Nullable Point mSize;
+        private long mLastModified;
+
+        private static Result obtainMiss() {
+            return obtain(CACHE_MISS, null, null, 0);
+        }
+
+        private static Result obtain(@Status int status, Point size, Entry entry) {
+            return obtain(status, entry.mThumbnail, size, entry.mLastModified);
+        }
+
+        private static Result obtain(@Status int status, @Nullable Bitmap thumbnail,
+                                     @Nullable Point size, long lastModified) {
+            checkMainLoop();
+
+            Result instance = sPool.acquire();
+            instance = (instance != null ? instance : new Result());
+
+            instance.mStatus = status;
+            instance.mThumbnail = thumbnail;
+            instance.mSize = size;
+            instance.mLastModified = lastModified;
+
+            return instance;
+        }
+
+        private Result() {}
+
+        public void recycle() {
+            checkMainLoop();
+
+            mStatus = -1;
+            mThumbnail = null;
+            mSize = null;
+            mLastModified = -1;
+
+            boolean released = sPool.release(this);
+            // This assert is used to guarantee we won't generate too many instances that can't be
+            // held in the pool, which indicates our pool size is too small.
+            //
+            // Right now one instance is enough because we expect all instances are only used in
+            // main thread.
+            assert (released);
+        }
+
+        public @Status int getStatus() {
+            return mStatus;
+        }
+
+        public @Nullable Bitmap getThumbnail() {
+            return mThumbnail;
+        }
+
+        public @Nullable Point getSize() {
+            return mSize;
+        }
+
+        public long getLastModified() {
+            return mLastModified;
+        }
+
+        public boolean isHit() {
+            return (mStatus != CACHE_MISS);
+        }
+
+        public boolean isExactHit() {
+            return (mStatus == CACHE_HIT_EXACT);
+        }
+    }
+
+    private static final class Entry {
+        private final Bitmap mThumbnail;
+        private final long mLastModified;
+
+        private Entry(Bitmap thumbnail, long lastModified) {
+            mThumbnail = thumbnail;
+            mLastModified = lastModified;
+        }
+    }
+
+    private final class Cache extends LruCache<Pair<Uri, Point>, Entry> {
+
+        private Cache(int maxSizeBytes) {
+            super(maxSizeBytes);
+        }
+
+        @Override
+        protected int sizeOf(Pair<Uri, Point> key, Entry value) {
+            return value.mThumbnail.getByteCount();
+        }
+
+        @Override
+        protected void entryRemoved(
+                boolean evicted, Pair<Uri, Point> key, Entry oldValue, Entry newValue) {
+            if (newValue == null) {
+                removeKey(key.first, key.second);
+            }
+        }
+    }
+
+    private static final class SizeComparator implements Comparator<Point> {
+        @Override
+        public int compare(Point size0, Point size1) {
+            // Assume all sizes are roughly square, so we only compare them in one dimension.
+            return size0.x - size1.x;
+        }
+    }
+
+    public static void checkMainLoop() {
+        if (Looper.getMainLooper() != Looper.myLooper()) {
+            Log.e(TAG, "Calling from non-UI thread!");
+        }
     }
 }

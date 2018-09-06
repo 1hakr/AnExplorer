@@ -5,9 +5,6 @@
     <color name="primaryDarkColor">#025f91</color>
     <color name="accentColor">#EF3A0F</color>
 
-    <color name="actionbar_color">#222222</color>
-    <color name="contextual_actionbar_color">#002E3E</color>
-    <color name="chip">#ddd</color>
     <color name="item_root_pressed">#33cccccc</color>
     <color name="item_root_focused">#66cccccc</color>
     <color name="statusBarColor">#28000000</color>
@@ -50,14 +47,11 @@
     <color name="item_doc_grid_overlay_activated">#88000000</color>
     <color name="item_doc_grid_overlay_disabled">#88ffffff</color>
 
-    <color name="item_doc_list_overlay_disabled">#88ffffff</color>
-
     <!-- 10% alpha of material_deep_teal_500 -->
     <color name="item_doc_list_background_activated">#1a009688</color>
 
 
     <color name="item_doc_generic">#ddd</color>
-    <color name="item_doc_folder">#404040</color>
     <color name="item_doc_file">#808080</color>
     <color name="item_doc_audio">#FF9800</color>
     <color name="item_doc_video">#C74141</color>
@@ -85,10 +79,6 @@
     <color name="defaultThemeColor">#808080</color>
 
     <color name="divider_light">#97dddddd</color>
-
-    <color name="window_background">#fff1f1f1</color>
-    <color name="drawer_background">#fff1f1f1</color>
-    <color name="directory_background">#fff7f7f7</color>
 
     <color name="item_connection_server">#4CAF50</color>
     <color name="item_connection_client">#00838F</color>

@@ -16,14 +16,14 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import android.support.annotation.GuardedBy;
+import androidx.annotation.GuardedBy;
 
 public class ProviderExecutor extends Thread implements Executor {
 

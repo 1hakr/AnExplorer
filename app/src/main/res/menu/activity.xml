@@ -35,7 +35,7 @@
         android:visible="false"/>
     <item
         android:id="@+id/menu_search"
-        support:actionViewClass="android.support.v7.widget.SearchView"
+        support:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="@drawable/abc_ic_search_api_material"
         support:showAsAction="ifRoom|collapseActionView"
         android:title="@string/menu_search"

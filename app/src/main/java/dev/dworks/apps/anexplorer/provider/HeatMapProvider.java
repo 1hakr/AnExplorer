@@ -30,7 +30,7 @@ import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -50,7 +50,7 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import android.support.annotation.GuardedBy;
+import androidx.annotation.GuardedBy;
 
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 

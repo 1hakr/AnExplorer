@@ -31,8 +31,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.GuardedBy;
-import android.support.v4.util.ArraySet;
+import androidx.annotation.GuardedBy;
+import androidx.collection.ArraySet;
 import android.util.Log;
 
 import java.util.ArrayList;
