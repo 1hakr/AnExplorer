@@ -338,9 +338,11 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         if(intent.getCategories().contains(BROWSABLE)) {
-            // Here we pass the response to the SDK which will automatically
-            // complete the authentication process
-            CloudRail.setAuthenticationResponse(intent);
+            try {
+                // Here we pass the response to the SDK which will automatically
+                // complete the authentication process
+                CloudRail.setAuthenticationResponse(intent);
+            } catch (Exception ignore) {}
         }
         super.onNewIntent(intent);
     }
@@ -1330,7 +1332,7 @@ public class DocumentsActivity extends BaseActivity {
 
         if (mState.action == ACTION_OPEN_TREE) {
             final PickFragment pick = PickFragment.get(fm);
-            if (pick != null) {
+            if (pick != null && null != cwd)  {
                     final CharSequence displayName = (mState.stack.size() <= 1) && null != root
                             ? root.title : cwd.displayName;
                 pick.setPickTarget(cwd, displayName);
@@ -1996,7 +1998,8 @@ public class DocumentsActivity extends BaseActivity {
     public void upadateActionItems(RecyclerView currentView) {
 
         mActionMenu.attachToListView(currentView);
-        if(getCurrentRoot().isCloudStorage()){
+        RootInfo root = getCurrentRoot();
+        if(null != root && root.isCloudStorage()){
             mActionMenu.newNavigationMenu(R.menu.menu_fab_cloud);
         }
         int defaultColor = SettingsActivity.getPrimaryColor(this);

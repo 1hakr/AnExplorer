@@ -90,7 +90,7 @@ public class RecentsCreateFragment extends ListFragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final Context context = inflater.getContext();
 
-        final View view = inflater.inflate(R.layout.fragment_directory, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recents_create, container, false);
 
         mEmptyView = view.findViewById(android.R.id.empty);
 

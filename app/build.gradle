@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         versionName "3.9"
-        versionCode = 63
+        versionCode = 64
         minSdkVersion 17
         targetSdkVersion 28
         vectorDrawables.useSupportLibrary = true
@@ -76,6 +76,7 @@ android {
         }
         amazon {
             dimension "release"
+            targetSdkVersion 25
         }
         other {
             dimension "release"
