@@ -16,7 +16,7 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/pressed_state" android:drawable="@drawable/fab_ic_close" android:state_selected="true" />
-    <item android:id="@+id/default_state" android:drawable="@drawable/fab_ic_add" />
+    <item android:drawable="@drawable/fab_ic_close" android:state_selected="true" />
+    <item android:drawable="@drawable/fab_ic_add" />
 
 </selector>

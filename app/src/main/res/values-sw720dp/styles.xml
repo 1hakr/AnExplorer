@@ -16,6 +16,5 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="DialogWhenReallyLarge" parent="@style/Theme.AppCompat.DayNight"/>
     <style name="ListProgress" parent="@android:style/Widget.Holo.Light.ProgressBar.Large"/>
 </resources>

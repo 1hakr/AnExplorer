@@ -128,7 +128,7 @@ public final class ThumbnailLoader extends AsyncTask<Uri, Void, Bitmap> implemen
                 thumbs.putThumbnail(mUri, mThumbSize, result, mLastModified);
             }
         } catch (Exception e) {
-            if (!(e instanceof android.support.v4.os.OperationCanceledException)) {
+            if (!(e instanceof androidx.core.os.OperationCanceledException)) {
                 Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
             }
             CrashReportingManager.logException(e);

@@ -44,7 +44,10 @@ public class ListFragment extends Fragment {
             mList.focusableViewAvailable(mList);
         }
     };
+    private TextView mStandardEmptyView;
     private TextView mLoadingView;
+    private CharSequence mEmptyText;
+    private View mEmptyView;
 
     private void ensureList() {
         if (mList != null) {
@@ -57,6 +60,13 @@ public class ListFragment extends Fragment {
         if (root instanceof ListView) {
             mList = (ListView) root;
         } else {
+            mStandardEmptyView = (TextView) root
+                    .findViewById(R.id.internalEmpty);
+            if (mStandardEmptyView == null) {
+                mEmptyView = root.findViewById(android.R.id.empty);
+            } else {
+                mStandardEmptyView.setVisibility(View.GONE);
+            }
             mProgressContainer = root.findViewById(R.id.progressContainer);
             mLoadingView = (TextView) root.findViewById(R.id.loading);
             mListContainer = root.findViewById(R.id.listContainer);
@@ -78,6 +88,12 @@ public class ListFragment extends Fragment {
 				}
             }
             mList = (ListView) rawListView;
+            if (mEmptyView != null) {
+                mList.setEmptyView(mEmptyView);
+            } else if (mEmptyText != null) {
+                mStandardEmptyView.setText(mEmptyText);
+                mList.setEmptyView(mStandardEmptyView);
+            }
         }
         mListShown = true;
         if (mAdapter != null) {
@@ -92,9 +108,9 @@ public class ListFragment extends Fragment {
         mHandler.post(mRequestFocus);
     }
 
-/*    protected View getEmptyView() {
+    protected View getEmptyView() {
         return mEmptyView;
-    }*/
+    }
 
     public ListAdapter getListAdapter() {
         return mAdapter;
@@ -141,13 +157,22 @@ public class ListFragment extends Fragment {
 
     public void setEmptyText(CharSequence text) {
         ensureList();
+        if (mStandardEmptyView == null) {
+//            throw new IllegalStateException(
+//                    "Can't be used with a custom content view");
+        }
+        mStandardEmptyView.setText(text);
+        if (mEmptyText == null) {
+            mList.setEmptyView(mStandardEmptyView);
+        }
+        mEmptyText = text;
     }
     
     private void setLoadingText(CharSequence text) {
         ensureList();
         if (mLoadingView == null) {
-/*            throw new IllegalStateException(
-                    "Can't be used with a custom content view");*/
+//            throw new IllegalStateException(
+//                    "Can't be used with a custom content view");
         	return;
         }
         mLoadingView.setText(text);
@@ -198,6 +223,9 @@ public class ListFragment extends Fragment {
             mProgressContainer.setVisibility(View.GONE);
             mListContainer.setVisibility(View.VISIBLE);
         } else {
+            if(null != mStandardEmptyView){
+                mStandardEmptyView.setText("");
+            }
             if (animate) {
                 mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
                         getActivity(), android.R.anim.fade_in));

@@ -1,11 +1,16 @@
 apply plugin: 'com.android.application'
 
 def props = new Properties()
-props.load(new FileInputStream(rootProject.file("keystore.properties")))
+File keystoreProperties = rootProject.file("keystore.properties")
+if (keystoreProperties.exists()) {
+    props.load(new FileInputStream(keystoreProperties))
+} else {
+    props['keystorefile'] = 'none';
+}
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
 
     applicationVariants.all { variant ->
         variant.outputs.all {
@@ -14,10 +19,10 @@ android {
     }
 
     defaultConfig {
-        versionName "3.8"
-        versionCode = 62
+        versionName "3.9"
+        versionCode = 64
         minSdkVersion 17
-        targetSdkVersion 25
+        targetSdkVersion 28
         vectorDrawables.useSupportLibrary = true
         buildConfigField "String", "LICENSE_KEY",  "$props.LICENSE_KEY"
         buildConfigField "String", "DROPBOX_CLIENT_ID",  "$props.DROPBOX_CLIENT_ID"
@@ -37,18 +42,16 @@ android {
             minifyEnabled false
             shrinkResources false
             useProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard/proguard-project.pro',
-                    'proguard/proguard-google-play-services.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             useProguard true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard/proguard-project.pro',
-                    'proguard/proguard-google-play-services.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
     flavorDimensions "release", "default"
@@ -66,12 +69,14 @@ android {
         underground {
             applicationId "dev.dworks.apps.anexplorer.underground"
             dimension "default"
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         google {
             dimension "release"
         }
         amazon {
             dimension "release"
+            targetSdkVersion 25
         }
         other {
             dimension "release"
@@ -91,36 +96,26 @@ android {
     lintOptions {
         abortOnError false
     }
-    aaptOptions {
-        noCompress 'apk'
-    }
-}
-
-ext {
-    supportLibVersion = '27.1.0'
-    gmsVersion = '12.0.1'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.jaredrummler:android-processes:+'
-    implementation 'com.github.mjdev:libaums:+'
-    implementation 'org.apache.ftpserver:ftpserver-core:+'
-    implementation 'commons-net:commons-net:+'
+    implementation 'com.jaredrummler:android-processes:1.1.1'
+    implementation 'com.github.mjdev:libaums:0.5.5'
+    implementation 'org.apache.ftpserver:ftpserver-core:1.1.1'
+    implementation 'commons-net:commons-net:3.6'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.21.6'
-    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
-    implementation "com.android.support:cardview-v7:${supportLibVersion}"
-    implementation "com.android.support:design:${supportLibVersion}"
-    implementation "com.android.support:exifinterface:${supportLibVersion}"
-    implementation "com.github.javiersantos:AppUpdater:2.6.5"
-    freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.1'
-    freeImplementation "com.google.firebase:firebase-ads:${gmsVersion}"
+    implementation 'androidx.appcompat:appcompat:1.0.0-rc02'
+    implementation 'androidx.cardview:cardview:1.0.0-rc02'
+    implementation 'com.google.android.material:material:1.0.0-rc01'
+    implementation 'androidx.exifinterface:exifinterface:1.0.0-rc02'
+    implementation 'com.github.javiersantos:AppUpdater:2.6.5'
+    freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
+    freeImplementation "com.google.firebase:firebase-core:16.0.3"
+    freeImplementation "com.google.firebase:firebase-ads:15.0.1"
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
-
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:+'
 }
-
 
 android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
 android.signingConfigs.release.storePassword props.keyStorePassword

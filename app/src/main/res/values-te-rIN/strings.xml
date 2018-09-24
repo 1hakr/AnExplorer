@@ -16,8 +16,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_label" msgid="2783841764617238354">"పత్రాలు"</string>
-    <string name="title_open" msgid="4353228937663917801">"ఇక్కడి నుండి తెరువు"</string>
     <string name="title_save" msgid="2433679664882857999">"ఇందులో సేవ్ చేయి"</string>
     <string name="menu_create_dir" msgid="5947289605844398389">"ఫోల్డర్‌ను సృష్టించు"</string>
     <string name="menu_grid" msgid="6878021334497835259">"గ్రిడ్ వీక్షణ"</string>
@@ -30,10 +28,6 @@
     <string name="menu_share" msgid="3075149983979628146">"భాగస్వామ్యం చేయి"</string>
     <string name="menu_delete" msgid="8138799623850614177">"తొలగించు"</string>
     <string name="menu_select" msgid="8711270657353563424">"\"<xliff:g id="DIRECTORY">^1</xliff:g>\"ని ఎంచుకోండి"</string>
-    <string name="menu_advanced_show" product="default" msgid="4693652895715631401">"అంతర్గత నిల్వను చూపు"</string>
-    <string name="menu_advanced_hide" product="default" msgid="4218809952721972589">"అంతర్గత నిల్వను దాచు"</string>
-    <string name="menu_file_size_show" msgid="3240323619260823076">"ఫైల్ పరిమాణాన్ని చూపు"</string>
-    <string name="menu_file_size_hide" msgid="8881975928502581042">"ఫైల్ పరిమాణాన్ని దాచు"</string>
     <string name="mode_selected_count" msgid="459111894725594625">"<xliff:g id="COUNT">%1$d</xliff:g> ఎంచుకోబడ్డాయి"</string>
     <string name="sort_name" msgid="9183560467917256779">"పేరు ద్వారా"</string>
     <string name="sort_date" msgid="586080032956151448">"సవరించిన తేదీ ద్వారా"</string>
@@ -45,10 +39,6 @@
     <string name="query_error" msgid="1222448261663503501">"పత్రాల కోసం ప్రశ్నించడంలో విఫలమైంది"</string>
     <string name="root_recent" msgid="4470053704320518133">"ఇటీవల"</string>
     <string name="root_available_bytes" msgid="8568452858617033281">"<xliff:g id="SIZE">%1$s</xliff:g> ఉచితం"</string>
-    <string name="root_type_service" msgid="2178854894416775409">"నిల్వ పరికరాలు"</string>
-    <string name="root_type_shortcut" msgid="3318760609471618093">"సత్వరమార్గాలు"</string>
-    <string name="root_type_device" msgid="7121342474653483538">"పరికరాలు"</string>
-    <string name="root_type_apps" msgid="8838065367985945189">"మరిన్ని అనువర్తనాలు"</string>
     <string name="empty" msgid="7858882803708117596">"అంశాలు లేవు"</string>
     <string name="toast_no_application" msgid="1339885974067891667">"ఫైల్‌ను తెరవడం సాధ్యపడదు"</string>
     <string name="toast_failed_delete" msgid="2180678019407244069">"కొన్ని పత్రాలను తొలగించడం సాధ్యపడలేదు"</string>

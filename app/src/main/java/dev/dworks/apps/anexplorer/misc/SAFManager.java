@@ -11,12 +11,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 import android.support.provider.BasicDocumentFile;
 import android.support.provider.DocumentFile;
 import android.support.provider.UsbDocumentFile;
-import android.support.v4.util.ArrayMap;
-import android.support.v7.app.AlertDialog;
+import androidx.collection.ArrayMap;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Spanned;
 
 import java.io.File;

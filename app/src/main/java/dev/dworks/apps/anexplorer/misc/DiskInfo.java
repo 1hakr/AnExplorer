@@ -2,7 +2,7 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.content.res.Resources;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import dev.dworks.apps.anexplorer.R;

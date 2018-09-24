@@ -3,10 +3,39 @@
     xmlns:support="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_add"
         android:alphabeticShortcut="s"
         android:icon="@drawable/fab_ic_add"
         android:title="@string/menu_add"
-        support:showAsAction="always" />
+        support:showAsAction="always" >
+        <menu>
+            <item
+                android:id="@+id/cloud_dropbox"
+                android:icon="@drawable/ic_root_dropbox"
+                android:orderInCategory="100"
+                android:title="@string/cloud_dropbox"
+                support:showAsAction="never" />
+
+            <item
+                android:id="@+id/cloud_onedrive"
+                android:icon="@drawable/ic_root_onedrive"
+                android:orderInCategory="100"
+                android:title="@string/cloud_onedrive"
+                support:showAsAction="never" />
+
+            <item
+                android:id="@+id/cloud_box"
+                android:icon="@drawable/ic_root_box"
+                android:orderInCategory="100"
+                android:title="@string/cloud_box"
+                support:showAsAction="never" />
+
+            <item
+                android:id="@+id/network_ftp"
+                android:icon="@drawable/ic_connection_network"
+                android:orderInCategory="100"
+                android:title="@string/network_ftp"
+                support:showAsAction="never" />
+        </menu>
+    </item>
 
 </menu>

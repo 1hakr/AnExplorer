@@ -2,8 +2,8 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
 import dev.dworks.apps.anexplorer.R;
 

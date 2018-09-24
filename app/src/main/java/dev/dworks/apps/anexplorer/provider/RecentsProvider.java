@@ -29,17 +29,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.util.ArraySet;
+import androidx.collection.ArraySet;
 import android.text.format.DateUtils;
 import android.util.Log;
-
-import com.android.internal.util.Predicate;
 
 import java.io.IOException;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.libcore.util.Predicate;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;

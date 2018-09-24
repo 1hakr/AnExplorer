@@ -16,8 +16,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.internal.NavigationMenu;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,14 +66,10 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     public static final String TAG = "ConnectionsFragment";
 
-    private ListView mListView;
-
     private ConnectionsAdapter mAdapter;
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
 
     private final int mLoaderId = 42;
-    private MaterialProgressBar mProgressBar;
-    private CompatTextView mEmptyView;
     private FloatingActionsMenu mActionMenu;
     private RootInfo mConnectionsRoot;
     private int mLastShowAccentColor;
@@ -110,23 +106,20 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
         mActionMenu.setMenuListener(this);
         mActionMenu.setVisibility(!isTelevision() ? View.VISIBLE : View.GONE);
 
-        mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
-        mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
-        mListView = (ListView) view.findViewById(R.id.list);
-        mListView.setOnItemClickListener(mItemListener);
+        getListView().setOnItemClickListener(mItemListener);
         if(isTelevision()) {
-            mListView.setOnItemLongClickListener(mItemLongClickListener);
+            getListView().setOnItemLongClickListener(mItemLongClickListener);
         }
-        mActionMenu.attachToListView(mListView);
+        mActionMenu.attachToListView(getListView());
 
         // Indent our list divider to align with text
-        final Drawable divider = mListView.getDivider();
+        final Drawable divider = getListView().getDivider();
         final boolean insetLeft = res.getBoolean(R.bool.list_divider_inset_left);
         final int insetSize = res.getDimensionPixelSize(R.dimen.list_divider_inset);
         if (insetLeft) {
-            mListView.setDivider(new InsetDrawable(divider, insetSize, 0, 0, 0));
+            getListView().setDivider(new InsetDrawable(divider, insetSize, 0, 0, 0));
         } else {
-            mListView.setDivider(new InsetDrawable(divider, 0, 0, insetSize, 0));
+            getListView().setDivider(new InsetDrawable(divider, 0, 0, insetSize, 0));
         }
     }
 
@@ -169,8 +162,6 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
                     return;
 
                 mAdapter.swapResult(result);
-                mEmptyView.setVisibility(mAdapter.isEmpty() ? View.VISIBLE : View.GONE);
-
                 if (isResumed()) {
                     setListShown(true);
                 } else {
@@ -222,11 +213,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_add:
-                addConnection();
-                return true;
-        }
+        menuItemAction(item);
         return super.onOptionsItemSelected(item);
     }
 
@@ -237,7 +224,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
                 addConnection();
                 break;
             case R.id.button_popup:
-                final int position = mListView.getPositionForView(view);
+                final int position = getListView().getPositionForView(view);
                 if (position != ListView.INVALID_POSITION) {
                     view.post(new Runnable() {
                         @Override
@@ -347,10 +334,29 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     }
 
     public boolean onMenuItemSelected(MenuItem menuItem) {
+        menuItemAction(menuItem);
+        mActionMenu.closeMenu();
+        return false;
+    }
+
+    @Override
+    public void onMenuClosed() {
+
+    }
+
+    public void addCloudConnection(String cloudType){
+        final BaseActivity activity = (BaseActivity) getActivity();
+        CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
+        new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
+                ProviderExecutor.forAuthority(CloudStorageProvider.AUTHORITY+cloudType));
+        AnalyticsManager.logEvent("add_cloud");
+    }
+
+    public void menuItemAction(MenuItem menuItem) {
         final BaseActivity activity = (BaseActivity) getActivity();
         if(!DocumentsApplication.isPurchased()){
             DocumentsApplication.openPurchaseActivity(activity);
-            return false;
+            return;
         }
         switch (menuItem.getItemId()){
             case R.id.cloud_gridve:
@@ -374,20 +380,5 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
                 AnalyticsManager.logEvent("add_ftp");
                 break;
         }
-        mActionMenu.closeMenu();
-        return false;
-    }
-
-    @Override
-    public void onMenuClosed() {
-
-    }
-
-    public void addCloudConnection(String cloudType){
-        final BaseActivity activity = (BaseActivity) getActivity();
-        CloudConnection cloudStorage = CloudConnection.createCloudConnections(getActivity(), cloudType);
-        new CloudConnection.CreateConnectionTask(activity, cloudStorage).executeOnExecutor(
-                ProviderExecutor.forAuthority(ExplorerProvider.AUTHORITY));
-        AnalyticsManager.logEvent("add_cloud");
     }
 }

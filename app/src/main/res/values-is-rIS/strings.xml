@@ -16,8 +16,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_label" msgid="2783841764617238354">"Skjöl"</string>
-    <string name="title_open" msgid="4353228937663917801">"Opna frá"</string>
     <string name="title_save" msgid="2433679664882857999">"Vista í"</string>
     <string name="menu_create_dir" msgid="5947289605844398389">"Búa til möppu"</string>
     <string name="menu_grid" msgid="6878021334497835259">"Töfluyfirlit"</string>
@@ -30,10 +28,6 @@
     <string name="menu_share" msgid="3075149983979628146">"Deila"</string>
     <string name="menu_delete" msgid="8138799623850614177">"Eyða"</string>
     <string name="menu_select" msgid="8711270657353563424">"Velja „<xliff:g id="DIRECTORY">^1</xliff:g>“"</string>
-    <string name="menu_advanced_show" product="default" msgid="4693652895715631401">"Sýna innbyggða geymslu"</string>
-    <string name="menu_advanced_hide" product="default" msgid="4218809952721972589">"Fela innbyggða geymslu"</string>
-    <string name="menu_file_size_show" msgid="3240323619260823076">"Sýna skráarstærð"</string>
-    <string name="menu_file_size_hide" msgid="8881975928502581042">"Fela skráarstærð"</string>
     <string name="mode_selected_count" msgid="459111894725594625">"<xliff:g id="COUNT">%1$d</xliff:g> valin"</string>
     <string name="sort_name" msgid="9183560467917256779">"Eftir heiti"</string>
     <string name="sort_date" msgid="586080032956151448">"Eftir breytingadags."</string>
@@ -45,10 +39,6 @@
     <string name="query_error" msgid="1222448261663503501">"Mistókst að senda skjalafyrirspurn"</string>
     <string name="root_recent" msgid="4470053704320518133">"Nýlegt"</string>
     <string name="root_available_bytes" msgid="8568452858617033281">"<xliff:g id="SIZE">%1$s</xliff:g> laus"</string>
-    <string name="root_type_service" msgid="2178854894416775409">"Geymsluþjónusta"</string>
-    <string name="root_type_shortcut" msgid="3318760609471618093">"Flýtileiðir"</string>
-    <string name="root_type_device" msgid="7121342474653483538">"Tæki"</string>
-    <string name="root_type_apps" msgid="8838065367985945189">"Fleiri forrit"</string>
     <string name="empty" msgid="7858882803708117596">"Engin atriði"</string>
     <string name="toast_no_application" msgid="1339885974067891667">"Ekki er hægt að opna skrána"</string>
     <string name="toast_failed_delete" msgid="2180678019407244069">"Ekki er hægt að eyða einhverjum skjölum"</string>

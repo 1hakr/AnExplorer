@@ -15,8 +15,8 @@
  */
 package dev.dworks.apps.anexplorer.libcore.io;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 import java.util.Collections;
 import java.util.LinkedList;

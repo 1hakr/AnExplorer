@@ -27,8 +27,8 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.support.v4.util.ArrayMap;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.collection.ArrayMap;
+import androidx.appcompat.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
 import com.cloudrail.si.CloudRail;

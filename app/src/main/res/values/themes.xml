@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="DocumentsTheme.Splash">
         <item name="windowNoTitle">true</item>
@@ -10,13 +10,6 @@
     <style name="DocumentsTheme.Document">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="DocumentsTheme.About">
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorAccent">@color/accentColor</item>
-        <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
     </style>
 
 
@@ -53,15 +46,7 @@
 
         <item name="actionModeStyle">@style/Custom.Widget.ActionMode</item>
         <item name="actionModeCloseButtonStyle">@style/Custom.Widget.ActionButton.CloseMode</item>
-    </style>
-
-    <style name="DocumentsTheme.Standalone">
-        <item name="android:actionBarWidgetTheme">@null</item>
-        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <item name="colorPrimaryDark">@*android:color/material_blue_grey_900</item>
-        <item name="colorPrimary">@*android:color/material_blue_grey_800</item>
-        <item name="colorAccent">@*android:color/material_deep_teal_500</item>
+        <item name="android:navigationBarColor" tools:targetApi="26">#303030</item>
     </style>
 
     <style name="DocumentsTheme.DailogPIN">

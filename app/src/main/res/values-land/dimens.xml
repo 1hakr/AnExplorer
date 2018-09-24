@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="detail_width">400dp</dimen>
-    <dimen name="activity_actionbar_size">40dp</dimen>
     <dimen name="side_navigation_width">320dp</dimen>
     <dimen name="card_padding">50dp</dimen>
 </resources>

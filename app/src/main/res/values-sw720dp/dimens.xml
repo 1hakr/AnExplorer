@@ -19,16 +19,6 @@
 
     <bool name="show_as_dialog">true</bool>
 
-    <item name="dialog_width" type="dimen">85%</item>
-    <item name="dialog_height" type="dimen">90%</item>
-    <item name="dialog_about_width" type="dimen">40%</item>
-    <item name="dialog_about_height" type="dimen">90%</item>
-
-    <dimen name="activity_actionbar_size">58dp</dimen>
-
-    <dimen name="grid_padding_horiz">24dp</dimen>
-    <dimen name="grid_padding_vert">16dp</dimen>
-
     <dimen name="grid_item_padding">8dp</dimen>
     <dimen name="progress_bar_size">80dp</dimen>
     <dimen name="side_navigation_width">288dp</dimen>

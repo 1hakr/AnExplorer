@@ -43,16 +43,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.DrawerLayout.DrawerListener;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.view.MenuItemCompat;
+import androidx.core.view.ViewCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.drawerlayout.widget.DrawerLayout.DrawerListener;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -338,9 +338,11 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         if(intent.getCategories().contains(BROWSABLE)) {
-            // Here we pass the response to the SDK which will automatically
-            // complete the authentication process
-            CloudRail.setAuthenticationResponse(intent);
+            try {
+                // Here we pass the response to the SDK which will automatically
+                // complete the authentication process
+                CloudRail.setAuthenticationResponse(intent);
+            } catch (Exception ignore) {}
         }
         super.onNewIntent(intent);
     }
@@ -1070,6 +1072,10 @@ public class DocumentsActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        if(isRootsDrawerOpen() && !mShowAsDialog){
+            mDrawerLayout.closeDrawer(mRootsContainer);
+            return;
+        }
         if(mSearchExpanded){
 
         }
@@ -1326,7 +1332,7 @@ public class DocumentsActivity extends BaseActivity {
 
         if (mState.action == ACTION_OPEN_TREE) {
             final PickFragment pick = PickFragment.get(fm);
-            if (pick != null) {
+            if (pick != null && null != cwd)  {
                     final CharSequence displayName = (mState.stack.size() <= 1) && null != root
                             ? root.title : cwd.displayName;
                 pick.setPickTarget(cwd, displayName);
@@ -1992,7 +1998,8 @@ public class DocumentsActivity extends BaseActivity {
     public void upadateActionItems(RecyclerView currentView) {
 
         mActionMenu.attachToListView(currentView);
-        if(getCurrentRoot().isCloudStorage()){
+        RootInfo root = getCurrentRoot();
+        if(null != root && root.isCloudStorage()){
             mActionMenu.newNavigationMenu(R.menu.menu_fab_cloud);
         }
         int defaultColor = SettingsActivity.getPrimaryColor(this);

@@ -16,7 +16,7 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 /**

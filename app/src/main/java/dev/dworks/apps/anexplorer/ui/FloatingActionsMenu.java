@@ -2,9 +2,9 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;

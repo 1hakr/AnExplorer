@@ -2,7 +2,7 @@ package dev.dworks.apps.anexplorer.directory;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import dev.dworks.apps.anexplorer.R;

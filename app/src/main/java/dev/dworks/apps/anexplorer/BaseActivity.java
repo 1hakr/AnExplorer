@@ -22,11 +22,11 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.util.ArrayMap;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.collection.ArrayMap;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -158,9 +158,14 @@ public abstract class BaseActivity extends ActionBarActivity {
             out.writeMap(dirState);
         }
 
-        public static final Creator<State> CREATOR = new Creator<State>() {
+        public static final ClassLoaderCreator<State> CREATOR = new ClassLoaderCreator<State>() {
             @Override
             public State createFromParcel(Parcel in) {
+                return createFromParcel(in, null);
+            }
+
+            @Override
+            public State createFromParcel(Parcel in, ClassLoader loader) {
                 final State state = new State();
                 state.action = in.readInt();
                 state.userMode = in.readInt();
@@ -180,7 +185,7 @@ public abstract class BaseActivity extends ActionBarActivity {
                 state.restored = in.readInt() != 0;
                 DurableUtils.readFromParcel(in, state.stack);
                 state.currentSearch = in.readString();
-                in.readMap(state.dirState, null);
+                in.readMap(state.dirState, loader);
                 return state;
             }
 

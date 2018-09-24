@@ -22,11 +22,17 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.util.ArrayMap;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.collection.ArrayMap;
 import android.util.TypedValue;
 
 import dev.dworks.apps.anexplorer.DocumentsActivity;
@@ -242,7 +248,11 @@ public class IconUtils {
 				if (packageInfo != null) {
 					packageInfo.applicationInfo.sourceDir = packageInfo.applicationInfo.publicSourceDir = path;
 					// know issue with nine patch image instead of drawable
-					return pm.getApplicationIcon(packageInfo.applicationInfo);
+                    if(Utils.hasOreo()){
+                        return new BitmapDrawable(context.getResources(), getAppIcon(pm, packageInfo.packageName));
+                    } else {
+                        return pm.getApplicationIcon(packageInfo.applicationInfo);
+                    }
 				}
 			} catch (Exception e) {
 				return ContextCompat.getDrawable(context, icon);
@@ -251,6 +261,32 @@ public class IconUtils {
             return ContextCompat.getDrawable(context, icon);
         }
         return null;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Bitmap getAppIcon(PackageManager mPackageManager, String packageName) {
+
+        try {
+            Drawable drawable = mPackageManager.getApplicationIcon(packageName);
+
+            if (drawable instanceof BitmapDrawable) {
+                return ((BitmapDrawable) drawable).getBitmap();
+            } else if (drawable instanceof AdaptiveIconDrawable) {
+                return drawableToBitmap(drawable);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
     public static Drawable loadMimeIcon(

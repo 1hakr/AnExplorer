@@ -28,7 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils.TruncateAt;
@@ -90,7 +90,7 @@ public class RecentsCreateFragment extends ListFragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final Context context = inflater.getContext();
 
-        final View view = inflater.inflate(R.layout.fragment_directory, container, false);
+        final View view = inflater.inflate(R.layout.fragment_recents_create, container, false);
 
         mEmptyView = view.findViewById(android.R.id.empty);
 

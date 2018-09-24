@@ -17,7 +17,7 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.app.Activity;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
 import dev.dworks.apps.anexplorer.R;
