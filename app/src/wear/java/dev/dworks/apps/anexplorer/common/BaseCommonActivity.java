@@ -2,28 +2,15 @@
 package dev.dworks.apps.anexplorer.common;
 
 import android.annotation.TargetApi;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
-import android.support.v7.widget.Toolbar;
-import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.activity.WearableActivityDelegate;
 import android.util.Log;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
-import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
-import dev.dworks.apps.anexplorer.misc.Utils;
+import androidx.annotation.CallSuper;
+import androidx.appcompat.app.AppCompatActivity;
 
 @TargetApi(21)
 public abstract class BaseCommonActivity extends AppCompatActivity {

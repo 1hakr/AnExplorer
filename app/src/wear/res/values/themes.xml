@@ -14,10 +14,11 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
-    <bool name="show_as_dialog">false</bool>
-    <bool name="always_show_summary">false</bool>
-    <dimen name="list_item_height">56dp</dimen>
-    <dimen name="list_item_padding">12dp</dimen>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="NavigationStyle" >
+        <item name="android:colorForeground">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
 </resources>
 

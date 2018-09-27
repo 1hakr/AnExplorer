@@ -17,6 +17,7 @@ import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListe
 import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 
 public abstract class DocumentHolder extends BaseHolder implements View.OnClickListener{
@@ -111,7 +112,7 @@ public abstract class DocumentHolder extends BaseHolder implements View.OnClickL
         line2 = itemView.findViewById(R.id.line2);
         iconView = itemView.findViewById(android.R.id.icon);
         popupButton.setOnClickListener(this);
-        popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
+        popupButton.setVisibility(isSpecialDevice() ? View.INVISIBLE : View.VISIBLE);
     }
 
     public void setData(Cursor cursor, int position) {

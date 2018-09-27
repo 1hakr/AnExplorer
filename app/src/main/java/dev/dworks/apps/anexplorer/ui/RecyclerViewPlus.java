@@ -4,18 +4,21 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import dev.dworks.apps.anexplorer.R;
 
-public class RecyclerViewPlus extends RecyclerView {
+public class RecyclerViewPlus extends RecyclerViewCompat {
     public static final int TYPE_LIST = 0;
     public static final int TYPE_GRID = 1;
     public static final int TYPE_GALLERY = 2;
 
-    private LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager;
     private int mType = TYPE_LIST;
     private int columnWidth = -1;
     private Context mContext;
@@ -49,18 +52,18 @@ public class RecyclerViewPlus extends RecyclerView {
         switch (mType){
             case TYPE_LIST:
                 layoutManager =
-                        new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+                        new LinearLayoutManagerCompat(mContext, LinearLayoutManager.VERTICAL, false);
                 break;
             case TYPE_GRID:
                 layoutManager = new GridLayoutManager(mContext, 1);
                 break;
             case TYPE_GALLERY:
                 layoutManager =
-                        new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+                        new LinearLayoutManagerCompat(mContext, LinearLayoutManager.HORIZONTAL, false);
                 break;
             default:
                 layoutManager =
-                        new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+                        new LinearLayoutManagerCompat(mContext, LinearLayoutManager.VERTICAL, false);
                 break;
         }
 

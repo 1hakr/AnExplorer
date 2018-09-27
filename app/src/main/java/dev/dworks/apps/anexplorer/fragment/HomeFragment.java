@@ -68,6 +68,7 @@ import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
 
@@ -132,7 +133,7 @@ public class HomeFragment extends Fragment {
 
         mShortcutsRecycler = (RecyclerView) view.findViewById(R.id.shortcuts_recycler);
         mRecentsRecycler = (RecyclerView) view.findViewById(R.id.recents_recycler);
-
+        mShortcutsRecycler.setVisibility(isWatch() ? View.GONE : View.VISIBLE);
         mActivity = ((BaseActivity) getActivity());
         mIconHelper = new IconHelper(mActivity, MODE_GRID);
 
@@ -307,8 +308,6 @@ public class HomeFragment extends Fragment {
             }
         });
         mRecentsRecycler.setAdapter(mRecentsAdapter);
-        LinearSnapHelper helper = new LinearSnapHelper();
-        helper.attachToRecyclerView(mRecentsRecycler);
 
         final BaseActivity.State state = getDisplayState(this);
         mCallbacks = new LoaderManager.LoaderCallbacks<DirectoryResult>() {

@@ -87,7 +87,7 @@ public class RootsFragment extends Fragment {
 
     private LoaderCallbacks<Collection<RootInfo>> mCallbacks;
 
-    private static final String EXTRA_INCLUDE_APPS = "includeApps";
+    public static final String EXTRA_INCLUDE_APPS = "includeApps";
     private static final String GROUP_SIZE = "group_size";
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;

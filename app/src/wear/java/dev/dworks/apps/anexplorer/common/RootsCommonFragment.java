@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.wear.widget.drawer.WearableNavigationDrawerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +19,12 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import androidx.annotation.Nullable;
+import androidx.wear.widget.drawer.WearableCompatDrawerLayout;
+import androidx.wear.widget.drawer.WearableDrawerController;
+import androidx.wear.widget.drawer.WearableDrawerControllerCompat;
+import androidx.wear.widget.drawer.WearableNavigationDrawerCompatView;
+import androidx.wear.widget.drawer.WearableNavigationDrawerView;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -43,7 +47,7 @@ public class RootsCommonFragment extends BaseFragment
     private RootsCommonAdapter mAdapter;
     private LoaderManager.LoaderCallbacks<Collection<RootInfo>> mCallbacks;
 
-    private WearableNavigationDrawerView mNavigationDrawer;
+    private WearableNavigationDrawerCompatView mNavigationDrawer;
 
     public static void show(FragmentManager fm, Intent includeApps) {
         final Bundle args = new Bundle();
@@ -83,6 +87,10 @@ public class RootsCommonFragment extends BaseFragment
         final RootsCache roots = DocumentsApplication.getRootsCache(context);
         final BaseActivity.State state = ((BaseActivity) context).getDisplayState();
 
+        WearableCompatDrawerLayout layout = getActivity().findViewById(R.id.drawer_layout);
+        WearableDrawerControllerCompat controllerCompat = new WearableDrawerControllerCompat(layout, mNavigationDrawer);
+        mNavigationDrawer.setDrawerController(controllerCompat);
+
         mCallbacks = new LoaderManager.LoaderCallbacks<Collection<RootInfo>>() {
             @Override
             public Loader<Collection<RootInfo>> onCreateLoader(int id, Bundle args) {
@@ -99,8 +107,7 @@ public class RootsCommonFragment extends BaseFragment
                 if (mAdapter == null) {
                     mAdapter = new RootsCommonAdapter(context, result, includeApps);
                     mNavigationDrawer.setAdapter(mAdapter);
-                    //mNavigationDrawer.getController().peekDrawer();
-                    //mNavigationDrawer.addOnItemSelectedListener(navigationAdapter);
+                    mNavigationDrawer.addOnItemSelectedListener(RootsCommonFragment.this);
                 } else {
                     mAdapter.setData(result);
                 }
@@ -121,6 +128,16 @@ public class RootsCommonFragment extends BaseFragment
 
     public void onCurrentRootChanged() {
         if (mAdapter == null || mNavigationDrawer == null) return;
+        final RootInfo root = ((BaseActivity) getActivity()).getCurrentRoot();
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            final RootInfo item = mAdapter.getItem(i);
+            if (item != null) {
+                if (Objects.equal(item, root)) {
+                    mNavigationDrawer.setCurrentItem(i, true);
+                    return;
+                }
+            }
+        }
     }
 
     @Override

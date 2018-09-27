@@ -67,7 +67,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
 
-public class Utils {
+public class Utils extends UtilsFlavour{
 
     public static final long KB_IN_BYTES = 1024;
     public static final String INTERSTITIAL_APP_UNIT_ID = "ca-app-pub-6407484780907805/9134520474";
@@ -385,6 +385,11 @@ public class Utils {
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION || isFireTV;
     }
 
+    public static boolean isWatch(Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_WATCH;
+    }
+
     public static void showRetrySnackBar(View view, String text, View.OnClickListener listener){
         Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
         if (null != listener) {
@@ -527,8 +532,13 @@ public class Utils {
     }
 
     public static String getSuffix(){
-        return Utils.isProVersion() ? " Pro" : ""
-                + (DocumentsApplication.isTelevision()? " for Android TV" : "");
+        String suffix = "";
+        if(DocumentsApplication.isTelevision()){
+            suffix = " for Android TV";
+        } else if(DocumentsApplication.isWatch()){
+            suffix = " for Wear OS";
+        }
+        return Utils.isProVersion() ? " Pro" : "" + suffix;
     }
 
     public static void openFeedback(Activity activity){

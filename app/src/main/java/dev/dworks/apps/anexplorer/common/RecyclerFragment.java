@@ -19,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 
 public class RecyclerFragment extends Fragment {
@@ -26,7 +27,7 @@ public class RecyclerFragment extends Fragment {
 	private LayoutManager mLayoutManager;
     private CharSequence mEmptyText;
     final private Handler mHandler = new Handler();
-    private RecyclerView mList;
+    private RecyclerViewPlus mList;
     private View mListContainer;
     private boolean mListShown;
     private String mLoadingText;
@@ -86,7 +87,7 @@ public class RecyclerFragment extends Fragment {
             return;
         }
         if (root instanceof RecyclerView) {
-            mList = (RecyclerView) root;
+            mList = (RecyclerViewPlus) root;
         } else {
             mStandardEmptyView = (TextView) root
                     .findViewById(android.R.id.empty);
@@ -109,7 +110,7 @@ public class RecyclerFragment extends Fragment {
 		                                + "that is not a ListView class");
 				}
             }
-            mList = (RecyclerView) rawListView;
+            mList = (RecyclerViewPlus) rawListView;
 
             mStandardEmptyView.setText(mEmptyText);
         }
@@ -140,7 +141,7 @@ public class RecyclerFragment extends Fragment {
         return mAdapter;
     }
 
-    public RecyclerView getListView() {
+    public RecyclerViewPlus getListView() {
         ensureList();
         return mList;
     }

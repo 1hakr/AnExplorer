@@ -71,6 +71,11 @@ android {
             dimension "default"
             buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
+        wear {
+            dimension "default"
+            minSdkVersion 23
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
+        }
         google {
             dimension "release"
         }
@@ -106,15 +111,20 @@ dependencies {
     implementation 'commons-net:commons-net:3.6'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.21.6'
-    implementation 'androidx.appcompat:appcompat:1.0.0-rc02'
-    implementation 'androidx.cardview:cardview:1.0.0-rc02'
-    implementation 'com.google.android.material:material:1.0.0-rc01'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0-rc02'
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
     freeImplementation "com.google.firebase:firebase-core:16.0.3"
     freeImplementation "com.google.firebase:firebase-ads:15.0.1"
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
+
+    wearImplementation 'com.google.android.support:wearable:2.3.0'
+    wearImplementation 'com.google.android.gms:play-services-wearable:15.0.1'
+    wearImplementation 'androidx.wear:wear:1.0.0-rc02'
+    wearCompileOnly 'com.google.android.wearable:wearable:2.3.0'
 }
 
 android.signingConfigs.release.storeFile rootProject.file(props.keyStore)

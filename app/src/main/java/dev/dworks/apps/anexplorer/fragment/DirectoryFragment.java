@@ -106,7 +106,9 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
@@ -180,8 +182,8 @@ public class DirectoryFragment extends RecyclerFragment {
 		show(fm, TYPE_SEARCH, root, doc, query, anim);
 	}
 
-	public static void showRecentsOpen(FragmentManager fm, int anim) {
-		show(fm, TYPE_RECENT_OPEN, null, null, null, anim);
+	public static void showRecentsOpen(FragmentManager fm, int anim, RootInfo root) {
+		show(fm, TYPE_RECENT_OPEN, root, null, null, anim);
 	}
 
 	private static void show(FragmentManager fm, int type, RootInfo root, DocumentInfo doc, String query, int anim) {
@@ -235,8 +237,6 @@ public class DirectoryFragment extends RecyclerFragment {
 
 		mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
 		mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
-		setLayoutManager(new LinearLayoutManager(view.getContext()));
-		setHasFixedSize(true);
 		getListView().setRecyclerListener(mRecycleListener);
 	}
 
@@ -274,8 +274,11 @@ public class DirectoryFragment extends RecyclerFragment {
 
 		mIconHelper = new IconHelper(mActivity, MODE_GRID);
 		mAdapter = new DocumentsAdapter(mItemListener, mAdapterEnv);
+
 		mMultiChoiceHelper = new MultiChoiceHelper(mActivity, mAdapter);
-		mMultiChoiceHelper.setMultiChoiceModeListener(mMultiListener);
+		if(!isWatch()){
+			mMultiChoiceHelper.setMultiChoiceModeListener(mMultiListener);
+		}
 		if(null != savedInstanceState) {
 			mMultiChoiceHelper.onRestoreInstanceState(savedInstanceState.getParcelable(KEY_ADAPTER));
 		}
@@ -515,7 +518,9 @@ public class DirectoryFragment extends RecyclerFragment {
 			}
 			itemDecoration = decoration;
 		}
-		getListView().addItemDecoration(itemDecoration);
+		if(!isWatch()) {
+			getListView().addItemDecoration(itemDecoration);
+		}
 	}
 
 	private RecyclerItemClickListener.OnItemClickListener mItemListener
@@ -658,7 +663,7 @@ public class DirectoryFragment extends RecyclerFragment {
 				compress.setVisible(editMode && !isOperationSupported);
 
 				info.setVisible(count == 1);
-				bookmark.setVisible(isTelevision() && count == 1);
+				bookmark.setVisible(isSpecialDevice() && count == 1);
 			}
 			return true;
 		}
@@ -1169,7 +1174,11 @@ public class DirectoryFragment extends RecyclerFragment {
     }
 
 	private void setEmptyState() {
-		if (mAdapter.isEmpty()) {
+		boolean isEmpty = mAdapter.isEmpty();
+		if(isWatch()){
+			isEmpty = mAdapter.getItemCount() == 1;
+		}
+		if (isEmpty) {
 			mEmptyView.setVisibility(View.VISIBLE);
 			if(null == root){
 				return;
@@ -1178,6 +1187,8 @@ public class DirectoryFragment extends RecyclerFragment {
 				mEmptyView.setText("Your phone is not rooted!");
 			} else if(root.isNetworkStorage()){
 				mEmptyView.setText("Couldnt connect to the server!");
+			} else  {
+				mEmptyView.setText(R.string.empty);
 			}
 		} else {
 			mEmptyView.setVisibility(View.GONE);
@@ -1471,6 +1482,11 @@ public class DirectoryFragment extends RecyclerFragment {
 		@Override
 		public RootInfo getRoot() {
 			return root;
+		}
+
+		@Override
+		public DocumentInfo getDocumentInfo() {
+			return doc;
 		}
 
 		@Override

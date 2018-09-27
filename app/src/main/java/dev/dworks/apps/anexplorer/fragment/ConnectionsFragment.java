@@ -53,6 +53,7 @@ import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 import dev.dworks.apps.anexplorer.ui.fabs.SimpleMenuListenerAdapter;
 import needle.Needle;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
@@ -88,7 +89,7 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(isTelevision());
+        setHasOptionsMenu(isSpecialDevice());
         mConnectionsRoot = DocumentsApplication.getRootsCache(getActivity()).getConnectionsRoot();
     }
 
@@ -104,10 +105,10 @@ public class ConnectionsFragment extends ListFragment implements View.OnClickLis
 
         mActionMenu = (FloatingActionsMenu) view.findViewById(R.id.fabs);
         mActionMenu.setMenuListener(this);
-        mActionMenu.setVisibility(!isTelevision() ? View.VISIBLE : View.GONE);
+        mActionMenu.setVisibility(!isSpecialDevice() ? View.VISIBLE : View.GONE);
 
         getListView().setOnItemClickListener(mItemListener);
-        if(isTelevision()) {
+        if(isSpecialDevice()) {
             getListView().setOnItemLongClickListener(mItemLongClickListener);
         }
         mActionMenu.attachToListView(getListView());

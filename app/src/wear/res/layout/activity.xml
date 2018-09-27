@@ -18,7 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.wear.widget.drawer.WearableDrawerLayout
+    <androidx.wear.widget.drawer.WearableCompatDrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -28,8 +28,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -37,6 +36,7 @@
                 android:elevation="8dp"
                 app:contentInsetLeft="@dimen/second_keyline_default"
                 app:contentInsetStart="@dimen/second_keyline_default"
+                android:visibility="gone"
                 app:popupTheme="?attr/actionBarPopupTheme"
                 app:theme="?attr/actionBarTheme">
 
@@ -47,9 +47,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginLeft="4dp"
+                    android:visibility="gone"
                     android:overlapAnchor="true" />
 
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
             <FrameLayout
                 android:id="@+id/container_rate"
@@ -76,16 +77,29 @@
 
         </LinearLayout>
 
-        <android.support.wear.widget.drawer.WearableNavigationDrawerView
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/roots_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="8dp"
+            android:visibility="gone"
+            app:popupTheme="?attr/actionBarPopupTheme"
+            app:theme="?attr/actionBarTheme" />
+
+        <androidx.wear.widget.drawer.WearableDrawerView
             android:id="@+id/top_navigation_drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            app:drawerContent="@+id/drawer_roots">
+            android:theme="@style/NavigationStyle"
+            android:background="@color/primaryColor"
+            app:enableAutoPeek="true"
+            app:drawerContent="@+id/drawer_roots" >
 
             <LinearLayout
                 android:id="@+id/drawer_roots"
-                android:layout_width="@dimen/side_navigation_width"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:elevation="16dp"
@@ -99,7 +113,13 @@
                     android:background="?android:attr/windowBackground" />
 
             </LinearLayout>
-        </android.support.wear.widget.drawer.WearableNavigationDrawerView>
+        </androidx.wear.widget.drawer.WearableDrawerView>
+
+        <androidx.wear.widget.drawer.WearableActionDrawerView
+            android:id="@+id/bottom_action_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:enableAutoPeek="false"/>
 
         <FrameLayout
             android:id="@+id/container_info"
@@ -109,5 +129,5 @@
             android:visibility="gone"
             android:background="?android:attr/windowBackground" />
 
-    </android.support.wear.widget.drawer.WearableDrawerLayout>
+    </androidx.wear.widget.drawer.WearableCompatDrawerLayout>
 </FrameLayout>

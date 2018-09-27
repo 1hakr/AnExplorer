@@ -9,6 +9,8 @@ import androidx.collection.LongSparseArray;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -291,7 +293,8 @@ public class MultiChoiceHelper {
 	private void startSupportActionModeIfNeeded() {
 		if (choiceActionMode == null) {
 			if (multiChoiceModeCallback == null) {
-				throw new IllegalStateException("No callback set");
+				Log.i("MultiChoiceHelper", "No callback set");
+				return;
 			}
 			choiceActionMode = activity.startSupportActionMode(multiChoiceModeCallback);
 		}

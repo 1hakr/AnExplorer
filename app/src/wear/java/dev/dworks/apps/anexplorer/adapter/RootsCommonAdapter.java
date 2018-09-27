@@ -3,12 +3,12 @@ package dev.dworks.apps.anexplorer.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.wear.widget.drawer.WearableNavigationDrawerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import androidx.wear.widget.drawer.WearableNavigationDrawerView;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 
 
@@ -135,7 +135,7 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
 
     @Override
     public Drawable getItemDrawable(int i) {
-        return group.get(i).loadDrawerIcon(context);
+        return group.get(i).loadNavDrawerIcon(context);
     }
 
     public RootInfo getItem(int position){

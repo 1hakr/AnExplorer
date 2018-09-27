@@ -34,6 +34,14 @@ public class MessageHolder extends BaseHolder {
     final ImageView icon;
     final TextView title;
 
+    public MessageHolder(DocumentsAdapter.Environment environment, Context context,
+                         ViewGroup parent, int layoutId) {
+        super(context, parent, layoutId);
+
+        icon = (ImageView) itemView.findViewById(android.R.id.icon);
+        title = (TextView) itemView.findViewById(android.R.id.title);
+    }
+
     public MessageHolder(DocumentsAdapter.Environment environment, Context context, ViewGroup parent) {
         super(context, parent, getLayoutId(environment));
 
@@ -52,7 +60,9 @@ public class MessageHolder extends BaseHolder {
     @Override
     public void setData(String message, int resId) {
         super.setData(message, resId);
-        icon.setImageResource(resId);
+        if(null != icon) {
+            icon.setImageResource(resId);
+        }
         title.setText(message);
     }
 }

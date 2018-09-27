@@ -141,7 +141,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     
     public static boolean getFolderAnimation(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_FOLDER_ANIMATIONS, false);
+                .getBoolean(KEY_FOLDER_ANIMATIONS, true);
     }
     
     @Override

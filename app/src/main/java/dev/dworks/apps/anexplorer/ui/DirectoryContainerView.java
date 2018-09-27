@@ -29,49 +29,13 @@ import java.util.ArrayList;
 
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
-public class DirectoryContainerView extends FrameLayout {
-	private boolean mDisappearingFirst = false;
-    protected ArrayList<View> mDisappearingChildren;
+public class DirectoryContainerView extends DirectoryCommonView {
 
     public DirectoryContainerView(Context context) {
         super(context);
-        setClipChildren(false);
     }
 
     public DirectoryContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setClipChildren(false);
-    }
-
-    @SuppressWarnings("unchecked")
-	@Override
-    protected void dispatchDraw(Canvas canvas) {
-    	try {
-    	    Field field = ViewGroup.class.getDeclaredField("mDisappearingChildren");
-    	    field.setAccessible(true);
-    	    mDisappearingChildren = (ArrayList<View>) field.get(this);
-    	} catch (Exception e) {
-            CrashReportingManager.logException(e);
-    	}
-        final ArrayList<View> disappearing = mDisappearingChildren;
-        if (mDisappearingFirst && disappearing != null) {
-            for (int i = 0; i < disappearing.size(); i++) {
-                super.drawChild(canvas, disappearing.get(i), getDrawingTime());
-            }
-        }
-        super.dispatchDraw(canvas);
-    }
-
-    @Override
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        if (mDisappearingFirst && mDisappearingChildren != null
-                && mDisappearingChildren.contains(child)) {
-            return false;
-        }
-        return super.drawChild(canvas, child, drawingTime);
-    }
-
-    public void setDrawDisappearingFirst(boolean disappearingFirst) {
-        mDisappearingFirst = disappearingFirst;
     }
 }
