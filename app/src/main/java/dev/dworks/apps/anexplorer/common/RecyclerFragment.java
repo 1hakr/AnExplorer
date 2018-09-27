@@ -37,7 +37,8 @@ public class RecyclerFragment extends Fragment {
         void onCancelled();
     }
 
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class RecyclerViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener{
 
     	private RecyclerViewHolder(View itemView) {
             super(itemView);
@@ -47,6 +48,12 @@ public class RecyclerFragment extends Fragment {
         @Override
         public void onClick(View view) {
         	onListItemClick(view, getLayoutPosition(), getItemId());
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            onListItemLongClick(view, getLayoutPosition(), getItemId());
+            return false;
         }
     }
 
@@ -58,12 +65,12 @@ public class RecyclerFragment extends Fragment {
 
         @Override
         public void onItemLongClick(View view, int position) {
-
+            onListItemLongClick(view, position, view.getId());
         }
 
         @Override
         public void onItemViewClick(View view, int position) {
-
+            onListItemViewClick(view, position, view.getId());
         }
     };
 
@@ -178,7 +185,13 @@ public class RecyclerFragment extends Fragment {
 
     public void onListItemClick(View v, int position, long id) {
     }
-    
+
+    public void onListItemLongClick(View v, int position, long id) {
+    }
+
+    public void onListItemViewClick(View v, int position, long id) {
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
     	super.onViewCreated(view, savedInstanceState);

@@ -1033,39 +1033,38 @@ public class DirectoryFragment extends RecyclerFragment {
 				switch (id) {
 				case R.id.menu_delete:
                     if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.toast_failed_delete);
+						Utils.showError(getActivity(), R.string.toast_failed_delete);
                     }
 					break;
 
 				case R.id.menu_save:
                     if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.save_error);
+						Utils.showError(getActivity(), R.string.save_error);
                     }
 					break;
 
                 case R.id.menu_compress:
                     if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.compress_error);
+						Utils.showError(getActivity(), R.string.compress_error);
                     }
 
                     break;
                 case R.id.menu_uncompress:
                     if(!((BaseActivity) getActivity()).isSAFIssue(doc.documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.uncompress_error);
+                        Utils.showError(getActivity(), R.string.uncompress_error);
                     }
                     break;
 				}
 			} else{
 				if(id == R.id.menu_save) {
-					((BaseActivity) getActivity()).
-							showSnackBar("App(s) Backed up to 'AppBackup' folder",
-									Snackbar.LENGTH_LONG, "View", new OnClickListener() {
-										@Override
-										public void onClick(View view) {
-											DocumentsActivity activity = ((DocumentsActivity)getActivity());
-											activity.onRootPicked(activity.getAppsBackupRoot(), true);
-										}
-									});
+					Utils.showSnackBar(getActivity(), "App(s) Backed up to 'AppBackup' folder",
+							Snackbar.LENGTH_LONG, "View", new OnClickListener() {
+								@Override
+								public void onClick(View view) {
+									DocumentsActivity activity = ((DocumentsActivity)getActivity());
+									activity.onRootPicked(activity.getAppsBackupRoot(), true);
+								}
+							});
 				}
 			}
 
@@ -1370,7 +1369,7 @@ public class DirectoryFragment extends RecyclerFragment {
 		contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
 		Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
 		if(null != uri) {
-			((BaseActivity) getActivity()).showInfo("Bookmark added");
+			Utils.showSnackBar(getActivity(), "Bookmark added");
 			RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
 		}
 		Bundle params = new Bundle();
@@ -1410,7 +1409,7 @@ public class DirectoryFragment extends RecyclerFragment {
 			}
 		}
 		else{
-			((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
+			Utils.showError(getActivity(), R.string.unable_to_open_app);
 		}
 		Bundle params = new Bundle();
 		String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);

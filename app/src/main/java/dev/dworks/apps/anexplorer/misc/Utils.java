@@ -66,6 +66,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 
 public class Utils extends UtilsFlavour{
 
@@ -390,13 +391,8 @@ public class Utils extends UtilsFlavour{
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_WATCH;
     }
 
-    public static void showRetrySnackBar(View view, String text, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
-        if (null != listener) {
-            snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getAccentColor());
-        }
-        snackbar.show();
+    public static void showError(Activity activity, int msg){
+        Utils.showSnackBar(activity, msg, ContextCompat.getColor(activity, R.color.button_text_color_red));
     }
 
     public static void showRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
@@ -408,18 +404,35 @@ public class Utils extends UtilsFlavour{
         snackbar.show();
     }
 
-    public static void showSnackBar(Activity activity, int text){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_SHORT);
+    public static void showSnackBar(Activity activity, int resId){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), resId, LENGTH_SHORT);
         snackbar.show();
     }
 
-    public static void showSnackBar(Activity activity, String text, int duration, String action, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
+    public static void showSnackBar(Activity activity, String message){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), message, LENGTH_SHORT);
+        snackbar.show();
+    }
+
+    public static void showSnackBar(Activity activity, String message,
+                                    int duration, String action, View.OnClickListener listener){
+        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), message, duration);
         if (null != listener) {
             snackbar.setAction(action, listener)
                     .setActionTextColor(SettingsActivity.getAccentColor());
         }
         snackbar.show();
+    }
+
+    public static void showSnackBar(Activity activity, int resId, int actionColor){
+        final Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view),
+                resId, LENGTH_SHORT);
+        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        }).setActionTextColor(actionColor).show();
     }
 
     public static Bitmap getVector2Bitmap(Context context, int id) {

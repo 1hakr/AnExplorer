@@ -196,63 +196,12 @@ public abstract class BaseActivity extends ActionBarActivity {
         };
     }
 
-    public void showError(int msg){
-        showToast(msg, ContextCompat.getColor(this, R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
-    }
-
-    public void showInfo(String msg){
-        showSnackBar(msg, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showToast(int msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
-        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-            }
-        })
-                .setActionTextColor(actionColor).show();
-    }
-
-    public void showSnackBar(String text, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), text, duration);
-        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.setActionTextColor(SettingsActivity.getAccentColor()).show();
-    }
-
-    public void showSnackBar(String text, int duration, String action, int actionColor){
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), text, duration);
-        snackbar.setAction(action, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.setActionTextColor(actionColor).show();
-    }
-
-    public void showSnackBar(String text, int duration, String action, int actionColor, View.OnClickListener listener){
-        Snackbar.make(findViewById(R.id.content_view), text, duration).setAction(action, listener)
-                .setActionTextColor(actionColor).show();
-    }
-
-    public void showSnackBar(String text, int duration, String action, View.OnClickListener listener){
-        Snackbar.make(findViewById(R.id.content_view), text, duration).setAction(action, listener)
-                .setActionTextColor(SettingsActivity.getAccentColor()).show();
-    }
-
     public boolean isSAFIssue(String docId){
         boolean isSAFIssue = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT
                 && !TextUtils.isEmpty(docId) && docId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
 
         if(isSAFIssue){
-            showError(R.string.saf_issue);
+            Utils.showError(this, R.string.saf_issue);
         }
         return isSAFIssue;
     }

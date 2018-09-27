@@ -35,6 +35,7 @@ import android.widget.EditText;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -82,7 +83,7 @@ public class CreateDirectoryFragment extends DialogFragment {
                 final DocumentInfo cwd = activity.getCurrentDirectory();
 
                 if(TextUtils.isEmpty(displayName)){
-                    activity.showError(R.string.create_error);
+                    Utils.showError(activity, R.string.create_error);
                     return;
                 }
                 new CreateDirectoryTask(activity, cwd, displayName).executeOnExecutor(
@@ -136,7 +137,7 @@ public class CreateDirectoryFragment extends DialogFragment {
                 mActivity.onDocumentPicked(result);
             } else {
                 if(!mActivity.isSAFIssue(mCwd.documentId)) {
-                    mActivity.showError(R.string.create_error);
+                    Utils.showError(mActivity, R.string.create_error);
                 }
             }
 

@@ -149,7 +149,7 @@ public class RenameFragment extends DialogFragment {
             }
             if (result == null) {
                 if(!mActivity.isSAFIssue(mDoc.documentId)) {
-                    mActivity.showError(R.string.rename_error);
+                    Utils.showError(mActivity, R.string.rename_error);
                 }
             }
             mActivity.setPending(false);

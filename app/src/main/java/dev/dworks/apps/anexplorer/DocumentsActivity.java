@@ -419,7 +419,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 	d.dismiss();
                 }
                 else {
-                    showError(R.string.incorrect_pin);
+                    Utils.showError(DocumentsActivity.this, R.string.incorrect_pin);
                 }
             }
 
@@ -1029,7 +1029,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         try {
             this.startActivityForResult(Intent.createChooser(intent, "Select a File to Upload"), UPLOAD_FILE);
         } catch(android.content.ActivityNotFoundException e) {
-            showError(R.string.upload_error);
+            Utils.showError(this, R.string.upload_error);
         }
         Bundle params = new Bundle();
         params.putString(FILE_TYPE, "file");
@@ -1515,7 +1515,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                showError(R.string.upload_error);
+                Utils.showError(DocumentsActivity.this, R.string.upload_error);
             }
             setPending(false);
         }
@@ -1617,7 +1617,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 }
             }
             else{
-                showError(R.string.toast_no_application);
+                Utils.showError(this, R.string.toast_no_application);
             }
         } else if (mState.action == ACTION_CREATE) {
             // Replace selected file
@@ -1643,13 +1643,13 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                     try {
                         startActivity(view);
                     } catch (ActivityNotFoundException ex2) {
-                        showError(R.string.toast_no_application);
+                        Utils.showError(this, R.string.toast_no_application);
                         CrashReportingManager.logException(ex2);
                     }
                 }
             }
             else{
-                showError(R.string.toast_no_application);
+                Utils.showError(this, R.string.toast_no_application);
             }
         }
     }
@@ -1792,7 +1792,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             } else {
                 final DocumentInfo cwd = getCurrentDirectory();
                 if(!isSAFIssue(cwd.documentId)) {
-                    showError(R.string.save_error);
+                    Utils.showError(DocumentsActivity.this, R.string.save_error);
                 }
             }
             setPending(false);
@@ -1897,7 +1897,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             }
             if (result){
                 //if(!isSAFIssue(toDoc.documentId)){
-                    showError(R.string.save_error);
+                Utils.showError(DocumentsActivity.this, R.string.save_error);
                 //}
             }
             MoveFragment.hide(getFragmentManager());

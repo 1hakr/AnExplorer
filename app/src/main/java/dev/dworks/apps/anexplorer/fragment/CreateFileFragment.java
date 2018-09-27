@@ -152,7 +152,7 @@ public class CreateFileFragment extends DialogFragment {
         protected void onPostExecute(Uri result) {
             if (result == null) {
                 if(!mActivity.isSAFIssue(mCwd.documentId)) {
-                    mActivity.showError(R.string.save_error);
+                    Utils.showError(mActivity, R.string.save_error);
                 }
             }
 

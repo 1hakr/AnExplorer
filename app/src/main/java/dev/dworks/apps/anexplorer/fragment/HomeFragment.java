@@ -192,7 +192,7 @@ public class HomeFragment extends Fragment {
                     if(Utils.isIntentAvailable(getActivity(), intent)) {
                         getActivity().startActivity(intent);
                     } else  {
-                        ((DocumentsActivity)getActivity()).showInfo("Coming Soon!");
+                        Utils.showSnackBar(getActivity(), "Coming Soon!");
                     }
                     Bundle params = new Bundle();
                     AnalyticsManager.logEvent("storage_analyze", params);
@@ -271,7 +271,7 @@ public class HomeFragment extends Fragment {
                 String summaryText = availableBytes <= 0 ? "Already cleaned up!" :
                         getActivity().getString(R.string.root_available_bytes,
                         Formatter.formatFileSize(getActivity(), availableBytes));
-                ((DocumentsActivity) getActivity()).showInfo(summaryText);
+                Utils.showSnackBar(getActivity(), summaryText);
             }
 
             processTimer = new Timer();

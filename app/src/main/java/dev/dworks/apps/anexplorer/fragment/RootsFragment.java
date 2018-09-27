@@ -353,8 +353,7 @@ public class RootsFragment extends Fragment {
                         new String[]{item.root.path, item.root.title}
                 );
                 if (rows > 0) {
-                    ((BaseActivity) getActivity()).showInfo("Bookmark removed");
-
+                    Utils.showSnackBar(getActivity(), "Bookmark removed");
                     RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
                 }
             }
