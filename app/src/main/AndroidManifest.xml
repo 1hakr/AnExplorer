@@ -32,6 +32,10 @@
         android:name="android.hardware.wifi"
         android:required="false" />
 
+    <uses-feature
+        android:name="android.hardware.type.pc"
+        android:required="false" />
+
     <application
         android:name=".DocumentsApplication"
         android:allowBackup="true"
@@ -41,6 +45,11 @@
         android:label="@string/name"
         tools:replace="android:label"
         android:supportsRtl="true">
+
+        <meta-data android:name="WindowManagerPreference:FreeformWindowSize"
+            android:value="[phone|tablet|maximize]" />
+        <meta-data android:name="WindowManagerPreference:FreeformWindowOrientation"
+            android:value="[portrait|landscape]" />
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
@@ -113,19 +122,31 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
+
+            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
+                android:value="true" />
         </activity>
         <activity
             android:name=".StandaloneActivity"
-            android:theme="@style/DocumentsTheme.Document" />
+            android:theme="@style/DocumentsTheme.Document" >
+            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
+                android:value="true" />
+        </activity>
         <activity
             android:name=".setting.SettingsActivity"
             android:exported="false"
             android:label="@string/menu_settings"
-            android:theme="@style/DocumentsTheme.Setting" />
+            android:theme="@style/DocumentsTheme.Setting" >
+            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
+                android:value="true" />
+        </activity>
         <activity
             android:name=".AboutActivity"
             android:label="About"
-            android:theme="@style/DocumentsTheme.Document" />
+            android:theme="@style/DocumentsTheme.Document" >
+            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
+                android:value="true" />
+        </activity>
 
         <receiver android:name=".receiver.PackageReceiver">
             <intent-filter>
@@ -152,13 +173,16 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="sensor"
             android:theme="@style/DocumentsTheme.Note">
-            <intent-filter android:label="Text Viewer">
+            <intent-filter android:label="Text Viewer"
+                tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="text/*" />
             </intent-filter>
+            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
+                android:value="true" />
         </activity>
 
         <receiver
@@ -329,7 +353,8 @@
                 <data android:scheme="https"
                     android:host="integrations.cloudrail.com" />
             </intent-filter>
-
+            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
+                android:value="true" />
         </activity>
 
     </application>
