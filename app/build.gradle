@@ -19,10 +19,10 @@ android {
     }
 
     defaultConfig {
-        versionName "3.9"
-        versionCode = 64
-        minSdkVersion 17
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.generateVersionCode(1)
+        versionName rootProject.generateVersionName()
         vectorDrawables.useSupportLibrary = true
         buildConfigField "String", "LICENSE_KEY",  "$props.LICENSE_KEY"
         buildConfigField "String", "DROPBOX_CLIENT_ID",  "$props.DROPBOX_CLIENT_ID"
@@ -74,6 +74,7 @@ android {
         wear {
             dimension "default"
             minSdkVersion 23
+            versionCode rootProject.generateVersionCode(2)
             buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         google {

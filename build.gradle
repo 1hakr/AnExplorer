@@ -23,3 +23,26 @@ allprojects {
         maven { url "https://jitpack.io" }
     }
 }
+
+ext {
+    compileSdkVersion = 28
+    targetSdkVersion = 28
+    minSdkVersion = 17
+    versionMajor = 4
+    versionMinor = 0
+    versionPatch = 0
+
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+private Integer generateVersionCode(Integer variant) {
+    return ext.versionMajor * 10000 + ext.versionMinor * 1000 + ext.versionPatch * 100 + variant
+}
+
+private String generateVersionName() {
+    String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
+    return versionName;
+}
