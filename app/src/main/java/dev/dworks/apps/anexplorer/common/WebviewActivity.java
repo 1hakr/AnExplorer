@@ -22,9 +22,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import dev.dworks.apps.anexplorer.ActionBarActivity;
 import dev.dworks.apps.anexplorer.R;
 
 /**

@@ -119,7 +119,8 @@
             android:id="@+id/bottom_action_drawer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:enableAutoPeek="false"/>
+            app:showOverflowInPeek="true"
+            app:enableAutoPeek="true"/>
 
         <FrameLayout
             android:id="@+id/container_info"

@@ -85,7 +85,8 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
 
     private String getTitle(){
         if(mEnv.getDisplayState().stack.size() == 1 || null == mEnv.getDocumentInfo()){
-            return mEnv.getRoot().title;
+            RootInfo rootInfo = mEnv.getRoot();
+            return  null != rootInfo ? rootInfo.title : "";
         }
         return mEnv.getDocumentInfo().displayName;
     }

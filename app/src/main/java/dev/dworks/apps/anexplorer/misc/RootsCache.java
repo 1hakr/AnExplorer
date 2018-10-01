@@ -63,6 +63,8 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+
 /**
  * Cache of known storage backends and their roots.
  */
@@ -367,6 +369,9 @@ public class RootsCache {
     }
 
     public RootInfo getDefaultRoot() {
+        if(isWatch()){
+            return getPrimaryRoot();
+        }
         return getHomeRoot();
     }
 

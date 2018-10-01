@@ -24,11 +24,9 @@ public abstract class DocumentHolder extends BaseHolder implements View.OnClickL
 
     protected final Context mContext;
 
-    protected OnItemClickListener mOnItemClickListener;
     protected DocumentsAdapter.Environment mEnv;
     protected IconHelper mIconHelper;
     protected DocumentInfo mDoc;
-    protected MultiChoiceHelper multiChoiceHelper;
 
     protected final ImageView iconMime;
     protected final ImageView iconThumb;
@@ -54,37 +52,7 @@ public abstract class DocumentHolder extends BaseHolder implements View.OnClickL
         multiChoiceHelper = mEnv.getMultiChoiceHelper();
         mDoc = new DocumentInfo();
 
-        mOnItemClickListener = onItemClickListener;
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isMultiChoiceActive()) {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        multiChoiceHelper.toggleItemChecked(position, false);
-                        updateCheckedState(position);
-                    }
-                } else {
-                    if (mOnItemClickListener != null) {
-                        mOnItemClickListener.onItemClick(view, getLayoutPosition());
-                    }
-                }
-            }
-        });
-        itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if ((multiChoiceHelper == null) || isMultiChoiceActive()) {
-                    return false;
-                }
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    multiChoiceHelper.setItemChecked(position, true, false);
-                    updateCheckedState(position);
-                }
-                return true;
-            }
-        });
+        clickListener = onItemClickListener;
     }
 
     public DocumentHolder(Context context, View item) {
@@ -140,8 +108,8 @@ public abstract class DocumentHolder extends BaseHolder implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        if(null != mOnItemClickListener) {
-            mOnItemClickListener.onItemViewClick(v, getLayoutPosition());
+        if(null != clickListener) {
+            clickListener.onItemViewClick(v, getLayoutPosition());
         }
     }
 

@@ -49,13 +49,13 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
 
         for (RootInfo root : roots) {
             if (root.isHome()) {
-                home.add(root);
+                //home.add(root);
             } else if (root.isRecents()) {
                 if(recent.size() == 0) {
                     recent.add(root);
                 }
             } else if (root.isConnections()) {
-                connection.add(root);
+                // connection.add(root);
             } else if (root.isRootedStorage()) {
                 rooted.add(root);
             } else if (root.isPhoneStorage()) {

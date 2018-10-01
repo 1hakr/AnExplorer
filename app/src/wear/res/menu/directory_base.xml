@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2013 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_info"
+        android:icon="@drawable/ic_menu_info"
+        support:showAsAction="always"
+        android:title="Info"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_bookmark"
+        android:icon="@drawable/ic_menu_bookmark"
+        support:showAsAction="always"
+        android:title="Bookmark"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_rename"
+        android:icon="@drawable/ic_menu_rename_file"
+        support:showAsAction="always"
+        android:visible="false"
+        android:title="Rename"/>
+    <item
+        android:id="@+id/menu_copy"
+        android:icon="@drawable/ic_menu_copy"
+        support:showAsAction="always"
+        android:title="Copy"/>
+    <item
+        android:id="@+id/menu_cut"
+        android:icon="@drawable/ic_menu_cut"
+        support:showAsAction="always"
+        android:title="Cut"/>
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@drawable/ic_menu_delete"
+        support:showAsAction="always"
+        android:title="@string/menu_delete"/>
+    <item
+        android:id="@+id/menu_compress"
+        android:icon="@drawable/ic_menu_compressed"
+        support:showAsAction="ifRoom"
+        android:title="@string/menu_compress"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_menu_share"
+        support:showAsAction="always"
+        android:title="@string/menu_share"/>
+    <item
+        android:id="@+id/menu_select_all"
+        android:icon="@drawable/ic_menu_select_all"
+        support:showAsAction="always"
+        android:title="Select All"/>
+
+</menu>

@@ -12,11 +12,16 @@ public class UtilsFlavour {
 
     }
 
-    public static Menu getActionDrawerMenu(DocumentsActivity activity){
+    public static Menu getActionDrawerMenu(Activity activity){
         return null;
     }
 
-    public static View getActionDrawer(DocumentsActivity activity){
+    public static View getActionDrawer(Activity activity){
         return null;
+    }
+
+    public static void inflateActionMenu(Activity activity,
+                                         MenuItem.OnMenuItemClickListener listener,
+                                         boolean contextual) {
     }
 }

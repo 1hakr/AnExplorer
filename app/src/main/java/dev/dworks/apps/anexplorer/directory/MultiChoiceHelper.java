@@ -9,6 +9,8 @@ import androidx.collection.LongSparseArray;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.RecyclerView;
+import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListener.OnItemClickListener;
+import dev.dworks.apps.anexplorer.misc.Utils;
 
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -16,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Checkable;
+
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 
 /**
  * Helper class to reproduce ListView's modal MultiChoice mode with a RecyclerView.
@@ -32,8 +36,8 @@ public class MultiChoiceHelper {
 	 */
 	public static abstract class ViewHolder extends RecyclerView.ViewHolder {
 
-		View.OnClickListener clickListener;
-		MultiChoiceHelper multiChoiceHelper;
+		protected OnItemClickListener clickListener;
+		protected MultiChoiceHelper multiChoiceHelper;
 
 		public ViewHolder(View itemView) {
 			super(itemView);
@@ -48,7 +52,7 @@ public class MultiChoiceHelper {
 						}
 					} else {
 						if (clickListener != null) {
-							clickListener.onClick(view);
+							clickListener.onItemClick(view, getLayoutPosition());
 						}
 					}
 				}
@@ -78,7 +82,7 @@ public class MultiChoiceHelper {
 			}
 		}
 
-		public void setOnClickListener(View.OnClickListener clickListener) {
+		public void setOnClickListener(OnItemClickListener clickListener) {
 			this.clickListener = clickListener;
 		}
 
@@ -115,7 +119,8 @@ public class MultiChoiceHelper {
 	private LongSparseArray<Integer> checkedIdStates;
 	private int checkedItemCount = 0;
 	private MultiChoiceModeWrapper multiChoiceModeCallback;
-	ActionMode choiceActionMode;
+	private ActionMode choiceActionMode;
+	private MenuItem.OnMenuItemClickListener menuItemClickListener;
 
 	/**
 	 * Make sure this constructor is called before setting the adapter on the RecyclerView
@@ -144,6 +149,10 @@ public class MultiChoiceHelper {
 			multiChoiceModeCallback = new MultiChoiceModeWrapper();
 		}
 		multiChoiceModeCallback.setWrapped(listener);
+	}
+
+	public void setMenuItemClickListener(MenuItem.OnMenuItemClickListener listener) {
+		menuItemClickListener = listener;
 	}
 
 	public int getCheckedItemCount() {
@@ -188,6 +197,9 @@ public class MultiChoiceHelper {
 
 			if (choiceActionMode != null) {
 				choiceActionMode.finish();
+			}
+			if(isWatch()){
+				Utils.inflateActionMenu(activity, menuItemClickListener, false);
 			}
 		}
 	}
@@ -238,23 +250,11 @@ public class MultiChoiceHelper {
 	public Parcelable onSaveInstanceState() {
 		SavedState savedState = new SavedState();
 		savedState.checkedItemCount = checkedItemCount;
-		savedState.checkStates = clone(checkStates);
+		savedState.checkStates = checkStates.clone();
 		if (checkedIdStates != null) {
 			savedState.checkedIdStates = checkedIdStates.clone();
 		}
 		return savedState;
-	}
-
-	private static SparseBooleanArray clone(SparseBooleanArray original) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			return original.clone();
-		}
-		final int size = original.size();
-		SparseBooleanArray clone = new SparseBooleanArray(size);
-		for (int i = 0; i < size; ++i) {
-			clone.append(original.keyAt(i), original.valueAt(i));
-		}
-		return clone;
 	}
 
 	public void onRestoreInstanceState(Parcelable state) {
@@ -290,14 +290,18 @@ public class MultiChoiceHelper {
 		}
 	}
 
-	private void startSupportActionModeIfNeeded() {
-		if (choiceActionMode == null) {
-			if (multiChoiceModeCallback == null) {
-				Log.i("MultiChoiceHelper", "No callback set");
-				return;
-			}
-			choiceActionMode = activity.startSupportActionMode(multiChoiceModeCallback);
-		}
+	public void startSupportActionModeIfNeeded() {
+	    if(isWatch()){
+            Utils.inflateActionMenu(activity, menuItemClickListener, true);
+        } else {
+            if (choiceActionMode == null) {
+                if (multiChoiceModeCallback == null) {
+                    Log.i("MultiChoiceHelper", "No callback set");
+                    return;
+                }
+                choiceActionMode = activity.startSupportActionMode(multiChoiceModeCallback);
+            }
+        }
 	}
 
 	public static class SavedState implements Parcelable {

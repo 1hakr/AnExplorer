@@ -47,6 +47,7 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;

@@ -16,7 +16,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
@@ -31,7 +30,7 @@
         android:gravity="start"
         android:maxLines="2"
         android:paddingStart="@dimen/list_item_padding"
-        android:textAlignment="center"
+        android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         tools:text="Android title"
         android:textColor="?android:attr/textColorPrimary"/>

@@ -18,11 +18,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
+import dev.dworks.apps.anexplorer.service.ConnectionsService;
 
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_FAILEDTOSTART;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STARTED;
@@ -30,6 +32,7 @@ import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_S
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_START_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_STOP_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
+import static dev.dworks.apps.anexplorer.misc.Utils.isWatch;
 
 public class ServerFragment extends Fragment implements View.OnClickListener {
 
@@ -119,13 +122,29 @@ public class ServerFragment extends Fragment implements View.OnClickListener {
     private void startServer() {
         Intent intent = new Intent(ACTION_START_FTPSERVER);
         intent.putExtras(getArguments());
-        getActivity().sendBroadcast(intent);
+
+        if(DocumentsApplication.isWatch()) {
+            Intent serverService = new Intent(getActivity(), ConnectionsService.class);
+            serverService.putExtras(intent.getExtras());
+            if (!ConnectionUtils.isServerRunning(getActivity())) {
+                getActivity().startService(serverService);
+            }
+        } else {
+            getActivity().sendBroadcast(intent);
+        }
     }
 
     private void stopServer() {
         Intent intent = new Intent(ACTION_STOP_FTPSERVER);
         intent.putExtras(getArguments());
-        getActivity().sendBroadcast(intent);
+
+        if(DocumentsApplication.isWatch()){
+            Intent serverService = new Intent(getActivity(), ConnectionsService.class);
+            serverService.putExtras(intent.getExtras());
+            getActivity().stopService(serverService);
+        } else {
+            getActivity().sendBroadcast(intent);
+        }
     }
 
     private void updateStatus(){

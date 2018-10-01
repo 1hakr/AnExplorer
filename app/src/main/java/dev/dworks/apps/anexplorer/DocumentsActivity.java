@@ -195,7 +195,6 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private boolean mActionMode;
     private FloatingActionsMenu mActionMenu;
     private RootInfo mParentRoot;
-    private Menu mActionDrawerMenu;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -482,10 +481,14 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if(menuAction(item)){
-            mDrawerLayoutHelper.closeDrawer(Utils.getActionDrawer(this));
+            closeDrawer();
             return true;
         }
         return false;
+    }
+
+    public void closeDrawer(){
+        mDrawerLayoutHelper.closeDrawer(Utils.getActionDrawer(this));
     }
 
     private class RestoreRootTask extends AsyncTask<Void, Void, RootInfo> {
@@ -770,13 +773,10 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        if(isWatch()){
-            return false;
-        }
         getMenuInflater().inflate(R.menu.activity, menu);
 
         final MenuItem searchMenu = menu.findItem(R.id.menu_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchMenu);
+        mSearchView = (SearchView) searchMenu.getActionView();
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -796,7 +796,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             }
         });
 
-        MenuItemCompat.setOnActionExpandListener(searchMenu, new MenuItemCompat.OnActionExpandListener() {
+        searchMenu.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 mSearchExpanded = true;
@@ -841,9 +841,6 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if(isWatch()){
-            return true;
-        }
         updateMenuItems(menu);
         return true;
     }
@@ -928,6 +925,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         search.setVisible(searchVisible);
 
         settings.setVisible(mState.action != ACTION_MANAGE);
+
+        Utils.inflateActionMenu(this, this, false);
     }
 
     @Override
@@ -1979,9 +1978,6 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     public void invalidateMenu(){
         supportInvalidateOptionsMenu();
         mActionMenu.setVisibility(!isSpecialDevice() && showActionMenu() ? View.VISIBLE : View.GONE);
-        if(isWatch()) {
-            //getMenuInflater().inflate(R.menu.activity_base, mActionDrawerMenu);
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -2022,7 +2018,6 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private void initControls() {
         mActionMenu = (FloatingActionsMenu) findViewById(R.id.fabs);
         mActionMenu.setMenuListener(mMenuListener);
-        mActionDrawerMenu = Utils.getActionDrawerMenu(this);
     }
 
     public void upadateActionItems(RecyclerView currentView) {

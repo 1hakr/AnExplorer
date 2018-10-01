@@ -27,7 +27,7 @@ public class RecyclerFragment extends Fragment {
 	private LayoutManager mLayoutManager;
     private CharSequence mEmptyText;
     final private Handler mHandler = new Handler();
-    private RecyclerViewPlus mList;
+    private RecyclerView mList;
     private View mListContainer;
     private boolean mListShown;
     private String mLoadingText;
@@ -105,7 +105,7 @@ public class RecyclerFragment extends Fragment {
             if (rawListView == null) {
                 throw new RuntimeException(
                         "Your content must have a ListView whose id attribute is "
-                                + "'android.R.id.list'");
+                                + "'R.id.recyclerview'");
             }
             else{
             	try {
@@ -148,7 +148,7 @@ public class RecyclerFragment extends Fragment {
         return mAdapter;
     }
 
-    public RecyclerViewPlus getListView() {
+    public RecyclerView getListView() {
         ensureList();
         return mList;
     }

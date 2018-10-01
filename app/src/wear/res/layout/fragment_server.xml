@@ -17,15 +17,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <FrameLayout
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginBottom="30dp"
-                android:layout_marginTop="30dp">
+                android:layout_width="50dp"
+                android:layout_height="50dp" >
 
                 <dev.dworks.apps.anexplorer.ui.CircleImage
                     android:layout_width="match_parent"
@@ -39,7 +37,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:contentDescription="@null"
-                    android:padding="30dp"
+                    android:padding="10dp"
                     app:srcCompat="@drawable/ic_connection_server" />
 
             </FrameLayout>
@@ -50,7 +48,6 @@
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
                 android:gravity="center_horizontal"
-                android:minHeight="55dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -60,7 +57,7 @@
                     android:layout_gravity="start"
                     android:ellipsize="end"
                     android:padding="10dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/accentColor"
                     android:textStyle="bold"
                     tools:text="ftp://192.168.1.101:2211" />
@@ -76,21 +73,21 @@
 
             <TableLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content" >
 
-                <TableRow
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@android:id/title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:ellipsize="middle"
                         android:singleLine="true"
                         android:text="FTP Web Server"
-                        android:textAlignment="viewEnd"
+                        android:textAlignment="viewStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="?android:attr/textColorPrimary" />
 
@@ -98,29 +95,27 @@
                         android:id="@+id/status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="3"
                         android:ellipsize="middle"
-                        android:paddingStart="10dp"
                         android:singleLine="true"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
                         tools:text="Not Running" />
-                </TableRow>
+                </LinearLayout>
 
-                <TableRow
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:paddingTop="10dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ellipsize="middle"
-                        android:paddingTop="10dp"
                         android:singleLine="true"
                         android:text="Shared path"
-                        android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="?android:attr/textColorPrimary" />
 
@@ -130,25 +125,23 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:ellipsize="middle"
-                        android:paddingStart="10dp"
-                        android:paddingTop="10dp"
                         android:singleLine="true"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
                         tools:text="/Shared/" />
-                </TableRow>
+                </LinearLayout>
 
-                <TableRow
+                <LinearLayout
                     android:layout_width="match_parent"
+                    android:paddingTop="10dp"
+                    android:orientation="horizontal"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:ellipsize="middle"
-                        android:paddingTop="10dp"
                         android:singleLine="true"
                         android:text="UserName"
                         android:textAlignment="viewEnd"
@@ -161,25 +154,24 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:ellipsize="middle"
-                        android:paddingStart="10dp"
-                        android:paddingTop="10dp"
                         android:singleLine="true"
+                        android:paddingStart="10dp"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
                         tools:text="HaKr" />
-                </TableRow>
+                </LinearLayout>
 
-                <TableRow
+                <LinearLayout
                     android:layout_width="match_parent"
+                    android:paddingTop="10dp"
+                    android:orientation="horizontal"
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:ellipsize="middle"
-                        android:paddingTop="10dp"
                         android:singleLine="true"
                         android:text="Password"
                         android:textAlignment="viewEnd"
@@ -190,16 +182,14 @@
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="3"
                         android:ellipsize="middle"
                         android:paddingStart="10dp"
-                        android:paddingTop="10dp"
                         android:singleLine="true"
                         android:textAlignment="viewStart"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
                         tools:text="nothing" />
-                </TableRow>
+                </LinearLayout>
             </TableLayout>
 
             <Button

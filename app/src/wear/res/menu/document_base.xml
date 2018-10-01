@@ -27,17 +27,5 @@
         support:showAsAction="ifRoom"
         android:title="@string/menu_list"
         android:visible="false"/>
-    <item
-        android:id="@+id/menu_grid"
-        android:icon="@drawable/ic_menu_view_grid"
-        support:showAsAction="ifRoom"
-        android:title="@string/menu_grid"
-        android:visible="false"/>
-    <item
-        android:id="@+id/menu_sort"
-        android:icon="@drawable/ic_menu_sortby"
-        support:showAsAction="ifRoom"
-        android:title="@string/menu_sort"
-        android:visible="false"/>
 
 </menu>

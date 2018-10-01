@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.ImageView;
 
-public class BaseHolder extends RecyclerView.ViewHolder  {
+public class BaseHolder extends MultiChoiceHelper.ViewHolder  {
 
     static final float DISABLED_ALPHA = 0.3f;
     public static final int CHECK_ANIMATION_DURATION = 100;

@@ -15,16 +15,15 @@
      limitations under the License.
 -->
 <resources>
-    <bool name="show_as_dialog">false</bool>
-    <bool name="always_show_summary">false</bool>
-    <dimen name="list_item_height">56dp</dimen>
-    <dimen name="list_item_padding">12dp</dimen>
-
-    <dimen name="header_start_padding">16dp</dimen>
-    <dimen name="header_end_padding">16dp</dimen>
-    <dimen name="list_start_padding">10dp</dimen>
-    <dimen name="list_end_padding">10dp</dimen>
-
-    <dimen name="big_spacing">16dp</dimen>
+    <declare-styleable name="BoxInsetLayout_Layout">
+        <attr name="boxedEdges">
+            <flag name="none" value="0x00"/>
+            <flag name="left" value="0x01"/>
+            <flag name="top" value="0x02"/>
+            <flag name="right" value="0x04"/>
+            <flag name="bottom" value="0x08"/>
+            <flag name="all" value="0x0F"/>
+        </attr>
+    </declare-styleable>
 </resources>
 

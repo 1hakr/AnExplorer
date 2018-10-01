@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 
@@ -33,6 +34,7 @@ public class MessageHolder extends BaseHolder {
 
     final ImageView icon;
     final TextView title;
+    final View background;
 
     public MessageHolder(DocumentsAdapter.Environment environment, Context context,
                          ViewGroup parent, int layoutId) {
@@ -40,6 +42,7 @@ public class MessageHolder extends BaseHolder {
 
         icon = (ImageView) itemView.findViewById(android.R.id.icon);
         title = (TextView) itemView.findViewById(android.R.id.title);
+        background = itemView.findViewById(R.id.background);
     }
 
     public MessageHolder(DocumentsAdapter.Environment environment, Context context, ViewGroup parent) {
@@ -47,6 +50,7 @@ public class MessageHolder extends BaseHolder {
 
         icon = (ImageView) itemView.findViewById(android.R.id.icon);
         title = (TextView) itemView.findViewById(android.R.id.title);
+        background = itemView.findViewById(R.id.background);
     }
 
     public static int getLayoutId(DocumentsAdapter.Environment environment){
@@ -64,5 +68,8 @@ public class MessageHolder extends BaseHolder {
             icon.setImageResource(resId);
         }
         title.setText(message);
+        if(null != background) {
+            background.setBackgroundColor(SettingsActivity.getPrimaryColor());
+        }
     }
 }

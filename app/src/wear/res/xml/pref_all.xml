@@ -1,0 +1,26 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="fileSize"
+        android:persistent="true"
+        android:title="@string/pref_file_size" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="folderSize"
+        android:title="@string/pref_folder_size" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="fileThumbnail"
+        android:persistent="true"
+        android:title="@string/pref_thumbnail" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="fileHidden"
+        android:persistent="true"
+        android:title="@string/pref_hidden" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="recentMedia"
+        android:persistent="true"
+        android:title="@string/pref_recent_media" />
+</PreferenceScreen>

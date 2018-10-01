@@ -8,23 +8,24 @@ import androidx.wear.widget.WearableRecyclerView;
 
 public class RecyclerViewCompat extends WearableRecyclerView {
     public RecyclerViewCompat(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public RecyclerViewCompat(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public RecyclerViewCompat(Context context, @Nullable AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+        this(context, attrs, defStyle, 0);
     }
 
     public RecyclerViewCompat(Context context, @Nullable AttributeSet attrs, int defStyle, int defStyleRes) {
         super(context, attrs, defStyle, defStyleRes);
+        init();
     }
 
     private void init(){
-        setEdgeItemsCenteringEnabled(true);
+        //setEdgeItemsCenteringEnabled(true);
         setCircularScrollingGestureEnabled(true);
         setBezelFraction(0.5f);
         setScrollDegreesPerScreen(90);

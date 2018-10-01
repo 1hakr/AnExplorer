@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 
@@ -77,6 +78,7 @@ public class RootsCommonFragment extends BaseFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mNavigationDrawer = view.findViewById(R.id.navigation_drawer);
+        mNavigationDrawer.setBackgroundColor(SettingsActivity.getPrimaryColor());
     }
 
     @Override

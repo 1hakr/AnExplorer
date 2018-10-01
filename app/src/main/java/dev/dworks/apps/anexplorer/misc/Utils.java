@@ -36,6 +36,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.IntDef;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
@@ -55,6 +57,8 @@ import android.webkit.WebView;
 import android.widget.Button;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 
@@ -577,5 +581,14 @@ public class Utils extends UtilsFlavour{
         } else {
             return Html.fromHtml(text);
         }
+    }
+
+    @IntDef({View.VISIBLE, View.INVISIBLE, View.GONE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Visibility {}
+
+    @Visibility
+    public static int getVisibility(boolean show) {
+        return show ? View.VISIBLE : View.GONE;
     }
 }

@@ -38,13 +38,15 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.AppCompatPreferenceActivity;
+import dev.dworks.apps.anexplorer.common.SettingsCommonActivity;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends SettingsCommonActivity {
 
     public static final String TAG = "Settings";
 

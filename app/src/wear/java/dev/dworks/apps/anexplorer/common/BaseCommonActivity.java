@@ -10,46 +10,17 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.wear.widget.drawer.WearableDrawerView;
+import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 @TargetApi(21)
 public abstract class BaseCommonActivity extends AppCompatActivity {
 
     private static final String TAG = "WearableActivity";
-    public static final String EXTRA_BURN_IN_PROTECTION = "com.google.android.wearable.compat.extra.BURN_IN_PROTECTION";
-    public static final String EXTRA_LOWBIT_AMBIENT = "com.google.android.wearable.compat.extra.LOWBIT_AMBIENT";
     private boolean mSuperCalled;
-    private final WearableActivityDelegate.AmbientCallback callback = new WearableActivityDelegate.AmbientCallback() {
-        public void onEnterAmbient(Bundle ambientDetails) {
-            BaseCommonActivity.this.mSuperCalled = false;
-            BaseCommonActivity.this.onEnterAmbient(ambientDetails);
-            if (!BaseCommonActivity.this.mSuperCalled) {
-                String var2 = String.valueOf(BaseCommonActivity.this);
-                Log.w("WearableActivity", (new StringBuilder(56 + String.valueOf(var2).length())).append("Activity ").append(var2).append(" did not call through to super.onEnterAmbient()").toString());
-            }
-
-        }
-
-        public void onExitAmbient() {
-            BaseCommonActivity.this.mSuperCalled = false;
-            BaseCommonActivity.this.onExitAmbient();
-            if (!BaseCommonActivity.this.mSuperCalled) {
-                String var1 = String.valueOf(BaseCommonActivity.this);
-                Log.w("WearableActivity", (new StringBuilder(55 + String.valueOf(var1).length())).append("Activity ").append(var1).append(" did not call through to super.onExitAmbient()").toString());
-            }
-
-        }
-
-        public void onUpdateAmbient() {
-            BaseCommonActivity.this.mSuperCalled = false;
-            BaseCommonActivity.this.onUpdateAmbient();
-            if (!BaseCommonActivity.this.mSuperCalled) {
-                String var1 = String.valueOf(BaseCommonActivity.this);
-                Log.w("WearableActivity", (new StringBuilder(57 + String.valueOf(var1).length())).append("Activity ").append(var1).append(" did not call through to super.onUpdateAmbient()").toString());
-            }
-
-        }
-    };
     private final WearableActivityDelegate mDelegate;
 
     public BaseCommonActivity() {
@@ -60,6 +31,16 @@ public abstract class BaseCommonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.mDelegate.onCreate(this);
+        setAmbientEnabled();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        WearableDrawerView wearableDrawerView = findViewById(R.id.top_navigation_drawer);
+        if(null != wearableDrawerView) {
+            wearableDrawerView.setBackgroundColor(SettingsActivity.getPrimaryColor());
+        }
     }
 
     @CallSuper
@@ -120,4 +101,36 @@ public abstract class BaseCommonActivity extends AppCompatActivity {
     public void onExitAmbient() {
         this.mSuperCalled = true;
     }
+
+    private final WearableActivityDelegate.AmbientCallback callback = new WearableActivityDelegate.AmbientCallback() {
+        public void onEnterAmbient(Bundle ambientDetails) {
+            BaseCommonActivity.this.mSuperCalled = false;
+            BaseCommonActivity.this.onEnterAmbient(ambientDetails);
+            if (!BaseCommonActivity.this.mSuperCalled) {
+                String var2 = String.valueOf(BaseCommonActivity.this);
+                Log.w("WearableActivity", (new StringBuilder(56 + String.valueOf(var2).length())).append("Activity ").append(var2).append(" did not call through to super.onEnterAmbient()").toString());
+            }
+
+        }
+
+        public void onExitAmbient() {
+            BaseCommonActivity.this.mSuperCalled = false;
+            BaseCommonActivity.this.onExitAmbient();
+            if (!BaseCommonActivity.this.mSuperCalled) {
+                String var1 = String.valueOf(BaseCommonActivity.this);
+                Log.w("WearableActivity", (new StringBuilder(55 + String.valueOf(var1).length())).append("Activity ").append(var1).append(" did not call through to super.onExitAmbient()").toString());
+            }
+
+        }
+
+        public void onUpdateAmbient() {
+            BaseCommonActivity.this.mSuperCalled = false;
+            BaseCommonActivity.this.onUpdateAmbient();
+            if (!BaseCommonActivity.this.mSuperCalled) {
+                String var1 = String.valueOf(BaseCommonActivity.this);
+                Log.w("WearableActivity", (new StringBuilder(57 + String.valueOf(var1).length())).append("Activity ").append(var1).append(" did not call through to super.onUpdateAmbient()").toString());
+            }
+
+        }
+    };
 }
