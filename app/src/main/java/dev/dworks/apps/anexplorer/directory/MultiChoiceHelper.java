@@ -9,8 +9,11 @@ import androidx.collection.LongSparseArray;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.RecyclerView;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListener.OnItemClickListener;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -198,9 +201,11 @@ public class MultiChoiceHelper {
 			if (choiceActionMode != null) {
 				choiceActionMode.finish();
 			}
-			if(isWatch()){
-				Utils.inflateActionMenu(activity, menuItemClickListener, false);
-			}
+		}
+		if(isWatch()){
+			RootInfo root = ((DocumentsActivity)activity).getCurrentRoot();
+			DocumentInfo cwd = ((DocumentsActivity)activity).getCurrentDirectory();
+			Utils.inflateActionMenu(activity, menuItemClickListener, false, root, cwd);
 		}
 	}
 
@@ -240,6 +245,14 @@ public class MultiChoiceHelper {
 					choiceActionMode.finish();
 				}
 			}
+			if(isWatch()){
+				if (checkedItemCount == 0) {
+					RootInfo root = ((DocumentsActivity)activity).getCurrentRoot();
+					DocumentInfo cwd = ((DocumentsActivity)activity).getCurrentDirectory();
+					Utils.inflateActionMenu(activity, menuItemClickListener, false, root, cwd);
+				}
+			}
+
 		}
 	}
 
@@ -292,7 +305,9 @@ public class MultiChoiceHelper {
 
 	public void startSupportActionModeIfNeeded() {
 	    if(isWatch()){
-            Utils.inflateActionMenu(activity, menuItemClickListener, true);
+			RootInfo root = ((DocumentsActivity)activity).getCurrentRoot();
+			DocumentInfo cwd = ((DocumentsActivity)activity).getCurrentDirectory();
+            Utils.inflateActionMenu(activity, menuItemClickListener, true, root, cwd);
         } else {
             if (choiceActionMode == null) {
                 if (multiChoiceModeCallback == null) {

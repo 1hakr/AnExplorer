@@ -100,6 +100,7 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
     private ArrayList<CommonInfo> shortcutsData;
     private HomeAdapter mAdapter;
     private RootInfo processRoot;
+    private int totalSpanSize;
 
     public static void show(FragmentManager fm) {
         final HomeFragment fragment = new HomeFragment();
@@ -122,6 +123,7 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        totalSpanSize = getResources().getInteger(R.integer.home_span);
         mActivity = ((BaseActivity) getActivity());
         mIconHelper = new IconHelper(mActivity, MODE_GRID);
         ArrayList<CommonInfo> data = new ArrayList<>();
@@ -158,17 +160,18 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         final RootInfo secondaryRoot = roots.getSecondaryRoot();
         final RootInfo usbRoot = roots.getUSBRoot();
         processRoot = roots.getProcessRoot();
+        int type = !isWatch() ? TYPE_MAIN : TYPE_SHORTCUT;
         if(null != primaryRoot){
-            mainData.add(CommonInfo.from(primaryRoot, TYPE_MAIN));
+            mainData.add(CommonInfo.from(primaryRoot, type));
         }
         if(null != secondaryRoot){
-            mainData.add(CommonInfo.from(secondaryRoot, TYPE_MAIN));
+            mainData.add(CommonInfo.from(secondaryRoot, type));
         }
         if(null != usbRoot){
-            mainData.add(CommonInfo.from(usbRoot, TYPE_MAIN));
+            mainData.add(CommonInfo.from(usbRoot, type));
         }
         if(null != processRoot){
-            mainData.add(CommonInfo.from(processRoot, TYPE_MAIN));
+            mainData.add(CommonInfo.from(processRoot, type));
         }
     }
 
@@ -360,7 +363,6 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
             setListShownNoAnimation(true);
         }
 
-        final int totalSpanSize = 10;
         ((GridLayoutManager)getListView().getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -370,7 +372,7 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
                         spanSize = totalSpanSize;
                         break;
                     case TYPE_SHORTCUT:
-                        spanSize = isWatch() ? 5 : 2;
+                        spanSize = isWatch() ? 1 : 2;
                         break;
                     case TYPE_RECENT:
                         spanSize = totalSpanSize;

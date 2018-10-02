@@ -62,7 +62,8 @@
             android:horizontalSpacing="@dimen/grid_item_padding"
             android:scrollbars="vertical"
             app:columnWidth="@dimen/grid_item_height"
-            app:span="10"
+            app:span="@integer/home_span"
+            android:padding="@dimen/home_padding"
             app:type="custom" />
 
         <dev.dworks.apps.anexplorer.ui.CompatTextView

@@ -369,9 +369,6 @@ public class RootsCache {
     }
 
     public RootInfo getDefaultRoot() {
-        if(isWatch()){
-            return getPrimaryRoot();
-        }
         return getHomeRoot();
     }
 

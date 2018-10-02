@@ -926,7 +926,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
         settings.setVisible(mState.action != ACTION_MANAGE);
 
-        Utils.inflateActionMenu(this, this, false);
+        Utils.inflateActionMenu(this, this, false, root, cwd);
     }
 
     @Override

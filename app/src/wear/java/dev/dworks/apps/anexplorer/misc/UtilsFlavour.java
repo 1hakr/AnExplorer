@@ -14,6 +14,8 @@ import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.wear.widget.drawer.WearableActionDrawerView;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class UtilsFlavour {
@@ -40,7 +42,8 @@ public class UtilsFlavour {
     }
 
     public static void inflateActionMenu(Activity activity,
-                                         MenuItem.OnMenuItemClickListener listener, boolean contextual) {
+                                         MenuItem.OnMenuItemClickListener listener,
+                                         boolean contextual, RootInfo root, DocumentInfo cwd) {
         WearableActionDrawerView actionDrawer = activity.findViewById(R.id.bottom_action_drawer);
         Menu menu = actionDrawer.getMenu();
         if(null != listener) {
@@ -48,11 +51,18 @@ public class UtilsFlavour {
         }
         if(!contextual){
             menu.clear();
-            activity.getMenuInflater().inflate(R.menu.document_base, menu);
+            if(null != root
+                    && !root.isHome() && !root.isConnections() && !root.isApp()) {
+                activity.getMenuInflater().inflate(R.menu.document_base, menu);
+            }
             activity.getMenuInflater().inflate(R.menu.activity_base, menu);
         } else {
             menu.clear();
-            activity.getMenuInflater().inflate(R.menu.directory_base, menu);
+            if(null != root && root.isApp()) {
+                activity.getMenuInflater().inflate(R.menu.apps_base, menu);
+            } else {
+                activity.getMenuInflater().inflate(R.menu.directory_base, menu);
+            }
         }
     }
 }
