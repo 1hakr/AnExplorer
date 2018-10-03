@@ -246,6 +246,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         public void setData(int position){
             mPosition = position;
             commonInfo = getItem(position);
+            if(null == commonInfo){
+                return;
+            }
             iconBackground.setColor(ContextCompat.getColor(mContext, commonInfo.rootInfo.derivedColor));
             icon.setImageDrawable(commonInfo.rootInfo.loadShortcutIcon(mContext));
             title.setText(commonInfo.rootInfo.title);

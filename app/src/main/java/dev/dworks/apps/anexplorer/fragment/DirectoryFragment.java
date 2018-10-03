@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -36,14 +37,12 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,10 +58,11 @@ import java.util.ArrayList;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
-import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
+import dev.dworks.apps.anexplorer.common.DialogCommonBuilder;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment;
 import dev.dworks.apps.anexplorer.directory.DividerItemDecoration;
 import dev.dworks.apps.anexplorer.directory.DocumentsAdapter;
@@ -95,7 +95,6 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
-import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 import static android.widget.LinearLayout.VERTICAL;
@@ -859,44 +858,43 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 
 	private class OperationTask extends AsyncTask<Void, Void, Boolean> {
 
-		private MaterialProgressDialog progressDialog;
+		private Dialog progressDialog;
 		private ArrayList<DocumentInfo> docs;
 		private int id;
 
 		public OperationTask(ArrayList<DocumentInfo> docs, int id) {
 			this.docs = docs;
 			this.id = id;
-			progressDialog = new MaterialProgressDialog(getActivity());
-			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialog.setIndeterminate(true);
-            progressDialog.setColor(SettingsActivity.getAccentColor());
-			progressDialog.setCancelable(false);
+			DialogBuilder builder = new DialogBuilder(getActivity());
+			builder.setCancelable(false);
+			builder.setIndeterminate(true);
 
 			switch (id) {
 			case R.id.menu_delete:
 			case R.id.menu_stop:
 				if (null != root && root.isApp()) {
-					progressDialog.setMessage("Stopping processes...");
+					builder.setMessage("Stopping processes...");
 				} else {
-					progressDialog.setMessage("Deleting files...");
+					builder.setMessage("Deleting files...");
 				}
 				break;
 
 			case R.id.menu_save:
-				progressDialog.setMessage("Saving apps...");
+				builder.setMessage("Saving apps...");
 				break;
 
             case R.id.menu_uncompress:
-                progressDialog.setMessage("Uncompressing files...");
+				builder.setMessage("Uncompressing files...");
                 break;
 
             case R.id.menu_compress:
-                progressDialog.setMessage("Compressing files...");
+				builder.setMessage("Compressing files...");
                 break;
 
 			default:
 				break;
 			}
+			progressDialog = builder.create();
 		}
 
 		@Override
@@ -991,18 +989,13 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 	}
 
 	private void deleteFiles(final ArrayList<DocumentInfo> docs, final int id, String title) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		DialogBuilder builder = new DialogBuilder(getActivity());
 		builder.setMessage(title).setCancelable(false).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int did) {
-				dialog.dismiss();
 				new OperationTask(docs, id).execute();
 			}
-		}).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int did) {
-				dialog.dismiss();
-			}
-		});
-		DialogFragment.showThemedDialog(builder);
+		}).setNegativeButton(android.R.string.cancel, null);
+		builder.showDialog();
 	}
 
 	public State getDisplayState(Fragment fragment) {

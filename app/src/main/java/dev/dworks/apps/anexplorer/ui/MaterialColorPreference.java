@@ -45,7 +45,7 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
-import static dev.dworks.apps.anexplorer.DialogFragment.tintButtons;
+import static dev.dworks.apps.anexplorer.common.DialogFragment.tintButtons;
 
 
 /**

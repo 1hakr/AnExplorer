@@ -32,7 +32,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
+import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
@@ -79,8 +80,8 @@ public class RenameFragment extends DialogFragment {
 
         final DocumentsActivity activity = (DocumentsActivity) getActivity();
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        final LayoutInflater dialogInflater = LayoutInflater.from(builder.getContext());
+        final DialogBuilder builder = new DialogBuilder(context);
+        final LayoutInflater dialogInflater = LayoutInflater.from(context);
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);

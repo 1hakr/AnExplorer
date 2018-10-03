@@ -4,19 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.wearable.activity.ConfirmationActivity;
-import android.support.wearable.view.ActionChooserView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AlertDialogLayout;
 import androidx.wear.widget.drawer.WearableActionDrawerView;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class UtilsFlavour {
 
@@ -63,6 +59,7 @@ public class UtilsFlavour {
             } else {
                 activity.getMenuInflater().inflate(R.menu.directory_base, menu);
             }
+            actionDrawer.getController().peekDrawer();
         }
     }
 }

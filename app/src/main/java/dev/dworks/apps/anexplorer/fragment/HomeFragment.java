@@ -18,6 +18,7 @@
 package dev.dworks.apps.anexplorer.fragment;
 
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -54,6 +55,7 @@ import dev.dworks.apps.anexplorer.adapter.CommonInfo;
 import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.adapter.HomeAdapter;
 import dev.dworks.apps.anexplorer.adapter.RecentsAdapter;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment;
 import dev.dworks.apps.anexplorer.cursor.LimitCursorWrapper;
 import dev.dworks.apps.anexplorer.loader.RecentLoader;
@@ -66,14 +68,11 @@ import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DirectoryResult;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.ui.HomeItem;
-import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
-import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
 
-import static android.content.Context.SHORTCUT_SERVICE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
@@ -181,6 +180,18 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         for (RootInfo root: data) {
             shortcutsData.add(CommonInfo.from(root, TYPE_SHORTCUT));
         }
+        if(isWatch()) {
+            RootInfo rootInfo = new RootInfo();
+            rootInfo.authority = null;
+            rootInfo.rootId = "clean";
+            rootInfo.icon = R.drawable.ic_clean;
+            rootInfo.flags = DocumentsContract.Root.FLAG_LOCAL_ONLY;
+            rootInfo.title = "Clean RAM";
+            rootInfo.availableBytes = -1;
+            rootInfo.deriveFields();
+            shortcutsData.add(CommonInfo.from(rootInfo, TYPE_SHORTCUT));
+        }
+
     }
 
     private void getRecentsData(){
@@ -229,7 +240,11 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         switch (item.commonInfo.type) {
             case TYPE_MAIN:
             case TYPE_SHORTCUT:
-                openRoot(item.commonInfo.rootInfo);
+                if(item.commonInfo.rootInfo.rootId.equals("clean")){
+                    cleanRAM();
+                } else {
+                    openRoot(item.commonInfo.rootInfo);
+                }
                 break;
             case TYPE_RECENT:
                 openDocument(item.commonInfo.documentInfo);
@@ -252,8 +267,7 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
             case R.id.action:
                 Bundle params = new Bundle();
                 if(item.commonInfo.rootInfo.isAppProcess()) {
-                    new OperationTask(item.commonInfo.rootInfo).execute();
-                    AnalyticsManager.logEvent("process_clean", params);
+                    cleanRAM();
                 } else {
                     Intent intent = new Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS);
                     if(Utils.isIntentAvailable(getActivity(), intent)) {
@@ -268,19 +282,23 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
 
     }
 
+    private void cleanRAM(){
+        Bundle params = new Bundle();
+        new OperationTask(processRoot).execute();
+        AnalyticsManager.logEvent("process_clean", params);
+    }
+
     private class OperationTask extends AsyncTask<Void, Void, Boolean> {
 
-        private MaterialProgressDialog progressDialog;
+        private Dialog progressDialog;
         private RootInfo root;
         private long currentAvailableBytes;
 
         public OperationTask(RootInfo root) {
-            progressDialog = new MaterialProgressDialog(getActivity());
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setColor(SettingsActivity.getAccentColor());
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("Cleaning up RAM...");
+            DialogBuilder builder = new DialogBuilder(getActivity());
+            builder.setMessage("Cleaning up RAM...");
+            builder.setIndeterminate(true);
+            progressDialog = builder.create();
             this.root = root;
             currentAvailableBytes = root.availableBytes;
         }

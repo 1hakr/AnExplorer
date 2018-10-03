@@ -25,12 +25,12 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
-import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.cloud.CloudConnection;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment;
 import dev.dworks.apps.anexplorer.directory.DividerItemDecoration;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
@@ -273,21 +273,18 @@ public class ConnectionsFragment extends RecyclerFragment
     }
 
     private void deleteConnection(final int connection_id) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Delete connection?").setCancelable(false).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int did) {
-                dialog.dismiss();
-                boolean success = NetworkConnection.deleteConnection(getActivity(), connection_id);
-                if(success){
-                    reload();
-                }
-            }
-        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int did) {
-                dialog.dismiss();
-            }
-        });
-        DialogFragment.showThemedDialog(builder);
+        DialogBuilder builder = new DialogBuilder(getActivity());
+        builder.setMessage("Delete connection?")
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int did) {
+                        boolean success = NetworkConnection.deleteConnection(getActivity(), connection_id);
+                        if(success){
+                            reload();
+                        }
+                    }
+                    }).setNegativeButton(android.R.string.cancel,  null);
+        builder.showDialog();
         AnalyticsManager.logEvent("connection_delete");
     }
 
