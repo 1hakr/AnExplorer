@@ -35,6 +35,7 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
+import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 
@@ -360,4 +361,9 @@ public class DocumentInfo implements Durable, Parcelable {
 
         return sCollator.compare(lhs, rhs);
     }
+
+    public boolean isMedia(){
+        return MimePredicate.mimeMatches(MimePredicate.MEDIA_MIMES, mimeType);
+    }
+
 }

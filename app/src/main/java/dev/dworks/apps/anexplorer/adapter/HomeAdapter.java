@@ -24,6 +24,7 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
@@ -259,6 +260,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         private int mPosition;
         private final RecyclerView recyclerview;
         private TextView recents;
+        private RecentsAdapter adapter;
 
         public GalleryViewHolder(View v) {
             super(v);
@@ -279,16 +281,20 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         public void setData(int position){
             mPosition = position;
             commonInfo = CommonInfo.from(recentCursor);
-            RecentsAdapter adapter = new RecentsAdapter(mContext, recentCursor, mIconHelper);
+            adapter = new RecentsAdapter(mContext, recentCursor, mIconHelper);
             adapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(RecentsAdapter.ViewHolder item, int position) {
                     if(null != onItemClickListener) {
-                        onItemClickListener.onItemClick(GalleryViewHolder.this, recyclerview, getLayoutPosition());
+                        onItemClickListener.onItemClick(GalleryViewHolder.this, recyclerview, position);
                     }
                 }
             });
             recyclerview.setAdapter(adapter);
+        }
+
+        public DocumentInfo getItem(int position){
+           return DocumentInfo.fromDirectoryCursor(adapter.getItem(position));
         }
     }
 
@@ -298,22 +304,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         } else {
             return CommonInfo.from(recentCursor);
         }
-    }
-
-    public int getSpanSize(int position){
-        int spanSize = 1;
-        switch (getItem(position).type) {
-            case TYPE_MAIN:
-                spanSize = 5;
-                break;
-            case TYPE_SHORTCUT:
-                spanSize = 1;
-                break;
-            case TYPE_RECENT:
-                spanSize = 1;
-                break;
-        }
-        return spanSize;
     }
 
     private void animateProgress(final NumberProgressBar item, RootInfo root){

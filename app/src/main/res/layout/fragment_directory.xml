@@ -73,10 +73,11 @@
         <dev.dworks.apps.anexplorer.ui.CompatTextView
             android:id="@android:id/empty"
             style="@style/TextAppearance.AppCompat.Subhead"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:paddingTop="10dp"
             android:text="@string/empty"
             android:visibility="gone"
             app:drawableTop="@drawable/ic_empty_file" />

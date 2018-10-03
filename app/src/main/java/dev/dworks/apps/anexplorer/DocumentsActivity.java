@@ -1579,15 +1579,16 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         } else if (mState.action == ACTION_BROWSE) {
 
             // Fall back to viewing
+            final RootInfo rootInfo = getCurrentRoot();
             final Intent view = new Intent(Intent.ACTION_VIEW);
             view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            if(RootInfo.isMedia(getCurrentRoot())){
+            if(RootInfo.isMedia(rootInfo)){
                 view.setDataAndType(MediaDocumentsProvider.getMediaUriForDocumentId(doc.documentId), doc.mimeType);
             } else {
                 Uri contentUri = null;
-                if(getCurrentRoot().isExternalStorage() && !TextUtils.isEmpty(doc.path)){
+                if((rootInfo.isStorage() || doc.isMedia()) && !TextUtils.isEmpty(doc.path)){
                     contentUri = FileUtils.getContentUriFromFilePath(this, new File(doc.path).getAbsolutePath());
                 }
                 if(null == contentUri){

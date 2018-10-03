@@ -247,7 +247,10 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
                 }
                 break;
             case TYPE_RECENT:
-                openDocument(item.commonInfo.documentInfo);
+                try {
+                    final DocumentInfo documentInfo = ((HomeAdapter.GalleryViewHolder)item).getItem(position);
+                    openDocument(documentInfo);
+                } catch (Exception ignore) {}
                 break;
         }
     }

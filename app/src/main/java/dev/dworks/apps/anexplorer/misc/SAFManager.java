@@ -87,17 +87,17 @@ public class SAFManager {
 
     public static String getRootUri(Uri uri) {
         if (isTreeUri(uri)) {
-            return dev.dworks.apps.anexplorer.model.DocumentsContract.getTreeDocumentId(uri);
+            return DocumentsContract.getTreeDocumentId(uri);
         }
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.getDocumentId(uri);
+        return DocumentsContract.getDocumentId(uri);
     }
 
     private static Uri buildDocumentUriMaybeUsingTree(Uri uri, String docId) {
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.buildDocumentUriMaybeUsingTree(uri, docId);
+        return DocumentsContract.buildDocumentUriMaybeUsingTree(uri, docId);
     }
 
     private static boolean isTreeUri(Uri uri) {
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.isTreeUri(uri);
+        return DocumentsContract.isTreeUri(uri);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
