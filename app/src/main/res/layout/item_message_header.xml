@@ -30,7 +30,7 @@
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="2"
-        android:paddingStart="@dimen/list_item_padding"
+        android:paddingStart="@dimen/header_start_padding"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         tools:text="Android title"

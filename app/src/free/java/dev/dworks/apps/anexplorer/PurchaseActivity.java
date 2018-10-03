@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 
 import dev.dworks.apps.anexplorer.common.ActionBarActivity;

@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.wearable.activity.ConfirmationActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.wear.widget.ConfirmationOverlay;
 import androidx.wear.widget.drawer.WearableActionDrawerView;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class UtilsFlavour {
 
@@ -52,6 +57,7 @@ public class UtilsFlavour {
                 activity.getMenuInflater().inflate(R.menu.document_base, menu);
             }
             activity.getMenuInflater().inflate(R.menu.activity_base, menu);
+            actionDrawer.getController().closeDrawer();
         } else {
             menu.clear();
             if(null != root && root.isApp()) {
@@ -61,5 +67,15 @@ public class UtilsFlavour {
             }
             actionDrawer.getController().peekDrawer();
         }
+    }
+
+    public static void showMessage(Activity activity, String message,
+                                    int duration, String action, View.OnClickListener listener){
+        int type = !TextUtils.isEmpty(action) && action.equals("ERROR")
+                ? ConfirmationOverlay.FAILURE_ANIMATION : ConfirmationOverlay.SUCCESS_ANIMATION;
+        new ConfirmationOverlay()
+                .setType(type)
+                .setMessage(message)
+                .showOn(activity);
     }
 }
