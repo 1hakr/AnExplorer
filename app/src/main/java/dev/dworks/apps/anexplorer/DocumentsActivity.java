@@ -667,40 +667,24 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             }
         });
 
-        if (isRootsDrawerOpen()) {
-            //mToolbar.setNavigationIcon(root != null ? root.loadToolbarIcon(mToolbar.getContext()) : null);
-            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT
-                    || mState.action == ACTION_BROWSE || mState.action == ACTION_OPEN_TREE) {
-                //mToolbar.setTitle(R.string.title_open);
-                setTitle(R.string.app_name);
-            } else if (mState.action == DocumentsActivity.State.ACTION_CREATE) {
-                setTitle(R.string.title_save);
-            }
+        if (mSearchExpanded) {
+            setTitle(null);
             mToolbarStack.setVisibility(View.GONE);
             mToolbarStack.setAdapter(null);
-
         } else {
-            //mToolbar.setNavigationIcon(R.drawable.ic_drawer_glyph);
-
-            if (mSearchExpanded) {
-                setTitle(null);
+            if (mState.stack.size() <= 1) {
+                if(null != root){
+                    setTitle(root.title);
+                    AnalyticsManager.setCurrentScreen(this, root.derivedTag);
+                }
                 mToolbarStack.setVisibility(View.GONE);
                 mToolbarStack.setAdapter(null);
             } else {
-                if (mState.stack.size() <= 1) {
-                    if(null != root){
-                        setTitle(root.title);
-                        AnalyticsManager.setCurrentScreen(this, root.derivedTag);
-                    }
-                    mToolbarStack.setVisibility(View.GONE);
-                    mToolbarStack.setAdapter(null);
-                } else {
-                    setTitle(null);
-                    mToolbarStack.setVisibility(View.VISIBLE);
-                    mToolbarStack.setAdapter(mStackAdapter);
-                    mIgnoreNextNavigation = true;
-                    mToolbarStack.setSelection(mStackAdapter.getCount() - 1);
-                }
+                setTitle(null);
+                mToolbarStack.setVisibility(View.VISIBLE);
+                mToolbarStack.setAdapter(mStackAdapter);
+                mIgnoreNextNavigation = true;
+                mToolbarStack.setSelection(mStackAdapter.getCount() - 1);
             }
         }
     }
