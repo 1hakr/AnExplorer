@@ -5,7 +5,7 @@ File keystoreProperties = rootProject.file("keystore.properties")
 if (keystoreProperties.exists()) {
     props.load(new FileInputStream(keystoreProperties))
 } else {
-    props['keystorefile'] = 'none';
+    props['keystorefile'] = 'none'
 }
 
 android {

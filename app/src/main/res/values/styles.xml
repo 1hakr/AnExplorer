@@ -31,8 +31,7 @@
 
     <style name="ListProgress" parent="@style/Widget.AppCompat.ProgressBar"/>
 
-    <style name="PopupTheme" parent="@android:style/Widget.Holo.Spinner">
-        <item name="android:background">@drawable/abc_spinner_mtrl_am_alpha</item>
+    <style name="PopupTheme" parent="@style/Widget.AppCompat.Spinner">
     </style>
 
     <style name="Custom.Widget.ActionMode" parent="Widget.AppCompat.ActionMode">

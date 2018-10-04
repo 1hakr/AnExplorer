@@ -44,5 +44,5 @@ private Integer generateVersionCode(Integer variant) {
 
 private String generateVersionName() {
     String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
-    return versionName;
+    return versionName
 }
