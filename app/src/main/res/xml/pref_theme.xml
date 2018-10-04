@@ -1,5 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/pref_header_theme"
     android:key="ThemePreferenceScreen">
 
     <ListPreference

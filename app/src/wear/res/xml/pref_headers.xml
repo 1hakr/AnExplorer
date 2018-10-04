@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <header
+        android:icon="@drawable/ic_dummy_icon"
+        android:fragment="dev.dworks.apps.anexplorer.setting.GeneralPreferenceFragment"
+        android:title="@string/pref_header_general" />
+    <header
+        android:icon="@drawable/ic_dummy_icon"
+        android:fragment="dev.dworks.apps.anexplorer.setting.ThemePreferenceFragment"
+        android:title="@string/pref_header_theme" />
+    <header
+        android:icon="@drawable/ic_dummy_icon"
+        android:fragment="dev.dworks.apps.anexplorer.setting.AdvancedPreferenceFragment"
+        android:title="@string/pref_header_advanced" />
+
+</preference-headers>

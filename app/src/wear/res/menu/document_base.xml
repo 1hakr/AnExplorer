@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_create_file"
+        android:icon="@drawable/ic_menu_new_file"
+        support:showAsAction="always"
+        android:title="@string/menu_create_file"
+        android:visible="false"/>
+    <item
+        android:id="@+id/menu_create_dir"
+        android:icon="@drawable/ic_menu_new_folder"
+        support:showAsAction="always"
+        android:title="@string/menu_create_dir"
+        android:visible="false"/>
+    <!--<item-->
+        <!--android:id="@+id/menu_search"-->
+        <!--support:actionViewClass="androidx.appcompat.widget.SearchView"-->
+        <!--android:icon="@drawable/ic_search"-->
+        <!--support:showAsAction="ifRoom|collapseActionView"-->
+        <!--android:title="@string/menu_search"-->
+        <!--android:visible="false"/>-->
+
+</menu>

@@ -1,4 +1,4 @@
-package dev.dworks.apps.anexplorer;
+package dev.dworks.apps.anexplorer.common;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -11,7 +11,7 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 /**
  * Created by HaKr on 18-Oct-14.
  */
-public abstract class ActionBarActivity extends AppCompatActivity{
+public abstract class ActionBarActivity extends BaseCommonActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

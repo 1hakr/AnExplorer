@@ -41,7 +41,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;

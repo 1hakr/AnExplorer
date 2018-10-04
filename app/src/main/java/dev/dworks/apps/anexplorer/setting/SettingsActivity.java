@@ -38,13 +38,17 @@ import java.util.List;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.AppCompatPreferenceActivity;
+import dev.dworks.apps.anexplorer.common.SettingsCommonActivity;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+
+public class SettingsActivity extends SettingsCommonActivity {
 
     public static final String TAG = "Settings";
 
@@ -99,7 +103,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static boolean getDisplayRecentMedia() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
-                .getBoolean(KEY_RECENT_MEDIA, true);
+                .getBoolean(KEY_RECENT_MEDIA, !isWatch());
     }
 
     public static boolean getRootMode(Context context) {
@@ -141,7 +145,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     
     public static boolean getFolderAnimation(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_FOLDER_ANIMATIONS, false);
+                .getBoolean(KEY_FOLDER_ANIMATIONS, true);
     }
     
     @Override

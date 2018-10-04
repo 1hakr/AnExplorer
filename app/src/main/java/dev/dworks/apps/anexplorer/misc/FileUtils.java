@@ -931,8 +931,7 @@ public class FileUtils {
             return MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         }else if ("video".equals(typeOnly)) {
             return MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-        } else {
-            return MediaStore.Files.getContentUri("external");
         }
+        return null;
     }
 }

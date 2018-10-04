@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -36,14 +37,12 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
 import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,10 +58,11 @@ import java.util.ArrayList;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
-import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
+import dev.dworks.apps.anexplorer.common.DialogCommonBuilder;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment;
 import dev.dworks.apps.anexplorer.directory.DividerItemDecoration;
 import dev.dworks.apps.anexplorer.directory.DocumentsAdapter;
@@ -95,7 +95,6 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
-import dev.dworks.apps.anexplorer.ui.MaterialProgressDialog;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 import static android.widget.LinearLayout.VERTICAL;
@@ -106,7 +105,9 @@ import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.SORT_ORDER_UNKNOWN;
 import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
@@ -127,7 +128,7 @@ import static dev.dworks.apps.anexplorer.ui.RecyclerViewPlus.TYPE_LIST;
 /**
  * Display the documents inside a single directory.
  */
-public class DirectoryFragment extends RecyclerFragment {
+public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMenuItemClickListener {
 
 	private static final String KEY_ADAPTER = "key_adapter";
 	private CompatTextView mEmptyView;
@@ -171,6 +172,7 @@ public class DirectoryFragment extends RecyclerFragment {
 	private final DocumentsAdapter.Environment mAdapterEnv = new AdapterEnvironment();
 	private IconHelper mIconHelper;
 	private MultiChoiceHelper mMultiChoiceHelper;
+	boolean selectAll = true;
 
 	public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
 		show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -180,8 +182,8 @@ public class DirectoryFragment extends RecyclerFragment {
 		show(fm, TYPE_SEARCH, root, doc, query, anim);
 	}
 
-	public static void showRecentsOpen(FragmentManager fm, int anim) {
-		show(fm, TYPE_RECENT_OPEN, null, null, null, anim);
+	public static void showRecentsOpen(FragmentManager fm, int anim, RootInfo root) {
+		show(fm, TYPE_RECENT_OPEN, root, null, null, anim);
 	}
 
 	private static void show(FragmentManager fm, int type, RootInfo root, DocumentInfo doc, String query, int anim) {
@@ -235,8 +237,6 @@ public class DirectoryFragment extends RecyclerFragment {
 
 		mProgressBar = (MaterialProgressBar) view.findViewById(R.id.progressBar);
 		mEmptyView = (CompatTextView)view.findViewById(android.R.id.empty);
-		setLayoutManager(new LinearLayoutManager(view.getContext()));
-		setHasFixedSize(true);
 		getListView().setRecyclerListener(mRecycleListener);
 	}
 
@@ -274,8 +274,13 @@ public class DirectoryFragment extends RecyclerFragment {
 
 		mIconHelper = new IconHelper(mActivity, MODE_GRID);
 		mAdapter = new DocumentsAdapter(mItemListener, mAdapterEnv);
+
 		mMultiChoiceHelper = new MultiChoiceHelper(mActivity, mAdapter);
 		mMultiChoiceHelper.setMultiChoiceModeListener(mMultiListener);
+		if (isWatch()){
+			mMultiChoiceHelper.setMenuItemClickListener(this);
+		}
+
 		if(null != savedInstanceState) {
 			mMultiChoiceHelper.onRestoreInstanceState(savedInstanceState.getParcelable(KEY_ADAPTER));
 		}
@@ -473,13 +478,6 @@ public class DirectoryFragment extends RecyclerFragment {
         mProgressBar.setColor(SettingsActivity.getAccentColor());
 		mIconHelper.setThumbnailsEnabled(state.showThumbnail);
 
-		final int choiceMode;
-		if (state.allowMultiple) {
-			choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL;
-		} else {
-			choiceMode = ListView.CHOICE_MODE_NONE;
-		}
-
 		if (state.derivedMode == MODE_GRID) {
 			((RecyclerViewPlus)getListView()).setType(TYPE_GRID);
 		} else {
@@ -515,7 +513,9 @@ public class DirectoryFragment extends RecyclerFragment {
 			}
 			itemDecoration = decoration;
 		}
-		getListView().addItemDecoration(itemDecoration);
+		if(!isWatch()) {
+			getListView().addItemDecoration(itemDecoration);
+		}
 	}
 
 	private RecyclerItemClickListener.OnItemClickListener mItemListener
@@ -558,15 +558,11 @@ public class DirectoryFragment extends RecyclerFragment {
 				switch (view.getId()) {
 					case android.R.id.icon:
 						if (count == 0) {
-							ActionMode mChoiceActionMode = null;
-							if (mChoiceActionMode == null
-									&& (mChoiceActionMode = mActivity.startSupportActionMode(mMultiListener)) != null) {
-								mAdapter.setSelected(position, true);
-								getListView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-							}
+							mMultiChoiceHelper.startSupportActionModeIfNeeded();
+							mMultiChoiceHelper.setItemChecked(position,true, true);
 						} else {
-							mAdapter.setSelected(position, !mAdapter.isItemChecked(position));
-							getListView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+							mMultiChoiceHelper.setItemChecked(position,
+									!mAdapter.isItemChecked(position), true);
 						}
 						break;
 
@@ -585,7 +581,6 @@ public class DirectoryFragment extends RecyclerFragment {
 
 	private MultiChoiceModeListener mMultiListener = new MultiChoiceModeListener() {
 
-		boolean selectAll = true;
 		private boolean editMode;
 
 		@Override
@@ -658,89 +653,14 @@ public class DirectoryFragment extends RecyclerFragment {
 				compress.setVisible(editMode && !isOperationSupported);
 
 				info.setVisible(count == 1);
-				bookmark.setVisible(isTelevision() && count == 1);
+				bookmark.setVisible(isSpecialDevice() && count == 1);
 			}
 			return true;
 		}
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			final SparseBooleanArray checked = mAdapter.getCheckedItemPositions();
-			final ArrayList<DocumentInfo> docs = new ArrayList<>();
-			final int size = checked.size();
-			for (int i = 0; i < size; i++) {
-				if (checked.valueAt(i)) {
-					final Cursor cursor = mAdapter.getItem(checked.keyAt(i));
-                    if(null != cursor) {
-                        final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
-                        docs.add(doc);
-                    }
-				}
-			}
-            if(docs.isEmpty()){
-                return false;
-            }
-			final int id = item.getItemId();
-			switch (id) {
-			case R.id.menu_open:
-				BaseActivity.get(DirectoryFragment.this).onDocumentsPicked(docs);
-				mode.finish();
-				return true;
-
-			case R.id.menu_share:
-				onShareDocuments(docs);
-				mode.finish();
-				return true;
-
-			case R.id.menu_copy:
-				moveDocument(docs, false);
-				mode.finish();
-				return true;
-
-			case R.id.menu_cut:
-				moveDocument(docs, true);
-				mode.finish();
-				return true;
-
-			case R.id.menu_delete:
-				deleteDocument(docs, id);
-				mode.finish();
-				return true;
-
-			case R.id.menu_stop:
-				stopDocument(docs, id);
-				mode.finish();
-				return true;
-			case R.id.menu_save:
-            case R.id.menu_compress:
-				new OperationTask(docs, id).execute();
-				mode.finish();
-				return true;
-
-			case R.id.menu_select_all:
-				int count = mAdapter.getItemCount();
-				for (int i = 0; i < count; i++) {
-					mAdapter.setSelected(i, selectAll);
-				}
-				selectAll = !selectAll;
-				Bundle params = new Bundle();
-				params.putInt(FILE_COUNT, count);
-				AnalyticsManager.logEvent("select", params);
-				return true;
-
-			case R.id.menu_info:
-				infoDocument(docs.get(0));
-				mode.finish();
-				return true;
-
-			case R.id.menu_rename:
-				renameDocument(docs.get(0));
-				mode.finish();
-				return true;
-
-			default:
-				return false;
-			}
+			return handleMenuAction(item);
 		}
 
 		@Override
@@ -938,44 +858,43 @@ public class DirectoryFragment extends RecyclerFragment {
 
 	private class OperationTask extends AsyncTask<Void, Void, Boolean> {
 
-		private MaterialProgressDialog progressDialog;
+		private Dialog progressDialog;
 		private ArrayList<DocumentInfo> docs;
 		private int id;
 
 		public OperationTask(ArrayList<DocumentInfo> docs, int id) {
 			this.docs = docs;
 			this.id = id;
-			progressDialog = new MaterialProgressDialog(getActivity());
-			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialog.setIndeterminate(true);
-            progressDialog.setColor(SettingsActivity.getAccentColor());
-			progressDialog.setCancelable(false);
+			DialogBuilder builder = new DialogBuilder(getActivity());
+			builder.setCancelable(false);
+			builder.setIndeterminate(true);
 
 			switch (id) {
 			case R.id.menu_delete:
 			case R.id.menu_stop:
 				if (null != root && root.isApp()) {
-					progressDialog.setMessage("Stopping processes...");
+					builder.setMessage("Stopping processes...");
 				} else {
-					progressDialog.setMessage("Deleting files...");
+					builder.setMessage("Deleting files...");
 				}
 				break;
 
 			case R.id.menu_save:
-				progressDialog.setMessage("Saving apps...");
+				builder.setMessage("Saving apps...");
 				break;
 
             case R.id.menu_uncompress:
-                progressDialog.setMessage("Uncompressing files...");
+				builder.setMessage("Uncompressing files...");
                 break;
 
             case R.id.menu_compress:
-                progressDialog.setMessage("Compressing files...");
+				builder.setMessage("Compressing files...");
                 break;
 
 			default:
 				break;
 			}
+			progressDialog = builder.create();
 		}
 
 		@Override
@@ -1028,39 +947,38 @@ public class DirectoryFragment extends RecyclerFragment {
 				switch (id) {
 				case R.id.menu_delete:
                     if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.toast_failed_delete);
+						Utils.showError(getActivity(), R.string.toast_failed_delete);
                     }
 					break;
 
 				case R.id.menu_save:
                     if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.save_error);
+						Utils.showError(getActivity(), R.string.save_error);
                     }
 					break;
 
                 case R.id.menu_compress:
                     if(!((BaseActivity) getActivity()).isSAFIssue(docs.get(0).documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.compress_error);
+						Utils.showError(getActivity(), R.string.compress_error);
                     }
 
                     break;
                 case R.id.menu_uncompress:
                     if(!((BaseActivity) getActivity()).isSAFIssue(doc.documentId)) {
-                        ((BaseActivity) getActivity()).showError(R.string.uncompress_error);
+                        Utils.showError(getActivity(), R.string.uncompress_error);
                     }
                     break;
 				}
 			} else{
 				if(id == R.id.menu_save) {
-					((BaseActivity) getActivity()).
-							showSnackBar("App(s) Backed up to 'AppBackup' folder",
-									Snackbar.LENGTH_LONG, "View", new OnClickListener() {
-										@Override
-										public void onClick(View view) {
-											DocumentsActivity activity = ((DocumentsActivity)getActivity());
-											activity.onRootPicked(activity.getAppsBackupRoot(), true);
-										}
-									});
+					Utils.showSnackBar(getActivity(), "App(s) Backed up to 'AppBackup' folder",
+							Snackbar.LENGTH_LONG, "View", new OnClickListener() {
+								@Override
+								public void onClick(View view) {
+									DocumentsActivity activity = ((DocumentsActivity)getActivity());
+									activity.onRootPicked(activity.getAppsBackupRoot(), true);
+								}
+							});
 				}
 			}
 
@@ -1071,18 +989,13 @@ public class DirectoryFragment extends RecyclerFragment {
 	}
 
 	private void deleteFiles(final ArrayList<DocumentInfo> docs, final int id, String title) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		DialogBuilder builder = new DialogBuilder(getActivity());
 		builder.setMessage(title).setCancelable(false).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int did) {
-				dialog.dismiss();
 				new OperationTask(docs, id).execute();
 			}
-		}).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int did) {
-				dialog.dismiss();
-			}
-		});
-		DialogFragment.showThemedDialog(builder);
+		}).setNegativeButton(android.R.string.cancel, null);
+		builder.showDialog();
 	}
 
 	public State getDisplayState(Fragment fragment) {
@@ -1169,7 +1082,11 @@ public class DirectoryFragment extends RecyclerFragment {
     }
 
 	private void setEmptyState() {
-		if (mAdapter.isEmpty()) {
+		boolean isEmpty = mAdapter.isEmpty();
+		if(isWatch()){
+			isEmpty = mAdapter.getItemCount() == 1;
+		}
+		if (isEmpty) {
 			mEmptyView.setVisibility(View.VISIBLE);
 			if(null == root){
 				return;
@@ -1178,6 +1095,8 @@ public class DirectoryFragment extends RecyclerFragment {
 				mEmptyView.setText("Your phone is not rooted!");
 			} else if(root.isNetworkStorage()){
 				mEmptyView.setText("Couldnt connect to the server!");
+			} else  {
+				mEmptyView.setText(R.string.empty);
 			}
 		} else {
 			mEmptyView.setVisibility(View.GONE);
@@ -1288,66 +1207,110 @@ public class DirectoryFragment extends RecyclerFragment {
 		popup.show();
 	}
 
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		if(handleMenuAction(item)){
+			((DocumentsActivity)getActivity()).closeDrawer();
+			mMultiChoiceHelper.clearChoices();
+			return true;
+		}
+		return false;
+	}
+
 	public boolean onPopupMenuItemClick(MenuItem item, int position) {
 		final ArrayList<DocumentInfo> docs = new ArrayList<>();
 		final Cursor cursor = mAdapter.getItem(position);
 		final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
 		docs.add(doc);
 
-		final int id = item.getItemId();
-		switch (id) {
-		case R.id.menu_share:
-			onShareDocuments(docs);
-			return true;
+		return handleMenuAction(item, docs);
+	}
 
-		case R.id.menu_copy:
-			moveDocument(docs, false);
-			return true;
-
-		case R.id.menu_cut:
-			moveDocument(docs, true);
-			return true;
-
-		case R.id.menu_delete:
-			deleteDocument(docs, id);
-			return true;
-
-		case R.id.menu_stop:
-			stopDocument(docs, id);
-			return true;
-
-		case R.id.menu_save:
-        case R.id.menu_uncompress:
-        case R.id.menu_compress:
-			new OperationTask(docs, id).execute();
-			return true;
-        case R.id.menu_open:
-			openDocument(docs.get(0));
-            return true;
-        case R.id.menu_details:
-            Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
-                    + AppsProvider.getPackageForDocId(docs.get(0).documentId)));
-            if(Utils.isIntentAvailable(getActivity(), intent2)) {
-                getActivity().startActivity(intent2);
-            }
-            Bundle params = new Bundle();
-			String type = IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType);
-			params.putString(FILE_TYPE, type);
-			AnalyticsManager.logEvent("details", params);
-            return true;
-		case R.id.menu_info:
-			infoDocument(docs.get(0));
-			return true;
-
-		case R.id.menu_rename:
-			renameDocument(docs.get(0));
-			return true;
-
-        case R.id.menu_bookmark:
-			bookmarkDocument(docs.get(0));
-            return true;
-		default:
+	public boolean handleMenuAction(MenuItem item){
+		final SparseBooleanArray checked = mAdapter.getCheckedItemPositions();
+		final ArrayList<DocumentInfo> docs = new ArrayList<>();
+		final int size = checked.size();
+		for (int i = 0; i < size; i++) {
+			if (checked.valueAt(i)) {
+				final Cursor cursor = mAdapter.getItem(checked.keyAt(i));
+				if(null != cursor) {
+					final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
+					docs.add(doc);
+				}
+			}
+		}
+		if(docs.isEmpty()){
 			return false;
+		}
+		return handleMenuAction(item, docs);
+	}
+
+	public boolean handleMenuAction(MenuItem item, ArrayList<DocumentInfo> docs) {
+		final int id = item.getItemId();
+		Bundle params = new Bundle();
+		switch (id) {
+			case R.id.menu_share:
+				onShareDocuments(docs);
+				return true;
+
+			case R.id.menu_copy:
+				moveDocument(docs, false);
+				return true;
+
+			case R.id.menu_cut:
+				moveDocument(docs, true);
+				return true;
+
+			case R.id.menu_delete:
+				deleteDocument(docs, id);
+				return true;
+
+			case R.id.menu_stop:
+				stopDocument(docs, id);
+				return true;
+
+			case R.id.menu_save:
+			case R.id.menu_uncompress:
+			case R.id.menu_compress:
+				new OperationTask(docs, id).execute();
+				return true;
+			case R.id.menu_open:
+				openDocument(docs.get(0));
+				//BaseActivity.get(DirectoryFragment.this).onDocumentsPicked(docs);
+				return true;
+			case R.id.menu_details:
+				Intent intent2 = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:"
+						+ AppsProvider.getPackageForDocId(docs.get(0).documentId)));
+				if(Utils.isIntentAvailable(getActivity(), intent2)) {
+					getActivity().startActivity(intent2);
+				}
+				String type = IconUtils.getTypeNameFromMimeType(docs.get(0).mimeType);
+				params.putString(FILE_TYPE, type);
+				AnalyticsManager.logEvent("details", params);
+				return true;
+			case R.id.menu_info:
+				infoDocument(docs.get(0));
+				return true;
+
+			case R.id.menu_rename:
+				renameDocument(docs.get(0));
+				return true;
+
+			case R.id.menu_bookmark:
+				bookmarkDocument(docs.get(0));
+				return true;
+			case R.id.menu_select_all:
+				int count = mAdapter.getItemCount();
+				for (int i = 0; i < count; i++) {
+					mAdapter.setSelected(i, selectAll);
+				}
+				selectAll = !selectAll;
+				params.putInt(FILE_COUNT, count);
+				AnalyticsManager.logEvent("select", params);
+				return false;
+
+			default:
+				return false;
 		}
 	}
 
@@ -1359,7 +1322,7 @@ public class DirectoryFragment extends RecyclerFragment {
 		contentValues.put(ExplorerProvider.BookmarkColumns.ROOT_ID, document.displayName);
 		Uri uri = getActivity().getContentResolver().insert(ExplorerProvider.buildBookmark(), contentValues);
 		if(null != uri) {
-			((BaseActivity) getActivity()).showInfo("Bookmark added");
+			Utils.showSnackBar(getActivity(), "Bookmark added");
 			RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
 		}
 		Bundle params = new Bundle();
@@ -1399,7 +1362,7 @@ public class DirectoryFragment extends RecyclerFragment {
 			}
 		}
 		else{
-			((BaseActivity) getActivity()).showError(R.string.unable_to_open_app);
+			Utils.showError(getActivity(), R.string.unable_to_open_app);
 		}
 		Bundle params = new Bundle();
 		String type = IconUtils.getTypeNameFromMimeType(doc.mimeType);
@@ -1425,7 +1388,7 @@ public class DirectoryFragment extends RecyclerFragment {
 	private void infoDocument(DocumentInfo doc) {
 		final BaseActivity activity = (BaseActivity) getActivity();
 		activity.setInfoDrawerOpen(true);
-		if (activity.isShowAsDialog()) {
+		if (activity.isShowAsDialog() || isWatch()) {
 			DetailFragment.showAsDialog(activity.getSupportFragmentManager(), doc);
 		} else {
 			DetailFragment.show(activity.getSupportFragmentManager(), doc);
@@ -1471,6 +1434,11 @@ public class DirectoryFragment extends RecyclerFragment {
 		@Override
 		public RootInfo getRoot() {
 			return root;
+		}
+
+		@Override
+		public DocumentInfo getDocumentInfo() {
+			return doc;
 		}
 
 		@Override

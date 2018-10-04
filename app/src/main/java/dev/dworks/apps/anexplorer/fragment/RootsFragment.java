@@ -55,10 +55,10 @@ import java.util.Comparator;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
-import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
@@ -87,7 +87,7 @@ public class RootsFragment extends Fragment {
 
     private LoaderCallbacks<Collection<RootInfo>> mCallbacks;
 
-    private static final String EXTRA_INCLUDE_APPS = "includeApps";
+    public static final String EXTRA_INCLUDE_APPS = "includeApps";
     private static final String GROUP_SIZE = "group_size";
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;
@@ -341,29 +341,23 @@ public class RootsFragment extends Fragment {
     };
 
     private void removeBookark(final BookmarkItem item) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        DialogBuilder builder = new DialogBuilder(getActivity());
         builder.setMessage("Remove bookmark?")
         .setCancelable(false)
         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int did) {
-                dialog.dismiss();
                 int rows = getActivity().getContentResolver().delete(ExplorerProvider.buildBookmark(),
                         ExplorerProvider.BookmarkColumns.PATH + " = ? AND " +
                                 ExplorerProvider.BookmarkColumns.TITLE + " = ? ",
                         new String[]{item.root.path, item.root.title}
                 );
                 if (rows > 0) {
-                    ((BaseActivity) getActivity()).showInfo("Bookmark removed");
-
+                    Utils.showSnackBar(getActivity(), "Bookmark removed");
                     RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
                 }
             }
-        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int did) {
-                dialog.dismiss();
-            }
-        });
-        DialogFragment.showThemedDialog(builder);
+        }).setNegativeButton(android.R.string.cancel, null);
+        builder.showDialog();
     }
 
     public static class GroupItem {

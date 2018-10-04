@@ -1,6 +1,7 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/pref_header_security">
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:key="pin_enable"
         android:summary="@string/pref_description_pin_enable"
         android:title="@string/pref_title_pin_enable" />

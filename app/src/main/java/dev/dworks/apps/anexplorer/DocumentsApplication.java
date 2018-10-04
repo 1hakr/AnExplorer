@@ -56,6 +56,7 @@ public class DocumentsApplication extends AppFlavour {
     private Point mThumbnailsSize;
     private ThumbnailCache mThumbnailCache;
     private static boolean isTelevision;
+    private static boolean isWatch;
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
@@ -120,6 +121,7 @@ public class DocumentsApplication extends AppFlavour {
         registerReceiver(mCacheReceiver, localeFilter);
 
         isTelevision = Utils.isTelevision(this);
+        isWatch = Utils.isWatch(this);
         if(isTelevision && Integer.valueOf(SettingsActivity.getThemeStyle()) != AppCompatDelegate.MODE_NIGHT_YES){
             SettingsActivity.setThemeStyle(AppCompatDelegate.MODE_NIGHT_YES);
         }
@@ -148,7 +150,15 @@ public class DocumentsApplication extends AppFlavour {
         }
     };
 
+    public static boolean isSpecialDevice() {
+        return isTelevision() || isWatch();
+    }
+
     public static boolean isTelevision() {
         return isTelevision;
+    }
+
+    public static boolean isWatch() {
+        return isWatch;
     }
 }

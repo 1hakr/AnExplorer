@@ -34,9 +34,10 @@ import android.view.View;
 import android.widget.EditText;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
-import dev.dworks.apps.anexplorer.DialogFragment;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
+import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
@@ -63,8 +64,8 @@ public class CreateDirectoryFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        final LayoutInflater dialogInflater = LayoutInflater.from(builder.getContext());
+        final DialogBuilder builder = new DialogBuilder(context);
+        final LayoutInflater dialogInflater = LayoutInflater.from(context);
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
@@ -82,7 +83,7 @@ public class CreateDirectoryFragment extends DialogFragment {
                 final DocumentInfo cwd = activity.getCurrentDirectory();
 
                 if(TextUtils.isEmpty(displayName)){
-                    activity.showError(R.string.create_error);
+                    Utils.showError(activity, R.string.create_error);
                     return;
                 }
                 new CreateDirectoryTask(activity, cwd, displayName).executeOnExecutor(
@@ -136,7 +137,7 @@ public class CreateDirectoryFragment extends DialogFragment {
                 mActivity.onDocumentPicked(result);
             } else {
                 if(!mActivity.isSAFIssue(mCwd.documentId)) {
-                    mActivity.showError(R.string.create_error);
+                    Utils.showError(mActivity, R.string.create_error);
                 }
             }
 

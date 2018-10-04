@@ -115,7 +115,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             final Uri stateUri = RecentsProvider.buildState(
                     mRoot.authority, mRoot.rootId, mDoc.documentId);
             cursor = resolver.query(stateUri, null, null, null, null);
-            if (cursor.moveToFirst()) {
+            if (null != cursor && cursor.moveToFirst()) {
                 userMode = getCursorInt(cursor, StateColumns.MODE);
                 userSortOrder = getCursorInt(cursor, StateColumns.SORT_ORDER);
             }

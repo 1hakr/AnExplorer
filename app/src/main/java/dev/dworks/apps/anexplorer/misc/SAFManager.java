@@ -16,14 +16,13 @@ import android.support.provider.BasicDocumentFile;
 import android.support.provider.DocumentFile;
 import android.support.provider.UsbDocumentFile;
 import androidx.collection.ArrayMap;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Spanned;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
@@ -88,17 +87,17 @@ public class SAFManager {
 
     public static String getRootUri(Uri uri) {
         if (isTreeUri(uri)) {
-            return dev.dworks.apps.anexplorer.model.DocumentsContract.getTreeDocumentId(uri);
+            return DocumentsContract.getTreeDocumentId(uri);
         }
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.getDocumentId(uri);
+        return DocumentsContract.getDocumentId(uri);
     }
 
     private static Uri buildDocumentUriMaybeUsingTree(Uri uri, String docId) {
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.buildDocumentUriMaybeUsingTree(uri, docId);
+        return DocumentsContract.buildDocumentUriMaybeUsingTree(uri, docId);
     }
 
     private static boolean isTreeUri(Uri uri) {
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.isTreeUri(uri);
+        return DocumentsContract.isTreeUri(uri);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -139,12 +138,12 @@ public class SAFManager {
                 CrashReportingManager.logException(e, true);
             }
         } else if(Utils.hasLollipop()){
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            DialogBuilder builder = new DialogBuilder(activity);
             Spanned message = Utils.fromHtml("Select root (outermost) folder of storage "
                     + "<b>" + root.title + "</b>"
                     + " to grant access from next screen");
             builder.setTitle("Grant accesss to External Storage")
-                    .setMessage(message)
+                    .setMessage(message.toString())
                     .setPositiveButton("Give Access", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterfaceParam, int code) {
@@ -158,7 +157,7 @@ public class SAFManager {
                         }
                     })
                     .setNegativeButton("Cancel", null);
-            DialogFragment.showThemedDialog(builder);
+            builder.showDialog();
         }
     }
 

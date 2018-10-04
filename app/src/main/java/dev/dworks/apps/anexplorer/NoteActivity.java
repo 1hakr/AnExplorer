@@ -47,6 +47,8 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -112,22 +114,20 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
     private void checkUnsavedChanges() {
         if (mOriginal != null && !mOriginal.equals(mInput.getText().toString())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            DialogBuilder builder = new DialogBuilder(this);
             builder.setTitle(R.string.unsaved_changes)
                     .setMessage(R.string.unsaved_changes_desc)
                     .setCancelable(false)
                     .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int did) {
-                            dialog.dismiss();
                             save(true);
                         }
                     }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int did) {
-                            dialog.dismiss();
                             finish();
                         }
                     });
-            DialogFragment.showThemedDialog(builder);
+            builder.showDialog();
 
         } else {
             finish();

@@ -19,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 
 public class RecyclerFragment extends Fragment {
@@ -36,7 +37,8 @@ public class RecyclerFragment extends Fragment {
         void onCancelled();
     }
 
-    public class RecyclerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class RecyclerViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener{
 
     	private RecyclerViewHolder(View itemView) {
             super(itemView);
@@ -46,6 +48,12 @@ public class RecyclerFragment extends Fragment {
         @Override
         public void onClick(View view) {
         	onListItemClick(view, getLayoutPosition(), getItemId());
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            onListItemLongClick(view, getLayoutPosition(), getItemId());
+            return false;
         }
     }
 
@@ -57,12 +65,12 @@ public class RecyclerFragment extends Fragment {
 
         @Override
         public void onItemLongClick(View view, int position) {
-
+            onListItemLongClick(view, position, view.getId());
         }
 
         @Override
         public void onItemViewClick(View view, int position) {
-
+            onListItemViewClick(view, position, view.getId());
         }
     };
 
@@ -86,7 +94,7 @@ public class RecyclerFragment extends Fragment {
             return;
         }
         if (root instanceof RecyclerView) {
-            mList = (RecyclerView) root;
+            mList = (RecyclerViewPlus) root;
         } else {
             mStandardEmptyView = (TextView) root
                     .findViewById(android.R.id.empty);
@@ -97,7 +105,7 @@ public class RecyclerFragment extends Fragment {
             if (rawListView == null) {
                 throw new RuntimeException(
                         "Your content must have a ListView whose id attribute is "
-                                + "'android.R.id.list'");
+                                + "'R.id.recyclerview'");
             }
             else{
             	try {
@@ -109,7 +117,7 @@ public class RecyclerFragment extends Fragment {
 		                                + "that is not a ListView class");
 				}
             }
-            mList = (RecyclerView) rawListView;
+            mList = (RecyclerViewPlus) rawListView;
 
             mStandardEmptyView.setText(mEmptyText);
         }
@@ -177,7 +185,13 @@ public class RecyclerFragment extends Fragment {
 
     public void onListItemClick(View v, int position, long id) {
     }
-    
+
+    public void onListItemLongClick(View v, int position, long id) {
+    }
+
+    public void onListItemViewClick(View v, int position, long id) {
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
     	super.onViewCreated(view, savedInstanceState);

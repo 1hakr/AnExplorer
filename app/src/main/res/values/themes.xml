@@ -54,8 +54,8 @@
     </style>
 
     <style name="DocumentsTheme.Setting">
-        <item name="colorControlNormal">?android:attr/textColorPrimary</item>
-        <item name="colorControlActivated">?android:attr/textColorPrimary</item>
+        <item name="colorControlNormal">@color/primaryColor</item>
+        <item name="colorControlActivated">@color/accentColor</item>
         <item name="windowActionBar">true</item>
     </style>
 

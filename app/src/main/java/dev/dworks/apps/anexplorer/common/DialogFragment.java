@@ -1,10 +1,13 @@
-package dev.dworks.apps.anexplorer;
+package dev.dworks.apps.anexplorer.common;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
+
+import android.text.TextUtils;
 import android.widget.Button;
 
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
@@ -43,11 +46,4 @@ public class DialogFragment extends AppCompatDialogFragment {
     private static Button getButton(Dialog dialog, int which){
         return ((AlertDialog)dialog).getButton(which);
     }
-
-    public static void showThemedDialog(AlertDialog.Builder builder){
-        Dialog dialog = builder.create();
-        dialog.show();
-        tintButtons(dialog);
-    }
-
 }

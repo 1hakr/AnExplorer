@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:support="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_menu_settings"
+        support:showAsAction="never"
+        android:title="@string/menu_settings"/>
+    <item
+        android:id="@+id/menu_about"
+        android:icon="@drawable/ic_dialog_info"
+        support:showAsAction="never"
+        android:title="About"/>
+
+    <item
+        android:id="@+id/menu_exit"
+        support:showAsAction="never"
+        android:icon="@drawable/ic_menu_exit"
+        android:title="Exit"/>
+
+</menu>

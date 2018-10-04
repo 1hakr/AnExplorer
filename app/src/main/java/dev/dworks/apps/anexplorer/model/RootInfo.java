@@ -35,6 +35,7 @@ import java.net.ProtocolException;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
@@ -47,6 +48,7 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
@@ -540,6 +542,15 @@ public class RootInfo implements Durable, Parcelable {
         if (derivedIcon != 0) {
             return IconUtils.applyTintAttr(context, derivedIcon,
                     android.R.attr.textColorPrimary);
+        } else {
+            return IconUtils.loadPackageIcon(context, authority, icon);
+        }
+    }
+
+    public Drawable loadNavDrawerIcon(Context context) {
+        if (derivedIcon != 0) {
+            return IconUtils.applyTint(context, derivedIcon,
+                    ContextCompat.getColor(context, android.R.color.white));
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }

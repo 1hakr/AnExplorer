@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.drawer.WearableNavigationDrawerCompatView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/NavigationStyle"
+    android:background="@color/primaryColor"
+    android:layout_gravity="top"
+    app:enableAutoPeek="true"
+    app:navigationStyle="multiPage" />

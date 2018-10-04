@@ -35,7 +35,8 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
-import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
+import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
@@ -93,7 +94,7 @@ public class CreateConnectionFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Context context = getActivity();
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        final DialogBuilder builder = new DialogBuilder(context);
         final LayoutInflater dialogInflater = getActivity().getLayoutInflater();
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_connection, null, false);
