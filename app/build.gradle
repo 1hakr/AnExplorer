@@ -87,11 +87,16 @@ android {
         other {
             dimension "release"
         }
+        paid {
+            applicationId "dev.dworks.apps.anexplorer.pro"
+            dimension "release"
+        }
     }
     variantFilter { variant ->
         def names = variant.flavors*.name
 
-        if (names.contains("underground") && (names.contains("google") || names.contains("other"))) {
+        if ((names.contains("underground") && (names.contains("google") || names.contains("other")))
+            || names.contains("paid") && !names.contains("wear")) {
             variant.ignore = true
         }
     }
