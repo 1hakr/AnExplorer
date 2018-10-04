@@ -2,14 +2,8 @@
     android:title="@string/pref_header_security">
 
     <SwitchPreference
-        android:key="pin_enable"
+        android:key="security_enable"
         android:summary="@string/pref_description_pin_enable"
         android:title="@string/pref_title_pin_enable" />
-
-    <Preference
-        android:key="pin_set"
-        android:dependency="pin_enable"
-        android:summary="@string/pref_default_pin_set"
-        android:title="@string/pref_title_pin_set" />
 
 </PreferenceScreen>

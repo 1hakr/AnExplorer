@@ -89,14 +89,6 @@
     <string name="pref_header_advanced">Advanced</string>
     <string name="pref_title_pin_enable">Enable PIN Protection</string>
     <string name="pref_description_pin_enable">Gives security to your files</string>
-    <string name="pref_title_pin_set">Set PIN</string>
-    <string name="pref_default_pin_set">PIN protection disabled</string>
-    <string name="enter_pin">Enter PIN</string>
-    <string name="incorrect_pin">Incorrect PIN</string>
-    <string name="confirm_pin">Confirm PIN</string>
-    <string name="pin_mismatch">PIN did not match</string>
-    <string name="pin_set">PIN protection enabled</string>
-    <string name="pin_disabled">PIN protection disabled</string>
     <string name="loading">Loading...</string>
     <string name="pref_foreground_color_title">Primary Color</string>
     <string name="pref_foreground_color_description">The main color of actionbar</string>

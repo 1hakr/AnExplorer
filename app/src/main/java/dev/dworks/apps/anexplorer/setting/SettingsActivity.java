@@ -60,9 +60,7 @@ public class SettingsActivity extends SettingsCommonActivity {
     public static final String KEY_FOLDER_SIZE = "folderSize";
     public static final String KEY_FILE_THUMBNAIL = "fileThumbnail";
     public static final String KEY_FILE_HIDDEN = "fileHidden";
-    private static final String KEY_PIN = "pin";
-    public static final String KEY_PIN_ENABLED = "pin_enable";
-    public static final String KEY_PIN_SET = "pin_set";
+    public static final String KEY_SECURITY_ENABLED = "security_enable";
     public static final String KEY_ROOT_MODE = "rootMode";
     public static final String KEY_PRIMARY_COLOR = "primaryColor";
     public static final String KEY_ACCENT_COLOR = "accentColor";
@@ -147,6 +145,14 @@ public class SettingsActivity extends SettingsCommonActivity {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(KEY_FOLDER_ANIMATIONS, true);
     }
+
+    public static boolean isSecurityEnabled(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(KEY_SECURITY_ENABLED, false);
+    }
+
+    public static void setSecurityEnabled(Context context, boolean enable) {
+        PreferenceUtils.set(KEY_SECURITY_ENABLED, enable);
+    }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,59 +183,11 @@ public class SettingsActivity extends SettingsCommonActivity {
     	return true;
     }
     
-	public static final boolean isPinEnabled(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(KEY_PIN_ENABLED, false)
-        		&& isPinProtected(context);
-    }
-	
-    public static final boolean isPinProtected(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_PIN, "") != "";
-    }
-    
-    public static void setPin(Context context, String pin) {
-    	PreferenceManager.getDefaultSharedPreferences(context).edit().putString(KEY_PIN, hashKeyForPIN(pin)).commit();
-    }
-    
-    public static boolean checkPin(Context context, String pin) {
-        pin = hashKeyForPIN(pin);
-        String hashed = PreferenceManager.getDefaultSharedPreferences(context).getString(KEY_PIN, "");
-        if (TextUtils.isEmpty(pin))
-            return TextUtils.isEmpty(hashed);
-        return pin.equals(hashed);
-    }
-    
-    private static String hashKeyForPIN(String value) {
-        if (TextUtils.isEmpty(value))
-            return null;
-        try {
-            //MessageDigest digester = MessageDigest.getInstance("MD5");
-            //return Base64.encodeToString(value.getBytes(), Base64.DEFAULT);
-        }
-        catch (Exception e) {
-            CrashReportingManager.logException(e);
-        }
-        return value;
-    }
-    
-/*    public static String hashKeyForPIN(String key) {
-        String cacheKey = key;
-        try {
-            final MessageDigest mDigest = MessageDigest.getInstance("MD5");
-            mDigest.update(key.getBytes());
-            cacheKey = bytesToHexString(mDigest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            cacheKey = String.valueOf(key.hashCode());
-        }
-        cacheKey = Base64.encodeToString(key.getBytes(), Base64.DEFAULT);
-        return cacheKey;
-    }*/
-    
     @Override
     protected void onResume() {
     	super.onResume();
         changeActionBarColor(0);
     }
-
 
     @Override
     public void startActivity(Intent intent) {

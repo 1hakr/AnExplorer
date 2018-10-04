@@ -43,15 +43,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -109,11 +111,10 @@ import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.IntentUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
-import dev.dworks.apps.anexplorer.misc.PinViewHelper;
-import dev.dworks.apps.anexplorer.misc.PinViewHelper.PINDialogFragment;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SAFManager;
+import dev.dworks.apps.anexplorer.misc.SecurityHelper;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -152,8 +153,10 @@ import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
 import static dev.dworks.apps.anexplorer.misc.SAFManager.ADD_STORAGE_REQUEST_CODE;
+import static dev.dworks.apps.anexplorer.misc.SecurityHelper.REQUEST_CONFIRM_CREDENTIALS;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.isDownloadAuthority;
+import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_SECURITY_ENABLED;
 
 public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuItemClickListener {
 
@@ -268,7 +271,6 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         }
 
         changeActionBarColor();
-        initProtection();
 
         // Hide roots when we're managing a specific root
         if (mState.action == ACTION_MANAGE) {
@@ -406,35 +408,15 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
     private void initProtection() {
 
-		if(mAuthenticated || !SettingsActivity.isPinEnabled(this)){
+		if(mAuthenticated || !SettingsActivity.isSecurityEnabled(this)){
 			return;
 		}
-        final Dialog d = new Dialog(this, R.style.DocumentsTheme_DailogPIN);
-        d.setContentView(new PinViewHelper((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE), null, null) {
-            public void onEnter(String password) {
-                super.onEnter(password);
-                if (SettingsActivity.checkPin(DocumentsActivity.this, password)) {
-                	mAuthenticated = true;
-                	d.dismiss();
-                }
-                else {
-                    Utils.showError(DocumentsActivity.this, R.string.incorrect_pin);
-                }
-            }
 
-            public void onCancel() {
-                super.onCancel();
-                finish();
-                d.dismiss();
-            }
-        }.getView(), new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        
-        PINDialogFragment pinFragment = new PINDialogFragment();
-        pinFragment.setDialog(d);
-        pinFragment.setCancelable(false);
-        pinFragment.show(getFragmentManager(), "PIN Dialog");
+		if(Utils.hasMarshmallow()) {
+            SecurityHelper securityHelper = new SecurityHelper(this);
+            securityHelper.authenticate("AnExplorer", "Use device pattern to continue");
+        }
 	}
-
 
     private void buildDefaultState() {
         mState = new State();
@@ -625,6 +607,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             mState.showHiddenFiles = SettingsActivity.getDisplayFileHidden(this);
             invalidateMenu();
         }
+        initProtection();
     }
 
     private DrawerListener mDrawerListener = new DrawerListener() {
@@ -1557,6 +1540,12 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 final String name = FileUtils.getFilenameFromContentUri(this, uri);
                 new UploadFileTask(uri, name,
                         FileUtils.getTypeForName(name)).executeOnExecutor(getCurrentExecutor());
+            }
+        } else if (requestCode == REQUEST_CONFIRM_CREDENTIALS) {
+            if (resultCode == RESULT_OK) {
+                mAuthenticated = true;
+            } else {
+                finish();
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

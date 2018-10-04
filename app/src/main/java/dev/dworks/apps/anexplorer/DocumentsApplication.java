@@ -122,7 +122,8 @@ public class DocumentsApplication extends AppFlavour {
 
         isTelevision = Utils.isTelevision(this);
         isWatch = Utils.isWatch(this);
-        if(isTelevision && Integer.valueOf(SettingsActivity.getThemeStyle()) != AppCompatDelegate.MODE_NIGHT_YES){
+        if((isTelevision || isWatch) && Integer.valueOf(SettingsActivity.getThemeStyle())
+                != AppCompatDelegate.MODE_NIGHT_YES){
             SettingsActivity.setThemeStyle(AppCompatDelegate.MODE_NIGHT_YES);
         }
     }

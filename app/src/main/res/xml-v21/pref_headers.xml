@@ -11,6 +11,10 @@
         android:title="@string/pref_header_theme" />
     <header
         android:icon="@drawable/ic_dummy_icon"
+        android:fragment="dev.dworks.apps.anexplorer.setting.SecurityPreferenceFragment"
+        android:title="@string/pref_header_security" />
+    <header
+        android:icon="@drawable/ic_dummy_icon"
         android:fragment="dev.dworks.apps.anexplorer.setting.AdvancedPreferenceFragment"
         android:title="@string/pref_header_advanced" />
 
