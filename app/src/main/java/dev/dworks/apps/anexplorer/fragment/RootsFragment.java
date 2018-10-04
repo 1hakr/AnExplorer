@@ -118,8 +118,12 @@ public class RootsFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_roots, container, false);
         proWrapper = view.findViewById(R.id.proWrapper);
         title = view.findViewById(android.R.id.title);
+        View headerLayout = view.findViewById(R.id.headerLayout);
         if(isTelevision()){
             title.setVisibility(View.VISIBLE);
+        } else {
+            headerLayout.setVisibility(View.VISIBLE);
+            headerLayout.setBackgroundColor(SettingsActivity.getPrimaryColor());
         }
         mList = (ExpandableListView) view.findViewById(android.R.id.list);
         mList.setOnChildClickListener(mItemListener);

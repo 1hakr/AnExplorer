@@ -10,7 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 
 public class ContentProviderClientCompat {
-	
+
+	//TODO NonSdkApiUsedViolation
 	public static void setDetectNotResponding(ContentProviderClient client, long anrTimeout){
 		if(Utils.hasKitKat()){
 			try {

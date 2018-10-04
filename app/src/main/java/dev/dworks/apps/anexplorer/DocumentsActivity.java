@@ -264,8 +264,10 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             if(view instanceof DrawerLayout) {
                 DrawerLayout mDrawerLayout = (DrawerLayout) view;
 
-                mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
-                mDrawerLayout.setDrawerListener(mDrawerListener);
+                mDrawerToggle = new ActionBarDrawerToggle(
+                        this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+                mDrawerLayout.addDrawerListener(mDrawerToggle);
+                mDrawerToggle.syncState();
                 lockInfoContainter();
             }
         }
@@ -329,7 +331,9 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         if(!PermissionUtil.hasStoragePermission(this)) {
             requestStoragePermissions();
         }
-        checkLatestVersion();
+        if(!Utils.isOtherBuild()) {
+            checkLatestVersion();
+        }
     }
 
     private void checkLatestVersion() {
@@ -610,50 +614,9 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         initProtection();
     }
 
-    private DrawerListener mDrawerListener = new DrawerListener() {
-        @Override
-        public void onDrawerSlide(View drawerView, float slideOffset) {
-            mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
-        }
-
-        @Override
-        public void onDrawerOpened(View drawerView) {
-            if(!mInfoContainer.equals(drawerView) && mDrawerLayoutHelper.isDrawerOpen(mInfoContainer)){
-                mDrawerLayoutHelper.closeDrawer(mInfoContainer);
-            }
-            mDrawerToggle.onDrawerOpened(drawerView);
-            updateActionBar();
-            invalidateMenu();
-        }
-
-        @Override
-        public void onDrawerClosed(View drawerView) {
-            lockInfoContainter();
-            mDrawerToggle.onDrawerClosed(drawerView);
-            updateActionBar();
-            invalidateMenu();
-        }
-
-        @Override
-        public void onDrawerStateChanged(int newState) {
-            mDrawerToggle.onDrawerStateChanged(newState);
-        }
-    };
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.onConfigurationChanged(newConfig);
-        }
-    }
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (mDrawerToggle != null) {
-            mDrawerToggle.syncState();
-        }
         updateActionBar();
     }
 
@@ -695,9 +658,6 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             //getSupportActionBar().setDisplayHomeAsUpEnabled(showIndicator);
             //mToolbar.setLogo(R.drawable.logo);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-            if (mDrawerToggle != null) {
-                mDrawerToggle.setDrawerIndicatorEnabled(showIndicator);
-            }
         }
         mToolbar.setNavigationContentDescription(R.string.drawer_open);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {

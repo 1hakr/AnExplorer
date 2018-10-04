@@ -18,9 +18,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#323232"
-    android:minHeight="@dimen/list_item_height">
+    android:layout_height="wrap_content"
+    android:background="#323232">
 
     <LinearLayout
         android:layout_width="match_parent"

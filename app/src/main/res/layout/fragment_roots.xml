@@ -39,7 +39,9 @@
             android:fontFamily="sans-serif-condensed"
             android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/background_dark" />
+
+        <include layout="@layout/nav_header_main" />
 
         <ExpandableListView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@android:id/list"
