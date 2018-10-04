@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.dworks.apps.anexplorer.ui.CommonFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,6 +12,7 @@
         android:layout_marginLeft="@dimen/list_item_padding"
         android:layout_marginRight="@dimen/list_item_padding"
         android:layout_marginStart="@dimen/list_item_padding"
+        app:boxedEdges="all"
         android:orientation="vertical">
 
         <ImageView
@@ -215,4 +216,4 @@
         </FrameLayout>
     </LinearLayout>
 
-</FrameLayout>
+</dev.dworks.apps.anexplorer.ui.CommonFrameLayout>

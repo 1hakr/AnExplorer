@@ -12,6 +12,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class UtilsFlavour {
 

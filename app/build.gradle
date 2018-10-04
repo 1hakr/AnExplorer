@@ -126,6 +126,7 @@ dependencies {
     wearImplementation 'com.google.android.gms:play-services-wearable:16.0.0'
     wearImplementation 'androidx.preference:preference:1.0.0'
     wearImplementation 'androidx.wear:wear:1.0.0'
+    wearImplementation 'androidx.preference:preference:1.0.0'
     wearCompileOnly 'com.google.android.wearable:wearable:2.3.0'
 }
 

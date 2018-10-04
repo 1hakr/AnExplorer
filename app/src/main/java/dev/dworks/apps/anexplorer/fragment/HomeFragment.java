@@ -217,7 +217,9 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
                 mAdapter.setRecentData(null);
             }
         };
-        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+        if(SettingsActivity.getDisplayRecentMedia()) {
+            getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+        }
     }
 
     public void reloadData(){

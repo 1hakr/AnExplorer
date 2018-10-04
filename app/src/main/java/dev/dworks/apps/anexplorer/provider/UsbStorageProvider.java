@@ -64,6 +64,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForName;
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
@@ -611,9 +612,12 @@ public class UsbStorageProvider extends DocumentsProvider {
         row.add(Document.COLUMN_DOCUMENT_ID, documentId);
         row.add(Document.COLUMN_DISPLAY_NAME, "");
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
-        row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
-                | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
-                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE);
+        int flags = Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
+                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE;
+        if(!isWatch()) {
+            flags |= Document.FLAG_DIR_PREFERS_GRID;
+        }
+        row.add(Document.COLUMN_FLAGS, flags);
     }
 
     private String getRootId(UsbDevice usbDevice) {

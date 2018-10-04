@@ -20,6 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:baselineAligned="false"
+    android:background="@color/primaryColor"
     android:minHeight="@dimen/list_item_height">
 
     <TextView
@@ -34,6 +35,6 @@
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         tools:text="Android title"
-        android:textColor="?android:attr/textColorPrimary"/>
+        android:textColor="@android:color/white"/>
 
 </FrameLayout>

@@ -46,6 +46,8 @@ import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+
 public class SettingsActivity extends SettingsCommonActivity {
 
     public static final String TAG = "Settings";
@@ -101,7 +103,7 @@ public class SettingsActivity extends SettingsCommonActivity {
 
     public static boolean getDisplayRecentMedia() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
-                .getBoolean(KEY_RECENT_MEDIA, true);
+                .getBoolean(KEY_RECENT_MEDIA, !isWatch());
     }
 
     public static boolean getRootMode(Context context) {

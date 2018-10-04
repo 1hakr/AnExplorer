@@ -14,18 +14,12 @@
         support:showAsAction="always"
         android:title="@string/menu_create_dir"
         android:visible="false"/>
-    <item
-        android:id="@+id/menu_search"
-        support:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:icon="@drawable/abc_ic_search_api_material"
-        support:showAsAction="ifRoom|collapseActionView"
-        android:title="@string/menu_search"
-        android:visible="false"/>
-    <item
-        android:id="@+id/menu_list"
-        android:icon="@drawable/ic_menu_view_list"
-        support:showAsAction="ifRoom"
-        android:title="@string/menu_list"
-        android:visible="false"/>
+    <!--<item-->
+        <!--android:id="@+id/menu_search"-->
+        <!--support:actionViewClass="androidx.appcompat.widget.SearchView"-->
+        <!--android:icon="@drawable/ic_search"-->
+        <!--support:showAsAction="ifRoom|collapseActionView"-->
+        <!--android:title="@string/menu_search"-->
+        <!--android:visible="false"/>-->
 
 </menu>

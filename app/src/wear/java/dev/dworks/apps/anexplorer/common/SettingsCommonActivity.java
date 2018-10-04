@@ -8,8 +8,8 @@ import androidx.annotation.Nullable;
 public abstract class SettingsCommonActivity extends AppCompatPreferenceActivity {
 
     @Override
-    public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
     }
 }
