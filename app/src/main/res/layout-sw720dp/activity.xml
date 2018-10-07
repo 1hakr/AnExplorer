@@ -46,7 +46,6 @@
                 android:layout_height="?android:attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 android:elevation="8dp"
-                app:navigationIcon="@drawable/logo"
                 app:contentInsetLeft="@dimen/second_keyline"
                 app:contentInsetStart="@dimen/second_keyline"
                 app:popupTheme="?attr/actionBarPopupTheme"

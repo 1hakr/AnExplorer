@@ -35,10 +35,9 @@
             android:text="@string/app_name"
             android:paddingStart="16dp"
             android:paddingTop="10dp"
-            android:fontFamily="sans-serif-condensed"
             android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:textColor="@android:color/background_dark" />
+            android:textColor="@android:color/white" />
 
         <include layout="@layout/nav_header_main" />
 
