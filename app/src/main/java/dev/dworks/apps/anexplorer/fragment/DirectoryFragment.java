@@ -258,14 +258,15 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		final Context context = getActivity();
+		final DocumentsActivity context = (DocumentsActivity)getActivity();
 		final State state = getDisplayState(DirectoryFragment.this);
 
 		root = getArguments().getParcelable(EXTRA_ROOT);
 		doc = getArguments().getParcelable(EXTRA_DOC);
 
 		if(null != root && root.isSecondaryStorage() && state.action == ACTION_BROWSE){
-			if(!doc.isWriteSupported()){
+			if(!doc.isWriteSupported() && !context.getSAFPermissionRequested()){
+				context.setSAFPermissionRequested(true);
 				SAFManager.takeCardUriPermission(getActivity(), root, doc);
 			}
 		}

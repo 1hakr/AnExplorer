@@ -206,7 +206,7 @@ public class RootInfo implements Durable, Parcelable {
             derivedTag = "phone";
         } else if (isSecondaryStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
-            if (isSecondaryStorageUSB()) {
+            if (isUsb() || isSecondaryStorageUSB()) {
 	            derivedIcon = R.drawable.ic_root_usb;
 	        } else if (isSecondaryStorageHDD()) {
 	            derivedIcon = R.drawable.ic_root_hdd;

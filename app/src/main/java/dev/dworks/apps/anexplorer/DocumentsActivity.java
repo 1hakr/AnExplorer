@@ -198,6 +198,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private boolean mActionMode;
     private FloatingActionsMenu mActionMenu;
     private RootInfo mParentRoot;
+    private boolean SAFPermissionRequested;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -2008,4 +2009,12 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             return false;
         }
     };
+
+    public void setSAFPermissionRequested(boolean SAFPermissionRequested) {
+        this.SAFPermissionRequested = SAFPermissionRequested;
+    }
+
+    public boolean getSAFPermissionRequested() {
+        return SAFPermissionRequested;
+    }
 }
