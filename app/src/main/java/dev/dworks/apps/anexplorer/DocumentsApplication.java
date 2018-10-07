@@ -33,6 +33,8 @@ import android.text.format.DateUtils;
 
 import com.cloudrail.si.CloudRail;
 
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
@@ -126,6 +128,12 @@ public class DocumentsApplication extends AppFlavour {
                 != AppCompatDelegate.MODE_NIGHT_YES){
             SettingsActivity.setThemeStyle(AppCompatDelegate.MODE_NIGHT_YES);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(base);
     }
 
     public static synchronized DocumentsApplication getInstance() {

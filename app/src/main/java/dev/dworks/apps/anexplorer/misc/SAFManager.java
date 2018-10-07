@@ -128,7 +128,7 @@ public class SAFManager {
 
     public static void takeCardUriPermission(final Activity activity, RootInfo root, DocumentInfo doc) {
 
-        if(Utils.hasNougat()){
+        if(Utils.hasNougat() && !Utils.hasOreo()){
             StorageManager storageManager = (StorageManager) activity.getSystemService(Context.STORAGE_SERVICE);
             StorageVolume storageVolume = storageManager.getStorageVolume(new File(doc.path));
             Intent intent = storageVolume.createAccessIntent(null);

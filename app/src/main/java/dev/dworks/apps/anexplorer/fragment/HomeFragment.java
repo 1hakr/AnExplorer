@@ -24,9 +24,12 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.storage.StorageManager;
@@ -87,6 +90,7 @@ import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProc
  */
 public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItemClickListener {
     public static final String TAG = "HomeFragment";
+    public static final String ROOTS_CHANGED = "android.intent.action.ROOTS_CHANGED";
     private static final int MAX_RECENT_COUNT = isTelevision() ? 20 : 10;
 
     private final int mLoaderId = 42;
@@ -139,6 +143,13 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
     public void onResume() {
         super.onResume();
         showData();
+        registerReceiver();
+    }
+
+    @Override
+    public void onPause() {
+        unRegisterReceiver();
+        super.onPause();
     }
 
     public void showData(){
@@ -405,4 +416,21 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
             }
         });
     }
+
+    private void registerReceiver() {
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(ROOTS_CHANGED));
+    }
+
+    private void unRegisterReceiver() {
+        if(null != broadcastReceiver) {
+            getActivity().unregisterReceiver(broadcastReceiver);
+        }
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showData();
+        }
+    };
 }

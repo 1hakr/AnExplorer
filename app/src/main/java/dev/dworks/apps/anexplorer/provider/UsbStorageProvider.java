@@ -57,6 +57,7 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -125,7 +126,9 @@ public class UsbStorageProvider extends DocumentsProvider {
     @Override
     public void updateRoots() {
         mRoots.clear();
-        discoverDevices();
+        if(Utils.checkUSBDevices()) {
+            discoverDevices();
+        }
         notifyRootsChanged();
     }
 

@@ -564,4 +564,8 @@ public class Utils extends UtilsFlavour{
     public static int getVisibility(boolean show) {
         return show ? View.VISIBLE : View.GONE;
     }
+
+    public static boolean checkUSBDevices() {
+        return !hasNougat() || DocumentsApplication.isTelevision();
+    }
 }
