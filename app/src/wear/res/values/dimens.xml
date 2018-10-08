@@ -30,5 +30,6 @@
     <dimen name="home_item_height">50dp</dimen>
     <dimen name="home_item_padding">5dp</dimen>
     <integer name="home_span">3</integer>
+    <dimen name="document_list_padding">0dp</dimen>
 </resources>
 

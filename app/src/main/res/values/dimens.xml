@@ -75,5 +75,6 @@
     <dimen name="home_item_height">60dp</dimen>
     <dimen name="home_item_padding">10dp</dimen>
     <integer name="home_span">10</integer>
+    <dimen name="document_list_padding">80dp</dimen>
 </resources>
 

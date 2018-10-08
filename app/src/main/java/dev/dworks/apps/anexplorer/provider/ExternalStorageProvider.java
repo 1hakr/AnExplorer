@@ -192,8 +192,11 @@ public class ExternalStorageProvider extends StorageProvider {
                 mRoots.put(rootId, root);
 
                 root.rootId = rootId;
-                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                         | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
+                if(storageVolume.getState().equals(Environment.MEDIA_MOUNTED)) {
+                    root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT;
+                }
                 root.title = title;
                 root.path = path;
                 root.docId = getDocIdForFile(path);
@@ -262,7 +265,7 @@ public class ExternalStorageProvider extends StorageProvider {
             }
             // Dunno when this would NOT be the case, but never hurts to be correct.
             if (volume.isMountedWritable()) {
-                root.flags |= Root.FLAG_SUPPORTS_CREATE;
+                root.flags |= Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT;
             }
             root.title = title;
             if (volume.getType() == VolumeInfo.TYPE_PUBLIC) {

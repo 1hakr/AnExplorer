@@ -680,7 +680,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isProFeature(RootInfo root){
-        return root.isUsbStorage() || root.isRootedStorage();
+        return root.isSecondaryStorage() || root.isUsbStorage() || root.isRootedStorage();
     }
 
 }
