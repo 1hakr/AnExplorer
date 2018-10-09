@@ -16,12 +16,17 @@ package dev.dworks.apps.anexplorer;
  * limitations under the License.
  */
 
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 import android.support.provider.DocumentFile;
 import androidx.appcompat.app.AlertDialog;
@@ -54,11 +59,13 @@ import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.root.RootCommands;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
@@ -77,8 +84,29 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         mInput = (EditText) findViewById(R.id.input);
         mInput.addTextChangedListener(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        int color = SettingsActivity.getPrimaryColor();
+
+        ActionBar bar = getSupportActionBar();
+        if(null != bar) {
+            bar.setBackgroundDrawable(new ColorDrawable(color));
+            bar.setDisplayHomeAsUpEnabled(true);
+        }
+        setUpDefaultStatusBar();
+
         getName();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpDefaultStatusBar() {
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
     }
 
     @Override
