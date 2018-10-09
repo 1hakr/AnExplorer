@@ -272,12 +272,8 @@ public class ExternalStorageProvider extends StorageProvider {
             if (volume.getType() == VolumeInfo.TYPE_PUBLIC) {
                 root.flags |= Root.FLAG_HAS_SETTINGS;
             }
-            if (volume.isVisibleForRead(userId)) {
-                root.visiblePath = volume.getPathForUser(userId);
-            } else {
-                root.visiblePath = null;
-            }
-            root.path = root.visiblePath ;//volume.getInternalPathForUser(userId);
+            root.path = volume.getPathForUser(userId);
+            root.visiblePath = volume.getPathForUser(userId);
             try {
                 root.docId = getDocIdForFile(root.path);
             } catch (FileNotFoundException e) {

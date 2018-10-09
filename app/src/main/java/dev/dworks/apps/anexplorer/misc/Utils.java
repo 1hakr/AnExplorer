@@ -149,6 +149,10 @@ public class Utils extends UtilsFlavour{
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
     }
 
+    public static boolean hasPie() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    }
+
     public static boolean hasMoreHeap(){
     	return Runtime.getRuntime().maxMemory() > 20971520;
     }

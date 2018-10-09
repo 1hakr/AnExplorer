@@ -41,6 +41,7 @@ import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import static android.R.attr.label;
 import static dev.dworks.apps.anexplorer.misc.DiskInfo.FLAG_SD;
 import static dev.dworks.apps.anexplorer.misc.DiskInfo.FLAG_USB;
+import static dev.dworks.apps.anexplorer.misc.VolumeInfo.ID_EMULATED_INTERNAL;
 
 public final class StorageUtils {
     private static final String TAG = "StorageUtils";
@@ -89,6 +90,11 @@ public final class StorageUtils {
             String fsLabel = getString(object, "fsLabel");
             String path = getString(object, "path");
             String internalPath = getString(object, "internalPath");
+
+            if(Utils.hasPie() && TextUtils.isEmpty(id)) {
+                id = TextUtils.isEmpty(id)
+                        ? (path.contains(ID_EMULATED_INTERNAL) ? ID_EMULATED_INTERNAL : "") : id;
+            }
 
             VolumeInfo volumeInfo = new VolumeInfo(id, type, disk, partGuid);
             volumeInfo.mountFlags = mountFlags;
