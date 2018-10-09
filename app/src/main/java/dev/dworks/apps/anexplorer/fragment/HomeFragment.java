@@ -169,6 +169,7 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         final RootInfo primaryRoot = roots.getPrimaryRoot();
         final RootInfo secondaryRoot = roots.getSecondaryRoot();
         final RootInfo usbRoot = roots.getUSBRoot();
+        final RootInfo deviceRoot = roots.getDeviceRoot();
         processRoot = roots.getProcessRoot();
         int type = !isWatch() ? TYPE_MAIN : TYPE_SHORTCUT;
         if(null != primaryRoot){
@@ -179,6 +180,9 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         }
         if(null != usbRoot){
             mainData.add(CommonInfo.from(usbRoot, type));
+        }
+        if(null != deviceRoot && isWatch()){
+            mainData.add(CommonInfo.from(deviceRoot, type));
         }
         if(null != processRoot){
             mainData.add(CommonInfo.from(processRoot, type));

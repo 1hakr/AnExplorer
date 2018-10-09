@@ -68,6 +68,7 @@ import androidx.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForFile;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
@@ -137,7 +138,7 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public void updateRoots() {
         synchronized (mRootsLock) {
-            if(Utils.hasMarshmallow()) {
+            if(Utils.hasMarshmallow() && !Utils.isWatch(getContext())) {
                 updateVolumesLocked2();
             } else {
                 updateVolumesLocked();

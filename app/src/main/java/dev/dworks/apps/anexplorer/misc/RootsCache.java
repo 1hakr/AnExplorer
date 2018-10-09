@@ -425,6 +425,15 @@ public class RootsCache {
         return null;
     }
 
+    public RootInfo getDeviceRoot() {
+        for (RootInfo root : mRoots.get(ExternalStorageProvider.AUTHORITY)) {
+            if (root.isPhoneStorage()) {
+                return root;
+            }
+        }
+        return null;
+    }
+
     public RootInfo getProcessRoot() {
         for (RootInfo root : mRoots.get(AppsProvider.AUTHORITY)) {
             if (root.isAppProcess()) {
