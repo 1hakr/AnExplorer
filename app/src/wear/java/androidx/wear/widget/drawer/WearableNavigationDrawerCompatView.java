@@ -16,13 +16,19 @@
 
 package androidx.wear.widget.drawer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityManager;
 
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.Nullable;
+import androidx.wear.internal.widget.drawer.WearableNavigationDrawerPresenter;
 
 public class WearableNavigationDrawerCompatView extends androidx.wear.widget.drawer.WearableNavigationDrawerView {
 
@@ -36,6 +42,16 @@ public class WearableNavigationDrawerCompatView extends androidx.wear.widget.dra
                 }
             };
     private boolean mIsAccessibilityEnabled;
+
+    private final GestureDetector mGestureDetector;
+    private final GestureDetector.SimpleOnGestureListener mOnGestureListener =
+            new GestureDetector.SimpleOnGestureListener() {
+                @SuppressLint("RestrictedApi")
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return mPresenter.onDrawerTapped();
+                }
+            };
 
     public WearableNavigationDrawerCompatView(Context context) {
         this(context, (AttributeSet) null);
@@ -51,6 +67,7 @@ public class WearableNavigationDrawerCompatView extends androidx.wear.widget.dra
     public WearableNavigationDrawerCompatView(Context context, AttributeSet attrs, int defStyleAttr,
                                               int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mGestureDetector = new GestureDetector(getContext(), mOnGestureListener);
         AccessibilityManager accessibilityManager =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         mIsAccessibilityEnabled = accessibilityManager.isEnabled();
@@ -63,10 +80,18 @@ public class WearableNavigationDrawerCompatView extends androidx.wear.widget.dra
         autoCloseDrawerAfterDelay();
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        autoCloseDrawerAfterDelay();
+        return mGestureDetector != null && mGestureDetector.onTouchEvent(ev);
+    }
+
     private void autoCloseDrawerAfterDelay() {
-        if (!mIsAccessibilityEnabled) {
-            mMainThreadHandler.removeCallbacks(mCloseDrawerRunnable);
-            mMainThreadHandler.postDelayed(mCloseDrawerRunnable, AUTO_CLOSE_DRAWER_DELAY_MS);
-        }
+        try {
+            if (!mIsAccessibilityEnabled) {
+                mMainThreadHandler.removeCallbacks(mCloseDrawerRunnable);
+                mMainThreadHandler.postDelayed(mCloseDrawerRunnable, AUTO_CLOSE_DRAWER_DELAY_MS);
+            }
+        } catch (Exception e) {}
     }
 }
