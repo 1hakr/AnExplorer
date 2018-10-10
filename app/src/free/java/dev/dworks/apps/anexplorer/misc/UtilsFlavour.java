@@ -13,6 +13,7 @@ import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.RecyclerViewCompat;
 
 public class UtilsFlavour {
 
@@ -41,5 +42,9 @@ public class UtilsFlavour {
                     .setActionTextColor(SettingsActivity.getAccentColor());
         }
         snackbar.show();
+    }
+
+    public static void setItemsCentered(RecyclerView recyclerView, boolean isEnabled) {
+
     }
 }

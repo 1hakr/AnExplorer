@@ -2,11 +2,14 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.WindowInsets;
 
 import androidx.annotation.Nullable;
 import androidx.wear.widget.WearableRecyclerView;
 
 public class RecyclerViewCompat extends WearableRecyclerView {
+    private boolean isRound;
+
     public RecyclerViewCompat(Context context) {
         this(context, null);
     }
@@ -25,9 +28,14 @@ public class RecyclerViewCompat extends WearableRecyclerView {
     }
 
     private void init(){
-        //setEdgeItemsCenteringEnabled(true);
+        isRound = getContext().getResources().getConfiguration().isScreenRound();
         setCircularScrollingGestureEnabled(true);
         setBezelFraction(0.5f);
         setScrollDegreesPerScreen(90);
+    }
+
+    @Override
+    public void setEdgeItemsCenteringEnabled(boolean isEnabled) {
+        super.setEdgeItemsCenteringEnabled(isEnabled && isRound);
     }
 }

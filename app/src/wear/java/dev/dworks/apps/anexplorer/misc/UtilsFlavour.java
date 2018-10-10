@@ -9,15 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.material.snackbar.Snackbar;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.wear.widget.ConfirmationOverlay;
 import androidx.wear.widget.drawer.WearableActionDrawerView;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.ui.RecyclerViewCompat;
 
 public class UtilsFlavour {
 
@@ -77,5 +77,11 @@ public class UtilsFlavour {
                 .setType(type)
                 .setMessage(message)
                 .showOn(activity);
+    }
+
+    public static void setItemsCentered(RecyclerView recyclerView, boolean isEnabled) {
+        if(recyclerView instanceof RecyclerViewCompat) {
+            ((RecyclerViewCompat)recyclerView).setEdgeItemsCenteringEnabled(isEnabled);
+        }
     }
 }

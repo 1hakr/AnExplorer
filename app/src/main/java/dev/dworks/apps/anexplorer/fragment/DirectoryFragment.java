@@ -351,7 +351,9 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 				} else {
 					setListShownNoAnimation(true);
 				}
-
+				if(isWatch()) {
+					Utils.setItemsCentered(getListView(), mAdapter.getItemCount() > 1);
+				}
 				mLastSortOrder = state.derivedSortOrder;
 				if(isTelevision()){
 					getListView().requestFocus();
@@ -361,6 +363,9 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 			@Override
 			public void onLoaderReset(Loader<DirectoryResult> loader) {
 				mAdapter.swapResult(null);
+				if(isWatch()) {
+					Utils.setItemsCentered(getListView(), false);
+				}
 			}
 		};
 		setListAdapter(mAdapter);
