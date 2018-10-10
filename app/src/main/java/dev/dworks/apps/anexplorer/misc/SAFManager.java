@@ -29,6 +29,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 
 import static android.app.Activity.RESULT_OK;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.IntentUtils.ACTION_OPEN_DOCUMENT_TREE;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.ROOT_ID_SECONDARY;
 import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
@@ -185,7 +186,7 @@ public class SAFManager {
         }
         Utils.showSnackBar(activity, "Access"+ (accessGranted ? "" : " was not") +" granted"
                         + (primaryStorage ? ". Choose the external storage." : ""),
-                Snackbar.LENGTH_SHORT, null, null);
+                Snackbar.LENGTH_SHORT, accessGranted ? "" : "ERROR", null);
         return accessGranted;
     }
 }

@@ -27,6 +27,7 @@ import android.os.StatFs;
 import android.os.storage.StorageManager;
 import androidx.core.content.res.ResourcesCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -150,6 +151,18 @@ public final class StorageUtils {
             String mUuid = getString(object, "mUuid");
             String mUserLabel = getString(object, "mUserLabel");
             String mState = getString(object, "mState");
+
+            if(Utils.hasPie()) {
+                android.os.storage.StorageVolume volume = mStorageManager.getStorageVolume(mPath);
+                if(null != volume) {
+                    mPrimary = volume.isEmulated();
+                    mEmulated = volume.isEmulated();
+                    mRemovable = volume.isRemovable();
+                    mUserLabel = volume.getDescription(mContext);
+                    mFsUuid = volume.getUuid();
+                    mState = volume.getState();
+                }
+            }
 
             StorageVolume storageVolume = new StorageVolume(mStorageId, mPath, mDescription, mPrimary,
                     mRemovable, mEmulated, mMtpReserveSize, mAllowMassStorage, mMaxFileSize);

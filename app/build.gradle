@@ -10,7 +10,6 @@ if (keystoreProperties.exists()) {
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.2'
 
     applicationVariants.all { variant ->
         variant.outputs.all {
