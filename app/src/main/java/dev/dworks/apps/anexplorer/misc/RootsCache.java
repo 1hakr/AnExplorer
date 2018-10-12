@@ -292,7 +292,11 @@ public class RootsCache {
             if (mObservedAuthorities.add(authority)) {
                 // Watch for any future updates
                 final Uri rootsUri = DocumentsContract.buildRootsUri(authority);
-                mContext.getContentResolver().registerContentObserver(rootsUri, true, mObserver);
+                try {
+                    mContext.getContentResolver().registerContentObserver(rootsUri, true, mObserver);
+                } catch (Exception e) {
+                    CrashReportingManager.logException(e, true);
+                }
             }
         }
 

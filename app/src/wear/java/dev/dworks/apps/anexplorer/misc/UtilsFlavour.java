@@ -53,15 +53,20 @@ public class UtilsFlavour {
         if(!contextual){
             menu.clear();
             if(null != root
-                    && !root.isHome() && !root.isConnections() && !root.isApp()) {
+                    && RootInfo.isOtherRoot(root) && RootInfo.isApps(root)
+                    &&  RootInfo.isMedia(root)) {
                 activity.getMenuInflater().inflate(R.menu.document_base, menu);
             }
             activity.getMenuInflater().inflate(R.menu.activity_base, menu);
             actionDrawer.getController().closeDrawer();
         } else {
             menu.clear();
-            if(null != root && root.isApp()) {
+            if(null != root && RootInfo.isApps(root)) {
                 activity.getMenuInflater().inflate(R.menu.apps_base, menu);
+            } else if (RootInfo.isMedia(root)){
+                activity.getMenuInflater().inflate(R.menu.directory_simple, menu);
+            } else if (RootInfo.isOtherRoot(root)){
+                //activity.getMenuInflater().inflate(R.menu.directory_simple, menu);
             } else {
                 activity.getMenuInflater().inflate(R.menu.directory_base, menu);
             }

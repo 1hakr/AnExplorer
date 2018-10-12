@@ -45,6 +45,7 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.common.DialogFragment.tintButtons;
 
 
@@ -186,6 +187,10 @@ public class MaterialColorPreference extends Preference {
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
+            if(null != savedInstanceState) {
+                dismiss();
+                return;
+            }
             if(!getShowsDialog()){
                 return;
             }

@@ -1259,7 +1259,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                     DirectoryFragment.showRecentsOpen(fm, anim, root);
 
                     // Start recents in grid when requesting visual things
-                    final boolean visualMimes = true;//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
+                    final boolean visualMimes = !isWatch();//MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, mState.acceptMimes);
                     mState.userMode = visualMimes ? MODE_GRID : MODE_LIST;
                     mState.derivedMode = mState.userMode;
                 }

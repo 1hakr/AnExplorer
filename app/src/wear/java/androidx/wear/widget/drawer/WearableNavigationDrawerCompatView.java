@@ -49,6 +49,7 @@ public class WearableNavigationDrawerCompatView extends androidx.wear.widget.dra
                 @SuppressLint("RestrictedApi")
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
+                    getController().closeDrawer();
                     return mPresenter.onDrawerTapped();
                 }
             };

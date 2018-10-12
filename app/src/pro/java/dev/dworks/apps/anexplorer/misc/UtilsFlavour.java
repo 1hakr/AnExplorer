@@ -2,18 +2,17 @@ package dev.dworks.apps.anexplorer.misc;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.common.DialogFragment;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.ui.RecyclerViewCompat;
 
 public class UtilsFlavour {
 
