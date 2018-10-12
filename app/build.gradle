@@ -97,7 +97,8 @@ android {
         def names = variant.flavors*.name
 
         if ((names.contains("underground") && (names.contains("google") || names.contains("other")))
-            || names.contains("paid") && !names.contains("wear")) {
+            || (names.contains("paid") && !names.contains("wear"))
+            || (names.contains("wear") && ! (names.contains("google") || names.contains("paid")))) {
             variant.ignore = true
         }
     }
