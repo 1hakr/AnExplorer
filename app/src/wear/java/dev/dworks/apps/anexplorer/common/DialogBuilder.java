@@ -39,13 +39,14 @@ public class DialogBuilder extends DialogCommonBuilder {
 
         if(!TextUtils.isEmpty(mTitle)) {
             text1.setText(mTitle);
-        }
-        if(!TextUtils.isEmpty(mMessage)) {
+        } else if(!TextUtils.isEmpty(mMessage)) {
             if(TextUtils.isEmpty(mTitle)){
                 text1.setText(mMessage);
             } else {
                 text2.setText(mMessage);
             }
+        } else {
+            text1.setVisibility(View.GONE);
         }
         builder.setCancelable(mCancelable);
 
@@ -60,7 +61,7 @@ public class DialogBuilder extends DialogCommonBuilder {
         }
         if (null != mCustomView) {
             final FrameLayout custom = (FrameLayout) view.findViewById(R.id.custom);
-            final View scrolltext = (FrameLayout) view.findViewById(R.id.scrolltext);
+            final View scrolltext = view.findViewById(R.id.scrolltext);
             custom.setVisibility(Utils.getVisibility(true));
             scrolltext.setVisibility(Utils.getVisibility(false));
             custom.addView(mCustomView, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));

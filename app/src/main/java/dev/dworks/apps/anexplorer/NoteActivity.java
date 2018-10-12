@@ -29,7 +29,6 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 import android.support.provider.DocumentFile;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;

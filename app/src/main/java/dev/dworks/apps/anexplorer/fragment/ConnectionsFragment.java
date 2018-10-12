@@ -14,14 +14,12 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.internal.NavigationMenu;
 
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 
 import dev.dworks.apps.anexplorer.BaseActivity;

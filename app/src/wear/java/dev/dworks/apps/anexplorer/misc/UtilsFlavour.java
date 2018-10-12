@@ -53,8 +53,8 @@ public class UtilsFlavour {
         if(!contextual){
             menu.clear();
             if(null != root
-                    && RootInfo.isOtherRoot(root) && RootInfo.isApps(root)
-                    &&  RootInfo.isMedia(root)) {
+                    && !RootInfo.isOtherRoot(root) && !RootInfo.isApps(root)
+                    && !RootInfo.isMedia(root)) {
                 activity.getMenuInflater().inflate(R.menu.document_base, menu);
             }
             activity.getMenuInflater().inflate(R.menu.activity_base, menu);

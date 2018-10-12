@@ -101,8 +101,9 @@ public abstract class DialogCommonBuilder {
         mindeterminate = indeterminate;
     }
 
-    public void setView(View view) {
+    public DialogCommonBuilder setView(View view) {
         this.mCustomView = view;
+        return this;
     }
 
     public Dialog create() {

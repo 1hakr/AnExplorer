@@ -22,16 +22,13 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:boxedEdges="left|right">
+            android:layout_height="match_parent" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/card_padding"
-                android:paddingStart="@dimen/big_spacing"
-                android:paddingEnd="@dimen/big_spacing">
+                android:padding="@dimen/big_spacing" >
 
                 <dev.dworks.apps.anexplorer.ui.LineColorPicker
                     android:id="@+id/color_picker"
