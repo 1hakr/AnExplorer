@@ -66,7 +66,10 @@ import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.root.RootCommands;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
-public class NoteActivity extends ActionBarActivity implements TextWatcher {
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+
+public class NoteActivity extends ActionBarActivity
+        implements TextWatcher, MenuItem.OnMenuItemClickListener {
 
     public static final String TAG = "TextEditor";
 
@@ -89,10 +92,13 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         if(null != bar) {
             bar.setBackgroundDrawable(new ColorDrawable(color));
             bar.setDisplayHomeAsUpEnabled(true);
+            if(isWatch()) {
+                bar.setHomeAsUpIndicator(R.drawable.ic_dummy_icon);
+            }
         }
         setUpDefaultStatusBar();
-
         getName();
+        updateMenuItems();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -163,31 +169,17 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.note_options, menu);
-        menu.findItem(R.id.menu_save).setVisible(mModified);
+        if(!isWatch()) {
+            getMenuInflater().inflate(R.menu.note_options, menu);
+            menu.findItem(R.id.menu_save).setVisible(mModified);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                checkUnsavedChanges();
-                break;
-            case R.id.menu_save:
-                save(false);
-                AnalyticsManager.logEvent("text_save");
-                break;
-            case R.id.menu_revert:
-                setSaveProgress(true);
-                try {
-                    mInput.setText(mOriginal);
-                } catch (OutOfMemoryError e){
-                    showError("Unable to Load file");
-                }
-                setSaveProgress(false);
-                AnalyticsManager.logEvent("text_revert");
-                break;
+        if(onMenuAction(item)){
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -208,13 +200,47 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             @Override
             public void run() {
                 mModified = !mInput.getText().toString().equals(mOriginal);
-                supportInvalidateOptionsMenu();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateMenuItems();
+                    }
+                });
             }
         }, 250);
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onMenuAction(item);
+    }
+
+    private boolean onMenuAction(MenuItem item){
+        Utils.closeNoteActionMenu(this);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                checkUnsavedChanges();
+                return true;
+            case R.id.menu_save:
+                save(false);
+                AnalyticsManager.logEvent("text_save");
+                return true;
+            case R.id.menu_revert:
+                setSaveProgress(true);
+                try {
+                    mInput.setText(mOriginal);
+                } catch (OutOfMemoryError e){
+                    showError("Unable to Load file");
+                }
+                setSaveProgress(false);
+                AnalyticsManager.logEvent("text_revert");
+                return true;
+        }
+        return false;
     }
 
     private class LoadContent extends AsyncTask<Void, Void, StringBuilder>{
@@ -367,8 +393,16 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             } else {
                 mOriginal = mInput.getText().toString();
                 mModified = false;
-                supportInvalidateOptionsMenu();
+                updateMenuItems();
             }
+        }
+    }
+
+    private void updateMenuItems(){
+        if(isWatch()){
+            Utils.inflateNoteActionMenu(this, this, mModified);
+        } else {
+            supportInvalidateOptionsMenu();
         }
     }
 

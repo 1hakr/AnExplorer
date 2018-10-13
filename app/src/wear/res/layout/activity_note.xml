@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.drawer.WearableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foreground="?android:windowContentOverlay">
+
+    <dev.dworks.apps.anexplorer.ui.CommonFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:fillViewport="true"
+            android:paddingTop="16dp"
+            android:paddingBottom="60dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical">
+
+            <EditText
+                android:id="@+id/input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:cursorVisible="true"
+                android:fadingEdge="vertical"
+                android:fontFamily="sans-serif-light"
+                android:gravity="top|start"
+                android:hint="Start typing"
+                android:imeOptions="actionDone"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="@integer/editor_max_file_size"
+                android:minHeight="120dp"
+                android:paddingStart="16dp"
+                android:paddingLeft="16dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
+                android:textAlignment="viewStart"
+                android:textColorLink="@color/accentColor"
+                android:textSize="18sp" />
+
+        </ScrollView>
+
+        <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
+            android:id="@+id/progress"
+            style="@style/ListProgress"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+    </dev.dworks.apps.anexplorer.ui.CommonFrameLayout>
+
+    <androidx.wear.widget.drawer.WearableActionDrawerView
+        android:id="@+id/bottom_action_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:actionMenu="@menu/activity_base" />
+
+</androidx.wear.widget.drawer.WearableDrawerLayout>

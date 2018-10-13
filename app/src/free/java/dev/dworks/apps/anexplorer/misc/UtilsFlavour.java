@@ -46,4 +46,11 @@ public class UtilsFlavour {
     public static void setItemsCentered(RecyclerView recyclerView, boolean isEnabled) {
 
     }
+
+    public static void inflateNoteActionMenu(Activity activity,
+                                             MenuItem.OnMenuItemClickListener listener, boolean updated) {
+    }
+
+    public static void closeNoteActionMenu(Activity activity) {
+    }
 }

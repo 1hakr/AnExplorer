@@ -30,13 +30,6 @@ public class UtilsFlavour {
         context.startActivity(intent);
     }
 
-    public static Menu getActionDrawerMenu(DocumentsActivity activity){
-        WearableActionDrawerView actionDrawer = activity.findViewById(R.id.bottom_action_drawer);
-        Menu menu = actionDrawer.getMenu();
-        actionDrawer.setOnMenuItemClickListener(activity);
-        return menu;
-    }
-
     public static View getActionDrawer(DocumentsActivity activity){
         WearableActionDrawerView actionDrawer = activity.findViewById(R.id.bottom_action_drawer);
         return actionDrawer;
@@ -78,15 +71,37 @@ public class UtilsFlavour {
                                     int duration, String action, View.OnClickListener listener){
         int type = !TextUtils.isEmpty(action) && action.equals("ERROR")
                 ? ConfirmationOverlay.FAILURE_ANIMATION : ConfirmationOverlay.SUCCESS_ANIMATION;
-        new ConfirmationOverlay()
-                .setType(type)
-                .setMessage(message)
-                .showOn(activity);
+        try {
+            new ConfirmationOverlay()
+                    .setType(type)
+                    .setMessage(message)
+                    .showOn(activity);
+        } catch (Exception e){}
     }
 
     public static void setItemsCentered(RecyclerView recyclerView, boolean isEnabled) {
         if(recyclerView instanceof RecyclerViewCompat) {
             ((RecyclerViewCompat)recyclerView).setEdgeItemsCenteringEnabled(isEnabled);
         }
+    }
+
+    public static void inflateNoteActionMenu(Activity activity,
+                                         MenuItem.OnMenuItemClickListener listener, boolean updated) {
+        WearableActionDrawerView actionDrawer = activity.findViewById(R.id.bottom_action_drawer);
+        Menu menu = actionDrawer.getMenu();
+        if(null != listener) {
+            actionDrawer.setOnMenuItemClickListener(listener);
+        }
+        menu.clear();
+        if(updated) {
+            actionDrawer.getController().peekDrawer();
+            activity.getMenuInflater().inflate(R.menu.note_options, menu);
+        }
+        //activity.getMenuInflater().inflate(R.menu.note_base, menu);
+    }
+
+    public static void closeNoteActionMenu(Activity activity) {
+        WearableActionDrawerView actionDrawer = activity.findViewById(R.id.bottom_action_drawer);
+        actionDrawer.getController().closeDrawer();
     }
 }
