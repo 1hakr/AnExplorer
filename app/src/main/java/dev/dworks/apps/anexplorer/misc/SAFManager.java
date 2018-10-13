@@ -15,6 +15,8 @@ import com.google.android.material.snackbar.Snackbar;
 import android.support.provider.BasicDocumentFile;
 import android.support.provider.DocumentFile;
 import android.support.provider.UsbDocumentFile;
+
+import androidx.annotation.RequiresApi;
 import androidx.collection.ArrayMap;
 import android.text.Spanned;
 
@@ -127,9 +129,10 @@ public class SAFManager {
         return treeUri;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void takeCardUriPermission(final Activity activity, RootInfo root, DocumentInfo doc) {
-
-        if(Utils.hasNougat() && !Utils.hasOreo()){
+        boolean useStorageAccess = Utils.hasNougat() && !Utils.hasOreo();
+        if(useStorageAccess && null != doc.path){
             StorageManager storageManager = (StorageManager) activity.getSystemService(Context.STORAGE_SERVICE);
             StorageVolume storageVolume = storageManager.getStorageVolume(new File(doc.path));
             Intent intent = storageVolume.createAccessIntent(null);

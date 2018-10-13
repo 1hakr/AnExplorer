@@ -61,11 +61,11 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
         if (extras != null) {
             final String info = extras.getString(DocumentsContract.EXTRA_INFO);
             if (info != null) {
-                mFooters.add(new MessageFooter(mEnv,ITEM_TYPE_INFO, R.drawable.ic_dialog_info, info));
+                mFooters.add(new MessageFooter(mEnv, ITEM_TYPE_INFO, R.drawable.ic_dialog_info, info));
             }
             final String error = extras.getString(DocumentsContract.EXTRA_ERROR);
             if (error != null) {
-                mFooters.add(new MessageFooter(mEnv,ITEM_TYPE_ERROR, R.drawable.ic_dialog_alert, error));
+                mFooters.add(new MessageFooter(mEnv, ITEM_TYPE_ERROR, R.drawable.ic_dialog_alert, error));
             }
             if (extras.getBoolean(DocumentsContract.EXTRA_LOADING, false)) {
                 mFooters.add(new LoadingFooter(mEnv, ITEM_TYPE_LOADING));
@@ -73,7 +73,7 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
         }
 
         if (result != null && result.exception != null) {
-            mFooters.add(new MessageFooter(mEnv,3, R.drawable.ic_dialog_alert, getString(R.string.query_error)));
+            mFooters.add(new MessageFooter(mEnv, ITEM_TYPE_ERROR, R.drawable.ic_dialog_alert, getString(R.string.query_error)));
         }
 
         mHeader = new MessageFooter(mEnv, ITEM_TYPE_HEADER, R.drawable.ic_doc_folder,

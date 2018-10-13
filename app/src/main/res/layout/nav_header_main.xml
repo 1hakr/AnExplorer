@@ -7,6 +7,7 @@
     android:baselineAligned="false"
     android:gravity="center_vertical"
     android:orientation="horizontal"
+    android:layout_marginTop="@dimen/drawer_padding"
     android:paddingStart="5dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
