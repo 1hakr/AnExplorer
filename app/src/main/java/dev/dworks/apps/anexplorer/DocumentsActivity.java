@@ -1543,7 +1543,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 //TODO: This temporarily fixes crash when the Activity that is opened is not
                 // exported gives java.lang.SecurityException: Permission Denial:
                 try {
-                    if(casty.isConnected() && rootInfo == getRoots().getPrimaryRoot()){
+                    if(casty.isConnected() && doc.isMedia()){
                         casty.getPlayer().loadMediaAndPlay(CastUtils.buildMediaInfo(doc, getRoots().getPrimaryRoot()));
                     } else {
                         startActivity(view);

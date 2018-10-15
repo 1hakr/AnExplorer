@@ -44,6 +44,7 @@
         android:roundIcon="@drawable/ic_launcher"
         android:label="@string/name"
         tools:replace="android:label"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true">
 
         <meta-data android:name="WindowManagerPreference:FreeformWindowSize"

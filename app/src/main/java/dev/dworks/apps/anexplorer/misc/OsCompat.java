@@ -1,8 +1,14 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import android.os.Build;
+import android.system.ErrnoException;
+import android.system.Os;
+
 import java.io.FileDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import androidx.annotation.RequiresApi;
 
 /** Very hackish */
 public final class OsCompat {
@@ -62,10 +68,17 @@ public final class OsCompat {
         }
     }
 
-    public static int lseek(FileDescriptor fd, long offset, int whence) throws
+    public static Long lseek(FileDescriptor fd, long offset, int whence) throws
             ExecutionFailedException {
         try {
-            return (Integer) sLseek.invoke(sOs, fd, offset, whence);
+            if(Utils.hasMarshmallow()){
+                try {
+                    return Os.lseek(fd, offset, whence);
+                } catch (ErrnoException e) {
+                    e.printStackTrace();
+                }
+            }
+            return (Long) sLseek.invoke(sOs, fd, offset, whence);
         } catch (IllegalAccessException e) {
             throw new ExecutionFailedException(e);
         } catch (InvocationTargetException e) {

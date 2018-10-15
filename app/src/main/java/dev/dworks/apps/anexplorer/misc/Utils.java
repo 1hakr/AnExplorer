@@ -318,8 +318,7 @@ public class Utils extends UtilsFlavour{
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static boolean isActivityAlive(Activity activity) {
-        return !(null == activity
-                || (null != activity && Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing()));
+        return !(null == activity || (Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing()));
     }
 
     public static boolean isAPK(String mimeType){

@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.StorageProvider;
 
 import static dev.dworks.apps.anexplorer.cast.CastUtils.MEDIA_THUMBNAILS;
+import static dev.dworks.apps.anexplorer.model.DocumentsContract.THUMBNAIL_BUFFER_SIZE;
 
 public class WebServer extends SimpleWebServer {
 
@@ -86,6 +88,8 @@ public class WebServer extends SimpleWebServer {
                     AssetFileDescriptor afd = DocumentsContract.getDocumentThumbnails(context.getContentResolver(), mediaUri);
                     if(null != afd) {
                         inputStream = afd.createInputStream();
+                        inputStream = new BufferedInputStream(afd.createInputStream(), THUMBNAIL_BUFFER_SIZE);
+                        inputStream.mark(THUMBNAIL_BUFFER_SIZE);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
