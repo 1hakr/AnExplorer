@@ -1033,6 +1033,22 @@ public final class DocumentsContract {
         }
     }
 
+    public static AssetFileDescriptor getDocumentThumbnails(
+            ContentResolver resolver, Uri documentUri) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                documentUri.getAuthority());
+        final Bundle openOpts = new Bundle();
+        openOpts.putParcelable(ContentResolver.EXTRA_SIZE, new Point(400, 400));
+
+        AssetFileDescriptor afd = null;
+        try {
+            afd = client.openTypedAssetFileDescriptor(documentUri, "image/*", openOpts);
+        } catch (Exception e){
+            CrashReportingManager.logException(e);
+        }
+        return afd;
+    }
+
     public static Bitmap getDocumentThumbnails(
             ContentProviderClient client, Uri documentUri, Point size, CancellationSignal signal)
             throws RemoteException, IOException {

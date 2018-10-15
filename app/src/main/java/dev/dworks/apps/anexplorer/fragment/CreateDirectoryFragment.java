@@ -41,6 +41,7 @@ import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
+import dev.dworks.apps.anexplorer.misc.TintUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -68,7 +69,7 @@ public class CreateDirectoryFragment extends DialogFragment {
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
-        Utils.tintWidget(text1);
+        TintUtils.tintWidget(text1);
 
         builder.setTitle(R.string.menu_create_dir);
         builder.setView(view);

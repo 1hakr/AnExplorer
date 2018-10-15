@@ -20,20 +20,26 @@ import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.collection.ArrayMap;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
-import android.widget.AbsListView;
+
+import com.google.android.gms.cast.framework.CastContext;
 
 import java.util.List;
 
+import dev.dworks.apps.anexplorer.cast.Casty;
 import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -42,7 +48,9 @@ import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
-import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.server.WebServer;
+
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 
 public abstract class BaseActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
@@ -244,4 +252,46 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
+    protected Casty casty;
+
+    @CallSuper
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(isWatch()){
+            return;
+        }
+        casty = Casty.create(this);
+        casty.setOnConnectChangeListener(new Casty.OnConnectChangeListener() {
+            @Override
+            public void onConnected() {
+                WebServer.getServer().startServer(BaseActivity.this);
+            }
+
+            @Override
+            public void onDisconnected() {
+                WebServer.getServer().stopServer();
+            }
+        });
+    }
+
+    @CallSuper
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        final RootInfo root = getCurrentRoot();
+        if(!isWatch() &&null != root && (RootInfo.isMedia(root) || casty.isConnected())) {
+            if (findViewById(R.id.casty_mini_controller) == null) {
+                casty.addMiniController();
+            }
+        }
+        casty.addMediaRouteMenuItem(menu);
+        return true;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return CastContext.getSharedInstance(this).onDispatchVolumeKeyEventBeforeJellyBean(event)
+                || super.dispatchKeyEvent(event);
+    }
 }

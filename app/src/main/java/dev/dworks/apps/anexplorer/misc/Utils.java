@@ -444,20 +444,6 @@ public class Utils extends UtilsFlavour{
         delegate.setLocalNightMode(nightMode);
     }
 
-    public static void tintWidget(View view) {
-        tintWidget(view, SettingsActivity.getAccentColor());
-    }
-
-    public static void tintButton(Button view) {
-        view.setTextColor(SettingsActivity.getAccentColor());
-    }
-
-    public static void tintWidget(View view, int color) {
-        Drawable wrappedDrawable = DrawableCompat.wrap(view.getBackground());
-        DrawableCompat.setTint(wrappedDrawable.mutate(), color);
-        ViewCompat.setBackground(view, wrappedDrawable);
-    }
-
     public static boolean isRTL() {
         return TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
                 == androidx.core.view.ViewCompat.LAYOUT_DIRECTION_RTL;

@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
 import com.cloudrail.si.CloudRail;
+import com.google.android.material.snackbar.Snackbar;
 
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -40,6 +41,7 @@ import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.server.SimpleWebServer;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 public class DocumentsApplication extends AppFlavour {
@@ -57,9 +59,15 @@ public class DocumentsApplication extends AppFlavour {
     private ThumbnailCache mThumbnailCache;
     private static boolean isTelevision;
     private static boolean isWatch;
+    private SimpleWebServer simpleWebServer;
+    private boolean isStarted;
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
+    }
+
+    public static RootsCache getRootsCache() {
+        return ((DocumentsApplication) DocumentsApplication.getInstance().getApplicationContext()).mRoots;
     }
 
     public static ArrayMap<Integer, Long> getFolderSizes() {

@@ -19,7 +19,6 @@ package dev.dworks.apps.anexplorer;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
@@ -43,17 +42,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.drawerlayout.widget.DrawerLayout.DrawerListener;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -62,7 +58,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -89,6 +84,8 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
+import dev.dworks.apps.anexplorer.cast.CastUtils;
+import dev.dworks.apps.anexplorer.cast.Casty;
 import dev.dworks.apps.anexplorer.common.RootsCommonFragment;
 import dev.dworks.apps.anexplorer.fragment.ConnectionsFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
@@ -129,6 +126,8 @@ import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
+import dev.dworks.apps.anexplorer.server.SimpleWebServer;
+import dev.dworks.apps.anexplorer.server.WebServer;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 import dev.dworks.apps.anexplorer.ui.DrawerLayoutHelper;
@@ -156,7 +155,6 @@ import static dev.dworks.apps.anexplorer.misc.SAFManager.ADD_STORAGE_REQUEST_COD
 import static dev.dworks.apps.anexplorer.misc.SecurityHelper.REQUEST_CONFIRM_CREDENTIALS;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.isDownloadAuthority;
-import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_SECURITY_ENABLED;
 
 public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuItemClickListener {
 
@@ -1545,7 +1543,11 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 //TODO: This temporarily fixes crash when the Activity that is opened is not
                 // exported gives java.lang.SecurityException: Permission Denial:
                 try {
-                    startActivity(view);
+                    if(casty.isConnected() && rootInfo == getRoots().getPrimaryRoot()){
+                        casty.getPlayer().loadMediaAndPlay(CastUtils.buildMediaInfo(doc, getRoots().getPrimaryRoot()));
+                    } else {
+                        startActivity(view);
+                    }
                 } catch (Exception e){
                     CrashReportingManager.logException(e);
                 }

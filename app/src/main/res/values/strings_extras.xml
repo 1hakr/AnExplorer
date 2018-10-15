@@ -184,4 +184,5 @@
     <string name="support_app">Support AnExplorer</string>
     <string name="restored_previous_purchase_please_restart">Restored previous purchase.</string>
 
+    <string name="casty_introduction_text">Use this button to connect with Chromecast</string>
 </resources>

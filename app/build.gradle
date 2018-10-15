@@ -123,7 +123,10 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
+    implementation "androidx.mediarouter:mediarouter:1.0.0"
+    implementation "com.google.android.gms:play-services-cast-framework:16.0.3"
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
+    implementation 'com.nanohttpd:nanohttpd:2.2.0'
 
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
     freeImplementation "com.google.firebase:firebase-core:16.0.4"

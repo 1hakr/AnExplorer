@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Button;
 
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.TintUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 /**
@@ -38,9 +39,9 @@ public class DialogFragment extends AppCompatDialogFragment {
     }
 
     public static void tintButtons(Dialog dialog){
-        Utils.tintButton(getButton(dialog, DialogInterface.BUTTON_POSITIVE));
-        Utils.tintButton(getButton(dialog, DialogInterface.BUTTON_NEGATIVE));
-        Utils.tintButton(getButton(dialog, DialogInterface.BUTTON_NEUTRAL));
+        TintUtils.tintButton(getButton(dialog, DialogInterface.BUTTON_POSITIVE));
+        TintUtils.tintButton(getButton(dialog, DialogInterface.BUTTON_NEGATIVE));
+        TintUtils.tintButton(getButton(dialog, DialogInterface.BUTTON_NEUTRAL));
     }
 
     private static Button getButton(Dialog dialog, int which){

@@ -40,6 +40,7 @@ import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
+import dev.dworks.apps.anexplorer.misc.TintUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -84,7 +85,7 @@ public class RenameFragment extends DialogFragment {
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
-        Utils.tintWidget(text1);
+        TintUtils.tintWidget(text1);
 
         String nameOnly = editExtension ? doc.displayName : FileUtils.removeExtension(doc.mimeType, doc.displayName);
         text1.setText(nameOnly);

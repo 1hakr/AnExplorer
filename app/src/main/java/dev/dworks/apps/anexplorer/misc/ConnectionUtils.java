@@ -11,6 +11,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.DatagramSocket;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -23,6 +24,8 @@ import java.util.List;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
+
+import static android.content.Context.WIFI_SERVICE;
 
 /**
  * Created by HaKr on 05/09/16.
@@ -53,7 +56,7 @@ public class ConnectionUtils {
 
         if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wm = (WifiManager) context.getSystemService(WIFI_SERVICE);
             try {
                 Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
                 connected = (Boolean) method.invoke(wm);
@@ -79,12 +82,20 @@ public class ConnectionUtils {
 
 
     public static boolean isConnectedToWifi(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        NetworkInfo networkInfo = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected()
+                && wifiManager.isWifiEnabled() && networkInfo.getType() ==ConnectivityManager.TYPE_WIFI) {
+            return true;
+        }
+        return false;
+    }
 
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni != null && ni.isConnected()
-                && ni.getType() == ConnectivityManager.TYPE_WIFI;
+    public static String getIpAccess(Context context) {
+        WifiManager wifiManager = (WifiManager)  context.getSystemService(WIFI_SERVICE);
+        int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+        final String formatedIpAddress = String.format("%d.%d.%d.%d", (ipAddress & 0xff), (ipAddress >> 8 & 0xff), (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff));
+        return "http://" + formatedIpAddress + ":";
     }
 
     public static InetAddress getLocalInetAddress(Context context) {
@@ -95,7 +106,7 @@ public class ConnectionUtils {
 
         if (isConnectedToWifi(context)) {
 
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wm = (WifiManager) context.getSystemService(WIFI_SERVICE);
             int ipAddress = wm.getConnectionInfo().getIpAddress();
             if (ipAddress == 0)
                 return null;
