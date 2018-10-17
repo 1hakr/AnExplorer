@@ -20,6 +20,8 @@ import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.cast.framework.media.MediaQueue;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -355,12 +357,28 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
 
     @Override
     public void onMediaLoaded() {
-        startExpandedControlsActivity();
+        //startExpandedControlsActivity();
     }
 
     private void startExpandedControlsActivity() {
         Intent intent = new Intent(activity, ExpandedControlsActivity.class);
         activity.startActivity(intent);
+    }
+
+    public MediaQueue getMediaQueue() {
+        RemoteMediaClient remoteClient = castyPlayer.getRemoteMediaClient();
+        if(null != remoteClient){
+            return remoteClient.getMediaQueue();
+        }
+        return null;
+    }
+
+    public RemoteMediaClient getRemoteMediaClient() {
+        return castyPlayer.getRemoteMediaClient();
+    }
+
+    public CastSession getCastSession() {
+        return castSession;
     }
 
     public interface OnConnectChangeListener {

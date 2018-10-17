@@ -185,4 +185,14 @@
     <string name="restored_previous_purchase_please_restart">Restored previous purchase.</string>
 
     <string name="casty_introduction_text">Use this button to connect with Chromecast</string>
+    <string name="queue_empty">No items in Queue!</string>
+    <string name="show_queue">Show Queue</string>
+    <string name="queue_list">Cast Queue</string>
+    <string name="action_clear_queue">Clear Queue</string>
+    <string name="action_delete">Delete Item</string>
+
+    <plurals name="queue_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
 </resources>

@@ -124,17 +124,6 @@ public class PurchaseActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onDestroy() {
         DocumentsApplication.getInstance().releaseBillingProcessor();
         super.onDestroy();

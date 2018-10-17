@@ -17,6 +17,7 @@
 
 package dev.dworks.apps.anexplorer;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentProviderClient;
@@ -34,6 +35,7 @@ import android.text.format.DateUtils;
 import com.cloudrail.si.CloudRail;
 import com.google.android.material.snackbar.Snackbar;
 
+import dev.dworks.apps.anexplorer.cast.Casty;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
@@ -61,6 +63,7 @@ public class DocumentsApplication extends AppFlavour {
     private static boolean isWatch;
     private SimpleWebServer simpleWebServer;
     private boolean isStarted;
+    private Casty mCasty;
 
     public static RootsCache getRootsCache(Context context) {
         return ((DocumentsApplication) context.getApplicationContext()).mRoots;
@@ -138,6 +141,14 @@ public class DocumentsApplication extends AppFlavour {
 
     public static synchronized DocumentsApplication getInstance() {
         return sInstance;
+    }
+
+    public void initCasty(Activity activity) {
+        mCasty = Casty.create(activity);
+    }
+
+    public Casty getCasty() {
+        return mCasty;
     }
 
     @Override

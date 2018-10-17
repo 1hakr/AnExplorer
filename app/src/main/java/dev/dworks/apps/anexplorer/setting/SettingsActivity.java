@@ -168,15 +168,6 @@ public class SettingsActivity extends SettingsCommonActivity {
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.pref_headers, target);
 	}
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
     
     @Override
     protected boolean isValidFragment(String fragmentName) {

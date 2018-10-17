@@ -29,6 +29,10 @@ public class CastyPlayer {
         this.remoteMediaClient = remoteMediaClient;
     }
 
+    public RemoteMediaClient getRemoteMediaClient() {
+        return remoteMediaClient;
+    }
+
     /**
      * Plays the current media file if it is paused
      */
@@ -197,11 +201,13 @@ public class CastyPlayer {
         if (remoteMediaClient == null) {
             return false;
         }
-        if (!inBackground) {
-            remoteMediaClient.registerCallback(createRemoteMediaClientListener());
-        }
 
-        remoteMediaClient.queueInsertAndPlayItem(queueItem, INVALID_ITEM_ID, 0,null);
+        MediaQueueItem currentItem = remoteMediaClient.getCurrentItem();
+        int currentId = 0;
+        if(null != currentItem) {
+            currentId = currentItem.getItemId();
+        }
+        remoteMediaClient.queueInsertAndPlayItem(queueItem, currentId, null);
         return true;
     }
 
@@ -220,7 +226,8 @@ public class CastyPlayer {
 
             @Override
             public void onQueueStatusUpdated() {
-                //no-op
+                onMediaLoadedListener.onMediaLoaded();
+                remoteMediaClient.unregisterCallback(this);
             }
 
             @Override

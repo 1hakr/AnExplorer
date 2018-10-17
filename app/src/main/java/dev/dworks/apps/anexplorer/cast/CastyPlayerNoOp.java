@@ -3,6 +3,7 @@ package dev.dworks.apps.anexplorer.cast;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaQueueItem;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
 import androidx.annotation.NonNull;
 
@@ -80,5 +81,10 @@ class CastyPlayerNoOp extends CastyPlayer {
     @Override
     public boolean loadMediaInQueueAndPlayInBackground(MediaQueueItem queueItem) {
         return false;
+    }
+
+    @Override
+    public RemoteMediaClient getRemoteMediaClient() {
+        return null;
     }
 }

@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.CancellationSignal;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 
 
@@ -114,11 +115,16 @@ public final class ThumbnailLoader extends AsyncTask<Uri, Void, Bitmap> implemen
         ContentProviderClient client = null;
         Bitmap result = null;
         try {
-            if (Utils.isAPK(mMimeType)) {
-                result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, mPath, DocumentsContract.Document.MIME_TYPE_APK)).getBitmap();
-            } else {
-                client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mUri.getAuthority());
-                result = DocumentsContract.getDocumentThumbnail(resolver, mUri, mThumbSize, mSignal);
+            if(URLUtil.isNetworkUrl(mUri.toString())){
+                result = ImageUtils.getThumbnail(resolver, mUri, mThumbSize.x, mThumbSize.y);
+            }
+            if (null == result) {
+                if (Utils.isAPK(mMimeType)) {
+                    result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, mPath, DocumentsContract.Document.MIME_TYPE_APK)).getBitmap();
+                } else {
+                    client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mUri.getAuthority());
+                    result = DocumentsContract.getDocumentThumbnail(resolver, mUri, mThumbSize, mSignal);
+                }
             }
             if (null == result){
                 result = ImageUtils.getThumbnail(mPath, mMimeType, mThumbSize.x, mThumbSize.y);

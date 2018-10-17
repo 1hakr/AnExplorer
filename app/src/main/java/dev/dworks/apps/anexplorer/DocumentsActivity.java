@@ -766,9 +766,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
         updateMenuItems(menu);
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public void updateMenuItems(Menu menu){
@@ -1543,8 +1542,11 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 //TODO: This temporarily fixes crash when the Activity that is opened is not
                 // exported gives java.lang.SecurityException: Permission Denial:
                 try {
+                    Casty casty =  DocumentsApplication.getInstance().getCasty();
                     if(casty.isConnected() && doc.isMedia()){
-                        casty.getPlayer().loadMediaAndPlay(CastUtils.buildMediaInfo(doc, getRoots().getPrimaryRoot()));
+                        CastUtils.addToQueue(casty,
+                                CastUtils.buildMediaInfo(doc, getRoots().getPrimaryRoot()));
+                        invalidateMenu();
                     } else {
                         startActivity(view);
                     }

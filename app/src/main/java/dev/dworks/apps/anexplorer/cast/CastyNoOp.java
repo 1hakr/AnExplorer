@@ -2,6 +2,10 @@ package dev.dworks.apps.anexplorer.cast;
 
 import android.view.Menu;
 
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.MediaQueue;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.mediarouter.app.MediaRouteButton;
@@ -51,5 +55,20 @@ class CastyNoOp extends Casty {
     @Override
     public void setOnCastSessionUpdatedListener(@Nullable Casty.OnCastSessionUpdatedListener onCastSessionUpdatedListener) {
         //no-op
+    }
+
+    @Override
+    public CastSession getCastSession() {
+        return null;
+    }
+
+    @Override
+    public RemoteMediaClient getRemoteMediaClient() {
+        return null;
+    }
+
+    @Override
+    public MediaQueue getMediaQueue() {
+        return null;
     }
 }

@@ -366,14 +366,12 @@
             android:name=".cast.ExpandedControlsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:theme="@style/DocumentsTheme.Cast">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DocumentsActivity" />
-        </activity>
+            android:theme="@style/DocumentsTheme.Cast" />
+
+        <activity
+            android:name=".queue.QueueActivity"
+            android:label="@string/queue_list"
+            android:theme="@style/DocumentsTheme.Document" />
 
     </application>
 

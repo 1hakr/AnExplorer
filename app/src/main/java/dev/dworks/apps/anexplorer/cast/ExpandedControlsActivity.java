@@ -12,6 +12,7 @@ import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.R.id;
 import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.TintUtils;
@@ -27,6 +28,8 @@ public class ExpandedControlsActivity extends ExpandedControllerActivity {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+        Toolbar toolbar = findViewById(id.toolbar);
+        toolbar.setFitsSystemWindows(true);
         ImageView imageView = findViewById(id.background_place_holder_image_view);
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_root_image);
         TintUtils.tintDrawable(drawable, Color.WHITE);
@@ -49,5 +52,10 @@ public class ExpandedControlsActivity extends ExpandedControllerActivity {
         getMenuInflater().inflate(R.menu.menu_cast, menu);
         CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.casty_media_route_menu_item);
         return true;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean b) {
+//        super.onWindowFocusChanged(b);
     }
 }

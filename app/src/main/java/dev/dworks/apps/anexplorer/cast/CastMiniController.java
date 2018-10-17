@@ -22,6 +22,5 @@ public class CastMiniController extends MiniControllerFragment {
         int color = SettingsActivity.getAccentColor();
         ProgressBar progressBar = view.findViewById(id.progressBar);
         TintUtils.tintDrawable(progressBar.getProgressDrawable(), color);
-
     }
 }

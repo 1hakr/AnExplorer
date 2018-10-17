@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="DocumentsTheme.Cast">
+        <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimaryDark">@color/primaryColor</item>
         <item name="castMiniControllerStyle">@style/CustomCastMiniController</item>
         <item name="castIntroOverlayStyle">@style/CustomCastIntroOverlay</item>
         <item name="castExpandedControllerStyle">@style/CustomCastExpandedController</item>
-        <item name="castExpandedControllerToolbarStyle">@style/DocumentsTheme.ActionBarTheme</item>
+        <item name="castExpandedControllerToolbarStyle">?attr/actionBarTheme</item>
     </style>
 
     <style name="CustomCastIntroOverlay" parent="CastIntroOverlay">
@@ -32,7 +33,4 @@
     </style>
 
     <style name="CustomCastExpandedController" parent="CastExpandedController" />
-
-    <style name="DocumentsTheme.ActionBarTheme">
-    </style>
 </resources>

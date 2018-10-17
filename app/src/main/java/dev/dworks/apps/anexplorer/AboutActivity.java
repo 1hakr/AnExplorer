@@ -106,16 +106,6 @@ public class AboutActivity extends AboutFlavour implements View.OnClickListener 
 		}
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
     @Override
     public void startActivity(Intent intent) {
         if(Utils.isIntentAvailable(this, intent)) {

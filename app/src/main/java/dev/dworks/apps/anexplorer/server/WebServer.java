@@ -4,13 +4,9 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
-import android.os.RemoteException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
@@ -19,8 +15,6 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
-import dev.dworks.apps.anexplorer.provider.StorageProvider;
 
 import static dev.dworks.apps.anexplorer.cast.CastUtils.MEDIA_THUMBNAILS;
 import static dev.dworks.apps.anexplorer.model.DocumentsContract.THUMBNAIL_BUFFER_SIZE;

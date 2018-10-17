@@ -17,6 +17,7 @@ package dev.dworks.apps.anexplorer;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -33,13 +34,17 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.MediaQueue;
 
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.cast.Casty;
+import dev.dworks.apps.anexplorer.queue.QueueActivity;
 import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -252,7 +257,8 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
-    protected Casty casty;
+    private Casty casty;
+    protected CastSession castSession;
 
     @CallSuper
     @Override
@@ -261,10 +267,13 @@ public abstract class BaseActivity extends ActionBarActivity {
         if(isWatch()){
             return;
         }
-        casty = Casty.create(this);
+        DocumentsApplication.getInstance().initCasty(this);
+        casty = DocumentsApplication.getInstance().getCasty();
         casty.setOnConnectChangeListener(new Casty.OnConnectChangeListener() {
             @Override
             public void onConnected() {
+                castSession = casty.getCastSession();
+                supportInvalidateOptionsMenu();
                 WebServer.getServer().startServer(BaseActivity.this);
             }
 
@@ -285,13 +294,40 @@ public abstract class BaseActivity extends ActionBarActivity {
                 casty.addMiniController();
             }
         }
-        casty.addMediaRouteMenuItem(menu);
+        if(!isWatch()) {
+            casty.addMediaRouteMenuItem(menu);
+        }
         return true;
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(!isWatch()) {
+            boolean connected = (castSession != null) && castSession.isConnected();
+            MediaQueue queue = casty.getMediaQueue();
+            int queueCount = null != queue ? queue.getItemCount() : 0;
+            menu.findItem(R.id.action_show_queue).setVisible(connected && queueCount > 0);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_show_queue){
+            Intent intent = new Intent(BaseActivity.this, QueueActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        return CastContext.getSharedInstance(this).onDispatchVolumeKeyEventBeforeJellyBean(event)
-                || super.dispatchKeyEvent(event);
+        if(!isWatch()) {
+            return CastContext.getSharedInstance(this).onDispatchVolumeKeyEventBeforeJellyBean(event)
+                    || super.dispatchKeyEvent(event);
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
     }
 }

@@ -19,6 +19,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 
@@ -35,6 +36,12 @@ public class RecyclerFragment extends Fragment {
     public interface onDataChangeListener {
         void onDataChanged();
         void onCancelled();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(RecyclerView.ViewHolder item, View view, int position);
+        void onItemLongClick(RecyclerView.ViewHolder item, View view, int position);
+        void onItemViewClick(RecyclerView.ViewHolder item, View view, int position);
     }
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder

@@ -1,6 +1,8 @@
 package dev.dworks.apps.anexplorer.common;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +36,16 @@ public abstract class ActionBarActivity extends BaseCommonActivity {
     protected void onResume() {
         super.onResume();
         AnalyticsManager.setCurrentScreen(this, getTag());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public abstract String getTag();
