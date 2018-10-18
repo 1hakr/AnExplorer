@@ -102,6 +102,7 @@ public class DocumentsApplication extends AppFlavour {
 
     @Override
     public void onCreate() {
+        Utils.setAppThemeStyle(getBaseContext());
         super.onCreate();
         if(!BuildConfig.DEBUG) {
             AnalyticsManager.intialize(getApplicationContext());

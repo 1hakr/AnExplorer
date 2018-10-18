@@ -65,6 +65,7 @@ import java.util.Locale;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
@@ -433,14 +434,42 @@ public class Utils extends UtilsFlavour{
 
     public static void changeThemeStyle(AppCompatDelegate delegate) {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        AppCompatDelegate.setDefaultNightMode(nightMode);
+        delegate.setLocalNightMode(nightMode);
+    }
+
+    public static void setAppThemeStyle(Context context) {
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle(context));
         if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
             try {
-                new WebView(DocumentsApplication.getInstance().getBaseContext());
+                new WebView(context);
             } catch (Exception e) {
             }
         }
         AppCompatDelegate.setDefaultNightMode(nightMode);
+    }
+
+    public static void setActivityThemeStyle(AppCompatDelegate delegate) {
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        AppCompatDelegate.setDefaultNightMode(nightMode);
         delegate.setLocalNightMode(nightMode);
+    }
+
+    public static void recreateActivity(Activity activity) {
+        if(!isActivityAlive(activity)){
+            return;
+        }
+        AppCompatDelegate delegate = null;
+        if(activity instanceof ActionBarActivity){
+            delegate = ((ActionBarActivity)activity).getDelegate();
+        }
+        Utils.changeThemeStyle(delegate);
+        activity.recreate();
+    }
+
+    public static boolean isDarkTheme(){
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        return nightMode == AppCompatDelegate.MODE_NIGHT_YES;
     }
 
     public static boolean isRTL() {

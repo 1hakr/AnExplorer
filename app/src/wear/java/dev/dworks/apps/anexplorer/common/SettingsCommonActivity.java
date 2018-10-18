@@ -1,11 +1,8 @@
 package dev.dworks.apps.anexplorer.common;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 
-import androidx.annotation.Nullable;
-
-public abstract class SettingsCommonActivity extends AppCompatPreferenceActivity {
+public abstract class SettingsCommonActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

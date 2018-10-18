@@ -17,7 +17,6 @@
 
 package dev.dworks.apps.anexplorer.setting;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,22 +25,19 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import androidx.core.content.ContextCompat;
-import android.text.TextUtils;
-import android.view.MenuItem;
 
 import java.util.List;
 
+import androidx.core.content.ContextCompat;
+
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.common.AppCompatPreferenceActivity;
 import dev.dworks.apps.anexplorer.common.SettingsCommonActivity;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
-import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -132,6 +128,11 @@ public class SettingsActivity extends SettingsCommonActivity {
         editor.commit();
     }
 
+    public static String getThemeStyle(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(KEY_THEME_STYLE, "1");
+    }
+
     public static String getThemeStyle() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
                 .getString(KEY_THEME_STYLE, "1");
@@ -162,18 +163,13 @@ public class SettingsActivity extends SettingsCommonActivity {
         changeActionBarColor(0);
         res = getResources();
         actionBarColor = getPrimaryColor(this);
+        if(null == savedInstanceState) {
+            getFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new SettingsFragment())
+                    .commit();
+        }
     }
 
-	@Override
-	public void onBuildHeaders(List<Header> target) {
-		loadHeadersFromResource(R.xml.pref_headers, target);
-	}
-    
-    @Override
-    protected boolean isValidFragment(String fragmentName) {
-    	return true;
-    }
-    
     @Override
     protected void onResume() {
     	super.onResume();

@@ -1,0 +1,113 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/menu_settings">
+    <PreferenceScreen
+        android:icon="@drawable/ic_theme"
+        android:key="pref_theme"
+        android:title="@string/pref_header_theme">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/theme_style_names"
+            android:entryValues="@array/theme_style_values"
+            android:icon="@drawable/dummy_icon"
+            android:key="themeStyle"
+            android:persistent="true"
+            android:summary="%s"
+            android:title="@string/pref_theme_style_title" />
+
+        <dev.dworks.apps.anexplorer.ui.MaterialColorPreference
+            android:defaultValue="@color/primaryColor"
+            android:dialogTitle="@string/pref_foreground_color_title"
+            android:icon="@drawable/dummy_icon"
+            android:key="primaryColor"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="@string/pref_foreground_color_description"
+            android:title="@string/pref_foreground_color_title"
+            app:color_type="primary"
+            app:itemLayout="@layout/pref_layout_color" />
+
+        <dev.dworks.apps.anexplorer.ui.MaterialColorPreference
+            android:defaultValue="@color/accentColor"
+            android:dialogTitle="@string/pref_foreground_color_title"
+            android:icon="@drawable/dummy_icon"
+            android:key="accentColor"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:summary="@string/pref_accent_color_description"
+            android:title="@string/pref_accent_color_title"
+            app:color_type="accent"
+            app:itemLayout="@layout/pref_layout_color" />
+
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:icon="@drawable/ic_security"
+        android:key="pref_security"
+        android:title="@string/pref_header_security">
+
+        <SwitchPreference
+            android:icon="@drawable/dummy_icon"
+            android:key="security_enable"
+            android:summary="@string/pref_description_pin_enable"
+            android:title="@string/pref_title_pin_enable" />
+
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:icon="@drawable/ic_folder_options"
+        android:title="@string/pref_header_general">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/dummy_icon"
+            android:key="fileSize"
+            android:persistent="true"
+            android:title="@string/pref_file_size" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/dummy_icon"
+            android:key="folderSize"
+            android:title="@string/pref_folder_size" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/dummy_icon"
+            android:key="fileThumbnail"
+            android:persistent="true"
+            android:title="@string/pref_thumbnail" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/dummy_icon"
+            android:key="fileHidden"
+            android:persistent="true"
+            android:title="@string/pref_hidden" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/dummy_icon"
+            android:key="recentMedia"
+            android:persistent="true"
+            android:title="@string/pref_recent_media" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:icon="@drawable/ic_advanced_settings"
+        android:title="@string/pref_header_advanced">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/dummy_icon"
+            android:key="advancedDevices"
+            android:persistent="true"
+            android:title="@string/pref_advanced_devices" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/dummy_icon"
+            android:key="rootMode"
+            android:persistent="true"
+            android:title="@string/pref_root_mode" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/dummy_icon"
+            android:key="folderAnimations"
+            android:persistent="true"
+            android:title="@string/pref_folder_animations" />
+
+    </PreferenceScreen>
+</PreferenceScreen>

@@ -77,5 +77,6 @@
     <integer name="home_span">10</integer>
     <dimen name="document_list_padding">80dp</dimen>
     <dimen name="drawer_padding">24dp</dimen>
+    <dimen name="preference_padding">72dp</dimen>
 </resources>
 

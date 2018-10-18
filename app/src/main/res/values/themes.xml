@@ -22,8 +22,6 @@
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorAccent">@color/accentColor</item>
-        <item name="colorControlNormal">@color/primary_text_default_material_dark</item>
-        <item name="colorControlActivated">@color/primary_text_default_material_dark</item>
 
         <!--<item name="android:listDivider">@drawable/list_divider_material</item>-->
 
@@ -54,9 +52,9 @@
     </style>
 
     <style name="DocumentsTheme.Setting">
-        <item name="colorControlNormal">@color/primaryColor</item>
         <item name="colorControlActivated">@color/accentColor</item>
         <item name="windowActionBar">true</item>
+        <item name="android:preferenceCategoryStyle">@style/PreferenceCategoryStyle</item>
     </style>
 
     <style name="DocumentsTheme.Note">

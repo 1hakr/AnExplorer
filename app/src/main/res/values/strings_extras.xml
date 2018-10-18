@@ -83,7 +83,7 @@
     <string name="pref_recent_media">Show recent media</string>
 
     <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
+    <string name="pref_header_general">Folder</string>
     <string name="pref_header_security">Security</string>
     <string name="pref_header_theme">Theme</string>
     <string name="pref_header_advanced">Advanced</string>
