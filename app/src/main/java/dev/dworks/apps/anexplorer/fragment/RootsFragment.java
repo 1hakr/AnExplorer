@@ -17,14 +17,14 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager.LoaderCallbacks;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.ColorDrawable;
@@ -52,9 +52,11 @@ import java.util.Comparator;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
+import dev.dworks.apps.anexplorer.common.BaseFragment;
 import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
@@ -77,7 +79,7 @@ import static dev.dworks.apps.anexplorer.R.layout.item_root_spacer;
 /**
  * Display list of known storage backend roots.
  */
-public class RootsFragment extends Fragment {
+public class RootsFragment extends BaseFragment {
 
     private ExpandableListView mList;
     private RootsExpandableAdapter mAdapter;
@@ -222,7 +224,7 @@ public class RootsFragment extends Fragment {
         if(null != proWrapper) {
             proWrapper.setVisibility(DocumentsApplication.isPurchased() ? View.GONE : View.VISIBLE);
         }
-        getLoaderManager().restartLoader(2, null, mCallbacks);
+        LoaderManager.getInstance(getActivity()).restartLoader(2, null, mCallbacks);
     }
 
     private void changeThemeColor() {

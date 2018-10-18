@@ -1,27 +1,20 @@
 package dev.dworks.apps.anexplorer.common;
 
-import androidx.fragment.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
-import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import androidx.wear.widget.drawer.WearableCompatDrawerLayout;
-import androidx.wear.widget.drawer.WearableDrawerController;
 import androidx.wear.widget.drawer.WearableDrawerControllerCompat;
 import androidx.wear.widget.drawer.WearableNavigationDrawerCompatView;
 import androidx.wear.widget.drawer.WearableNavigationDrawerView;
@@ -29,18 +22,14 @@ import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.RootsCommonAdapter;
-import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
-import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
-import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
-import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.fragment.RootsFragment.EXTRA_INCLUDE_APPS;
 
 public class RootsCommonFragment extends BaseFragment
         implements WearableNavigationDrawerView.OnItemSelectedListener{
@@ -125,7 +114,7 @@ public class RootsCommonFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(2, null, mCallbacks);
+        LoaderManager.getInstance(getAppCompatActivity()).restartLoader(2, null, mCallbacks);
     }
 
     public void onCurrentRootChanged() {

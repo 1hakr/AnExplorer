@@ -60,6 +60,7 @@ import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.OsCompat;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 import static dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat.buildAssetFileDescriptor;
@@ -120,7 +121,7 @@ public final class DocumentsContract {
      * @see MediaStore.Images.ImageColumns#ORIENTATION
      * @hide
      */
-    public static final String EXTRA_ORIENTATION = "android.content.extra.ORIENTATION";
+    public static final String EXTRA_ORIENTATION = "android.provider.extra.ORIENTATION";
     /**
      * Overrides the default prompt text in DocumentsUI when set in an intent.
      */
@@ -740,7 +741,7 @@ public final class DocumentsContract {
     public static Uri buildHomeUri() {
         // TODO: Avoid this type of interpackage copying. Added here to avoid
         // direct coupling, but not ideal.
-        return DocumentsContract.buildRootUri(DOCUMENT_AUTHORITY, "home");
+        return DocumentsContract.buildRootUri(ExternalStorageProvider.AUTHORITY, "home");
     }
 
     /**
@@ -1101,7 +1102,7 @@ public final class DocumentsContract {
             } else {
                 try {
                     OsCompat.lseek(fd, offset, OsCompat.SEEK_SET);
-                } catch (OsCompat.ExecutionFailedException e) {
+                } catch (Exception e) {
                     throw new IOException(e);
                 }
                 bitmap = BitmapFactory.decodeFileDescriptor(fd, null, opts);

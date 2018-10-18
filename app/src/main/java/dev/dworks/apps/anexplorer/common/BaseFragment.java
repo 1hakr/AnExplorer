@@ -30,9 +30,4 @@ public class BaseFragment extends Fragment {
         mActivity = null;
         super.onDetach();
     }
-
-    @Override
-    public LoaderManager getLoaderManager() {
-        return super.getLoaderManager();
-    }
 }

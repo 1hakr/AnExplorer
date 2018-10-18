@@ -1,12 +1,7 @@
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.content.CursorLoader;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
@@ -44,6 +42,8 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import static android.widget.LinearLayout.VERTICAL;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
@@ -191,12 +191,12 @@ public class ConnectionsFragment extends RecyclerFragment
         setListAdapter(mAdapter);
         setListShown(false);
         // Kick off loader at least once
-        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+        LoaderManager.getInstance(getActivity()).restartLoader(mLoaderId, null, mCallbacks);
 
     }
 
     public void reload(){
-        getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+        LoaderManager.getInstance(getActivity()).restartLoader(mLoaderId, null, mCallbacks);
         RootsCache.updateRoots(getActivity(), NetworkStorageProvider.AUTHORITY);
         RootsCache.updateRoots(getActivity(), CloudStorageProvider.AUTHORITY);
     }
@@ -261,12 +261,12 @@ public class ConnectionsFragment extends RecyclerFragment
     }
 
     private void addConnection() {
-        CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager());
+        CreateConnectionFragment.show(getAppCompatActivity().getSupportFragmentManager());
         AnalyticsManager.logEvent("connection_add");
     }
 
     private void editConnection(int connection_id) {
-        CreateConnectionFragment.show(((DocumentsActivity)getActivity()).getSupportFragmentManager(), connection_id);
+        CreateConnectionFragment.show(getAppCompatActivity().getSupportFragmentManager(), connection_id);
         AnalyticsManager.logEvent("connection_edit");
     }
 

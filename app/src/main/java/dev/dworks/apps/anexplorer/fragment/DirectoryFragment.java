@@ -18,17 +18,19 @@
 package dev.dworks.apps.anexplorer.fragment;
 
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager.LoaderCallbacks;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -369,7 +371,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		setListAdapter(mAdapter);
 		setListShown(false);
 		// Kick off loader at least once
-		getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+		LoaderManager.getInstance(getActivity()).restartLoader(mLoaderId, null, mCallbacks);
 
 		updateDisplayState();
 	}
@@ -412,7 +414,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
         updateUserState(StateColumns.SORT_ORDER);
 		// Sort order change always triggers reload; we'll trigger state change
 		// on the flip side.
-		getLoaderManager().restartLoader(mLoaderId, null, mCallbacks);
+		LoaderManager.getInstance(getActivity()).restartLoader(mLoaderId, null, mCallbacks);
 		getListView().smoothScrollToPosition(0);
 	}
 

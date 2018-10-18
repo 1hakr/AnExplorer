@@ -23,6 +23,7 @@ import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.CancellationSignal;
+import android.os.OperationCanceledException;
 import android.util.Log;
 import android.view.View;
 import android.webkit.URLUtil;
@@ -33,8 +34,6 @@ import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.libcore.util.BiConsumer;
 import dev.dworks.apps.anexplorer.libcore.util.Consumer;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
-
-import static dev.dworks.apps.anexplorer.BaseActivity.TAG;
 
 /**
  *  Loads a Thumbnails asynchronously then animates from the mime icon to the thumbnail
@@ -134,7 +133,7 @@ public final class ThumbnailLoader extends AsyncTask<Uri, Void, Bitmap> implemen
                 thumbs.putThumbnail(mUri, mThumbSize, result, mLastModified);
             }
         } catch (Exception e) {
-            if (!(e instanceof androidx.core.os.OperationCanceledException)) {
+            if (!(e instanceof OperationCanceledException)) {
                 Log.w(TAG, "Failed to load thumbnail for " + mUri + ": " + e);
             }
             CrashReportingManager.logException(e);
