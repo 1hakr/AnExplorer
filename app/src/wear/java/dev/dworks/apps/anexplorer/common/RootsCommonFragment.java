@@ -1,6 +1,6 @@
 package dev.dworks.apps.anexplorer.common;
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;

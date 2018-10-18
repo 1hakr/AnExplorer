@@ -1,7 +1,7 @@
 package dev.dworks.apps.anexplorer.common;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 

@@ -46,7 +46,7 @@ public class QueueActivity extends ActionBarActivity {
         setContentView(R.layout.activity_queue);
 
         if (savedInstanceState == null) {
-            QueueFragment.show(getFragmentManager());
+            QueueFragment.show(getSupportFragmentManager());
         }
 
         setupActionBar();

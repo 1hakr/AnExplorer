@@ -1,6 +1,5 @@
 package dev.dworks.apps.anexplorer.common;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,11 +18,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.adapter.ConnectionsAdapter;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 
-public class RecyclerFragment extends Fragment {
+public class RecyclerFragment extends BaseFragment {
 	private Adapter<RecyclerView.ViewHolder> mAdapter;
 	private LayoutManager mLayoutManager;
     private CharSequence mEmptyText;

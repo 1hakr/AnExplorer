@@ -1,7 +1,7 @@
 package dev.dworks.apps.anexplorer.queue;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;

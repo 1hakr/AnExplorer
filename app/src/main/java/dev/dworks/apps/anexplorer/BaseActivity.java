@@ -16,7 +16,6 @@
 package dev.dworks.apps.anexplorer;
 
 import android.Manifest;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -29,6 +28,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.collection.ArrayMap;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;

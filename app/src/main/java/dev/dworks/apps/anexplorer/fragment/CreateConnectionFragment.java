@@ -221,7 +221,7 @@ public class CreateConnectionFragment extends DialogFragment {
         protected void onPostExecute(Boolean result) {
             if (result) {
                 RootsCache.updateRoots(mActivity, NetworkStorageProvider.AUTHORITY);
-                ConnectionsFragment connectionsFragment = ConnectionsFragment.get(mActivity.getFragmentManager());
+                ConnectionsFragment connectionsFragment = ConnectionsFragment.get(mActivity.getSupportFragmentManager());
                 if(null != connectionsFragment){
                     connectionsFragment.reload();
                     if(connection_id == 0) {

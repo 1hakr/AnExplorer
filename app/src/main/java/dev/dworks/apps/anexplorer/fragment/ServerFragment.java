@@ -1,8 +1,5 @@
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,8 +15,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.BaseFragment;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
@@ -32,9 +32,8 @@ import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_S
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_START_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_STOP_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
-import static dev.dworks.apps.anexplorer.misc.Utils.isWatch;
 
-public class ServerFragment extends Fragment implements View.OnClickListener {
+public class ServerFragment extends BaseFragment implements View.OnClickListener {
 
     private TextView status;
     private TextView username;
