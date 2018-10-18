@@ -17,6 +17,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.CircledImageView;
+import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -53,8 +54,8 @@ public class DialogBuilder extends DialogCommonBuilder {
         builder.setView(view);
         if(mindeterminate){
             mCustomView = dialogInflater.inflate(R.layout.dialog_layout_progress, null, false);
-            CircularProgressLayout progress = mCustomView.findViewById(R.id.circular_progress);
-            progress.setColorSchemeColors(SettingsActivity.getAccentColor());
+            MaterialProgressBar progress = mCustomView.findViewById(R.id.circular_progress);
+            progress.setColor(SettingsActivity.getAccentColor());
 
             button1.setVisibility(Utils.getVisibility(false));
             button2.setVisibility(Utils.getVisibility(false));

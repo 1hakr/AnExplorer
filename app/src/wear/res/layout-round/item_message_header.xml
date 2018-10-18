@@ -29,7 +29,7 @@
         android:singleLine="true"
         android:ellipsize="middle"
         android:paddingStart="@dimen/list_item_padding"
-        android:paddingEnd="80dp"
+        android:paddingEnd="90dp"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         tools:text="Android title"
