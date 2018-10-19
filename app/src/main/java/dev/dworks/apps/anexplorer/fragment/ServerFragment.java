@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.BaseFragment;
@@ -25,6 +26,7 @@ import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_FAILEDTOSTART;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STARTED;
@@ -73,6 +75,7 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
         password =(TextView) view.findViewById(R.id.password);
         path = (TextView) view.findViewById(R.id.path);
         address = (TextView) view.findViewById(R.id.address);
+        address.setHighlightColor(SettingsActivity.getAccentColor());
         warning = (TextView) view.findViewById(R.id.warning);
         action = (Button) view.findViewById(R.id.action);
         action.setOnClickListener(this);
@@ -120,30 +123,16 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
 
     private void startServer() {
         Intent intent = new Intent(ACTION_START_FTPSERVER);
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         intent.putExtras(getArguments());
-
-        if(DocumentsApplication.isWatch()) {
-            Intent serverService = new Intent(getActivity(), ConnectionsService.class);
-            serverService.putExtras(intent.getExtras());
-            if (!ConnectionUtils.isServerRunning(getActivity())) {
-                getActivity().startService(serverService);
-            }
-        } else {
-            getActivity().sendBroadcast(intent);
-        }
+        getActivity().sendBroadcast(intent);
     }
 
     private void stopServer() {
         Intent intent = new Intent(ACTION_STOP_FTPSERVER);
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         intent.putExtras(getArguments());
-
-        if(DocumentsApplication.isWatch()){
-            Intent serverService = new Intent(getActivity(), ConnectionsService.class);
-            serverService.putExtras(intent.getExtras());
-            getActivity().stopService(serverService);
-        } else {
-            getActivity().sendBroadcast(intent);
-        }
+        getActivity().sendBroadcast(intent);
     }
 
     private void updateStatus(){

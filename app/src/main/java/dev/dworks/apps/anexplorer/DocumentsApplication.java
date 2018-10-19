@@ -39,6 +39,7 @@ import dev.dworks.apps.anexplorer.cast.Casty;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
+import dev.dworks.apps.anexplorer.misc.NotificationUtils;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.SAFManager;
 import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
@@ -137,6 +138,10 @@ public class DocumentsApplication extends AppFlavour {
         if((isTelevision || isWatch) && Integer.valueOf(SettingsActivity.getThemeStyle())
                 != AppCompatDelegate.MODE_NIGHT_YES){
             SettingsActivity.setThemeStyle(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+        if(Utils.hasOreo()) {
+            NotificationUtils.createNotificationChannels(this);
         }
     }
 

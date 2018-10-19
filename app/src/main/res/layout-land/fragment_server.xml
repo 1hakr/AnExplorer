@@ -74,6 +74,7 @@
                     android:layout_gravity="start"
                     android:ellipsize="end"
                     android:padding="10dp"
+                    android:textIsSelectable="true"
                     android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/accentColor"

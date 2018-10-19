@@ -10,7 +10,6 @@ import android.os.Message;
 import android.os.Process;
 
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
-import dev.dworks.apps.anexplorer.misc.LogUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.network.NetworkServiceHandler;
@@ -40,7 +39,6 @@ public abstract class NetworkServerService extends Service {
     public abstract void stopServer();
 
     protected void handleServerStartError(Exception e) {
-        LogUtils.LOGD(TAG, "could not start server", e);
         CrashReportingManager.logException(e);
         sendBroadcast(new Intent(ACTION_FTPSERVER_FAILEDTOSTART));
     }
@@ -64,7 +62,6 @@ public abstract class NetworkServerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) {
-            LogUtils.LOGD(TAG, "intent is null in onStartCommand()");
             return START_REDELIVER_INTENT;
         }
 
