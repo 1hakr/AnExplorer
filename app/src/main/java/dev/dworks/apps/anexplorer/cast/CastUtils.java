@@ -1,7 +1,6 @@
 package dev.dworks.apps.anexplorer.cast;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
@@ -12,11 +11,9 @@ import com.google.android.gms.common.images.WebImage;
 import java.io.File;
 
 import dev.dworks.apps.anexplorer.DocumentsApplication;
-import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.server.WebServer;
 
 public class CastUtils {
 
@@ -63,7 +60,7 @@ public class CastUtils {
     }
 
     private static String getIpAddress(){
-        return ConnectionUtils.getIpAccess(DocumentsApplication.getInstance().getApplicationContext()) + WebServer.DEFAULT_PORT;
+        return ConnectionUtils.getHTTPAccess(DocumentsApplication.getInstance().getApplicationContext());
     }
 
     public static void removeQueueItem(Casty casty, int itemId) {

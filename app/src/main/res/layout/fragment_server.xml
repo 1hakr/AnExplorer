@@ -72,6 +72,8 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/button_text_color_red"
+                    android:gravity="center"
+                    tools:text="@string/local_no_connection"
                     android:visibility="gone" />
             </LinearLayout>
 
