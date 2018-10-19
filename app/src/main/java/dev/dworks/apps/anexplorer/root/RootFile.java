@@ -25,7 +25,7 @@ public class RootFile {
 	}
     
 	public RootFile(RootFile target, String result) {
-    	array = result.split("\\s+");
+    	array = result.trim().split("\\s+");
 		int arrayLength = array.length;
 		LogUtils.LOGD("root", result+":"+ array.length);
         if(array.length > 3) {

@@ -82,6 +82,10 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
         }
     }
 
+    public static boolean isAvailable(@NonNull Activity activity){
+        return ConnectionResult.SUCCESS == GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity);
+    }
+
     //Needed for NoOp instance
     Casty() {
         //no-op

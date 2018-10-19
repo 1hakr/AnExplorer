@@ -306,7 +306,10 @@ public abstract class BaseActivity extends ActionBarActivity {
             boolean connected = (castSession != null) && castSession.isConnected();
             MediaQueue queue = casty.getMediaQueue();
             int queueCount = null != queue ? queue.getItemCount() : 0;
-            menu.findItem(R.id.action_show_queue).setVisible(connected && queueCount > 0);
+            MenuItem showQueue = menu.findItem(R.id.action_show_queue);
+            if(null != showQueue) {
+                showQueue.setVisible(connected && queueCount > 0);
+            }
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -323,7 +326,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if(!isWatch()) {
+        if(!isWatch() && Casty.isAvailable(this)) {
             return CastContext.getSharedInstance(this).onDispatchVolumeKeyEventBeforeJellyBean(event)
                     || super.dispatchKeyEvent(event);
         } else {
