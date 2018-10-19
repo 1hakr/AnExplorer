@@ -737,18 +737,11 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 
 	private void onShareDocuments(ArrayList<DocumentInfo> docs) {
 		Intent intent;
+		String mimeType = "";
 		if (docs.size() == 1) {
 			final DocumentInfo doc = docs.get(0);
-
+			mimeType = doc.mimeType;
 			intent = new Intent(Intent.ACTION_SEND);
-			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			// intent.addCategory(Intent.CATEGORY_DEFAULT);
-            if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, doc.mimeType)) {
-                intent.setType(doc.mimeType);
-            }
-            else{
-                intent.setType(MimeTypes.ALL_MIME_TYPES);
-            }
 			intent.putExtra(Intent.EXTRA_STREAM, doc.derivedUri);
 
 			Bundle params = new Bundle();
@@ -759,23 +752,17 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 
 		} else if (docs.size() > 1) {
 			intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			// intent.addCategory(Intent.CATEGORY_DEFAULT);
 
 			final ArrayList<String> mimeTypes = new ArrayList<>();
 			final ArrayList<Uri> uris = new ArrayList<>();
 			for (DocumentInfo doc : docs) {
-				mimeTypes.add(doc.mimeType);
-				uris.add(doc.derivedUri);
+				if(!doc.isDirectory()) {
+					mimeTypes.add(doc.mimeType);
+					uris.add(doc.derivedUri);
+				}
 			}
 
-            String mimeType = findCommonMimeType(mimeTypes);
-            if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, mimeType)) {
-                intent.setType(mimeType);
-            }
-            else{
-                intent.setType(MimeTypes.ALL_MIME_TYPES);
-            }
+            mimeType = MimeTypes.findCommonMimeType(mimeTypes);
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
 			Bundle params = new Bundle();
@@ -785,6 +772,14 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		} else {
 			return;
 		}
+
+		if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, doc.mimeType)) {
+			intent.setType(mimeType);
+		} else{
+			intent.setType(MimeTypes.ALL_MIME_TYPES);
+		}
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		intent.addCategory(Intent.CATEGORY_DEFAULT);
 
 		intent = Intent.createChooser(intent, getActivity().getText(R.string.share_via));
         if(Utils.isIntentAvailable(getActivity(), intent)) {
@@ -1107,31 +1102,6 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		} else {
 			mEmptyView.setVisibility(View.GONE);
 		}
-	}
-
-	private String findCommonMimeType(ArrayList<String> mimeTypes) {
-		String[] commonType = mimeTypes.get(0).split("/");
-		if (commonType.length != 2) {
-			return "*/*";
-		}
-
-		for (int i = 1; i < mimeTypes.size(); i++) {
-			String[] type = mimeTypes.get(i).split("/");
-			if (type.length != 2)
-				continue;
-
-			if (!commonType[1].equals(type[1])) {
-				commonType[1] = "*";
-			}
-
-			if (!commonType[0].equals(type[0])) {
-				commonType[0] = "*";
-				commonType[1] = "*";
-				break;
-			}
-		}
-
-		return commonType[0] + "/" + commonType[1];
 	}
 
 	public boolean isDocumentEnabled(String docMimeType, int docFlags) {

@@ -1,5 +1,6 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -129,7 +130,7 @@ public class SAFManager {
         return treeUri;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @SuppressLint("NewApi")
     public static void takeCardUriPermission(final Activity activity, RootInfo root, DocumentInfo doc) {
         boolean useStorageAccess = Utils.hasNougat() && !Utils.hasOreo();
         if(useStorageAccess && null != doc.path){
