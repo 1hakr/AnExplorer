@@ -255,7 +255,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(final Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
 		final DocumentsActivity context = (DocumentsActivity)getActivity();
@@ -327,7 +327,9 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 				if (!isAdded())
 					return;
 
-				saveDisplayState();
+				if(null != savedInstanceState) {
+					saveDisplayState();
+				}
 				mAdapter.swapResult(result);
 
 				// Push latest state up to UI
@@ -355,6 +357,9 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 					Utils.setItemsCentered(getListView(), mAdapter.getItemCount() > 1);
 				}
 				mLastSortOrder = state.derivedSortOrder;
+
+				restoreDisplaySate();
+
 				if(isTelevision()){
 					getListView().requestFocus();
 				}
@@ -390,10 +395,12 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		final SparseArray<Parcelable> container = state.dirState.remove(mStateKey);
 		if (container != null && !getArguments().getBoolean(EXTRA_IGNORE_STATE, false)) {
 			getView().restoreHierarchyState(container);
+		} else if (mLastSortOrder != state.derivedSortOrder) {
+			getListView().smoothScrollToPosition(0);
 		}
 	}
 
-	@Override
+    @Override
 	public void onPause() {
 		super.onPause();
 		saveDisplayState();
@@ -491,7 +498,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		}
 		mIconHelper.setViewMode(state.derivedMode);
 		setItemDivider();
-		restoreDisplaySate();
+
         ((BaseActivity) getActivity()).upadateActionItems(getListView());
 
         if(refreshData) {
@@ -869,7 +876,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 			DialogBuilder builder = new DialogBuilder(getActivity());
 			builder.setCancelable(false);
 			builder.setIndeterminate(true);
-
+			saveDisplayState();
 			switch (id) {
 			case R.id.menu_delete:
 			case R.id.menu_stop:

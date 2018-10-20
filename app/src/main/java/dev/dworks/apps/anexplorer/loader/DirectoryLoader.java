@@ -20,10 +20,13 @@ package dev.dworks.apps.anexplorer.loader;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.CancellationSignal;
+import android.os.Handler;
 import android.os.OperationCanceledException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
@@ -261,4 +264,30 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
                 return null;
         }
     }
+
+    public final class ForceLoadContentObserver extends ContentObserver {
+        public ForceLoadContentObserver() {
+            super(new Handler());
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            onContentChanged();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            final String path  = null != uri ? uri.getPath() : "";
+            if(!TextUtils.isEmpty(path)){
+                return;
+            }
+            super.onChange(selfChange, uri);
+        }
+    }
+
 }

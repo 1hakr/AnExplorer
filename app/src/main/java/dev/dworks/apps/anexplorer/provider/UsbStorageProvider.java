@@ -21,7 +21,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
@@ -360,6 +362,18 @@ public class UsbStorageProvider extends DocumentsProvider {
         }
 
         return BASIC_MIME_TYPE;
+    }
+
+    @Override
+    public AssetFileDescriptor openDocumentThumbnail(String documentId, Point sizeHint,
+                                         CancellationSignal signal) throws FileNotFoundException {
+        try {
+            UsbFile file = getFileForDocId(documentId);
+            final ParcelFileDescriptor pfd = ParcelFileDescriptorUtil.pipeFrom(new UsbFileInputStream(file));
+            return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
     }
 
     private static String getMimeType(UsbFile file) {
