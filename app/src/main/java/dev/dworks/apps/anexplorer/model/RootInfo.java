@@ -683,4 +683,8 @@ public class RootInfo implements Durable, Parcelable {
         return root.isSecondaryStorage() || root.isUsbStorage() || root.isRootedStorage();
     }
 
+    public static boolean isChromecastFeature(RootInfo root){
+        return RootInfo.isMedia(root) || root.isHome() || root.isStorage();
+    }
+
 }

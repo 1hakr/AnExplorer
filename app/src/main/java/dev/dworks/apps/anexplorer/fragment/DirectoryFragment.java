@@ -35,6 +35,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
 import com.google.android.material.snackbar.Snackbar;
@@ -340,7 +341,13 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
                 if (result.sortOrder != SORT_ORDER_UNKNOWN) {
                     state.derivedSortOrder = result.sortOrder;
                 }
-				((BaseActivity) context).onStateChanged();
+				final Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						((BaseActivity) context).onStateChanged();
+					}
+				}, 500);
 
 				updateDisplayState();
 

@@ -287,17 +287,16 @@ public abstract class BaseActivity extends ActionBarActivity {
     @CallSuper
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
         final RootInfo root = getCurrentRoot();
-        if(!isWatch() &&null != root && (RootInfo.isMedia(root) || casty.isConnected())) {
+        if(!isWatch() && casty.isConnected()) {
             if (findViewById(R.id.casty_mini_controller) == null) {
                 casty.addMiniController();
             }
         }
-        if(!isWatch()) {
+        if(!isWatch() && (null != root && RootInfo.isChromecastFeature(root))) {
             casty.addMediaRouteMenuItem(menu);
         }
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
