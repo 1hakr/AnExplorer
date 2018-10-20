@@ -17,7 +17,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
     android:background="@drawable/item_doc_list_background">
 
     <LinearLayout
@@ -138,8 +139,8 @@
         android:contentDescription="@string/abc_action_menu_overflow_description"
         android:paddingBottom="10dp"
         android:paddingEnd="10dp"
-        android:paddingRight="10dp"
         android:paddingTop="10dp"
-        app:srcCompat="@drawable/ic_menu_moreoverflow_dark" />
+        app:srcCompat="@drawable/ic_menu_moreoverflow_dark"
+        android:focusable="true" />
 
 </FrameLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding='utf-8' standalone='no'?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <declare-styleable name="CircledImageView">
+        <attr name="android:src" />
+        <attr name="circle_color" format="color" />
+        <attr name="circle_radius" format="dimension" />
+        <attr name="circle_radius_pressed" format="dimension" />
+        <attr name="circle_border_width" format="dimension" />
+        <attr name="circle_border_color" format="color" />
+        <attr name="circle_border_cap">
+            <enum name="butt" value="0" />
+            <enum name="round" value="1" />
+            <enum name="square" value="2" />
+        </attr>
+        <attr name="circle_padding" format="dimension" />
+        <attr name="shadow_width" format="dimension" />
+        <attr name="image_circle_percentage" format="dimension" />
+        <attr name="image_horizontal_offcenter_percentage" format="dimension" />
+        <attr name="image_tint" format="color" />
+        <attr name="circle_radius_percent" format="fraction" />
+        <attr name="circle_radius_pressed_percent" format="fraction" />
+        <attr name="square_dimen">
+            <enum name="none" value="0" />
+            <enum name="height" value="1" />
+            <enum name="width" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

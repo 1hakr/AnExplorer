@@ -6,11 +6,15 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.text.format.Formatter;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.DatagramSocket;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
@@ -20,9 +24,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
+import dev.dworks.apps.anexplorer.server.WebServer;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
+
+import static android.content.Context.WIFI_SERVICE;
 
 /**
  * Created by HaKr on 05/09/16.
@@ -43,48 +51,81 @@ public class ConnectionUtils {
 
     public static boolean isConnectedToLocalNetwork(Context context) {
         boolean connected = false;
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        connected = ni != null
-                && ni.isConnected()
-                && (ni.getType() & (ConnectivityManager.TYPE_WIFI
-                | ConnectivityManager.TYPE_ETHERNET)) != 0;
-
+        if (!connected) {
+            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI");
+            connected = isConnectedToWifi(context);
+        }
+        if (!connected) {
+            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an Ethernet");
+            connected = isConnectedToEthernet(context);
+        }
         if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an WIFI AP");
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            try {
-                Method method = wm.getClass().getDeclaredMethod("isWifiApEnabled");
-                connected = (Boolean) method.invoke(wm);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            connected = isConnectedToWifiAP(context);
         }
         if (!connected) {
             Log.d(TAG, "isConnectedToLocalNetwork: see if it is an USB AP");
-            try {
-                for (NetworkInterface netInterface : Collections.list(NetworkInterface
-                        .getNetworkInterfaces())) {
-                    if (netInterface.getDisplayName().startsWith("rndis")) {
-                        connected = true;
-                    }
-                }
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
+            connected = isConnectedToUSBAP(context);
+        }
+        if (!connected) {
+            Log.d(TAG, "isConnectedToLocalNetwork: see if it is an Mobile");
+            connected = isConnectedToMobile(context);
         }
         return connected;
     }
 
+    public static boolean isConnectedToMobile(Context context) {
+        return isConnectedToNetwork(context, ConnectivityManager.TYPE_MOBILE);
+    }
 
     public static boolean isConnectedToWifi(Context context) {
+        return isConnectedToNetwork(context, ConnectivityManager.TYPE_WIFI);
+    }
 
-        ConnectivityManager cm = (ConnectivityManager) context
+    public static boolean isConnectedToEthernet(Context context) {
+        return isConnectedToNetwork(context, ConnectivityManager.TYPE_ETHERNET);
+    }
+
+    public static boolean isConnectedToNetwork(Context context, int type) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni != null && ni.isConnected()
-                && ni.getType() == ConnectivityManager.TYPE_WIFI;
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        boolean connected = networkInfo != null && networkInfo.isConnectedOrConnecting()
+                && (networkInfo.getType() == type);
+        return connected;
+    }
+
+    public static boolean isConnectedToWifiAP(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
+        boolean connected = false;
+        try {
+            Method method = wifiManager.getClass().getDeclaredMethod("isWifiApEnabled");
+            connected = (Boolean) method.invoke(wifiManager);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return connected;
+    }
+
+    public static boolean isConnectedToUSBAP(Context context) {
+        boolean connected = false;
+        try {
+            for (NetworkInterface netInterface : Collections.list(NetworkInterface
+                    .getNetworkInterfaces())) {
+                if (netInterface.getDisplayName().startsWith("rndis")) {
+                    connected = true;
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return connected;
     }
 
     public static InetAddress getLocalInetAddress(Context context) {
@@ -94,8 +135,7 @@ public class ConnectionUtils {
         }
 
         if (isConnectedToWifi(context)) {
-
-            WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wm = (WifiManager) context.getSystemService(WIFI_SERVICE);
             int ipAddress = wm.getConnectionInfo().getIpAddress();
             if (ipAddress == 0)
                 return null;
@@ -169,9 +209,18 @@ public class ConnectionUtils {
     }
 
     public static String getFTPAddress(Context context){
+        return getIpAccess(context, true, FTP_SERVER_PORT);
+    }
+
+    public static String getHTTPAccess(Context context) {
+        return getIpAccess(context, false, WebServer.DEFAULT_PORT);
+    }
+
+    public static String getIpAccess(Context context, boolean ftp, int port) {
         InetAddress inetAddress = getLocalInetAddress(context);
+        String scheme = ftp ? "ftp://" : "http://";
         if(null != inetAddress) {
-            return "ftp://" + inetAddress.getHostAddress() + ":" + FTP_SERVER_PORT;
+            return scheme + inetAddress.getHostAddress() + ":" + port;
         }
         return "";
     }

@@ -30,4 +30,5 @@
 
     <integer name="recycler_type">1</integer>
     <dimen name="card_padding">50dp</dimen>
+    <dimen name="preference_padding">80dp</dimen>
 </resources>

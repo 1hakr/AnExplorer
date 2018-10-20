@@ -85,7 +85,7 @@
             android:id="@+id/action_layout"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <ImageButton
                 android:id="@+id/action"

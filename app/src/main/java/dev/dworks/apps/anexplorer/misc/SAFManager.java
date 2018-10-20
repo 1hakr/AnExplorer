@@ -1,5 +1,6 @@
 package dev.dworks.apps.anexplorer.misc;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -15,21 +16,23 @@ import com.google.android.material.snackbar.Snackbar;
 import android.support.provider.BasicDocumentFile;
 import android.support.provider.DocumentFile;
 import android.support.provider.UsbDocumentFile;
+
+import androidx.annotation.RequiresApi;
 import androidx.collection.ArrayMap;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Spanned;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 
 import static android.app.Activity.RESULT_OK;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.IntentUtils.ACTION_OPEN_DOCUMENT_TREE;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.ROOT_ID_SECONDARY;
 import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
@@ -88,17 +91,17 @@ public class SAFManager {
 
     public static String getRootUri(Uri uri) {
         if (isTreeUri(uri)) {
-            return dev.dworks.apps.anexplorer.model.DocumentsContract.getTreeDocumentId(uri);
+            return DocumentsContract.getTreeDocumentId(uri);
         }
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.getDocumentId(uri);
+        return DocumentsContract.getDocumentId(uri);
     }
 
     private static Uri buildDocumentUriMaybeUsingTree(Uri uri, String docId) {
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.buildDocumentUriMaybeUsingTree(uri, docId);
+        return DocumentsContract.buildDocumentUriMaybeUsingTree(uri, docId);
     }
 
     private static boolean isTreeUri(Uri uri) {
-        return dev.dworks.apps.anexplorer.model.DocumentsContract.isTreeUri(uri);
+        return DocumentsContract.isTreeUri(uri);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -127,9 +130,10 @@ public class SAFManager {
         return treeUri;
     }
 
+    @SuppressLint("NewApi")
     public static void takeCardUriPermission(final Activity activity, RootInfo root, DocumentInfo doc) {
-
-        if(Utils.hasNougat()){
+        boolean useStorageAccess = Utils.hasNougat() && !Utils.hasOreo();
+        if(useStorageAccess && null != doc.path){
             StorageManager storageManager = (StorageManager) activity.getSystemService(Context.STORAGE_SERVICE);
             StorageVolume storageVolume = storageManager.getStorageVolume(new File(doc.path));
             Intent intent = storageVolume.createAccessIntent(null);
@@ -139,12 +143,12 @@ public class SAFManager {
                 CrashReportingManager.logException(e, true);
             }
         } else if(Utils.hasLollipop()){
-            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            DialogBuilder builder = new DialogBuilder(activity);
             Spanned message = Utils.fromHtml("Select root (outermost) folder of storage "
                     + "<b>" + root.title + "</b>"
                     + " to grant access from next screen");
             builder.setTitle("Grant accesss to External Storage")
-                    .setMessage(message)
+                    .setMessage(message.toString())
                     .setPositiveButton("Give Access", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterfaceParam, int code) {
@@ -158,7 +162,7 @@ public class SAFManager {
                         }
                     })
                     .setNegativeButton("Cancel", null);
-            DialogFragment.showThemedDialog(builder);
+            builder.showDialog();
         }
     }
 
@@ -186,7 +190,7 @@ public class SAFManager {
         }
         Utils.showSnackBar(activity, "Access"+ (accessGranted ? "" : " was not") +" granted"
                         + (primaryStorage ? ". Choose the external storage." : ""),
-                Snackbar.LENGTH_SHORT, null, null);
+                Snackbar.LENGTH_SHORT, accessGranted ? "" : "ERROR", null);
         return accessGranted;
     }
 }

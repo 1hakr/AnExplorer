@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_show_queue"
+        android:icon="@drawable/ic_playlist"
+        android:title="@string/show_queue"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/casty_media_route_menu_item"
+        android:title="Cast"
+        app:actionProviderClass="dev.dworks.apps.anexplorer.cast.CastActionProvider"
+        app:showAsAction="always" />
+</menu>

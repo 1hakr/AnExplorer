@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.R;
 
 public class MaterialProgressDialog extends ProgressDialog {
@@ -26,8 +27,7 @@ public class MaterialProgressDialog extends ProgressDialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Resources res = getContext().getResources();
-        mDefaultColor = res.getColor(R.color.accentColor);
+        mDefaultColor = ContextCompat.getColor(getContext(), R.color.accentColor);
 
         indeterminateDrawable = new MaterialProgressDrawable(getContext(), findViewById(android.R.id.progress));
         indeterminateDrawable.setBackgroundColor(CIRCLE_BG_LIGHT);

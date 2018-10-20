@@ -69,5 +69,14 @@
     <dimen name="big_spacing">24dp</dimen>
 
     <dimen name="card_padding">8dp</dimen>
+    <dimen name="header_start_padding">0dp</dimen>
+
+    <dimen name="home_padding">0dp</dimen>
+    <dimen name="home_item_height">60dp</dimen>
+    <dimen name="home_item_padding">10dp</dimen>
+    <integer name="home_span">10</integer>
+    <dimen name="document_list_padding">80dp</dimen>
+    <dimen name="drawer_padding">24dp</dimen>
+    <dimen name="preference_padding">72dp</dimen>
 </resources>
 

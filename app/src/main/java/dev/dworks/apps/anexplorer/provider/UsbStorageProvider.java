@@ -21,7 +21,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
@@ -57,6 +59,7 @@ import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
@@ -64,6 +67,7 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.usb.UsbUtils;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForName;
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 
@@ -124,7 +128,9 @@ public class UsbStorageProvider extends DocumentsProvider {
     @Override
     public void updateRoots() {
         mRoots.clear();
-        discoverDevices();
+        if(Utils.checkUSBDevices()) {
+            discoverDevices();
+        }
         notifyRootsChanged();
     }
 
@@ -356,6 +362,18 @@ public class UsbStorageProvider extends DocumentsProvider {
         }
 
         return BASIC_MIME_TYPE;
+    }
+
+    @Override
+    public AssetFileDescriptor openDocumentThumbnail(String documentId, Point sizeHint,
+                                         CancellationSignal signal) throws FileNotFoundException {
+        try {
+            UsbFile file = getFileForDocId(documentId);
+            final ParcelFileDescriptor pfd = ParcelFileDescriptorUtil.pipeFrom(new UsbFileInputStream(file));
+            return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
     }
 
     private static String getMimeType(UsbFile file) {
@@ -611,9 +629,12 @@ public class UsbStorageProvider extends DocumentsProvider {
         row.add(Document.COLUMN_DOCUMENT_ID, documentId);
         row.add(Document.COLUMN_DISPLAY_NAME, "");
         row.add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR);
-        row.add(Document.COLUMN_FLAGS, Document.FLAG_DIR_PREFERS_GRID
-                | Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
-                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE);
+        int flags = Document.FLAG_SUPPORTS_THUMBNAIL | Document.FLAG_DIR_PREFERS_LAST_MODIFIED
+                | Document.FLAG_DIR_HIDE_GRID_TITLES | Document.FLAG_SUPPORTS_DELETE;
+        if(!isWatch()) {
+            flags |= Document.FLAG_DIR_PREFERS_GRID;
+        }
+        row.add(Document.COLUMN_FLAGS, flags);
     }
 
     private String getRootId(UsbDevice usbDevice) {

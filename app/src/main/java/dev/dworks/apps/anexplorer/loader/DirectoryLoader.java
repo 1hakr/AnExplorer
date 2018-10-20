@@ -20,10 +20,13 @@ package dev.dworks.apps.anexplorer.loader;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.CancellationSignal;
+import android.os.Handler;
 import android.os.OperationCanceledException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
@@ -115,7 +118,7 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             final Uri stateUri = RecentsProvider.buildState(
                     mRoot.authority, mRoot.rootId, mDoc.documentId);
             cursor = resolver.query(stateUri, null, null, null, null);
-            if (cursor.moveToFirst()) {
+            if (null != cursor && cursor.moveToFirst()) {
                 userMode = getCursorInt(cursor, StateColumns.MODE);
                 userSortOrder = getCursorInt(cursor, StateColumns.SORT_ORDER);
             }
@@ -176,11 +179,12 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             Log.w(TAG, "Failed to query", e);
             CrashReportingManager.logException(e);
             result.exception = e;
-            ContentProviderClientCompat.releaseQuietly(client);
         } finally {
             synchronized (this) {
                 mSignal = null;
             }
+            // TODO: Remove this call.
+            ContentProviderClientCompat.releaseQuietly(client);
         }
 
         return result;
@@ -260,4 +264,30 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
                 return null;
         }
     }
+
+    public final class ForceLoadContentObserver extends ContentObserver {
+        public ForceLoadContentObserver() {
+            super(new Handler());
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            onContentChanged();
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            final String path  = null != uri ? uri.getPath() : "";
+            if(!TextUtils.isEmpty(path)){
+                return;
+            }
+            super.onChange(selfChange, uri);
+        }
+    }
+
 }

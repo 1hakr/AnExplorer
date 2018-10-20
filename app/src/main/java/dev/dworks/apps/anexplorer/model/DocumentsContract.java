@@ -60,8 +60,11 @@ import dev.dworks.apps.anexplorer.misc.ImageUtils;
 import dev.dworks.apps.anexplorer.misc.OsCompat;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
+import static dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat.buildAssetFileDescriptor;
+import static dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat.openTypedAssetFileDescriptor;
 import static dev.dworks.apps.anexplorer.misc.SAFManager.DOCUMENT_AUTHORITY;
 
 /**
@@ -118,7 +121,7 @@ public final class DocumentsContract {
      * @see MediaStore.Images.ImageColumns#ORIENTATION
      * @hide
      */
-    public static final String EXTRA_ORIENTATION = "android.content.extra.ORIENTATION";
+    public static final String EXTRA_ORIENTATION = "android.provider.extra.ORIENTATION";
     /**
      * Overrides the default prompt text in DocumentsUI when set in an intent.
      */
@@ -140,9 +143,11 @@ public final class DocumentsContract {
     /**
      * Buffer is large enough to rewind past any EXIF headers.
      */
-    private static final int THUMBNAIL_BUFFER_SIZE = (int) (128 * 1024);
+    public static final int THUMBNAIL_BUFFER_SIZE = (int) (128 * 1024);
     /** {@hide} */
     public static final String PACKAGE_DOCUMENTS_UI = "com.android.documents";
+
+    public static final String EXTRA_SIZE = "android.content.extra.SIZE";
 
     /**
      * Constants related to a document, including {@link Cursor} column names
@@ -736,7 +741,7 @@ public final class DocumentsContract {
     public static Uri buildHomeUri() {
         // TODO: Avoid this type of interpackage copying. Added here to avoid
         // direct coupling, but not ideal.
-        return DocumentsContract.buildRootUri(DOCUMENT_AUTHORITY, "home");
+        return DocumentsContract.buildRootUri(ExternalStorageProvider.AUTHORITY, "home");
     }
 
     /**
@@ -1033,18 +1038,35 @@ public final class DocumentsContract {
         }
     }
 
+    public static AssetFileDescriptor getDocumentThumbnails(
+            ContentResolver resolver, Uri documentUri) {
+        final ContentProviderClient client = ContentProviderClientCompat.acquireUnstableContentProviderClient(resolver,
+                documentUri.getAuthority());
+        final Bundle openOpts = new Bundle();
+        CancellationSignal signal = new CancellationSignal();
+        Point size =  new Point(400, 400);
+        openOpts.putParcelable(EXTRA_SIZE, size);
+
+        AssetFileDescriptor afd = null;
+        try {
+            afd = openTypedAssetFileDescriptor(client, documentUri, "image/*", openOpts, signal);
+
+        } catch (Exception e) {
+            CrashReportingManager.logException(e);
+        }
+        return afd;
+    }
+
     public static Bitmap getDocumentThumbnails(
             ContentProviderClient client, Uri documentUri, Point size, CancellationSignal signal)
             throws RemoteException, IOException {
         final Bundle openOpts = new Bundle();
-        openOpts.putParcelable(ContentResolver.EXTRA_SIZE, size);
+        openOpts.putParcelable(EXTRA_SIZE, size);
 
         AssetFileDescriptor afd = null;
         Bitmap bitmap = null;
         try {
-            // TODO : Remove
-            // afd = client.openTypedAssetFileDescriptor(documentUri, "image/*", openOpts, signal);
-            afd = client.openTypedAssetFileDescriptor(documentUri, "image/*", openOpts);
+            afd = openTypedAssetFileDescriptor(client, documentUri, "image/*", openOpts, signal);
 
             final FileDescriptor fd = afd.getFileDescriptor();
             final long offset = afd.getStartOffset();
@@ -1080,7 +1102,7 @@ public final class DocumentsContract {
             } else {
                 try {
                     OsCompat.lseek(fd, offset, OsCompat.SEEK_SET);
-                } catch (OsCompat.ExecutionFailedException e) {
+                } catch (Exception e) {
                     throw new IOException(e);
                 }
                 bitmap = BitmapFactory.decodeFileDescriptor(fd, null, opts);
@@ -1392,14 +1414,10 @@ public final class DocumentsContract {
      *
      * @hide
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static AssetFileDescriptor openImageThumbnail(File file) throws FileNotFoundException {
         final ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
                 file, ParcelFileDescriptor.MODE_READ_ONLY);
         Bundle extras = null;
-        if(!Utils.hasKitKat()) {
-            return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
-        }
         try {
             final ExifInterface exif = new ExifInterface(file.getAbsolutePath());
 
@@ -1420,12 +1438,11 @@ public final class DocumentsContract {
 
             final long[] thumb = exif.getThumbnailRange();
             if (thumb != null) {
-                return new AssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
+                return buildAssetFileDescriptor(pfd, thumb[0], thumb[1], extras);
             }
         } catch (IOException e) {
             CrashReportingManager.logException(e);
         }
-
-        return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH, extras);
+        return buildAssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH, extras);
     }
 }

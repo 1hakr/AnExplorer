@@ -16,15 +16,19 @@ package dev.dworks.apps.anexplorer;
  * limitations under the License.
  */
 
+import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
 import android.support.provider.DocumentFile;
-import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -47,18 +51,25 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.FileUtils;
+import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.root.RootCommands;
+import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
-public class NoteActivity extends ActionBarActivity implements TextWatcher {
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+
+public class NoteActivity extends ActionBarActivity
+        implements TextWatcher, MenuItem.OnMenuItemClickListener {
 
     public static final String TAG = "TextEditor";
 
@@ -75,8 +86,32 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
         mInput = (EditText) findViewById(R.id.input);
         mInput.addTextChangedListener(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        int color = SettingsActivity.getPrimaryColor();
+
+        ActionBar bar = getSupportActionBar();
+        if(null != bar) {
+            bar.setBackgroundDrawable(new ColorDrawable(color));
+            bar.setDisplayHomeAsUpEnabled(true);
+            if(isWatch()) {
+                bar.setHomeAsUpIndicator(R.drawable.ic_dummy_icon);
+            }
+        }
+        setUpDefaultStatusBar();
         getName();
+        updateMenuItems();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setUpDefaultStatusBar() {
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
+        if(Utils.hasLollipop()){
+            getWindow().setStatusBarColor(color);
+        }
+        else if(Utils.hasKitKat()){
+            SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+            systemBarTintManager.setTintColor(color);
+            systemBarTintManager.setStatusBarTintEnabled(true);
+        }
     }
 
     @Override
@@ -112,22 +147,20 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
     private void checkUnsavedChanges() {
         if (mOriginal != null && !mOriginal.equals(mInput.getText().toString())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            DialogBuilder builder = new DialogBuilder(this);
             builder.setTitle(R.string.unsaved_changes)
                     .setMessage(R.string.unsaved_changes_desc)
                     .setCancelable(false)
                     .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int did) {
-                            dialog.dismiss();
                             save(true);
                         }
                     }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int did) {
-                            dialog.dismiss();
                             finish();
                         }
                     });
-            DialogFragment.showThemedDialog(builder);
+            builder.showDialog();
 
         } else {
             finish();
@@ -136,31 +169,17 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.note_options, menu);
-        menu.findItem(R.id.menu_save).setVisible(mModified);
+        if(!isWatch()) {
+            getMenuInflater().inflate(R.menu.note_options, menu);
+            menu.findItem(R.id.menu_save).setVisible(mModified);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                checkUnsavedChanges();
-                break;
-            case R.id.menu_save:
-                save(false);
-                AnalyticsManager.logEvent("text_save");
-                break;
-            case R.id.menu_revert:
-                setSaveProgress(true);
-                try {
-                    mInput.setText(mOriginal);
-                } catch (OutOfMemoryError e){
-                    showError("Unable to Load file");
-                }
-                setSaveProgress(false);
-                AnalyticsManager.logEvent("text_revert");
-                break;
+        if(onMenuAction(item)){
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -181,13 +200,47 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             @Override
             public void run() {
                 mModified = !mInput.getText().toString().equals(mOriginal);
-                supportInvalidateOptionsMenu();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateMenuItems();
+                    }
+                });
             }
         }, 250);
     }
 
     @Override
     public void afterTextChanged(Editable editable) {
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onMenuAction(item);
+    }
+
+    private boolean onMenuAction(MenuItem item){
+        Utils.closeNoteActionMenu(this);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                checkUnsavedChanges();
+                return true;
+            case R.id.menu_save:
+                save(false);
+                AnalyticsManager.logEvent("text_save");
+                return true;
+            case R.id.menu_revert:
+                setSaveProgress(true);
+                try {
+                    mInput.setText(mOriginal);
+                } catch (OutOfMemoryError e){
+                    showError("Unable to Load file");
+                }
+                setSaveProgress(false);
+                AnalyticsManager.logEvent("text_revert");
+                return true;
+        }
+        return false;
     }
 
     private class LoadContent extends AsyncTask<Void, Void, StringBuilder>{
@@ -340,8 +393,16 @@ public class NoteActivity extends ActionBarActivity implements TextWatcher {
             } else {
                 mOriginal = mInput.getText().toString();
                 mModified = false;
-                supportInvalidateOptionsMenu();
+                updateMenuItems();
             }
+        }
+    }
+
+    private void updateMenuItems(){
+        if(isWatch()){
+            Utils.inflateNoteActionMenu(this, this, mModified);
+        } else {
+            supportInvalidateOptionsMenu();
         }
     }
 

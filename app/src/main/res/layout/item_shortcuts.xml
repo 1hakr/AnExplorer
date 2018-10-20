@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:gravity="center"
-        android:minHeight="80dp"
+        android:minHeight="@dimen/home_item_height"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="@dimen/home_item_padding">
 
         <FrameLayout
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:duplicateParentState="true">
 
             <dev.dworks.apps.anexplorer.ui.CircleImage

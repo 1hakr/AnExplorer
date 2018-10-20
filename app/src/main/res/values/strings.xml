@@ -98,4 +98,5 @@
     <string name="cloud_onedrive">One Drive</string>
     <string name="cloud_box">Box</string>
     <string name="network_ftp">FTP</string>
+    <drawable name="dummy_icon">@drawable/ic_dummy_icon</drawable>
 </resources>

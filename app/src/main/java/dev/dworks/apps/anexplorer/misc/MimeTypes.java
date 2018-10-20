@@ -4,7 +4,10 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.Nullable;
 
 public final class MimeTypes {
 
@@ -101,5 +104,39 @@ public final class MimeTypes {
             }
         }
         return type;
+    }
+
+    public static @Nullable String[] splitMimeType(String mimeType) {
+        final String[] groups = mimeType.split("/");
+
+        if (groups.length != 2 || groups[0].isEmpty() || groups[1].isEmpty()) {
+            return null;
+        }
+
+        return groups;
+    }
+
+    public static String findCommonMimeType(List<String> mimeTypes) {
+        String[] commonType = splitMimeType(mimeTypes.get(0));
+        if (commonType == null) {
+            return "*/*";
+        }
+
+        for (int i = 1; i < mimeTypes.size(); i++) {
+            String[] type = mimeTypes.get(i).split("/");
+            if (type.length != 2) continue;
+
+            if (!commonType[1].equals(type[1])) {
+                commonType[1] = "*";
+            }
+
+            if (!commonType[0].equals(type[0])) {
+                commonType[0] = "*";
+                commonType[1] = "*";
+                break;
+            }
+        }
+
+        return commonType[0] + "/" + commonType[1];
     }
 }

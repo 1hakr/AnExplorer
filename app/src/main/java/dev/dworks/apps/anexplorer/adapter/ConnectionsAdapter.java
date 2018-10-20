@@ -5,110 +5,116 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
-import dev.dworks.apps.anexplorer.provider.ExplorerProvider;
 
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_CLOUD;
 
-public class ConnectionsAdapter extends BaseAdapter{
-    private Cursor mCursor;
-    private int mCursorCount;
-    private View.OnClickListener mListener;
+public class ConnectionsAdapter extends CursorRecyclerViewAdapter<ConnectionsAdapter.ViewHolder> {
 
-    public ConnectionsAdapter(View.OnClickListener listener){
-        mListener = listener;
-    }
+    private Context mContext;
+    private OnItemClickListener onItemClickListener;
 
-    public void swapResult(Cursor result) {
-        mCursor = result;
-        mCursorCount = mCursor != null ? mCursor.getCount() : 0;
-        notifyDataSetChanged();
+    public ConnectionsAdapter(Context context, Cursor cursor){
+        super(context, cursor);
+        mContext = context;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return getDocumentView(position, convertView, parent);
-
+    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
+        viewHolder.setData(cursor);
     }
 
-    private View getDocumentView(int position, View convertView, ViewGroup parent) {
-        final Context context = parent.getContext();
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_connection_list, parent, false);
+        return new ViewHolder(itemView);
+    }
 
-        if (convertView == null) {
-            final LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.item_connection_list, parent, false);
+    public void setOnItemClickListener(OnItemClickListener listener){
+        onItemClickListener = listener;
+    }
+
+    public OnItemClickListener getOnItemClickListener(){
+        return onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(ViewHolder item, View view, int position);
+        void onItemLongClick(ViewHolder item, View view, int position);
+        void onItemViewClick(ViewHolder item, View view, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView iconMime;
+        private final View iconMimeBackground;
+        private final TextView summary;
+        private final TextView title;
+        private final View popupButton;
+
+        public ViewHolder(View v) {
+            super(v);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(null != onItemClickListener) {
+                        onItemClickListener.onItemClick(ViewHolder.this, v, getLayoutPosition());
+                    }
+                }
+            });
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(null != onItemClickListener) {
+                        onItemClickListener.onItemLongClick(ViewHolder.this, v, getLayoutPosition());
+                    }
+                    return false;
+                }
+            });
+
+            iconMime = (ImageView) v.findViewById(R.id.icon_mime);
+            iconMimeBackground = v.findViewById(R.id.icon_mime_background);
+            title = (TextView) v.findViewById(android.R.id.title);
+            summary = (TextView) v.findViewById(android.R.id.summary);
+            popupButton = v.findViewById(R.id.button_popup);
+            popupButton.setVisibility(isSpecialDevice() ? View.INVISIBLE : View.VISIBLE);
+            popupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(null != onItemClickListener) {
+                        onItemClickListener.onItemViewClick(ViewHolder.this, popupButton, getLayoutPosition());
+                    }
+                }
+            });
         }
 
-        final Cursor cursor = getItem(position);
-        String type = getCursorString(cursor, ExplorerProvider.ConnectionColumns.TYPE);
-
-        final ImageView iconMime = (ImageView) convertView.findViewById(R.id.icon_mime);
-        final View iconMimeBackground = convertView.findViewById(R.id.icon_mime_background);
-        final TextView title = (TextView) convertView.findViewById(android.R.id.title);
-        final ImageView icon1 = (ImageView) convertView.findViewById(android.R.id.icon1);
-        final TextView summary = (TextView) convertView.findViewById(android.R.id.summary);
-        final View popupButton = convertView.findViewById(R.id.button_popup);
-        popupButton.setVisibility(isTelevision() ? View.INVISIBLE : View.VISIBLE);
-        if(null != mListener) {
-            popupButton.setOnClickListener(mListener);
+        public void setData(Cursor cursor){
+            NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
+            if(networkConnection.type.startsWith(TYPE_CLOUD)){
+                title.setText(CloudConnection.getTypeName(networkConnection.type));
+                summary.setText(networkConnection.username);
+                iconMimeBackground.setVisibility(View.VISIBLE);
+                iconMimeBackground.setBackgroundColor(
+                        IconColorUtils.loadCloudColor(mContext, networkConnection.getType()));
+                iconMime.setImageDrawable(IconUtils.loadCloudIcon(mContext, networkConnection.type));
+            } else {
+                title.setText(networkConnection.getName());
+                summary.setText(networkConnection.getSummary());
+                iconMimeBackground.setVisibility(View.VISIBLE);
+                iconMimeBackground.setBackgroundColor(
+                        IconColorUtils.loadSchmeColor(mContext, networkConnection.getType()));
+                iconMime.setImageDrawable(IconUtils.loadSchemeIcon(mContext, networkConnection.type));
+            }
         }
-
-        NetworkConnection networkConnection = NetworkConnection.fromConnectionsCursor(cursor);
-        if(networkConnection.type.startsWith(TYPE_CLOUD)){
-            title.setText(CloudConnection.getTypeName(networkConnection.type));
-            summary.setText(networkConnection.username);
-            iconMimeBackground.setVisibility(View.VISIBLE);
-            iconMimeBackground.setBackgroundColor(
-                    IconColorUtils.loadCloudColor(context, networkConnection.getType()));
-            iconMime.setImageDrawable(IconUtils.loadCloudIcon(context, networkConnection.type));
-        } else {
-            title.setText(networkConnection.getName());
-            summary.setText(networkConnection.getSummary());
-            iconMimeBackground.setVisibility(View.VISIBLE);
-            iconMimeBackground.setBackgroundColor(
-                    IconColorUtils.loadSchmeColor(context, networkConnection.getType()));
-            iconMime.setImageDrawable(IconUtils.loadSchemeIcon(context, networkConnection.type));
-        }
-        return convertView;
-    }
-
-    @Override
-    public int getCount() {
-        return mCursorCount;
-    }
-
-    @Override
-    public Cursor getItem(int position) {
-        if (position < mCursorCount) {
-            mCursor.moveToPosition(position);
-            return mCursor;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return 0;
     }
 }

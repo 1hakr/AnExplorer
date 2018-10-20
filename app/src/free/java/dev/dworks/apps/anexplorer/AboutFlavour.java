@@ -6,6 +6,8 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
+
 import static dev.dworks.apps.anexplorer.misc.Utils.INTERSTITIAL_APP_UNIT_ID;
 
 public abstract class AboutFlavour extends ActionBarActivity {

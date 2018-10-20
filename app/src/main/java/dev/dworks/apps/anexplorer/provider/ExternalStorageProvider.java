@@ -44,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import androidx.core.util.Pair;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -67,6 +68,7 @@ import androidx.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.FileUtils.getTypeForFile;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;
@@ -136,7 +138,11 @@ public class ExternalStorageProvider extends StorageProvider {
     @Override
     public void updateRoots() {
         synchronized (mRootsLock) {
-            updateVolumesLocked();
+            if(Utils.hasMarshmallow() && !Utils.isWatch(getContext())) {
+                updateVolumesLocked2();
+            } else {
+                updateVolumesLocked();
+            }
             includeOtherRoot();
             includeBookmarkRoot();
             Log.d(TAG, "After updating volumes, found " + mRoots.size() + " active roots");
@@ -187,8 +193,11 @@ public class ExternalStorageProvider extends StorageProvider {
                 mRoots.put(rootId, root);
 
                 root.rootId = rootId;
-                root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                root.flags = Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
                         | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD;
+                if(storageVolume.getState().equals(Environment.MEDIA_MOUNTED)) {
+                    root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT;
+                }
                 root.title = title;
                 root.path = path;
                 root.docId = getDocIdForFile(path);
@@ -257,18 +266,14 @@ public class ExternalStorageProvider extends StorageProvider {
             }
             // Dunno when this would NOT be the case, but never hurts to be correct.
             if (volume.isMountedWritable()) {
-                root.flags |= Root.FLAG_SUPPORTS_CREATE;
+                root.flags |= Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT;
             }
             root.title = title;
             if (volume.getType() == VolumeInfo.TYPE_PUBLIC) {
                 root.flags |= Root.FLAG_HAS_SETTINGS;
             }
-            if (volume.isVisibleForRead(userId)) {
-                root.visiblePath = volume.getPathForUser(userId);
-            } else {
-                root.visiblePath = null;
-            }
-            root.path = volume.getInternalPathForUser(userId);
+            root.path = volume.getPathForUser(userId);
+            root.visiblePath = volume.getPathForUser(userId);
             try {
                 root.docId = getDocIdForFile(root.path);
             } catch (FileNotFoundException e) {
@@ -297,20 +302,15 @@ public class ExternalStorageProvider extends StorageProvider {
                     primaryVolume.getPathForUser(userId), Environment.DIRECTORY_DOCUMENTS);
             root.path = new File(
                     primaryVolume.getInternalPathForUser(userId), Environment.DIRECTORY_DOCUMENTS);
-            root.path = new File(
-                    primaryVolume.getInternalPathForUser(userId), Environment.DIRECTORY_DOCUMENTS);
             try {
                 root.docId = getDocIdForFile(root.path);
             } catch (FileNotFoundException e) {
                 throw new IllegalStateException(e);
             }
         }
-        Log.d(TAG, "After updating volumes, found " + mRoots.size() + " active roots");
         // Note this affects content://com.android.externalstorage.documents/root/39BD-07C5
         // as well as content://com.android.externalstorage.documents/document/*/children,
         // so just notify on content://com.android.externalstorage.documents/.
-
-        notifyRootsChanged(getContext());
     }
 
     private void includeOtherRoot() {
@@ -473,26 +473,23 @@ public class ExternalStorageProvider extends StorageProvider {
         String path = file.getAbsolutePath();
 
         // Find the most-specific root path
-        String mostSpecificId = null;
-        String mostSpecificPath = null;
-        synchronized (mRootsLock) {
-            for (int i = 0; i < mRoots.size(); i++) {
-                final String rootId = mRoots.keyAt(i);
-                final String rootPath = mRoots.valueAt(i).path.getAbsolutePath();
-                if (path.startsWith(rootPath) && (mostSpecificPath == null
-                        || rootPath.length() > mostSpecificPath.length())) {
-                    mostSpecificId = rootId;
-                    mostSpecificPath = rootPath;
-                }
-            }
+        boolean visiblePath = false;
+        RootInfo mostSpecificRoot = getMostSpecificRootForPath(path, false);
+
+        if (mostSpecificRoot == null) {
+            // Try visible path if no internal path matches. MediaStore uses visible paths.
+            visiblePath = true;
+            mostSpecificRoot = getMostSpecificRootForPath(path, true);
         }
 
-        if (mostSpecificPath == null) {
+        if (mostSpecificRoot == null) {
             throw new FileNotFoundException("Failed to find root that contains " + path);
         }
 
         // Start at first char of path under root
-        final String rootPath = mostSpecificPath;
+        final String rootPath = visiblePath
+                ? mostSpecificRoot.visiblePath.getAbsolutePath()
+                : mostSpecificRoot.path.getAbsolutePath();
         if (rootPath.equals(path)) {
             path = "";
         } else if (rootPath.endsWith("/")) {
@@ -508,17 +505,54 @@ public class ExternalStorageProvider extends StorageProvider {
             }
         }
 
-        return mostSpecificId + ':' + path;
+        return mostSpecificRoot.rootId + ':' + path;
     }
 
-    private File getFileForDocId(String docId) throws FileNotFoundException {
+    private RootInfo getMostSpecificRootForPath(String path, boolean visible) {
+        // Find the most-specific root path
+        RootInfo mostSpecificRoot = null;
+        String mostSpecificPath = null;
+        synchronized (mRootsLock) {
+            for (int i = 0; i < mRoots.size(); i++) {
+                final RootInfo root = mRoots.valueAt(i);
+                final File rootFile = visible ? root.visiblePath : root.path;
+                if (rootFile != null) {
+                    final String rootPath = rootFile.getAbsolutePath();
+                    if (path.startsWith(rootPath) && (mostSpecificPath == null
+                            || rootPath.length() > mostSpecificPath.length())) {
+                        mostSpecificRoot = root;
+                        mostSpecificPath = rootPath;
+                    }
+                }
+            }
+        }
+
+        return mostSpecificRoot;
+    }
+
+    protected final File getFileForDocId(String docId) throws FileNotFoundException {
         return getFileForDocId(docId, false);
     }
 
-    private File getFileForDocId(String docId, boolean visible) throws FileNotFoundException {
+    protected File getFileForDocId(String docId, boolean visible) throws FileNotFoundException {
+        return getFileForDocId(docId, visible, true);
+    }
+
+    private File getFileForDocId(String docId, boolean visible, boolean mustExist)
+            throws FileNotFoundException {
+        RootInfo root = getRootFromDocId(docId);
+        return buildFile(root, docId, visible, mustExist);
+    }
+
+    private Pair<RootInfo, File> resolveDocId(String docId, boolean visible)
+            throws FileNotFoundException {
+        RootInfo root = getRootFromDocId(docId);
+        return Pair.create(root, buildFile(root, docId, visible, true));
+    }
+
+    private RootInfo getRootFromDocId(String docId) throws FileNotFoundException {
         final int splitIndex = docId.indexOf(':', 1);
         final String tag = docId.substring(0, splitIndex);
-        final String path = docId.substring(splitIndex + 1);
 
         RootInfo root;
         synchronized (mRootsLock) {
@@ -528,6 +562,14 @@ public class ExternalStorageProvider extends StorageProvider {
             throw new FileNotFoundException("No root for " + tag);
         }
 
+        return root;
+    }
+
+    private File buildFile(RootInfo root, String docId, boolean visible, boolean mustExist)
+            throws FileNotFoundException {
+        final int splitIndex = docId.indexOf(':', 1);
+        final String path = docId.substring(splitIndex + 1);
+
         File target = visible ? root.visiblePath : root.path;
         if (target == null) {
             return null;
@@ -536,7 +578,7 @@ public class ExternalStorageProvider extends StorageProvider {
             target.mkdirs();
         }
         target = new File(target, path);
-        if (!target.exists()) {
+        if (mustExist && !target.exists()) {
             throw new FileNotFoundException("Missing file for " + docId + " at " + target);
         }
         return target;

@@ -1,18 +1,14 @@
 package dev.dworks.apps.anexplorer.network;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
-import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
-import dev.dworks.apps.anexplorer.misc.LogUtils;
+import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.service.NetworkServerService;
 
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STARTED;
@@ -32,11 +28,8 @@ public class NetworkServiceHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        LogUtils.LOGD(TAG, "handleMessage()");
-
         NetworkServerService service = serviceRef.get();
         if (service == null) {
-            LogUtils.LOGD(TAG, "serviceRef is null");
             return;
         }
 
@@ -51,18 +44,10 @@ public class NetworkServiceHandler extends Handler {
 
     protected void handleStart(NetworkServerService service) {
         if (service.getServer() == null) {
-            LogUtils.LOGD(TAG, "starting {} server");
 
             boolean started = service.launchServer();
             if (started && service.getServer() != null) {
                 sendBroadcast(service, ACTION_FTPSERVER_STARTED);
-                if(null == service.getRootInfo()) {
-                    Context context = service.getApplicationContext();
-                    String contentTitle = context.getString(R.string.ftp_notif_title)
-                            + " \n " + String.format(context.getString(R.string.ftp_notif_text),
-                            ConnectionUtils.getFTPAddress(context));
-                    Toast.makeText(context, contentTitle, Toast.LENGTH_LONG).show();
-                }
             } else {
                 service.stopSelf();
             }
@@ -72,10 +57,8 @@ public class NetworkServiceHandler extends Handler {
 
     protected void handleStop(NetworkServerService service) {
         if (service.getServer() != null) {
-            LogUtils.LOGD(TAG, "stopping {} server");
             service.stopServer();
         }
-        LogUtils.LOGD(TAG, "stopSelf ({})");
         service.stopSelf();
         sendBroadcast(service, ACTION_FTPSERVER_STOPPED);
     }
@@ -84,6 +67,7 @@ public class NetworkServiceHandler extends Handler {
         Intent intent = new Intent(action);
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_ROOT, service.getRootInfo());
+        intent.setPackage(BuildConfig.APPLICATION_ID);
         intent.putExtras(args);
         service.sendBroadcast(intent);
     }

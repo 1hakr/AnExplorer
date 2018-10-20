@@ -36,6 +36,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.IntDef;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
@@ -55,19 +57,23 @@ import android.webkit.WebView;
 import android.widget.Button;
 
 import java.io.File;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 
-public class Utils {
+public class Utils extends UtilsFlavour{
 
     public static final long KB_IN_BYTES = 1024;
     public static final String INTERSTITIAL_APP_UNIT_ID = "ca-app-pub-6407484780907805/9134520474";
@@ -142,6 +148,10 @@ public class Utils {
 
     public static boolean hasOreoMR1() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
+    }
+
+    public static boolean hasPie() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
     }
 
     public static boolean hasMoreHeap(){
@@ -309,8 +319,7 @@ public class Utils {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static boolean isActivityAlive(Activity activity) {
-        return !(null == activity
-                || (null != activity && Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing()));
+        return !(null == activity || (Utils.hasJellyBeanMR1() ? activity.isDestroyed() : activity.isFinishing()));
     }
 
     public static boolean isAPK(String mimeType){
@@ -385,36 +394,26 @@ public class Utils {
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION || isFireTV;
     }
 
-    public static void showRetrySnackBar(View view, String text, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE);
-        if (null != listener) {
-            snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getAccentColor());
-        }
-        snackbar.show();
+    public static boolean isWatch(Context context) {
+        UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_WATCH;
+    }
+
+    public static void showError(Activity activity, int msg){
+        showSnackBar(activity, activity.getString(msg), LENGTH_SHORT, "ERROR", null);
     }
 
     public static void showRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_INDEFINITE);
-        if (null != listener) {
-            snackbar.setAction("RETRY", listener)
-                    .setActionTextColor(SettingsActivity.getAccentColor());
-        }
-        snackbar.show();
+        showSnackBar(activity, text, LENGTH_SHORT , "RETRY", listener);
     }
 
-    public static void showSnackBar(Activity activity, int text){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, Snackbar.LENGTH_SHORT);
-        snackbar.show();
+    public static void showSnackBar(Activity activity, String message){
+        showSnackBar(activity, message, LENGTH_SHORT, null, null);
     }
 
-    public static void showSnackBar(Activity activity, String text, int duration, String action, View.OnClickListener listener){
-        Snackbar snackbar = Snackbar.make(activity.findViewById(R.id.content_view), text, duration);
-        if (null != listener) {
-            snackbar.setAction(action, listener)
-                    .setActionTextColor(SettingsActivity.getAccentColor());
-        }
-        snackbar.show();
+    public static void showSnackBar(Activity activity, String message,
+                                    int duration, String action, View.OnClickListener listener){
+        showMessage(activity, message, duration, action, listener);
     }
 
     public static Bitmap getVector2Bitmap(Context context, int id) {
@@ -435,28 +434,42 @@ public class Utils {
 
     public static void changeThemeStyle(AppCompatDelegate delegate) {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
-        if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
-            try {
-                new WebView(DocumentsApplication.getInstance().getBaseContext());
-            } catch (Exception e) {
-            }
-        }
         AppCompatDelegate.setDefaultNightMode(nightMode);
         delegate.setLocalNightMode(nightMode);
     }
 
-    public static void tintWidget(View view) {
-        tintWidget(view, SettingsActivity.getAccentColor());
+    public static void setAppThemeStyle(Context context) {
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle(context));
+        if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
+            try {
+                new WebView(context);
+            } catch (Exception e) {
+            }
+        }
+        AppCompatDelegate.setDefaultNightMode(nightMode);
     }
 
-    public static void tintButton(Button view) {
-        view.setTextColor(SettingsActivity.getAccentColor());
+    public static void setActivityThemeStyle(AppCompatDelegate delegate) {
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        AppCompatDelegate.setDefaultNightMode(nightMode);
+        delegate.setLocalNightMode(nightMode);
     }
 
-    public static void tintWidget(View view, int color) {
-        Drawable wrappedDrawable = DrawableCompat.wrap(view.getBackground());
-        DrawableCompat.setTint(wrappedDrawable.mutate(), color);
-        view.setBackgroundDrawable(wrappedDrawable);
+    public static void recreateActivity(Activity activity) {
+        if(!isActivityAlive(activity)){
+            return;
+        }
+        AppCompatDelegate delegate = null;
+        if(activity instanceof ActionBarActivity){
+            delegate = ((ActionBarActivity)activity).getDelegate();
+        }
+        Utils.changeThemeStyle(delegate);
+        activity.recreate();
+    }
+
+    public static boolean isDarkTheme(){
+        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
+        return nightMode == AppCompatDelegate.MODE_NIGHT_YES;
     }
 
     public static boolean isRTL() {
@@ -527,8 +540,13 @@ public class Utils {
     }
 
     public static String getSuffix(){
-        return Utils.isProVersion() ? " Pro" : ""
-                + (DocumentsApplication.isTelevision()? " for Android TV" : "");
+        String suffix = "";
+        if(DocumentsApplication.isTelevision()){
+            suffix = " for Android TV";
+        } else if(DocumentsApplication.isWatch()){
+            suffix = " for Wear OS";
+        }
+        return Utils.isProVersion() ? " Pro" : "" + suffix;
     }
 
     public static void openFeedback(Activity activity){
@@ -554,5 +572,18 @@ public class Utils {
         } else {
             return Html.fromHtml(text);
         }
+    }
+
+    @IntDef({View.VISIBLE, View.INVISIBLE, View.GONE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Visibility {}
+
+    @Visibility
+    public static int getVisibility(boolean show) {
+        return show ? View.VISIBLE : View.GONE;
+    }
+
+    public static boolean checkUSBDevices() {
+        return !hasNougat() || DocumentsApplication.isTelevision();
     }
 }

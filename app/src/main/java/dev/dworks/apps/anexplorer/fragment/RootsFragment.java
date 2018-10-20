@@ -17,25 +17,22 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager.LoaderCallbacks;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
-import androidx.appcompat.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -55,10 +52,12 @@ import java.util.Comparator;
 
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
-import dev.dworks.apps.anexplorer.DialogFragment;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.adapter.RootsExpandableAdapter;
+import dev.dworks.apps.anexplorer.common.BaseFragment;
+import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.loader.RootsLoader;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
@@ -80,14 +79,14 @@ import static dev.dworks.apps.anexplorer.R.layout.item_root_spacer;
 /**
  * Display list of known storage backend roots.
  */
-public class RootsFragment extends Fragment {
+public class RootsFragment extends BaseFragment {
 
     private ExpandableListView mList;
     private RootsExpandableAdapter mAdapter;
 
     private LoaderCallbacks<Collection<RootInfo>> mCallbacks;
 
-    private static final String EXTRA_INCLUDE_APPS = "includeApps";
+    public static final String EXTRA_INCLUDE_APPS = "includeApps";
     private static final String GROUP_SIZE = "group_size";
     private static final String GROUP_IDS = "group_ids";
     private int group_size = 0;
@@ -118,8 +117,12 @@ public class RootsFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_roots, container, false);
         proWrapper = view.findViewById(R.id.proWrapper);
         title = view.findViewById(android.R.id.title);
+        View headerLayout = view.findViewById(R.id.headerLayout);
         if(isTelevision()){
             title.setVisibility(View.VISIBLE);
+        } else {
+            headerLayout.setVisibility(View.VISIBLE);
+            headerLayout.setBackgroundColor(SettingsActivity.getPrimaryColor());
         }
         mList = (ExpandableListView) view.findViewById(android.R.id.list);
         mList.setOnChildClickListener(mItemListener);
@@ -221,7 +224,7 @@ public class RootsFragment extends Fragment {
         if(null != proWrapper) {
             proWrapper.setVisibility(DocumentsApplication.isPurchased() ? View.GONE : View.VISIBLE);
         }
-        getLoaderManager().restartLoader(2, null, mCallbacks);
+        LoaderManager.getInstance(getActivity()).restartLoader(2, null, mCallbacks);
     }
 
     private void changeThemeColor() {
@@ -341,29 +344,23 @@ public class RootsFragment extends Fragment {
     };
 
     private void removeBookark(final BookmarkItem item) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        DialogBuilder builder = new DialogBuilder(getActivity());
         builder.setMessage("Remove bookmark?")
         .setCancelable(false)
         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int did) {
-                dialog.dismiss();
                 int rows = getActivity().getContentResolver().delete(ExplorerProvider.buildBookmark(),
                         ExplorerProvider.BookmarkColumns.PATH + " = ? AND " +
                                 ExplorerProvider.BookmarkColumns.TITLE + " = ? ",
                         new String[]{item.root.path, item.root.title}
                 );
                 if (rows > 0) {
-                    ((BaseActivity) getActivity()).showInfo("Bookmark removed");
-
+                    Utils.showSnackBar(getActivity(), "Bookmark removed");
                     RootsCache.updateRoots(getActivity(), ExternalStorageProvider.AUTHORITY);
                 }
             }
-        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int did) {
-                dialog.dismiss();
-            }
-        });
-        DialogFragment.showThemedDialog(builder);
+        }).setNegativeButton(android.R.string.cancel, null);
+        builder.showDialog();
     }
 
     public static class GroupItem {

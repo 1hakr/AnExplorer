@@ -30,9 +30,9 @@
         <FrameLayout
             android:id="@+id/container_roots"
             android:layout_width="@dimen/side_navigation_width"
+            android:layout_height="match_parent"
             android:background="@color/material_grey_50"
-            android:elevation="8dp"
-            android:layout_height="match_parent" />
+            android:elevation="8dp" />
 
         <LinearLayout
             android:layout_width="0dp"

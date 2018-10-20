@@ -16,24 +16,36 @@
 package dev.dworks.apps.anexplorer;
 
 import android.Manifest;
-import android.app.Fragment;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.collection.ArrayMap;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
+
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.MediaQueue;
 
 import java.util.List;
 
+import dev.dworks.apps.anexplorer.cast.Casty;
+import dev.dworks.apps.anexplorer.queue.QueueActivity;
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -41,7 +53,9 @@ import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
-import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.server.WebServer;
+
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 
 public abstract class BaseActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
@@ -196,63 +210,12 @@ public abstract class BaseActivity extends ActionBarActivity {
         };
     }
 
-    public void showError(int msg){
-        showToast(msg, ContextCompat.getColor(this, R.color.button_text_color_red), Snackbar.LENGTH_SHORT);
-    }
-
-    public void showInfo(String msg){
-        showSnackBar(msg, Snackbar.LENGTH_SHORT);
-    }
-
-    public void showToast(int msg, int actionColor, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), msg, duration);
-        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                snackbar.dismiss();
-            }
-        })
-                .setActionTextColor(actionColor).show();
-    }
-
-    public void showSnackBar(String text, int duration){
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), text, duration);
-        snackbar.setAction(android.R.string.ok, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.setActionTextColor(SettingsActivity.getAccentColor()).show();
-    }
-
-    public void showSnackBar(String text, int duration, String action, int actionColor){
-        final Snackbar snackbar = Snackbar.make(findViewById(R.id.content_view), text, duration);
-        snackbar.setAction(action, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                snackbar.dismiss();
-            }
-        });
-        snackbar.setActionTextColor(actionColor).show();
-    }
-
-    public void showSnackBar(String text, int duration, String action, int actionColor, View.OnClickListener listener){
-        Snackbar.make(findViewById(R.id.content_view), text, duration).setAction(action, listener)
-                .setActionTextColor(actionColor).show();
-    }
-
-    public void showSnackBar(String text, int duration, String action, View.OnClickListener listener){
-        Snackbar.make(findViewById(R.id.content_view), text, duration).setAction(action, listener)
-                .setActionTextColor(SettingsActivity.getAccentColor()).show();
-    }
-
     public boolean isSAFIssue(String docId){
         boolean isSAFIssue = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT
                 && !TextUtils.isEmpty(docId) && docId.startsWith(ExternalStorageProvider.ROOT_ID_SECONDARY);
 
         if(isSAFIssue){
-            showError(R.string.saf_issue);
+            Utils.showError(this, R.string.saf_issue);
         }
         return isSAFIssue;
     }
@@ -294,4 +257,79 @@ public abstract class BaseActivity extends ActionBarActivity {
         }
     }
 
+    private Casty casty;
+    protected CastSession castSession;
+
+    @CallSuper
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(isWatch()){
+            return;
+        }
+        DocumentsApplication.getInstance().initCasty(this);
+        casty = DocumentsApplication.getInstance().getCasty();
+        casty.setOnConnectChangeListener(new Casty.OnConnectChangeListener() {
+            @Override
+            public void onConnected() {
+                castSession = casty.getCastSession();
+                supportInvalidateOptionsMenu();
+                WebServer.getServer().startServer(BaseActivity.this);
+            }
+
+            @Override
+            public void onDisconnected() {
+                WebServer.getServer().stopServer();
+            }
+        });
+    }
+
+    @CallSuper
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final RootInfo root = getCurrentRoot();
+        if(!isWatch() && casty.isConnected()) {
+            if (findViewById(R.id.casty_mini_controller) == null) {
+                casty.addMiniController();
+            }
+        }
+        if(!isWatch() && (null != root && RootInfo.isChromecastFeature(root))) {
+            casty.addMediaRouteMenuItem(menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(!isWatch()) {
+            boolean connected = (castSession != null) && castSession.isConnected();
+            MediaQueue queue = casty.getMediaQueue();
+            int queueCount = null != queue ? queue.getItemCount() : 0;
+            MenuItem showQueue = menu.findItem(R.id.action_show_queue);
+            if(null != showQueue) {
+                showQueue.setVisible(connected && queueCount > 0);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_show_queue){
+            Intent intent = new Intent(BaseActivity.this, QueueActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if(!isWatch() && Casty.isAvailable(this)) {
+            return CastContext.getSharedInstance(this).onDispatchVolumeKeyEventBeforeJellyBean(event)
+                    || super.dispatchKeyEvent(event);
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
+    }
 }

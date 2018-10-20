@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:gravity="start|center_vertical"
+            android:minHeight="36dp"
+            android:paddingStart="10dp"
+            android:text="Recent Media"
+            android:textAlignment="viewStart"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/recents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:clickable="true"
+            android:gravity="end|center_vertical"
+            android:minHeight="36dp"
+            android:paddingEnd="10dp"
+            android:text="MORE"
+            android:textAlignment="viewEnd"
+            android:textAllCaps="true"
+            android:textColor="@color/accentColor" />
+
+    </FrameLayout>
+
+    <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+        android:id="@+id/recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:minHeight="@dimen/grid_item_height"
+        android:paddingStart="10dp"
+        android:paddingEnd="@dimen/list_item_padding"
+        app:columnWidth="@dimen/grid_item_height"
+        app:type="@integer/recycler_type" />
+
+</LinearLayout>

@@ -35,6 +35,11 @@ public class MimePredicate implements Predicate<DocumentInfo> {
     	"audio/*",
     	Document.MIME_TYPE_APK};
 
+    public static final String[] MEDIA_MIMES = new String[] {
+            "image/*",
+            "video/*",
+            "audio/*"};
+
     public static final String[] SPECIAL_MIMES = new String[] { 
     	"application/zip",
     	"application/rar",

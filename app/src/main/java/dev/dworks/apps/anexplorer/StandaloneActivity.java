@@ -16,8 +16,9 @@
 package dev.dworks.apps.anexplorer;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ComponentName;
@@ -31,7 +32,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,11 +62,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import dev.dworks.apps.anexplorer.common.RootsCommonFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
+import dev.dworks.apps.anexplorer.misc.AsyncTask;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
@@ -80,7 +82,6 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_DOWN;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.ANIM_NONE;
@@ -96,7 +97,6 @@ public class StandaloneActivity extends BaseActivity {
     private Spinner mToolbarStack;
     private Toolbar mRootsToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
-    private DirectoryContainerView mDirectoryContainer;
     private boolean mIgnoreNextNavigation;
     private boolean mIgnoreNextClose;
     private boolean mIgnoreNextCollapse;
@@ -125,7 +125,6 @@ public class StandaloneActivity extends BaseActivity {
         getWindowManager().getDefaultDisplay().getSize(size);
         // a.width = (int) res.getFraction(R.dimen.dialog_width, size.x, size.x);
         getWindow().setAttributes(a);
-        mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
         if (icicle != null) {
             mState = icicle.getParcelable(EXTRA_STATE);
         } else {
@@ -142,7 +141,7 @@ public class StandaloneActivity extends BaseActivity {
                     android.R.style.TextAppearance_DeviceDefault_Widget_ActionBar_Title);
         }
         setSupportActionBar(mToolbar);
-        RootsFragment.show(getFragmentManager(), null);
+        RootsCommonFragment.show(getSupportFragmentManager(), null);
         if (!mState.restored) {
             new RestoreStackTask().execute();
         } else {
@@ -334,7 +333,7 @@ public class StandaloneActivity extends BaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        final FragmentManager fm = getFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
         final MenuItem createDir = menu.findItem(R.id.menu_create_dir);
@@ -409,7 +408,7 @@ public class StandaloneActivity extends BaseActivity {
      */
     private void setUserSortOrder(int sortOrder) {
         mState.userSortOrder = sortOrder;
-        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        Fragment fragment = DirectoryFragment.get(getSupportFragmentManager());
         if(fragment instanceof DirectoryFragment) {
             final DirectoryFragment directory = (DirectoryFragment) fragment;
             directory.onUserSortOrderChanged();
@@ -420,7 +419,7 @@ public class StandaloneActivity extends BaseActivity {
      */
     private void setUserMode(int mode) {
         mState.userMode = mode;
-        Fragment fragment = DirectoryFragment.get(getFragmentManager());
+        Fragment fragment = DirectoryFragment.get(getSupportFragmentManager());
         if(fragment instanceof DirectoryFragment) {
             final DirectoryFragment directory = (DirectoryFragment) fragment;
             directory.onUserModeChanged();
@@ -428,7 +427,7 @@ public class StandaloneActivity extends BaseActivity {
     }
     @Override
     public void setPending(boolean pending) {
-        final SaveFragment save = SaveFragment.get(getFragmentManager());
+        final SaveFragment save = SaveFragment.get(getSupportFragmentManager());
         if (save != null) {
             save.setPending(pending);
         }
@@ -598,12 +597,11 @@ public class StandaloneActivity extends BaseActivity {
     }
 
     private void onCurrentDirectoryChanged(int anim) {
-        final FragmentManager fm = getFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();
-        mDirectoryContainer.setDrawDisappearingFirst(anim == ANIM_DOWN);
         if (cwd == null) {
-            DirectoryFragment.showRecentsOpen(fm, anim);
+            DirectoryFragment.showRecentsOpen(fm, anim, root);
             // Start recents in grid when requesting visual things
             final boolean visualMimes = MimePredicate.mimeMatches(
                     MimePredicate.VISUAL_MIMES, mState.acceptMimes);
@@ -618,7 +616,7 @@ public class StandaloneActivity extends BaseActivity {
                 DirectoryFragment.showNormal(fm, root, cwd, anim);
             }
         }
-        final RootsFragment roots = RootsFragment.get(fm);
+        final RootsCommonFragment roots = RootsCommonFragment.get(fm);
         if (roots != null) {
             roots.onCurrentRootChanged();
         }
@@ -703,7 +701,7 @@ public class StandaloneActivity extends BaseActivity {
     }
     @Override
     public void onDocumentPicked(DocumentInfo doc) {
-        final FragmentManager fm = getFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
         if (doc.isDirectory()) {
             mState.stack.push(doc);
             mState.stackTouched = true;

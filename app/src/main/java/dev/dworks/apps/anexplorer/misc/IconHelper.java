@@ -133,6 +133,14 @@ public class IconHelper {
                 iconThumb, iconMime, subIconMime);
     }
 
+    public void load(
+            Uri uri, String mimeType,
+            ImageView iconThumb,
+            ImageView iconMime,
+            @Nullable View subIconMime) {
+        loadThumbnail(uri, mimeType, iconThumb, iconMime, subIconMime);
+    }
+
     /**
      * Load thumbnails for a directory list item.
      *
@@ -218,6 +226,49 @@ public class IconHelper {
                     mCurrentSize, docLastModified, docPath, mimeType,
                         callback, true);
 
+                ProviderExecutor.forAuthority(docAuthority).execute(task);
+            }
+
+            return result.isHit();
+        } finally {
+            result.recycle();
+        }
+    }
+
+    private boolean loadThumbnail(Uri uri, final String mimeType, final ImageView iconThumb,
+                                  final ImageView iconMime, final View subIconMime) {
+        final ThumbnailCache.Result result = mThumbnailCache.getThumbnail(uri, mCurrentSize);
+
+        try {
+            final Bitmap cachedThumbnail = result.getThumbnail();
+            if(result.isExactHit()){
+                setImage(iconThumb, cachedThumbnail, mimeType, "");
+                subIconMime.setVisibility(View.INVISIBLE);
+            }
+
+            if (!result.isExactHit()) {
+                final BiConsumer<View, View> animator =
+                        (cachedThumbnail == null ? ThumbnailLoader.ANIM_FADE_IN :
+                                ThumbnailLoader.ANIM_NO_OP);
+
+                Consumer<Bitmap> callback = new Consumer<Bitmap>() {
+                    @Override
+                    public void accept(Bitmap bitmap) {
+                        if (bitmap != null) {
+                            setImage(iconThumb, bitmap, mimeType, "");
+                            subIconMime.setVisibility(View.INVISIBLE);
+                            animator.accept(iconMime, iconThumb);
+                        } else {
+                            subIconMime.setVisibility(View.VISIBLE);
+                        }
+                    }
+                };
+
+                final ThumbnailLoader task = new ThumbnailLoader(uri, iconThumb,
+                        mCurrentSize, 0, "", mimeType,
+                        callback, true);
+
+                String docAuthority = "ImageLoading";
                 ProviderExecutor.forAuthority(docAuthority).execute(task);
             }
 

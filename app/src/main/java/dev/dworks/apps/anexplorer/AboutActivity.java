@@ -48,18 +48,22 @@ public class AboutActivity extends AboutFlavour implements View.OnClickListener 
 		}
 		setContentView(R.layout.activity_about);
 
-		Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		mToolbar.setTitleTextAppearance(this, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
-		if(Utils.hasKitKat() && !Utils.hasLollipop()) {
-			//((LinearLayout.LayoutParams) mToolbar.getLayoutParams()).setMargins(0, getStatusBarHeight(this), 0, 0);
-			mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
-		}
 		int color = SettingsActivity.getPrimaryColor();
-		mToolbar.setBackgroundColor(color);
-		setSupportActionBar(mToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setTitle(null);
-		setUpDefaultStatusBar();
+		View view = findViewById(R.id.toolbar);
+		if(view instanceof Toolbar){
+			Toolbar mToolbar = (Toolbar) view;
+			mToolbar.setTitleTextAppearance(this, R.style.TextAppearance_AppCompat_Widget_ActionBar_Title);
+			if(Utils.hasKitKat() && !Utils.hasLollipop()) {
+				mToolbar.setPadding(0, getStatusBarHeight(this), 0, 0);
+			}
+			mToolbar.setBackgroundColor(color);
+			setSupportActionBar(mToolbar);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setTitle(null);
+			setUpDefaultStatusBar();
+		} else {
+			view.setBackgroundColor(color);
+		}
 		initAd();
 		initControls();
 	}
@@ -100,16 +104,6 @@ public class AboutActivity extends AboutFlavour implements View.OnClickListener 
 		if(!DocumentsApplication.isPurchased()){
 			action_sponsor.setVisibility(View.VISIBLE);
 		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
     @Override

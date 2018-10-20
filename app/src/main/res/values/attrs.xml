@@ -64,7 +64,9 @@
             <enum name="list" value="0"/>
             <enum name="grid" value="1"/>
             <enum name="gallery" value="2"/>
+            <enum name="custom" value="3"/>
         </attr>
+        <attr name="span" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="LineColorPicker">
