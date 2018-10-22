@@ -23,13 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.collection.ArrayMap;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -43,8 +36,13 @@ import com.google.android.gms.cast.framework.media.MediaQueue;
 
 import java.util.List;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.cast.Casty;
-import dev.dworks.apps.anexplorer.queue.QueueActivity;
 import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
 import dev.dworks.apps.anexplorer.misc.Utils;
@@ -53,6 +51,7 @@ import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.queue.QueueActivity;
 import dev.dworks.apps.anexplorer.server.WebServer;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;

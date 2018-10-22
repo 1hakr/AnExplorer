@@ -3,25 +3,17 @@ package dev.dworks.apps.anexplorer.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.misc.IconHelper;
-import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
-import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
-
-import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 public class RecentsAdapter extends CursorRecyclerViewAdapter<RecentsAdapter.ViewHolder> {
 

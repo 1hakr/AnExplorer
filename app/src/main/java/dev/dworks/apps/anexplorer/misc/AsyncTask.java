@@ -16,15 +16,11 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
-
 import android.os.Binder;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-
-import androidx.annotation.RestrictTo;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -39,6 +35,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import androidx.annotation.RestrictTo;
+
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 /**
  * Copy of the required parts of {@link android.os.AsyncTask} from Android 3.0 that is

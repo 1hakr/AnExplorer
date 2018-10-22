@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.design.internal.NavigationMenu;
-
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +18,9 @@ import android.widget.PopupMenu;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
@@ -42,8 +43,6 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 import static android.widget.LinearLayout.VERTICAL;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;

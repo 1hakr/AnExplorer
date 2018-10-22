@@ -24,7 +24,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -34,6 +33,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 
 public class PackageManagerUtils {

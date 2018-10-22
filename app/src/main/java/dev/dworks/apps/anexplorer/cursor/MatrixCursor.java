@@ -16,12 +16,12 @@ package dev.dworks.apps.anexplorer.cursor;
  * limitations under the License.
  */
 
+import android.database.AbstractCursor;
+import android.database.CursorIndexOutOfBoundsException;
+
 import java.util.ArrayList;
 
 import dev.dworks.apps.anexplorer.misc.DataBaseUtils;
-
-import android.database.AbstractCursor;
-import android.database.CursorIndexOutOfBoundsException;
 
 /**
  * A mutable cursor implementation backed by an array of {@code Object}s. Use

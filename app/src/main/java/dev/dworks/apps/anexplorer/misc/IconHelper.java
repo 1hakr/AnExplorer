@@ -22,18 +22,17 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-
+import androidx.annotation.Nullable;
+import dev.dworks.apps.anexplorer.BaseActivity.State.ViewMode;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.libcore.util.Consumer;
 import dev.dworks.apps.anexplorer.libcore.util.BiConsumer;
+import dev.dworks.apps.anexplorer.libcore.util.Consumer;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
-import dev.dworks.apps.anexplorer.BaseActivity.State.ViewMode;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 

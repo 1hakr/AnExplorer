@@ -16,15 +16,11 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import android.os.Looper;
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import android.content.ComponentCallbacks2;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import androidx.core.util.Pair;
-import androidx.core.util.Pools;
+import android.os.Looper;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -33,6 +29,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeMap;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
+import androidx.core.util.Pools;
 
 /**
  * An LRU cache that supports finding the thumbnail of the requested uri with a different size than

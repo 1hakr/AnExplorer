@@ -4,23 +4,23 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
-import androidx.collection.LongSparseArray;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.RecyclerView;
-import dev.dworks.apps.anexplorer.DocumentsActivity;
-import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListener.OnItemClickListener;
-import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.model.DocumentInfo;
-import dev.dworks.apps.anexplorer.model.RootInfo;
-
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Checkable;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.collection.LongSparseArray;
+import androidx.recyclerview.widget.RecyclerView;
+import dev.dworks.apps.anexplorer.DocumentsActivity;
+import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListener.OnItemClickListener;
+import dev.dworks.apps.anexplorer.misc.Utils;
+import dev.dworks.apps.anexplorer.model.DocumentInfo;
+import dev.dworks.apps.anexplorer.model.RootInfo;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 

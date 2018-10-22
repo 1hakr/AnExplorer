@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -14,6 +11,9 @@ import android.util.SparseIntArray;
 import java.io.File;
 import java.util.Comparator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 

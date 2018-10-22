@@ -25,9 +25,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
-import androidx.core.content.res.ResourcesCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -39,7 +37,6 @@ import java.util.List;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 
-import static android.R.attr.label;
 import static dev.dworks.apps.anexplorer.misc.DiskInfo.FLAG_SD;
 import static dev.dworks.apps.anexplorer.misc.DiskInfo.FLAG_USB;
 import static dev.dworks.apps.anexplorer.misc.VolumeInfo.ID_EMULATED_INTERNAL;

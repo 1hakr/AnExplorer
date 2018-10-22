@@ -25,18 +25,17 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Scanner;
 
+import androidx.annotation.GuardedBy;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
@@ -48,7 +47,6 @@ import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import androidx.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.root.RootCommands;
 import dev.dworks.apps.anexplorer.root.RootFile;
 

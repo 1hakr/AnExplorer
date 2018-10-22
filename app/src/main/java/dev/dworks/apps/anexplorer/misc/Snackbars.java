@@ -17,8 +17,9 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.app.Activity;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import dev.dworks.apps.anexplorer.R;
 

@@ -1,29 +1,27 @@
 package dev.dworks.apps.anexplorer.misc;
 
-import java.io.FileNotFoundException;
-import java.lang.reflect.Method;
-
-import android.annotation.TargetApi;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 
+import java.io.FileNotFoundException;
+import java.lang.reflect.Method;
+
 public class ContentProviderClientCompat {
 
 	//TODO NonSdkApiUsedViolation
 	public static void setDetectNotResponding(ContentProviderClient client, long anrTimeout){
-		if(Utils.hasKitKat()){
+		if(Utils.hasKitKat() && !Utils.hasPie()){
 			try {
 				Method method = client.getClass().getMethod("setDetectNotResponding", long.class);
 				if (method != null) {
 					method.invoke(client, anrTimeout);
-				}	
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

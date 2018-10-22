@@ -29,13 +29,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.collection.ArraySet;
 import android.text.format.DateUtils;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
 
+import androidx.collection.ArraySet;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.libcore.util.Predicate;

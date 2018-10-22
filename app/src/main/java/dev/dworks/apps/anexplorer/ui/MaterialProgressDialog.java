@@ -2,7 +2,6 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;

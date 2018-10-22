@@ -2,7 +2,7 @@ package dev.dworks.apps.anexplorer.model;
 
 import java.util.List;
 
-import dev.dworks.apps.anexplorer.fragment.RootsFragment.*;
+import dev.dworks.apps.anexplorer.fragment.RootsFragment.Item;
 
 /**
  * Created by HaKr on 07/08/16.

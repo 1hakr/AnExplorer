@@ -12,19 +12,18 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
-import com.google.android.material.snackbar.Snackbar;
 import android.support.provider.BasicDocumentFile;
 import android.support.provider.DocumentFile;
 import android.support.provider.UsbDocumentFile;
-
-import androidx.annotation.RequiresApi;
-import androidx.collection.ArrayMap;
 import android.text.Spanned;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -32,7 +31,6 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 
 import static android.app.Activity.RESULT_OK;
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.IntentUtils.ACTION_OPEN_DOCUMENT_TREE;
 import static dev.dworks.apps.anexplorer.provider.ExternalStorageProvider.ROOT_ID_SECONDARY;
 import static dev.dworks.apps.anexplorer.provider.UsbStorageProvider.ROOT_ID_USB;

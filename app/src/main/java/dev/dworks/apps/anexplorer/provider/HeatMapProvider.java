@@ -30,7 +30,6 @@ import android.os.CancellationSignal;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.ParcelFileDescriptor;
-import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -39,6 +38,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import androidx.annotation.GuardedBy;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
@@ -50,7 +51,6 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import androidx.annotation.GuardedBy;
 
 import static dev.dworks.apps.anexplorer.misc.MimeTypes.BASIC_MIME_TYPE;
 

@@ -3,11 +3,8 @@ package dev.dworks.apps.anexplorer.directory;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
 import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +15,6 @@ import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 
 public abstract class DocumentHolder extends BaseHolder implements View.OnClickListener{
 

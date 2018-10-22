@@ -17,14 +17,12 @@
 package dev.dworks.apps.anexplorer;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import androidx.core.app.ShareCompat;
-import androidx.appcompat.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ShareCompat;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ColorUtils;
 import dev.dworks.apps.anexplorer.misc.SystemBarTintManager;

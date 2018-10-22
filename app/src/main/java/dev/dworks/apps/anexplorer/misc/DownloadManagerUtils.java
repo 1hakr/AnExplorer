@@ -16,11 +16,11 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public final class DownloadManagerUtils {
 

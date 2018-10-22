@@ -4,7 +4,6 @@ import android.app.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.loader.app.LoaderManager;
 
 public class BaseFragment extends Fragment {
 

@@ -1,25 +1,14 @@
 package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 
 import dev.dworks.apps.anexplorer.AppFlavour;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
-import dev.dworks.apps.anexplorer.misc.Utils;
-
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 
 public class ProWrapper extends FrameLayout {
 

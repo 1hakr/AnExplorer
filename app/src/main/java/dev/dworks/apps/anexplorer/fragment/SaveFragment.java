@@ -17,8 +17,6 @@
 
 package dev.dworks.apps.anexplorer.fragment;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -31,6 +29,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.BaseFragment;

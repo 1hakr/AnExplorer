@@ -1,7 +1,6 @@
 package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -9,8 +8,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsListView;
 
+import androidx.annotation.NonNull;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 
 public class FloatingActionButton extends com.google.android.material.floatingactionbutton.FloatingActionButton {

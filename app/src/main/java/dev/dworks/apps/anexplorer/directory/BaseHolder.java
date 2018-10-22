@@ -2,7 +2,6 @@ package dev.dworks.apps.anexplorer.directory;
 
 import android.content.Context;
 import android.database.Cursor;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

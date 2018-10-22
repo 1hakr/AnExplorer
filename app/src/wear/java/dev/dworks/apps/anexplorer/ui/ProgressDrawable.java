@@ -28,9 +28,6 @@ import android.graphics.drawable.Drawable;
 import android.util.Property;
 import android.view.animation.LinearInterpolator;
 
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
-
 /**
  * Drawable for showing an indeterminate progress indicator.
  *

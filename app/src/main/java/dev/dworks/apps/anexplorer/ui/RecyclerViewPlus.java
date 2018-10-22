@@ -2,21 +2,12 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-
-import androidx.annotation.DimenRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 
-import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 import dev.dworks.apps.anexplorer.R;
 
 public class RecyclerViewPlus extends RecyclerViewCompat {

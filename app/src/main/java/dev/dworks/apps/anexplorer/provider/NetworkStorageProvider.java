@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
-import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -20,6 +19,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 
+import androidx.annotation.GuardedBy;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
@@ -32,7 +33,6 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
-import androidx.annotation.GuardedBy;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.network.NetworkFile;
 

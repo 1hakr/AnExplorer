@@ -29,7 +29,6 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 
-
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.libcore.util.BiConsumer;
 import dev.dworks.apps.anexplorer.libcore.util.Consumer;

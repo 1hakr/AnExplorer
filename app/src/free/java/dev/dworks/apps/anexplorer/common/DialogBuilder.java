@@ -1,6 +1,5 @@
 package dev.dworks.apps.anexplorer.common;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 

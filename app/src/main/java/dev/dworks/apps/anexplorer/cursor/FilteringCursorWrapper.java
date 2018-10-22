@@ -16,16 +16,17 @@
 
 package dev.dworks.apps.anexplorer.cursor;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
+
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 /**
  * Cursor wrapper that filters MIME types not matching given list.

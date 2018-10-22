@@ -2,9 +2,9 @@ package dev.dworks.apps.anexplorer.directory;
 
 import android.content.Context;
 import android.graphics.Rect;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
 
 public class MarginDecoration extends RecyclerView.ItemDecoration {
