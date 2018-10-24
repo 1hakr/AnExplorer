@@ -27,8 +27,9 @@ Top Features
 
 ★ **Wear OS File Explorer** you can use it to browse internal storage and wear storages. You can cut/copy paste files, check the media and compress/ uncompress files. You can also clear ram and manage you apps on watch. The best watch file manager available.
 
-★ **Chromecast File Manager** you can use it to play local media on to your chromecast device like, Google Home, Android TV or other chromecast devices.. You can play music, videos and also manager their playlist directly from the explorer.
-★ RAM & Junk Cleaner - Boost your mobile speed, optimize phone memory by freeing up RAM, and give you a faster and more responsive device. Link to Storage Analysis where you can clean cache and remove junk files.
+★ **Chromecast File Manager** you can use it to play local media on to your chromecast device like, Google Home, Android TV or other chromecast devices. You can play music, videos and also manager their playlist directly from the explorer.
+
+★ **RAM & Junk Cleaner** to boost your mobile speed, optimize phone memory by freeing up RAM, and give you a faster and more responsive device. Link to Storage Analysis where you can clean cache and remove junk files.
 
 ★ **App Manager and Process Manager** Quickly and easily uninstall multiple unwanted applications and free up phone storage space which is very valuable. App Manager helps you save your favorite apps on to memory and install them back again when needed
 
