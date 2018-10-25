@@ -315,7 +315,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             file.delete();
             mFileCache.remove(documentId);
             notifyDocumentsChanged(documentId);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new FileNotFoundException(e.getMessage());
         }
     }

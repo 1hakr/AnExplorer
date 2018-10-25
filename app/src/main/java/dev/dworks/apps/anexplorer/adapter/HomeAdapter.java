@@ -172,7 +172,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     public class MainViewHolder extends ViewHolder {
         private final int accentColor;
         private final int color;
-        private int mPosition;
 
         public MainViewHolder(View v) {
             super(v);
@@ -190,7 +189,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         @Override
         public void setData(int position){
-            mPosition = position;
             commonInfo = getItem(position);
             icon.setImageDrawable(commonInfo.rootInfo.loadDrawerIcon(mContext));
             title.setText(commonInfo.rootInfo.title);
@@ -234,7 +232,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
     public class ShortcutViewHolder extends ViewHolder {
-        private int mPosition;
 
         public ShortcutViewHolder(View v) {
             super(v);
@@ -242,9 +239,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         @Override
         public void setData(int position){
-            mPosition = position;
             commonInfo = getItem(position);
-            if(null == commonInfo){
+            if(null == commonInfo || null == commonInfo.rootInfo){
                 return;
             }
             iconBackground.setColor(ContextCompat.getColor(mContext, commonInfo.rootInfo.derivedColor));
@@ -254,7 +250,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
     public class GalleryViewHolder extends ViewHolder {
-        private int mPosition;
         private final RecyclerView recyclerview;
         private TextView recents;
         private RecentsAdapter adapter;
@@ -276,7 +271,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         @Override
         public void setData(int position){
-            mPosition = position;
             commonInfo = CommonInfo.from(recentCursor);
             adapter = new RecentsAdapter(mContext, recentCursor, mIconHelper);
             adapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {

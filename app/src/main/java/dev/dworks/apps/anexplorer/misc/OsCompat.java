@@ -1,14 +1,9 @@
 package dev.dworks.apps.anexplorer.misc;
 
-import android.os.Build;
-import android.system.ErrnoException;
 import android.system.Os;
 
 import java.io.FileDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import androidx.annotation.RequiresApi;
 
 /** Very hackish */
 public final class OsCompat {
@@ -72,16 +67,10 @@ public final class OsCompat {
             ExecutionFailedException {
         try {
             if(Utils.hasMarshmallow()){
-                try {
-                    return Os.lseek(fd, offset, whence);
-                } catch (ErrnoException e) {
-                    e.printStackTrace();
-                }
+                return Os.lseek(fd, offset, whence);
             }
             return (Long) sLseek.invoke(sOs, fd, offset, whence);
-        } catch (IllegalAccessException e) {
-            throw new ExecutionFailedException(e);
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             throw new ExecutionFailedException(e);
         }
     }

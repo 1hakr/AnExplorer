@@ -17,6 +17,8 @@
 package dev.dworks.apps.anexplorer.misc;
 
 
+import android.text.TextUtils;
+
 import dev.dworks.apps.anexplorer.libcore.util.Predicate;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
@@ -97,6 +99,11 @@ public class MimePredicate implements Predicate<DocumentInfo> {
         if (filters == null) {
             return true;
         }
+
+        if( TextUtils.isEmpty(test)){
+            return false;
+        }
+
         for (String filter : filters) {
             if (mimeMatches(filter, test)) {
                 return true;

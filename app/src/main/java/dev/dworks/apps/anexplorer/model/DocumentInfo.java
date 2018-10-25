@@ -211,7 +211,7 @@ public class DocumentInfo implements Durable, Parcelable {
         }
     }
 
-    private void deriveFields() {
+    public void deriveFields() {
         derivedUri = DocumentsContract.buildDocumentUri(authority, documentId);
     }
 

@@ -75,11 +75,12 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
     public static Casty create(@NonNull Activity activity) {
         int playServicesState = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(activity);
         if (playServicesState == ConnectionResult.SUCCESS) {
-            return new Casty(activity);
-        } else {
-            Log.w(Casty.TAG, "Google Play services not found on a device, Casty won't work.");
-            return new CastyNoOp();
+            try {
+                return new Casty(activity);
+            } catch (Exception e){}
         }
+        Log.w(Casty.TAG, "Google Play services not found on a device, Casty won't work.");
+        return new CastyNoOp();
     }
 
     public static boolean isAvailable(@NonNull Activity activity){
