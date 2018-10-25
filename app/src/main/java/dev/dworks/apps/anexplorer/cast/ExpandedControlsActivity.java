@@ -9,7 +9,6 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.R.id;
 import com.google.android.gms.cast.framework.media.widget.ExpandedControllerActivity;
 
 import androidx.appcompat.widget.Toolbar;
@@ -28,9 +27,9 @@ public class ExpandedControlsActivity extends ExpandedControllerActivity {
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        Toolbar toolbar = findViewById(id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setFitsSystemWindows(true);
-        ImageView imageView = findViewById(id.background_place_holder_image_view);
+        ImageView imageView = findViewById(R.id.background_place_holder_image_view);
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.ic_root_image);
         TintUtils.tintDrawable(drawable, Color.WHITE);
         imageView.setImageDrawable(drawable);
@@ -38,11 +37,9 @@ public class ExpandedControlsActivity extends ExpandedControllerActivity {
         int color = SettingsActivity.getAccentColor();
         int accentColor = SettingsActivity.getAccentColor();
 
-        ProgressBar progressBar = findViewById(id.loading_indicator);
+        ProgressBar progressBar = findViewById(R.id.loading_indicator);
         TintUtils.tintDrawable(progressBar.getIndeterminateDrawable(), accentColor);
-        SeekBar seekBarLive = findViewById(id.live_stream_seek_bar);
-        SeekBar seekBar = findViewById(id.seek_bar);
-        TintUtils.tintWidget(seekBarLive, color);
+        SeekBar seekBar = findViewById(R.id.seek_bar);
         TintUtils.tintWidget(seekBar, color);
     }
 

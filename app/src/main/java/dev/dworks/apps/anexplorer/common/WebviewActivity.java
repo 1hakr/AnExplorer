@@ -15,6 +15,7 @@
 package dev.dworks.apps.anexplorer.common;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -41,9 +42,11 @@ public class WebviewActivity extends ActionBarActivity {
         webView.setWebViewClient(new WebViewClient());
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        String name = url.contains("cloudrail.com") ? getString(R.string.name) : url;
-        mToolbar.setTitle(name);
-        webView.loadUrl(url);
+        if(!TextUtils.isEmpty(url)) {
+            String name = url.contains("cloudrail.com") ? getString(R.string.name) : url;
+            mToolbar.setTitle(name);
+            webView.loadUrl(url);
+        }
     }
 
     @Override

@@ -1,10 +1,10 @@
 package dev.dworks.apps.anexplorer.common;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 

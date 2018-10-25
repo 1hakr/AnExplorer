@@ -100,6 +100,9 @@ public class QueueFragment extends RecyclerFragment implements OnItemClickListen
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if(null == casty) {
+            return;
+        }
         IconHelper iconHelper = new IconHelper(getActivity(), MODE_GRID);
         mAdapter = new QueueAdapter(casty.getMediaQueue(), iconHelper);
         mAdapter.setOnItemClickListener(this);

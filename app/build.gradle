@@ -68,7 +68,7 @@ android {
             buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         underground {
-            applicationId "dev.dworks.apps.anexplorer.underground"
+            applicationId "dev.dworks.apps.anexplorer"
             dimension "default"
             buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }

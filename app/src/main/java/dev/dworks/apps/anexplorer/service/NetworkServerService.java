@@ -67,7 +67,9 @@ public abstract class NetworkServerService extends Service {
 
         // get parameters
         Bundle extras = intent.getExtras();
-        root = extras.getParcelable(EXTRA_ROOT);
+        if(null != extras) {
+            root = extras.getParcelable(EXTRA_ROOT);
+        }
         if(null == root){
             networkConnection = NetworkConnection.getDefaultServer(getApplicationContext());
         } else {
