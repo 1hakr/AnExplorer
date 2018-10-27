@@ -54,7 +54,7 @@
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="${applicationId}.cast.CastOptionsProvider" />
+            android:value="dev.dworks.apps.anexplorer.cast.CastOptionsProvider" />
 
         <!-- TODO: allow rotation when state saving is in better shape -->
         <activity
