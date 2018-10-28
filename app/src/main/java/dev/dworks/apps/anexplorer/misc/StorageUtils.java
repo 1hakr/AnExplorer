@@ -65,6 +65,7 @@ public final class StorageUtils {
     public List<VolumeInfo> getVolumes() {
         List<VolumeInfo> mounts = new ArrayList<VolumeInfo>();
         List<Object> vi = null;
+        boolean first = false;
         try {
             Method getVolumeList = StorageManager.class.getDeclaredMethod("getVolumes");
             vi = (List<Object>)getVolumeList.invoke(mStorageManager);
@@ -93,7 +94,10 @@ public final class StorageUtils {
                 id = TextUtils.isEmpty(id) && !TextUtils.isEmpty(path)
                         ? (path.contains(ID_EMULATED_INTERNAL) ? ID_EMULATED_INTERNAL : "") : id;
                 if(TextUtils.isEmpty(id)){
-                    id = ID_EMULATED_INTERNAL;
+                    if(!first){
+                        first = true;
+                        id = ID_EMULATED_INTERNAL;
+                    }
                 }
             }
 
@@ -366,7 +370,7 @@ public final class StorageUtils {
 	
 	/**
 	 * @param isTotal  The parameter for calculating total size
-	 * @return return Total Size when isTotal is {@value true} else return Free Size of Internal memory(data folder)
+	 * @return return Total Size when isTotal is true else return Free Size of Internal memory(data folder)
 	 */
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @SuppressWarnings("deprecation")

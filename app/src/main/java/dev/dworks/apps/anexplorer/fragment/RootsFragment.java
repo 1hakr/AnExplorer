@@ -434,11 +434,7 @@ public class RootsFragment extends BaseFragment {
             title.setText(root.title);
 
             // Show available space if no summary
-            if(root.isNetworkStorage()) {
-                String summaryText = root.summary;
-                summary.setText(summaryText);
-                summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
-            } if(root.isCloudStorage()) {
+            if(root.isNetworkStorage() || root.isCloudStorage() || root.isApp()) {
                 String summaryText = root.summary;
                 summary.setText(summaryText);
                 summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
