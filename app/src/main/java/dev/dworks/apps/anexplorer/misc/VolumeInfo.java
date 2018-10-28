@@ -185,7 +185,7 @@ public class VolumeInfo {
 
     public @Nullable String getDescription() {
         if (ID_PRIVATE_INTERNAL.equals(id) || ID_EMULATED_INTERNAL.equals(id)) {
-            return Resources.getSystem().getString(R.string.storage_internal);
+            return "Internal storage";
         } else if (!TextUtils.isEmpty(fsLabel)) {
             return fsLabel;
         } else {

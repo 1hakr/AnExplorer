@@ -89,9 +89,12 @@ public final class StorageUtils {
             String path = getString(object, "path");
             String internalPath = getString(object, "internalPath");
 
-            if(Utils.hasPie() && TextUtils.isEmpty(id)) {
-                id = TextUtils.isEmpty(id)
+            if(Utils.hasPie() && !TextUtils.isEmpty(path)) {
+                id = TextUtils.isEmpty(id) && !TextUtils.isEmpty(path)
                         ? (path.contains(ID_EMULATED_INTERNAL) ? ID_EMULATED_INTERNAL : "") : id;
+                if(TextUtils.isEmpty(id)){
+                    id = ID_EMULATED_INTERNAL;
+                }
             }
 
             VolumeInfo volumeInfo = new VolumeInfo(id, type, disk, partGuid);

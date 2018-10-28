@@ -96,8 +96,8 @@ public class Casty implements CastyPlayer.OnMediaLoadedListener {
         this.activity = activity;
         sessionManagerListener = createSessionManagerListener();
         castyPlayer = new CastyPlayer(this);
-        activity.getApplication().registerActivityLifecycleCallbacks(createActivityCallbacks());
         CastContext.getSharedInstance(activity).addCastStateListener(createCastStateListener());
+        activity.getApplication().registerActivityLifecycleCallbacks(createActivityCallbacks());
     }
 
     /**

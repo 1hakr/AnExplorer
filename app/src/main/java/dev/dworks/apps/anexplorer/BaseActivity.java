@@ -54,6 +54,7 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.queue.QueueActivity;
 import dev.dworks.apps.anexplorer.server.WebServer;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 
 public abstract class BaseActivity extends ActionBarActivity {
@@ -287,12 +288,12 @@ public abstract class BaseActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         final RootInfo root = getCurrentRoot();
-        if(!isWatch() && casty.isConnected()) {
+        if(!isSpecialDevice() && casty.isConnected()) {
             if (findViewById(R.id.casty_mini_controller) == null) {
                 casty.addMiniController();
             }
         }
-        if(!isWatch() && (null != root && RootInfo.isChromecastFeature(root))) {
+        if(!isSpecialDevice() && (null != root && RootInfo.isChromecastFeature(root))) {
             casty.addMediaRouteMenuItem(menu);
         }
         return super.onCreateOptionsMenu(menu);
@@ -300,7 +301,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(!isWatch()) {
+        if(!isSpecialDevice()) {
             boolean connected = (castSession != null) && castSession.isConnected();
             MediaQueue queue = casty.getMediaQueue();
             int queueCount = null != queue ? queue.getItemCount() : 0;
@@ -324,7 +325,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if(!isWatch() && Casty.isAvailable(this)) {
+        if(!isSpecialDevice() && Casty.isAvailable(this)) {
             return CastContext.getSharedInstance(this).onDispatchVolumeKeyEventBeforeJellyBean(event)
                     || super.dispatchKeyEvent(event);
         } else {

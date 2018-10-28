@@ -105,7 +105,7 @@
                         android:layout_weight="1"
                         android:ellipsize="middle"
                         android:singleLine="true"
-                        android:text="FTP Web Server"
+                        android:text="Web Server"
                         android:textAlignment="viewEnd"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         android:textColor="?android:attr/textColorPrimary" />
