@@ -205,11 +205,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                 action.setImageDrawable(null);
                 action_layout.setVisibility(View.GONE);
             }
-            // Show available space if no summary
-            String summaryText = commonInfo.rootInfo.summary;
-            if (TextUtils.isEmpty(summaryText) && commonInfo.rootInfo.availableBytes >= 0) {
-                summaryText = mContext.getString(R.string.root_available_bytes,
-                        Formatter.formatFileSize(mContext, commonInfo.rootInfo.availableBytes));
+
+            if (commonInfo.rootInfo.availableBytes >= 0) {
                 try {
                     Long current = 100 * commonInfo.rootInfo.availableBytes / commonInfo.rootInfo.totalBytes ;
                     progress.setVisibility(View.VISIBLE);
@@ -225,9 +222,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             else{
                 progress.setVisibility(View.GONE);
             }
-
-            summary.setText(summaryText);
-            summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
         }
     }
 

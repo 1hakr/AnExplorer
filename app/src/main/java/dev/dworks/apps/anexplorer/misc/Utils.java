@@ -64,6 +64,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
+import static android.content.Intent.ACTION_SENDTO;
 import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
 import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 
@@ -544,13 +545,18 @@ public class Utils extends UtilsFlavour{
     }
 
     public static void openFeedback(Activity activity){
-        ShareCompat.IntentBuilder
-                .from(activity)
-                .setEmailTo(new String[]{"hakr@dworks.in"})
-                .setSubject("AnExplorer Feedback" + getSuffix())
-                .setType("text/email")
-                .setChooserTitle("Send Feedback")
-                .startChooser();
+        sendEmail(activity, "Send Feedback", "AnExplorer Feedback");
+    }
+
+    public static void sendEmail(Activity activity, String title, String subject){
+        final Intent result = new Intent(ACTION_SENDTO);
+        result.setData(Uri.parse("mailto:"));
+        result.putExtra(Intent.EXTRA_EMAIL, new String[]{"support@dworks.io"});
+        result.putExtra(Intent.EXTRA_SUBJECT, subject);
+        result.putExtra(Intent.EXTRA_TEXT, "AnExplorer Feedback"
+                + getSuffix() + " v" + BuildConfig.VERSION_NAME);
+
+        activity.startActivity(Intent.createChooser(result, title));
     }
 
     public static void openPlaystore(Context çontext){
