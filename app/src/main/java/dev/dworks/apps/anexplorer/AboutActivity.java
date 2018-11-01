@@ -34,7 +34,7 @@ import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
 
-public class AboutActivity extends AboutFlavour implements View.OnClickListener {
+public class AboutActivity extends AboutVariantFlavour implements View.OnClickListener {
 
 	public static final String TAG = "About";
 

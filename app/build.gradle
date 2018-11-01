@@ -20,7 +20,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.generateVersionCode(1)
         versionName rootProject.generateVersionName()
         vectorDrawables.useSupportLibrary = true
         buildConfigField "String", "LICENSE_KEY",  "$props.LICENSE_KEY"
@@ -55,21 +54,19 @@ android {
                     'proguard-rules.pro'
         }
     }
-    flavorDimensions "release", "default"
+    flavorDimensions "release", "default", "variant"
     productFlavors {
         free {
             applicationId "dev.dworks.apps.anexplorer"
-            dimension "default"
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_CLIENT_ID"
+            dimension "variant"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
-            dimension "default"
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
+            dimension "variant"
         }
-        underground {
-            applicationId "dev.dworks.apps.anexplorer"
+        mobile {
             dimension "default"
+            versionCode rootProject.generateVersionCode(1)
             buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         wear {
@@ -78,27 +75,28 @@ android {
             versionCode rootProject.generateVersionCode(2)
             buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
+        television {
+            dimension "default"
+            minSdkVersion 25
+            versionCode rootProject.generateVersionCode(3)
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
+        }
         google {
             dimension "release"
         }
         amazon {
+            applicationId "dev.dworks.apps.anexplorer"
             dimension "release"
             targetSdkVersion 25
         }
         other {
             dimension "release"
         }
-        paid {
-            applicationId "dev.dworks.apps.anexplorer.pro"
-            dimension "release"
-        }
     }
     variantFilter { variant ->
         def names = variant.flavors*.name
 
-        if ((names.contains("underground") && (names.contains("google") || names.contains("other")))
-            || (names.contains("paid") && !names.contains("wear"))
-            || (names.contains("wear") && ! (names.contains("google") || names.contains("paid")))) {
+        if (((names.contains("wear") || names.contains("television")) && !names.contains("google"))) {
             variant.ignore = true
         }
     }
@@ -138,6 +136,10 @@ dependencies {
     wearImplementation 'com.google.android.gms:play-services-wearable:16.0.1'
     wearImplementation 'androidx.wear:wear:1.0.0'
     wearCompileOnly 'com.google.android.wearable:wearable:2.4.0'
+
+    televisionImplementation 'androidx.leanback:leanback:1.0.0'
+    televisionImplementation 'androidx.preference:preference:1.0.0'
+    televisionImplementation 'androidx.leanback:leanback-preference:1.0.0'
 
     debugImplementation 'androidx.multidex:multidex:2.0.0'
 }

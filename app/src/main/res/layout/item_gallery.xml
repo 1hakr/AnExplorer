@@ -44,7 +44,7 @@
         android:minHeight="@dimen/grid_item_height"
         android:paddingStart="10dp"
         android:paddingEnd="@dimen/list_item_padding"
-        app:columnWidth="@dimen/grid_item_height"
+        app:gridColumnWidth="@dimen/grid_item_height"
         app:type="@integer/recycler_type" />
 
 </LinearLayout>

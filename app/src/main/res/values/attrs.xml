@@ -59,7 +59,7 @@
     </declare-styleable>
 
     <declare-styleable name="RecyclerViewPlus">
-        <attr name="columnWidth" format="dimension"/>
+        <attr name="gridColumnWidth" format="dimension"/>
         <attr name="type" format="enum">
             <enum name="list" value="0"/>
             <enum name="grid" value="1"/>

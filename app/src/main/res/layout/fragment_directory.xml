@@ -66,7 +66,7 @@
                 android:horizontalSpacing="@dimen/grid_item_padding"
                 android:scrollbars="vertical"
                 android:paddingBottom="@dimen/document_list_padding"
-                app:columnWidth="@dimen/grid_item_width"
+                app:gridColumnWidth="@dimen/grid_item_width"
                 app:type="list" />
 
         </FrameLayout>

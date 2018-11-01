@@ -46,7 +46,7 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.server.SimpleWebServer;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
-public class DocumentsApplication extends AppFlavour {
+public class DocumentsApplication extends AppPaymentFlavour {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
     private static DocumentsApplication sInstance;
 
