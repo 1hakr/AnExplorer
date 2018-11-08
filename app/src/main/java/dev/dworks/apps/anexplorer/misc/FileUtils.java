@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -50,6 +51,7 @@ public class FileUtils {
     /** Regular expression for safe filenames: no spaces or metacharacters */
     private static final Pattern SAFE_FILENAME_PATTERN = Pattern.compile("[\\w%+,./=_-]+");
     private static final File[] EMPTY = new File[0];
+    private static final Locale LOCALE = Resources.getSystem().getConfiguration().locale;
 
     /**
      * Test if a file lives under the given directory, either as a direct child
@@ -580,11 +582,12 @@ public class FileUtils {
 
         @Override
         public boolean accept(File dir, String filename) {
+            final String name = filename.toLowerCase(LOCALE);
             if (!onlyFolders && (!filename.startsWith("."))) {
-                return filename.toLowerCase(Resources.getSystem().getConfiguration().locale).contains(searchQuery);
+                return name.contains(searchQuery);
             } else {
                 if (!dir.isDirectory() && !filename.startsWith(".")) {
-                    return filename.toLowerCase(Resources.getSystem().getConfiguration().locale).contains(searchQuery);
+                    return name.contains(searchQuery) || name.endsWith(searchQuery);
                 }
             }
             return false;

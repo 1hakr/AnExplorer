@@ -680,7 +680,11 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			return handleMenuAction(item);
+			if(handleMenuAction(item)){
+				mode.finish();
+				return true;
+			}
+			return false;
 		}
 
 		@Override
