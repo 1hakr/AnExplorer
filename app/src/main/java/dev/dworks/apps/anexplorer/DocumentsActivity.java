@@ -158,7 +158,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private static final String EXTRA_AUTHENTICATED = "authenticated";
     private static final String EXTRA_ACTIONMODE = "actionmode";
     private static final String EXTRA_SEARCH_STATE = "searchsate";
-    private static final String BROWSABLE = "android.intent.category.BROWSABLE";
+    public static final String BROWSABLE = "android.intent.category.BROWSABLE";
     private static final int UPLOAD_FILE = 99;
 
     private static final int CODE_FORWARD = 42;

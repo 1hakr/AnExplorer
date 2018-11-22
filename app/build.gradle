@@ -85,9 +85,10 @@ android {
             dimension "release"
         }
         amazon {
-            applicationId "dev.dworks.apps.anexplorer"
             dimension "release"
             targetSdkVersion 25
+            versionName "3.9"
+            versionCode 59
         }
         other {
             dimension "release"
@@ -117,7 +118,7 @@ dependencies {
     implementation 'commons-net:commons-net:3.6'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.22.4'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
@@ -126,10 +127,10 @@ dependencies {
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     implementation 'com.nanohttpd:nanohttpd:2.2.0'
 
-    freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
-    freeImplementation "com.google.firebase:firebase-core:16.0.4"
-    freeImplementation "com.google.firebase:firebase-ads:17.0.0"
-    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:17.0.3'
+    freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
+    freeImplementation "com.google.firebase:firebase-core:16.0.5"
+    freeImplementation "com.google.firebase:firebase-ads:17.1.1"
+    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:17.0.4'
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     wearImplementation 'com.google.android.support:wearable:2.4.0'

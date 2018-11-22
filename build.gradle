@@ -30,7 +30,7 @@ ext {
     minSdkVersion = 17
     versionMajor = 4
     versionMinor = 0
-    versionPatch = 3
+    versionPatch = 4
 
 }
 

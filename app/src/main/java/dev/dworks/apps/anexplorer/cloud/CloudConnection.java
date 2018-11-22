@@ -159,7 +159,7 @@ public class CloudConnection {
         if (type.equals(TYPE_GDRIVE)) {
             ((GoogleDrive) cloudStorage).useAdvancedAuthentication();
         } else if (type.equals(TYPE_DROPBOX)) {
-            ((Dropbox) cloudStorage).useAdvancedAuthentication();
+           // ((Dropbox) cloudStorage).useAdvancedAuthentication();
         }
         cloudStorage.login();
     }

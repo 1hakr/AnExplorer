@@ -46,8 +46,7 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 	}
 
 	public static boolean isPurchased() {
-		return Utils.isAmazonBuild() || Utils.isProVersion()
-				|| PreferenceUtils.getBooleanPrefs(PURCHASED);
+		return BuildConfig.DEBUG || Utils.isProVersion() || PreferenceUtils.getBooleanPrefs(PURCHASED);
 	}
 
 	@Override

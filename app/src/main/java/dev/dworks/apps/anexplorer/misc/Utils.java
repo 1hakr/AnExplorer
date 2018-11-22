@@ -53,7 +53,6 @@ import java.util.Locale;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.TextUtilsCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;

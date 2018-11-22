@@ -9,6 +9,13 @@
         support:showAsAction="always" >
         <menu>
             <item
+                android:id="@+id/cloud_gridve"
+                android:icon="@drawable/ic_root_gdrive"
+                android:orderInCategory="100"
+                android:title="@string/cloud_gdrive"
+                support:showAsAction="never" />
+
+            <item
                 android:id="@+id/cloud_dropbox"
                 android:icon="@drawable/ic_root_dropbox"
                 android:orderInCategory="100"
