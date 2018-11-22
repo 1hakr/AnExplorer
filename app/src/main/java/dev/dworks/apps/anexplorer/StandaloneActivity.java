@@ -16,9 +16,6 @@
 package dev.dworks.apps.anexplorer;
 
 import android.app.Activity;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ComponentName;
@@ -33,9 +30,6 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,7 +38,6 @@ import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
@@ -62,10 +55,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.common.RootsCommonFragment;
 import dev.dworks.apps.anexplorer.fragment.CreateDirectoryFragment;
 import dev.dworks.apps.anexplorer.fragment.DirectoryFragment;
-import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AsyncTask;

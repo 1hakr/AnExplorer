@@ -1,12 +1,9 @@
 package dev.dworks.apps.anexplorer.misc;
 
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableWrapper;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
 import androidx.core.graphics.drawable.DrawableCompat;

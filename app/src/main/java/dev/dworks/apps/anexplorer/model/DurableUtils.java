@@ -16,8 +16,6 @@
 
 package dev.dworks.apps.anexplorer.model;
 
-import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
-
 import android.os.BadParcelableException;
 import android.os.Parcel;
 import android.util.Log;
@@ -27,6 +25,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import static dev.dworks.apps.anexplorer.DocumentsActivity.TAG;
 
 public class DurableUtils {
     public static <D extends Durable> byte[] writeToArray(D d) throws IOException {

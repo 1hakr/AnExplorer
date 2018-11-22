@@ -1,8 +1,9 @@
 package dev.dworks.apps.anexplorer.ui;
 
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.AbsListView;
+
+import androidx.annotation.NonNull;
 
 public abstract class AbsListViewScrollDetector implements AbsListView.OnScrollListener {
     private int mLastScrollY;

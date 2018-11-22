@@ -13,7 +13,6 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
-import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;

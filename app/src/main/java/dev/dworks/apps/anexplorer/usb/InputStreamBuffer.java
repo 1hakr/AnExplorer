@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import dev.dworks.apps.anexplorer.misc.Utils;
-
 /**
  * Wrapper for {@link InputStream} that allows you to read bytes from it like a byte[]. An
  * internal buffer is kept as small as possible to avoid large unnecessary allocations.

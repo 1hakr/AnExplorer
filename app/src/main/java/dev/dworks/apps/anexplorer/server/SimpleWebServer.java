@@ -32,19 +32,14 @@ package dev.dworks.apps.anexplorer.server;
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-import android.content.ContentResolver;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.net.Uri;
+
 import android.os.Environment;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -57,9 +52,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.StringTokenizer;
 
-import dev.dworks.apps.anexplorer.DocumentsApplication;
-import dev.dworks.apps.anexplorer.model.DocumentsContract;
-import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 import fi.iki.elonen.NanoHTTPD.Response.Status;

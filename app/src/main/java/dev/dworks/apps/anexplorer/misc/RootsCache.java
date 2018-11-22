@@ -31,8 +31,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
-import androidx.annotation.GuardedBy;
-import androidx.collection.ArraySet;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -41,12 +39,13 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.GuardedBy;
+import androidx.collection.ArraySet;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cloud.CloudConnection;
-import dev.dworks.apps.anexplorer.fragment.HomeFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.libcore.io.MultiMap;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
@@ -64,7 +63,6 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.fragment.HomeFragment.ROOTS_CHANGED;
 
 /**

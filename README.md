@@ -49,7 +49,7 @@ Other Features
 * Acts as a Standalone File Picker from other applications such as attaching document files from gmail
 * Has high quality thumbnail support in list / gridview for all types of file like images, videos, album art for music files and applications
 
-Feedback is greatly appreciated. Any issues please report through mail only to hakr@dworks.in
+Feedback is greatly appreciated. Any issues please report through mail only to support@dworks.io
 
 
 Discussion
@@ -64,7 +64,7 @@ App Links
 Developed By
 ============
 
-* Hari Krishna Dulipudi - <hakr@dworks.io>
+* Hari Krishna Dulipudi
 
 
 License

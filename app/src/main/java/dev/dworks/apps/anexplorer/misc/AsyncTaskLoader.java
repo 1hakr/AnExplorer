@@ -22,16 +22,16 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.OperationCanceledException;
 import androidx.core.util.TimeUtils;
 import androidx.loader.content.Loader;
-
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 
 /**
  * Static library support version of the framework's {@link android.content.AsyncTaskLoader}.

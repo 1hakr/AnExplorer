@@ -61,7 +61,7 @@
             android:drawSelectorOnTop="true"
             android:horizontalSpacing="@dimen/grid_item_padding"
             android:scrollbars="vertical"
-            app:columnWidth="@dimen/grid_item_height"
+            app:gridColumnWidth="@dimen/grid_item_height"
             app:span="@integer/home_span"
             android:padding="@dimen/home_padding"
             app:type="custom" />

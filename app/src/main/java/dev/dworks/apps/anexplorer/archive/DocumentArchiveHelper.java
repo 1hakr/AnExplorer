@@ -24,7 +24,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
-import androidx.annotation.Nullable;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -35,6 +34,7 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import androidx.annotation.Nullable;
 import dev.dworks.apps.anexplorer.misc.Preconditions;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;

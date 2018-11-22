@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="name">AnExplorer Pro</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="name" tools:ignore="MissingTranslation">AnExplorer Pro</string>
 </resources>

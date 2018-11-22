@@ -5,12 +5,8 @@ import com.google.android.gms.cast.MediaLoadOptions;
 import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
-import org.json.JSONObject;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-
-import static com.google.android.gms.cast.MediaQueueItem.INVALID_ITEM_ID;
 
 public class CastyPlayer {
     private RemoteMediaClient remoteMediaClient;

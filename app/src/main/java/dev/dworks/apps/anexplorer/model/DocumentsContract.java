@@ -39,8 +39,6 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import androidx.annotation.Nullable;
-import androidx.exifinterface.media.ExifInterface;
 import android.util.Log;
 import android.widget.SearchView.OnCloseListener;
 
@@ -53,6 +51,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
@@ -65,7 +65,6 @@ import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 
 import static dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat.buildAssetFileDescriptor;
 import static dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat.openTypedAssetFileDescriptor;
-import static dev.dworks.apps.anexplorer.misc.SAFManager.DOCUMENT_AUTHORITY;
 
 /**
  * Defines the contract between a documents provider and the platform.

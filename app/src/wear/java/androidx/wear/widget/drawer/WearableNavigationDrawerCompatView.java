@@ -27,9 +27,6 @@ import android.view.accessibility.AccessibilityManager;
 
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.Nullable;
-import androidx.wear.internal.widget.drawer.WearableNavigationDrawerPresenter;
-
 public class WearableNavigationDrawerCompatView extends androidx.wear.widget.drawer.WearableNavigationDrawerView {
 
     private static final long AUTO_CLOSE_DRAWER_DELAY_MS = TimeUnit.SECONDS.toMillis(5);

@@ -24,10 +24,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.ActionBar;
-import androidx.core.content.ContextCompat;
 import android.support.provider.DocumentFile;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -39,6 +35,7 @@ import android.widget.EditText;
 
 import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileOutputStream;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,6 +48,8 @@ import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.common.DialogBuilder;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;

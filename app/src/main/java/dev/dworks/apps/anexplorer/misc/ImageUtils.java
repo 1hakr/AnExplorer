@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
-import androidx.exifinterface.media.ExifInterface;
 import android.util.Base64;
 import android.util.Log;
 import android.webkit.URLUtil;
@@ -20,9 +19,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
+
+import androidx.exifinterface.media.ExifInterface;
 
 
 public class ImageUtils {

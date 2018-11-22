@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -14,6 +11,9 @@ import android.util.SparseIntArray;
 import java.io.File;
 import java.util.Comparator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
 
@@ -185,7 +185,7 @@ public class VolumeInfo {
 
     public @Nullable String getDescription() {
         if (ID_PRIVATE_INTERNAL.equals(id) || ID_EMULATED_INTERNAL.equals(id)) {
-            return Resources.getSystem().getString(R.string.storage_internal);
+            return "Internal storage";
         } else if (!TextUtils.isEmpty(fsLabel)) {
             return fsLabel;
         } else {

@@ -75,7 +75,7 @@ public class AppsProvider extends DocumentsProvider {
     
     private static final String[] DEFAULT_ROOT_PROJECTION = new String[] {
             Root.COLUMN_ROOT_ID, Root.COLUMN_FLAGS, Root.COLUMN_ICON,
-            Root.COLUMN_TITLE, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES,
+            Root.COLUMN_TITLE, Root.COLUMN_SUMMARY, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_AVAILABLE_BYTES, Root.COLUMN_CAPACITY_BYTES,
     };
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
@@ -127,10 +127,24 @@ public class AppsProvider extends DocumentsProvider {
     	StorageUtils storageUtils = new StorageUtils(getContext());
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
         final RowBuilder row = result.newRow();
-        row.add(Root.COLUMN_ROOT_ID, ROOT_ID_USER_APP);
+		List<PackageInfo> allAppList = packageManager.getInstalledPackages(getAppListFlag());
+		List<RunningAppProcessInfo> processList = getRunningAppProcessInfo(getContext());
+		int countUserApps = 0;
+		int countSystemApps = 0;
+		int countProcesses = null != processList? processList.size() : 0;
+		for (PackageInfo packageInfo : allAppList) {
+			ApplicationInfo appInfo = packageInfo.applicationInfo;
+			if(isSystemApp(appInfo)){
+				countSystemApps++;
+			} else {
+				countUserApps++;
+			}
+		}
+		row.add(Root.COLUMN_ROOT_ID, ROOT_ID_USER_APP);
         row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
         row.add(Root.COLUMN_ICON, R.drawable.ic_root_apps);
         row.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_apps));
+		row.add(Root.COLUMN_SUMMARY, String.valueOf(countUserApps) + " apps");
         row.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_USER_APP);
         row.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, false));
         row.add(Root.COLUMN_CAPACITY_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, true));
@@ -140,6 +154,7 @@ public class AppsProvider extends DocumentsProvider {
 		row1.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY  | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
 		row1.add(Root.COLUMN_ICON, R.drawable.ic_root_apps);
 		row1.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_system_apps));
+		row1.add(Root.COLUMN_SUMMARY, String.valueOf(countSystemApps) + " apps");
 		row1.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_SYSTEM_APP);
 		row1.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, false));
 		row1.add(Root.COLUMN_CAPACITY_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_DATA, true));
@@ -149,6 +164,7 @@ public class AppsProvider extends DocumentsProvider {
 		row2.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED | Root.FLAG_SUPER_ADVANCED | Root.FLAG_SUPPORTS_SEARCH);
 		row2.add(Root.COLUMN_ICON, R.drawable.ic_root_process);
 		row2.add(Root.COLUMN_TITLE, getContext().getString(R.string.root_processes));
+		row2.add(Root.COLUMN_SUMMARY, String.valueOf(countProcesses) + " processes");
 		row2.add(Root.COLUMN_DOCUMENT_ID, ROOT_ID_PROCESS);
 		row2.add(Root.COLUMN_AVAILABLE_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, false));
 		row2.add(Root.COLUMN_CAPACITY_BYTES, storageUtils.getPartionSize(StorageUtils.PARTITION_RAM, true));
@@ -246,17 +262,17 @@ public class AppsProvider extends DocumentsProvider {
         		List<PackageInfo> allAppList = packageManager.getInstalledPackages(getAppListFlag());
         		for (PackageInfo packageInfo : allAppList) {
         			includeAppFromPackage(result, docId, packageInfo, false, null);
-        		}	
+        		}
         	}
 			else if (docId.startsWith(ROOT_ID_SYSTEM_APP)) {
-				List<PackageInfo> allAppList = packageManager.getInstalledPackages( getAppListFlag());
+				List<PackageInfo> allAppList = packageManager.getInstalledPackages(getAppListFlag());
 				for (PackageInfo packageInfo : allAppList) {
 					includeAppFromPackage(result, docId, packageInfo, true, null);
 				}
 			}
         	else if(docId.startsWith(ROOT_ID_PROCESS)) {
         		if(Utils.hasOreo()){
-					List<PackageInfo> allAppList = packageManager.getInstalledPackages( getAppListFlag());
+					List<PackageInfo> allAppList = packageManager.getInstalledPackages(getAppListFlag());
 					for (PackageInfo packageInfo : allAppList) {
 						includeAppFromPackage(result, docId, packageInfo, false, null);
 						includeAppFromPackage(result, docId, packageInfo, true, null);
@@ -278,7 +294,6 @@ public class AppsProvider extends DocumentsProvider {
 					for (RunningAppProcessInfo processInfo : runningProcessesList) {
 						includeAppFromProcess(result, docId, processInfo, null);
 					}
-
 				}
         	}
         } finally {

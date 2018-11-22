@@ -28,13 +28,12 @@ import android.content.IntentFilter;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.RemoteException;
-import androidx.collection.ArrayMap;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.text.format.DateUtils;
 
 import com.cloudrail.si.CloudRail;
-import com.google.android.material.snackbar.Snackbar;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.cast.Casty;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.ContentProviderClientCompat;
@@ -47,7 +46,7 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.server.SimpleWebServer;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
-public class DocumentsApplication extends AppFlavour {
+public class DocumentsApplication extends AppPaymentFlavour {
 	private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
     private static DocumentsApplication sInstance;
 

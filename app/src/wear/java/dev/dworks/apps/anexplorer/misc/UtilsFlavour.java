@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.wear.widget.ConfirmationOverlay;
 import androidx.wear.widget.drawer.WearableActionDrawerView;

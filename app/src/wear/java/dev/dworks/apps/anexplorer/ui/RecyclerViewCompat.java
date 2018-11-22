@@ -2,7 +2,6 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.WindowInsets;
 
 import androidx.annotation.Nullable;
 import androidx.wear.widget.WearableRecyclerView;

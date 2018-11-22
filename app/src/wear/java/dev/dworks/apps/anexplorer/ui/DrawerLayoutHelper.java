@@ -2,7 +2,6 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.view.View;
 
-import androidx.wear.widget.drawer.WearableActionDrawerView;
 import androidx.wear.widget.drawer.WearableCompatDrawerLayout;
 import androidx.wear.widget.drawer.WearableDrawerView;
 

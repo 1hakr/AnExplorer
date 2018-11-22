@@ -1,18 +1,14 @@
 package dev.dworks.apps.anexplorer.common;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
-
-import android.text.TextUtils;
 import android.widget.Button;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 import dev.dworks.apps.anexplorer.misc.TintUtils;
-import dev.dworks.apps.anexplorer.misc.Utils;
 
 /**
  * Created by HaKr on 12/06/16.

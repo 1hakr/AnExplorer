@@ -4,8 +4,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -47,7 +46,7 @@ public class SettingsFragment extends PreferenceFragment
 
 	public SettingsFragment() {
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

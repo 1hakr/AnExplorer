@@ -2,43 +2,28 @@ package dev.dworks.apps.anexplorer.directory;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import androidx.collection.ArrayMap;
-import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListener.OnItemClickListener;
 import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
-import dev.dworks.apps.anexplorer.misc.IconColorUtils;
-import dev.dworks.apps.anexplorer.misc.IconHelper;
+import dev.dworks.apps.anexplorer.directory.DocumentsAdapter.Environment;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
-import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.ProviderExecutor;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
-import dev.dworks.apps.anexplorer.misc.ThumbnailCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
-import dev.dworks.apps.anexplorer.model.DocumentInfo;
-import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
-import dev.dworks.apps.anexplorer.directory.DocumentsAdapter.Environment;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
-import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.fragment.DirectoryFragment.TYPE_RECENT_OPEN;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
-import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 public class ListDocumentHolder extends DocumentHolder {

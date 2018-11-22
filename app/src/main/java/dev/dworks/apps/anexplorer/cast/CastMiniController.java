@@ -1,13 +1,11 @@
 package dev.dworks.apps.anexplorer.cast;
 
-import android.graphics.PorterDuff;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.google.android.gms.cast.framework.media.widget.MiniControllerFragment;
 import com.google.android.gms.cast.framework.R.id;
+import com.google.android.gms.cast.framework.media.widget.MiniControllerFragment;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

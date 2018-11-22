@@ -2,9 +2,6 @@ package dev.dworks.apps.anexplorer.ui;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -12,8 +9,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.AbsListView;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
-import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 
 

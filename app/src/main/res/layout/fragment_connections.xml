@@ -61,7 +61,7 @@
             android:drawSelectorOnTop="true"
             android:horizontalSpacing="@dimen/grid_item_padding"
             android:scrollbars="vertical"
-            app:columnWidth="@dimen/grid_item_width"
+            app:gridColumnWidth="@dimen/grid_item_width"
             app:type="list" />
 
         <include layout="@layout/fab_layout_connections" />

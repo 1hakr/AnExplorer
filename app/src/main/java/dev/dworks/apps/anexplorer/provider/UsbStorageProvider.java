@@ -30,7 +30,6 @@ import android.net.Uri;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.support.provider.DocumentFile;
-import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
@@ -50,6 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -315,7 +315,7 @@ public class UsbStorageProvider extends DocumentsProvider {
             file.delete();
             mFileCache.remove(documentId);
             notifyDocumentsChanged(documentId);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new FileNotFoundException(e.getMessage());
         }
     }

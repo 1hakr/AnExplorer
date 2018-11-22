@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 package dev.dworks.apps.anexplorer.misc;
+
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -26,7 +25,11 @@ import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 
-import java.util.HashSet;import androidx.fragment.app.Fragment;
+import java.util.HashSet;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.fragment.app.Fragment;
 /**
  * Utilities for handling multiple selection in list views. Contains functionality similar to {@link
  * AbsListView#CHOICE_MODE_MULTIPLE_MODAL} which works with {@link AppCompatActivity} and

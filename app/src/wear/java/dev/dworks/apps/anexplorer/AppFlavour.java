@@ -3,6 +3,9 @@ package dev.dworks.apps.anexplorer;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 
 /**
  * Created by HaKr on 16/05/17.
@@ -15,11 +18,18 @@ public abstract class AppFlavour extends Application {
         super.onCreate();
     }
 
+    public void initializeBilling() {
+    }
+
     public static boolean isPurchased() {
         return true;
     }
 
     public void loadOwnedPurchasesFromGoogle() {
+    }
+
+    public void onPurchaseHistoryRestored() {
+
     }
 
     public void reloadSubscription() {
@@ -43,6 +53,13 @@ public abstract class AppFlavour extends Application {
 
     public boolean isBillingSupported() {
         return false;
+    }
+
+    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
+        return false;
+    }
+
+    public void releaseBillingProcessor() {
     }
 
     public void purchase(Activity activity, String productId){

@@ -19,9 +19,10 @@ package dev.dworks.apps.anexplorer.misc;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Utility class that wraps access to the runtime permissions API in M and provides basic helper

@@ -15,15 +15,14 @@
  */
 package dev.dworks.apps.anexplorer.libcore.io;
 
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 
 /**

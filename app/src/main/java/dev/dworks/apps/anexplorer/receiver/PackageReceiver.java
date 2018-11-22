@@ -16,12 +16,13 @@
 
 package dev.dworks.apps.anexplorer.receiver;
 
-import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 
 /**
  * Clean up {@link RecentsProvider} when packages are removed.

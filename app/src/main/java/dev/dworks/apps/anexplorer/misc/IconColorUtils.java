@@ -17,19 +17,19 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.content.Context;
-import androidx.core.content.ContextCompat;
-import androidx.collection.ArrayMap;
 
+import androidx.collection.ArrayMap;
+import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
+import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_BOX;
 import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_DROPBOX;
 import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_GDRIVE;
 import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_ONEDRIVE;
-import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
-import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 
 public class IconColorUtils {
 

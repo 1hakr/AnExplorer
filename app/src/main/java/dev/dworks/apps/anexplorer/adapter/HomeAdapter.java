@@ -1,9 +1,7 @@
 package dev.dworks.apps.anexplorer.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
@@ -25,7 +23,6 @@ import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
-import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ui.CircleImage;
@@ -175,7 +172,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     public class MainViewHolder extends ViewHolder {
         private final int accentColor;
         private final int color;
-        private int mPosition;
 
         public MainViewHolder(View v) {
             super(v);
@@ -193,7 +189,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         @Override
         public void setData(int position){
-            mPosition = position;
             commonInfo = getItem(position);
             icon.setImageDrawable(commonInfo.rootInfo.loadDrawerIcon(mContext));
             title.setText(commonInfo.rootInfo.title);
@@ -210,11 +205,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                 action.setImageDrawable(null);
                 action_layout.setVisibility(View.GONE);
             }
-            // Show available space if no summary
-            String summaryText = commonInfo.rootInfo.summary;
-            if (TextUtils.isEmpty(summaryText) && commonInfo.rootInfo.availableBytes >= 0) {
-                summaryText = mContext.getString(R.string.root_available_bytes,
-                        Formatter.formatFileSize(mContext, commonInfo.rootInfo.availableBytes));
+
+            if (commonInfo.rootInfo.availableBytes >= 0) {
                 try {
                     Long current = 100 * commonInfo.rootInfo.availableBytes / commonInfo.rootInfo.totalBytes ;
                     progress.setVisibility(View.VISIBLE);
@@ -230,14 +222,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             else{
                 progress.setVisibility(View.GONE);
             }
-
-            summary.setText(summaryText);
-            summary.setVisibility(TextUtils.isEmpty(summaryText) ? View.GONE : View.VISIBLE);
         }
     }
 
     public class ShortcutViewHolder extends ViewHolder {
-        private int mPosition;
 
         public ShortcutViewHolder(View v) {
             super(v);
@@ -245,9 +233,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         @Override
         public void setData(int position){
-            mPosition = position;
             commonInfo = getItem(position);
-            if(null == commonInfo){
+            if(null == commonInfo || null == commonInfo.rootInfo){
                 return;
             }
             iconBackground.setColor(ContextCompat.getColor(mContext, commonInfo.rootInfo.derivedColor));
@@ -257,7 +244,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
     public class GalleryViewHolder extends ViewHolder {
-        private int mPosition;
         private final RecyclerView recyclerview;
         private TextView recents;
         private RecentsAdapter adapter;
@@ -279,7 +265,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
         @Override
         public void setData(int position){
-            mPosition = position;
             commonInfo = CommonInfo.from(recentCursor);
             adapter = new RecentsAdapter(mContext, recentCursor, mIconHelper);
             adapter.setOnItemClickListener(new RecentsAdapter.OnItemClickListener() {

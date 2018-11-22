@@ -17,7 +17,6 @@
 package dev.dworks.apps.anexplorer.misc;
 
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;

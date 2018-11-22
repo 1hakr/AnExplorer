@@ -18,14 +18,17 @@ package android.support.design.widget;
 
 import android.graphics.Rect;
 import android.os.Build;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.ViewPropertyAnimatorCompat;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.coordinatorlayout.widget.ViewGroupUtils;
 import android.view.View;
 
-import com.google.android.material.appbar.AppBarLayout;import com.google.android.material.snackbar.Snackbar;import java.util.List;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.util.List;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.coordinatorlayout.widget.ViewGroupUtils;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewPropertyAnimatorCompat;
 import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 
 import static android.view.View.VISIBLE;

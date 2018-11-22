@@ -12,7 +12,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
-import dev.dworks.apps.anexplorer.AppFlavour;
+import dev.dworks.apps.anexplorer.AppPaymentFlavour;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
@@ -65,7 +65,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     private void requestNewInterstitial() {
-        if(AppFlavour.isPurchased()){
+        if(AppPaymentFlavour.isPurchased()){
             return;
         }
         if(null != mInterstitialAd){
@@ -74,7 +74,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     private void showInterstitial() {
-        if(AppFlavour.isPurchased()){
+        if(AppPaymentFlavour.isPurchased()){
             return;
         }
         if(showInterstiatial && null != mInterstitialAd){
@@ -103,7 +103,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     private void showAd(){
-        if(AppFlavour.isPurchased()){
+        if(AppPaymentFlavour.isPurchased()){
             return;
         }
         if(isInEditMode()){

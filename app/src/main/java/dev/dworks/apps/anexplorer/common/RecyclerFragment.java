@@ -3,12 +3,6 @@ package dev.dworks.apps.anexplorer.common;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.Adapter;
-import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
-import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,6 +11,12 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 

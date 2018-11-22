@@ -22,11 +22,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.DocumentsContract;
-import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
+import androidx.annotation.RequiresApi;
 
 @RequiresApi(21)
 @TargetApi(21)

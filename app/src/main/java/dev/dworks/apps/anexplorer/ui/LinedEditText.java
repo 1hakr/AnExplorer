@@ -4,10 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import androidx.appcompat.widget.AppCompatEditText;
 import android.util.AttributeSet;
-import android.widget.EditText;
 
+import androidx.appcompat.widget.AppCompatEditText;
 import dev.dworks.apps.anexplorer.R;
 
 /**

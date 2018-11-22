@@ -11,26 +11,20 @@ import android.os.Binder;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
-import androidx.annotation.GuardedBy;
-import android.support.provider.DocumentFile;
-import androidx.collection.ArrayMap;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
-
 
 import com.cloudrail.si.interfaces.CloudStorage;
 import com.cloudrail.si.types.CloudMetaData;
-import com.github.mjdev.libaums.fs.UsbFileInputStream;
-import com.github.mjdev.libaums.fs.UsbFileOutputStream;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import androidx.annotation.GuardedBy;
+import androidx.collection.ArrayMap;
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.cloud.CloudConnection;
 import dev.dworks.apps.anexplorer.cloud.CloudFile;
@@ -38,8 +32,6 @@ import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor.RowBuilder;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
-import dev.dworks.apps.anexplorer.misc.FileUtils;
-import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.misc.MimePredicate;
 import dev.dworks.apps.anexplorer.misc.MimeTypes;
 import dev.dworks.apps.anexplorer.misc.ParcelFileDescriptorUtil;

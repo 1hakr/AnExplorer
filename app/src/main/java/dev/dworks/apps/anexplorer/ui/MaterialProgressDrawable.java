@@ -29,8 +29,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -42,6 +40,9 @@ import android.view.animation.Transformation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 /**
  * Fancy progress indicator for Material theme.

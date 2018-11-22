@@ -119,7 +119,7 @@ public final class MimeTypes {
     public static String findCommonMimeType(List<String> mimeTypes) {
         String[] commonType = splitMimeType(mimeTypes.get(0));
         if (commonType == null) {
-            return "*/*";
+            return ALL_MIME_TYPES;
         }
 
         for (int i = 1; i < mimeTypes.size(); i++) {

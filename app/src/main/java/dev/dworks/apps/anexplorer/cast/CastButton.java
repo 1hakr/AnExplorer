@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import androidx.mediarouter.app.MediaRouteButton;
-import dev.dworks.apps.anexplorer.AppFlavour;
+import dev.dworks.apps.anexplorer.AppPaymentFlavour;
 
 public class CastButton extends MediaRouteButton {
     public CastButton(Context context) {
@@ -21,10 +21,10 @@ public class CastButton extends MediaRouteButton {
 
     @Override
     public boolean showDialog() {
-        if(AppFlavour.isPurchased()) {
+        if(AppPaymentFlavour.isPurchased()) {
             return super.showDialog();
         } else {
-            AppFlavour.openPurchaseActivity(getContext());
+            AppPaymentFlavour.openPurchaseActivity(getContext());
             return true;
         }
     }

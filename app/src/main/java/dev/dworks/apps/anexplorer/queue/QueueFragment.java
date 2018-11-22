@@ -1,7 +1,5 @@
 package dev.dworks.apps.anexplorer.queue;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +15,8 @@ import com.google.android.gms.cast.framework.media.MediaQueue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -100,6 +100,9 @@ public class QueueFragment extends RecyclerFragment implements OnItemClickListen
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if(null == casty) {
+            return;
+        }
         IconHelper iconHelper = new IconHelper(getActivity(), MODE_GRID);
         mAdapter = new QueueAdapter(casty.getMediaQueue(), iconHelper);
         mAdapter.setOnItemClickListener(this);

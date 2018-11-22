@@ -23,11 +23,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CancellationSignal;
-import android.os.OperationCanceledException;
 import android.os.ParcelFileDescriptor;
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
-import androidx.exifinterface.media.ExifInterface;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -50,6 +46,9 @@ import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.exifinterface.media.ExifInterface;
 import dev.dworks.apps.anexplorer.cursor.MatrixCursor;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;

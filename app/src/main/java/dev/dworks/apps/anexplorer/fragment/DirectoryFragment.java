@@ -18,13 +18,6 @@
 package dev.dworks.apps.anexplorer.fragment;
 
 import android.app.Dialog;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -38,10 +31,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.Settings;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -56,8 +45,18 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 
+import androidx.appcompat.view.ActionMode;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
@@ -112,6 +111,7 @@ import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_COUNT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_MOVE;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.misc.MimeTypes.ALL_MIME_TYPES;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.ACTION_FORCE_STOP_REQUEST;
 import static dev.dworks.apps.anexplorer.misc.PackageManagerUtils.EXTRA_PACKAGE_NAMES;
 import static dev.dworks.apps.anexplorer.misc.Utils.DIRECTORY_APPBACKUP;
@@ -680,7 +680,11 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			return handleMenuAction(item);
+			if(handleMenuAction(item)){
+				mode.finish();
+				return true;
+			}
+			return false;
 		}
 
 		@Override
@@ -751,7 +755,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 
 	private void onShareDocuments(ArrayList<DocumentInfo> docs) {
 		Intent intent;
-		String mimeType = "";
+		String mimeType = ALL_MIME_TYPES;
 		if (docs.size() == 1) {
 			final DocumentInfo doc = docs.get(0);
 			mimeType = doc.mimeType;
@@ -776,6 +780,10 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 				}
 			}
 
+			if(uris.isEmpty()){
+				Utils.showSnackBar(getActivity(), "Nothing to share");
+				return;
+			}
             mimeType = MimeTypes.findCommonMimeType(mimeTypes);
 			intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
@@ -787,10 +795,10 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 			return;
 		}
 
-		if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, doc.mimeType)) {
+		if(!MimePredicate.mimeMatches(MimePredicate.SHARE_SKIP_MIMES, mimeType)) {
 			intent.setType(mimeType);
 		} else{
-			intent.setType(MimeTypes.ALL_MIME_TYPES);
+			intent.setType(ALL_MIME_TYPES);
 		}
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		intent.addCategory(Intent.CATEGORY_DEFAULT);

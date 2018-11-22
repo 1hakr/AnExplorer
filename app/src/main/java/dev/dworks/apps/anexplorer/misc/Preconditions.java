@@ -16,8 +16,9 @@
 
 package dev.dworks.apps.anexplorer.misc;
 
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 /**
  * Simple static methods to be called at the start of your own methods to verify
