@@ -239,10 +239,12 @@ public class Utils extends UtilsFlavour{
 		return DateUtils.formatDateTime(context, when, flags);
 	}
 
+	// todo ここなおす
     public static long getDirectorySize(File dir) {
 		long result = 0L;
-		if (dir.listFiles() != null && dir.listFiles().length > 0) {
-			for (File eachFile : dir.listFiles()) {
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File eachFile : files) {
 				result += eachFile.isDirectory() && eachFile.canRead() ? getDirectorySize(eachFile) : eachFile.length();
 			}
 		} else if (!dir.isDirectory()) {
