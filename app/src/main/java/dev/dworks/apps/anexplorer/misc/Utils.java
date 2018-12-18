@@ -239,7 +239,6 @@ public class Utils extends UtilsFlavour{
 		return DateUtils.formatDateTime(context, when, flags);
 	}
 
-	// todo ここなおす
     public static long getDirectorySize(File dir) {
 		long result = 0L;
 		File[] files = dir.listFiles();
