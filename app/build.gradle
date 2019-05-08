@@ -122,15 +122,15 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
-    implementation "androidx.mediarouter:mediarouter:1.0.0"
-    implementation "com.google.android.gms:play-services-cast-framework:16.1.0"
+    implementation 'androidx.mediarouter:mediarouter:1.0.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:16.2.0'
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     implementation 'com.nanohttpd:nanohttpd:2.2.0'
 
-    freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
-    freeImplementation "com.google.firebase:firebase-core:16.0.5"
-    freeImplementation "com.google.firebase:firebase-ads:17.1.1"
-    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:17.0.4'
+    freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    freeImplementation 'com.google.firebase:firebase-core:16.0.9'
+    freeImplementation 'com.google.firebase:firebase-ads:17.2.0'
+    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:17.1.1'
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     wearImplementation 'com.google.android.support:wearable:2.4.0'
@@ -142,7 +142,7 @@ dependencies {
     televisionImplementation 'androidx.preference:preference:1.0.0'
     televisionImplementation 'androidx.leanback:leanback-preference:1.0.0'
 
-    debugImplementation 'androidx.multidex:multidex:2.0.0'
+    debugImplementation 'androidx.multidex:multidex:2.0.1'
 }
 
 android.signingConfigs.release.storeFile rootProject.file(props.keyStore)
