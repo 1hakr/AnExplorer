@@ -1,0 +1,11 @@
+{
+  "name": "anexplorer",
+  "version": "1.0.0",
+  "description": "Anexplorer",
+  "author": "Hari Krishna Dulipudi",
+  "private": true,
+  "scripts": {
+    "start": "firebase serve --only hosting",
+    "deploy": "firebase deploy --only hosting"
+  }
+}
