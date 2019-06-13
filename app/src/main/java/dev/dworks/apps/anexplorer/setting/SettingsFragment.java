@@ -23,6 +23,7 @@ import dev.dworks.apps.anexplorer.misc.SecurityHelper;
 import dev.dworks.apps.anexplorer.misc.Utils;
 
 import static android.app.Activity.RESULT_OK;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.misc.SecurityHelper.REQUEST_CONFIRM_CREDENTIALS;
 import static dev.dworks.apps.anexplorer.setting.SettingsActivity.KEY_ACCENT_COLOR;
@@ -69,12 +70,12 @@ public class SettingsFragment extends PreferenceFragment
 		Preference preferenceThemeStyle = findPreference(KEY_THEME_STYLE);
 		preferenceThemeStyle.setOnPreferenceChangeListener(this);
 		preferenceThemeStyle.setOnPreferenceClickListener(this);
-		if(DocumentsApplication.isTelevision()){
+		if(isTelevision()){
 			PreferenceCategory preferenceScreen = (PreferenceCategory) findPreference("pref_theme");
 			preferenceScreen.removePreference(preferenceThemeStyle);
 		}
 
-		if(isWatch() || !Utils.hasMarshmallow()){
+		if(isWatch() || isTelevision() || !Utils.hasMarshmallow()){
 			getPreferenceScreen().removePreference(findPreference("pref_security"));
 		} else {
 			//Security

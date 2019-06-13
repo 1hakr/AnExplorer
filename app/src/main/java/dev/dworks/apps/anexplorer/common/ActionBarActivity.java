@@ -15,19 +15,13 @@ public abstract class ActionBarActivity extends BaseCommonActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Utils.changeThemeStyle(getDelegate());
+        Utils.changeThemeStyle();
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public ActionBar getSupportActionBar() {
         return super.getSupportActionBar();
-    }
-
-    @Override
-    public void recreate() {
-        Utils.changeThemeStyle(getDelegate());
-        super.recreate();
     }
 
     @Override

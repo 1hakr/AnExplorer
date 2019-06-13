@@ -102,6 +102,8 @@
 
 -dontwarn org.slf4j.**
 
+-dontwarn dagger.releasablereferences.*
+
 # Application classes that will be serialized/deserialized over Gson
 # or have been blown up by ProGuard in the past
 

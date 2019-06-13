@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
@@ -126,12 +127,12 @@ public class SettingsActivity extends SettingsCommonActivity {
 
     public static String getThemeStyle(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(KEY_THEME_STYLE, "1");
+                .getString(KEY_THEME_STYLE, String.valueOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
     }
 
     public static String getThemeStyle() {
         return PreferenceManager.getDefaultSharedPreferences(DocumentsApplication.getInstance().getBaseContext())
-                .getString(KEY_THEME_STYLE, "1");
+                .getString(KEY_THEME_STYLE, String.valueOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
     }
 
     public static void setThemeStyle(int style) {

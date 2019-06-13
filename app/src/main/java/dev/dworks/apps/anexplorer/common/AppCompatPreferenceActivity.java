@@ -46,7 +46,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Utils.changeThemeStyle(getDelegate());
+        Utils.changeThemeStyle();
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         if (mDelegate.applyDayNight() && mThemeId != 0) {
@@ -153,7 +153,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
     @Override
     public void recreate() {
-        Utils.changeThemeStyle(getDelegate());
+        Utils.changeThemeStyle();
         super.recreate();
     }
 

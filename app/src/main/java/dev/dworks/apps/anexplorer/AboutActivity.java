@@ -95,6 +95,7 @@ public class AboutActivity extends AboutVariantFlavour implements View.OnClickLi
 			action_rate.setVisibility(View.GONE);
 			action_support.setVisibility(View.GONE);
 		} else if(DocumentsApplication.isTelevision()){
+			action_support.setVisibility(View.GONE);
 			action_share.setVisibility(View.GONE);
 			action_feedback.setVisibility(View.GONE);
 		}

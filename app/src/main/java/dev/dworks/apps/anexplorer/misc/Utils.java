@@ -365,9 +365,9 @@ public class Utils extends UtilsFlavour{
 
     public static Uri getAppProStoreUri(){
         if(isAmazonBuild()){
-            return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + BuildConfig.APPLICATION_ID+".pro" + "&showAll=1");
+            return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + "dev.dworks.apps.anexplorer.pro" + "&showAll=1");
         }
-        return Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID+".pro");
+        return Uri.parse("https://play.google.com/store/apps/details?id=" + "dev.dworks.apps.anexplorer.pro");
     }
 
     public static boolean hasFeature(Context context, String feature) {
@@ -426,39 +426,14 @@ public class Utils extends UtilsFlavour{
         return Math.round(px);
     }
 
-    public static void changeThemeStyle(AppCompatDelegate delegate) {
+    public static void changeThemeStyle() {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
         AppCompatDelegate.setDefaultNightMode(nightMode);
-        delegate.setLocalNightMode(nightMode);
     }
 
     public static void setAppThemeStyle(Context context) {
         int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle(context));
-        if (nightMode != AppCompatDelegate.MODE_NIGHT_NO) {
-            try {
-                new WebView(context);
-            } catch (Exception e) {
-            }
-        }
         AppCompatDelegate.setDefaultNightMode(nightMode);
-    }
-
-    public static void setActivityThemeStyle(AppCompatDelegate delegate) {
-        int nightMode = Integer.valueOf(SettingsActivity.getThemeStyle());
-        AppCompatDelegate.setDefaultNightMode(nightMode);
-        delegate.setLocalNightMode(nightMode);
-    }
-
-    public static void recreateActivity(Activity activity) {
-        if(!isActivityAlive(activity)){
-            return;
-        }
-        AppCompatDelegate delegate = null;
-        if(activity instanceof ActionBarActivity){
-            delegate = ((ActionBarActivity)activity).getDelegate();
-        }
-        Utils.changeThemeStyle(delegate);
-        activity.recreate();
     }
 
     public static boolean isDarkTheme(){

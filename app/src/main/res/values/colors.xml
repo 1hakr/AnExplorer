@@ -10,7 +10,7 @@
     <color name="statusBarColor">#28000000</color>
     <color name="alertColor">#323232</color>
     <color name="alertDarkColor">#ff242424</color>
-
+    <color name="splashColor">@color/primaryColor</color>
     <!-- color prefernce -->
     <string-array name="default_color_choice_values" translatable="false">
         <item>#0288D1</item>

@@ -120,13 +120,15 @@
     <string-array name="theme_style_names">
         <item>Light</item>
         <item>Dark</item>
-        <item>Auto</item>
+        <item>Set by Battery Saver</item>
+        <item>Use system default</item>
     </string-array>
 
     <string-array name="theme_style_values">
         <item>1</item>
         <item>2</item>
-        <item>0</item>
+        <item>3</item>
+        <item>-1</item>
     </string-array>
 
     <string name="root_usb">USB Storage</string>
