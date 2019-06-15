@@ -40,7 +40,6 @@ android {
             multiDexEnabled true
             minifyEnabled false
             shrinkResources false
-            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
@@ -49,7 +48,6 @@ android {
             multiDexEnabled false
             minifyEnabled true
             shrinkResources true
-            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
