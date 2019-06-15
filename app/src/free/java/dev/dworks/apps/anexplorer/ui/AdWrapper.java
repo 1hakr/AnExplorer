@@ -48,7 +48,6 @@ public class AdWrapper extends FrameLayout {
         if(!isTelevision()){
             LayoutInflater.from(context).inflate(R.layout.ads_wrapper, this, true);
             initAd();
-        } else {
             mInterstitialAd = new InterstitialAd(context);
             initInterstitialAd();
         }

@@ -9,7 +9,7 @@ if (keystoreProperties.exists()) {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     applicationVariants.all { variant ->
         variant.outputs.all {
