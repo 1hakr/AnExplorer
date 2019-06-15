@@ -175,6 +175,5 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 
 	public static void openPurchaseActivity(Context context){
 		context.startActivity(new Intent(context, PurchaseActivity.class));
-
 	}
 }

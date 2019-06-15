@@ -367,7 +367,7 @@ public class Utils extends UtilsFlavour{
         if(isAmazonBuild()){
             return Uri.parse("http://www.amazon.com/gp/mas/dl/android?p=" + "dev.dworks.apps.anexplorer.pro" + "&showAll=1");
         }
-        return Uri.parse("https://play.google.com/store/apps/details?id=" + "dev.dworks.apps.anexplorer.pro");
+        return Uri.parse("market://details?id=" + "dev.dworks.apps.anexplorer.pro");
     }
 
     public static boolean hasFeature(Context context, String feature) {
