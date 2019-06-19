@@ -43,6 +43,7 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 
 
@@ -197,7 +198,9 @@ public class NonMediaDocumentsProvider extends StorageProvider {
     @Override
     public Cursor queryRoots(String[] projection) throws FileNotFoundException {
         final MatrixCursor result = new MatrixCursor(resolveRootProjection(projection));
-        includeFileRoot(result, TYPE_DOCUMENT_ROOT, R.string.root_document, DOCUMENT_MIME_TYPES, true);
+        if(!isTelevision()){
+            includeFileRoot(result, TYPE_DOCUMENT_ROOT, R.string.root_document, DOCUMENT_MIME_TYPES, true);
+        }
         includeFileRoot(result, TYPE_ARCHIVE_ROOT, R.string.root_archive, ARCHIVE_MIME_TYPES, false);
         includeFileRoot(result, TYPE_APK_ROOT, R.string.root_apk, APK_MIME_TYPES, false);
 
