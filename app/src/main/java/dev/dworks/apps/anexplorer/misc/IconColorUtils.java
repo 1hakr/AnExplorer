@@ -22,7 +22,9 @@ import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Document;
+import dev.dworks.apps.anexplorer.provider.ExtraDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
+import dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider;
 
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.CLIENT;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
@@ -221,6 +223,26 @@ public class IconColorUtils {
                 }
                 else if(docId.startsWith(MediaDocumentsProvider.TYPE_VIDEOS_BUCKET)){
                     return ContextCompat.getColor(context, R.color.item_doc_video);
+                }
+            } else if (NonMediaDocumentsProvider.AUTHORITY.equals(authority)){
+                if(docId.startsWith(NonMediaDocumentsProvider.TYPE_APK_ROOT)){
+                    return ContextCompat.getColor(context, R.color.item_doc_apk);
+                }
+                else if(docId.startsWith(NonMediaDocumentsProvider.TYPE_ARCHIVE_ROOT)){
+                    return ContextCompat.getColor(context, R.color.item_doc_compressed);
+                }
+                else if(docId.startsWith(NonMediaDocumentsProvider.TYPE_DOCUMENT_ROOT)){
+                    return ContextCompat.getColor(context, R.color.item_doc_pdf);
+                }
+            } else if (ExtraDocumentsProvider.AUTHORITY.equals(authority)){
+                if(docId.startsWith(ExtraDocumentsProvider.ROOT_ID_WHATSAPP)){
+                    return ContextCompat.getColor(context, R.color.item_whatsapp);
+                }
+                else if(docId.startsWith(ExtraDocumentsProvider.ROOT_ID_TELEGRAMX)){
+                    return ContextCompat.getColor(context, R.color.item_telegramx);
+                }
+                else if(docId.startsWith(ExtraDocumentsProvider.ROOT_ID_TELEGRAM)){
+                    return ContextCompat.getColor(context, R.color.item_telegram);
                 }
             }
             return defaultColor;

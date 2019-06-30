@@ -442,13 +442,13 @@ public class RootedStorageProvider extends StorageProvider {
 
         final long token = Binder.clearCallingIdentity();
         try {
-            if ("audio".equals(typeOnly)) {
+            if (MediaDocumentsProvider.TYPE_AUDIO.equals(typeOnly)) {
                 final long id = getAlbumForPathCleared(file.getPath());
                 return openOrCreateAudioThumbnailCleared(id, signal);
-            } else if ("image".equals(typeOnly)) {
+            } else if (MediaDocumentsProvider.TYPE_IMAGE.equals(typeOnly)) {
                 final long id = getImageForPathCleared(file.getPath());
                 return openOrCreateImageThumbnailCleared(id, signal);
-            } else if ("video".equals(typeOnly)) {
+            } else if (MediaDocumentsProvider.TYPE_VIDEO.equals(typeOnly)) {
                 final long id = getVideoForPathCleared(file.getPath());
                 return openOrCreateVideoThumbnailCleared(id, signal);
             } else {

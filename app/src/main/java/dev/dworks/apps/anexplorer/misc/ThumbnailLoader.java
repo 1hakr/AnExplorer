@@ -29,10 +29,13 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 
+import java.io.File;
+
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.libcore.util.BiConsumer;
 import dev.dworks.apps.anexplorer.libcore.util.Consumer;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
+import dev.dworks.apps.anexplorer.provider.ExtraDocumentsProvider;
 
 /**
  *  Loads a Thumbnails asynchronously then animates from the mime icon to the thumbnail
@@ -117,8 +120,20 @@ public final class ThumbnailLoader extends AsyncTask<Uri, Void, Bitmap> implemen
                 result = ImageUtils.getThumbnail(resolver, mUri, mThumbSize.x, mThumbSize.y);
             }
             if (null == result) {
+                final String docId = DocumentsContract.getDocumentId(mUri);
+                boolean isDir = false;
+                File file = null;
+                if (null != mPath){
+                    file  = new File(mPath);
+                    isDir = file.isDirectory();
+                }
                 if (Utils.isAPK(mMimeType)) {
                     result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, mPath, DocumentsContract.Document.MIME_TYPE_APK)).getBitmap();
+                } else if(ExtraDocumentsProvider.AUTHORITY.equals(mUri.getAuthority())
+                        && !ExtraDocumentsProvider.ROOT_ID_WHATSAPP.startsWith(docId) && isDir) {
+                    final File previewFile = FileUtils.getPreviewFile(file);
+                    final String mimeTypePreview = FileUtils.getTypeForFile(previewFile);
+                    return ImageUtils.getThumbnail(previewFile.getAbsolutePath(), mimeTypePreview, mThumbSize.x, mThumbSize.y);
                 } else {
                     client = DocumentsApplication.acquireUnstableProviderOrThrow(resolver, mUri.getAuthority());
                     result = DocumentsContract.getDocumentThumbnail(resolver, mUri, mThumbSize, mSignal);

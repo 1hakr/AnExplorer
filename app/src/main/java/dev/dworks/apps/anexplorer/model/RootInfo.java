@@ -40,6 +40,7 @@ import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
 import dev.dworks.apps.anexplorer.provider.DownloadStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.ExtraDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider;
@@ -186,7 +187,7 @@ public class RootInfo implements Durable, Parcelable {
 
     public void deriveFields() {
         derivedMimeTypes = (mimeTypes != null) ? mimeTypes.split("\n") : null;
-        derivedColor = R.color.item_doc_doc;
+        derivedColor = R.color.primaryColor;
         derivedTag = title;
 
         // TODO: remove these special case icons
@@ -297,6 +298,17 @@ public class RootInfo implements Durable, Parcelable {
             }
             derivedColor = R.color.item_connection_cloud;
             derivedTag = "cloud";
+        } else if (isExtraStorage()) {
+            if (isWhatsApp()) {
+                derivedIcon = R.drawable.ic_root_whatsapp;
+                derivedColor = R.color.item_whatsapp;
+            } else if (isTelegram()) {
+                derivedIcon = R.drawable.ic_root_telegram;
+                derivedColor = R.color.item_telegram;
+            } else if (isTelegramX()) {
+                derivedIcon = R.drawable.ic_root_telegram;
+                derivedColor = R.color.item_telegramx;
+            }
         }
     }
 
@@ -406,6 +418,25 @@ public class RootInfo implements Durable, Parcelable {
     public boolean isDocument() {
         return NonMediaDocumentsProvider.AUTHORITY.equals(authority)
                 && NonMediaDocumentsProvider.TYPE_DOCUMENT_ROOT.equals(rootId);
+    }
+
+    public boolean isExtraStorage() {
+        return ExtraDocumentsProvider.AUTHORITY.equals(authority);
+    }
+
+    public boolean isWhatsApp() {
+        return ExtraDocumentsProvider.AUTHORITY.equals(authority)
+                && ExtraDocumentsProvider.ROOT_ID_WHATSAPP.equals(rootId);
+    }
+
+    public boolean isTelegram() {
+        return ExtraDocumentsProvider.AUTHORITY.equals(authority)
+                && ExtraDocumentsProvider.ROOT_ID_TELEGRAM.equals(rootId);
+    }
+
+    public boolean isTelegramX() {
+        return ExtraDocumentsProvider.AUTHORITY.equals(authority)
+                && ExtraDocumentsProvider.ROOT_ID_TELEGRAMX.equals(rootId);
     }
 
     public boolean isArchive() {
@@ -548,7 +579,7 @@ public class RootInfo implements Durable, Parcelable {
     public Drawable loadNavDrawerIcon(Context context) {
         if (derivedIcon != 0) {
             return IconUtils.applyTint(context, derivedIcon,
-                    ContextCompat.getColor(context, android.R.color.white));
+                    ContextCompat.getColor(context, derivedColor));
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }
@@ -642,6 +673,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public static boolean isLibraryNonMedia(RootInfo root){
         return root.isDocument() || root.isArchive() || root.isApk();
+    }
+
+    public static boolean isLibraryExtra(RootInfo root){
+        return root.isWhatsApp() || root.isTelegram() || root.isTelegramX();
     }
 
     public static boolean isFolder(RootInfo root){

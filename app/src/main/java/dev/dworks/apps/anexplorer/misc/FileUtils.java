@@ -16,6 +16,7 @@ import android.webkit.MimeTypeMap;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -933,5 +934,18 @@ public class FileUtils {
             return MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         }
         return null;
+    }
+
+    public static File getPreviewFile(File folder){
+        File[] files = folder.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return !pathname.isDirectory();
+            }
+        });
+        if (files.length == 0){
+            return null;
+        }
+        return files[0];
     }
 }

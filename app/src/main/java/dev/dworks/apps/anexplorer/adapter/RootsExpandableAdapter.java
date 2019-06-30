@@ -44,6 +44,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> libraryNonMedia = new ArrayList<>();
         final List<Item> folders = new ArrayList<>();
         final List<Item> bookmarks = new ArrayList<>();
+        final List<Item> messengers = new ArrayList<>();
 
         for (RootInfo root : roots) {
             if (root.isHome()) {
@@ -82,6 +83,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 network.add(new RootItem(root));
             } else if (RootInfo.isCloud(root)) {
                 network.add(new RootItem(root));
+            } else if (RootInfo.isLibraryExtra(root)) {
+                messengers.add(new RootItem(root));
             }
         }
 
@@ -92,6 +95,10 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             home.addAll(phone);
             home.addAll(rooted);
             groupRoots.add(new GroupInfo("Storage", home));
+        }
+
+        if(!messengers.isEmpty()){
+            groupRoots.add(new GroupInfo("Messengers Media", messengers));
         }
 
         if(!network.isEmpty()){

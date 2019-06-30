@@ -345,6 +345,16 @@
             </intent-filter>
         </provider>
 
+        <provider
+            android:name="dev.dworks.apps.anexplorer.provider.ExtraDocumentsProvider"
+            android:authorities="${applicationId}.extra.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENT">
+            <intent-filter>
+                <action android:name="dev.dworks.apps.anexplorer.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
         <activity
             android:name=".common.WebviewActivity"
             android:theme="@style/DocumentsTheme.Document"
