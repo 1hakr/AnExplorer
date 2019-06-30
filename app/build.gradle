@@ -121,18 +121,18 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
     implementation 'androidx.mediarouter:mediarouter:1.0.0'
-    implementation 'com.google.android.gms:play-services-cast-framework:16.2.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:17.0.0'
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     implementation 'com.nanohttpd:nanohttpd:2.2.0'
 
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    freeImplementation 'com.google.firebase:firebase-core:16.0.9'
-    freeImplementation 'com.google.firebase:firebase-ads:17.2.1'
-    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:17.2.0'
+    freeImplementation 'com.google.firebase:firebase-core:17.0.0'
+    freeImplementation 'com.google.firebase:firebase-ads:18.0.0'
+    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:18.0.1'
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     wearImplementation 'com.google.android.support:wearable:2.4.0'
-    wearImplementation 'com.google.android.gms:play-services-wearable:16.0.1'
+    wearImplementation 'com.google.android.gms:play-services-wearable:17.0.0'
     wearImplementation 'androidx.wear:wear:1.0.0'
     wearCompileOnly 'com.google.android.wearable:wearable:2.4.0'
 
