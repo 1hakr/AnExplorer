@@ -320,6 +320,10 @@ public class Utils extends UtilsFlavour{
         return MimePredicate.mimeMatches(DocumentsContract.Document.MIME_TYPE_APK, mimeType);
     }
 
+    public static boolean isPDF(String mimeType){
+        return MimePredicate.mimeMatches(DocumentsContract.Document.MIME_TYPE_PDF, mimeType);
+    }
+
     public static boolean isDir(String mimeType){
         return MimePredicate.mimeMatches(DocumentsContract.Document.MIME_TYPE_DIR, mimeType);
     }

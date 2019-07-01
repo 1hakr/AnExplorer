@@ -129,6 +129,8 @@ public final class ThumbnailLoader extends AsyncTask<Uri, Void, Bitmap> implemen
                 }
                 if (Utils.isAPK(mMimeType)) {
                     result = ((BitmapDrawable) IconUtils.loadPackagePathIcon(context, mPath, DocumentsContract.Document.MIME_TYPE_APK)).getBitmap();
+                } else if (Utils.isPDF(mMimeType) && Utils.hasLollipop()) {
+                    result = PdfUtils.getPdfThumbnail(file, mThumbSize);
                 } else if(ExtraDocumentsProvider.AUTHORITY.equals(mUri.getAuthority())
                         && !ExtraDocumentsProvider.ROOT_ID_WHATSAPP.startsWith(docId) && isDir) {
                     final File previewFile = FileUtils.getPreviewFile(file);

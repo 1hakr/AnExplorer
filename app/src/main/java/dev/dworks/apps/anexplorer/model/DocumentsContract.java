@@ -273,7 +273,9 @@ public final class DocumentsContract {
          * @see #COLUMN_MIME_TYPE
          */
         public static final String MIME_TYPE_APK = "application/vnd.android.package-archive";
-        
+
+        public static final String MIME_TYPE_PDF = "application/pdf";
+
         public static final String MIME_TYPE_HIDDEN = "vnd.android.document/hidden";
         
         /**
