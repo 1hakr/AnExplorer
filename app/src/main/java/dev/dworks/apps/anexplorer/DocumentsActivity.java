@@ -121,7 +121,6 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
-import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
@@ -366,7 +365,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     @Override
     public void again() {
         if(Utils.hasMarshmallow()) {
-            RootsCache.updateRoots(this, ExternalStorageProvider.AUTHORITY);
+            RootsCache.updateRoots(this);
             mRoots = DocumentsApplication.getRootsCache(this);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {

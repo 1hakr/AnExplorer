@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.GuardedBy;
@@ -56,6 +57,7 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
+import dev.dworks.apps.anexplorer.provider.ContentProvider;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.ExtraDocumentsProvider;
@@ -660,9 +662,25 @@ public class RootsCache {
                 ContentProviderClientCompat.acquireUnstableContentProviderClient(
                         context.getContentResolver(), authority);
         try {
-            ((DocumentsProvider) client.getLocalContentProvider()).updateRoots();
+            DocumentsProvider provider = ((DocumentsProvider) client.getLocalContentProvider());
+            if (null == provider){
+                return;
+            }
+            provider.updateRoots();
+        } catch (Exception e){
+            e.printStackTrace();
         } finally {
             ContentProviderClientCompat.releaseQuietly(client);
+        }
+    }
+
+    public static void updateRoots(Context context){
+        MultiMap<String, RootInfo> roots = DocumentsApplication.getRootsCache(context).mRoots;
+        for (RootInfo root : roots.values()) {
+            String authority = root.authority;
+            if (!TextUtils.isEmpty(authority)) {
+                updateRoots(context, authority);
+            }
         }
     }
 }

@@ -108,19 +108,20 @@ public class ExtraDocumentsProvider extends StorageProvider {
     @GuardedBy("mRootsLock")
     private ArrayMap<String, RootInfo> mRoots = new ArrayMap<>();
 
-    private static String joinNewline(String[] args) {
-        return TextUtils.join("\n", args);
-    }
-
-    private void copyNotificationUri(MatrixCursor result, Uri uri) {
-        result.setNotificationUri(getContext().getContentResolver(), uri);//cursor.getNotificationUri());
-    }
-
     @Override
     public boolean onCreate() {
         mHandler = new Handler();
-        includeRoots();
+        updateRoots();
         return super.onCreate();
+    }
+
+    @Override
+    public void updateRoots() {
+        synchronized (mRootsLock) {
+            includeRoots();
+            Log.d(TAG, "After updating volumes, found " + mRoots.size() + " active roots");
+            notifyRootsChanged(getContext());
+        }
     }
 
     private void includeRoots() {
