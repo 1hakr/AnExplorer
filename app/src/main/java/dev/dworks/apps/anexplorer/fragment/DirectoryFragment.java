@@ -45,10 +45,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
-
 import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -57,6 +53,11 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+
 import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsActivity;
@@ -93,6 +94,7 @@ import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.StateColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 import dev.dworks.apps.anexplorer.ui.CompatTextView;
 import dev.dworks.apps.anexplorer.ui.MaterialProgressBar;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
@@ -1247,8 +1249,13 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		final int id = item.getItemId();
 		Bundle params = new Bundle();
 		switch (id) {
+
 			case R.id.menu_share:
 				onShareDocuments(docs);
+				return true;
+
+			case R.id.menu_transfer:
+				TransferHelper.sendDocs(getActivity(), docs);
 				return true;
 
 			case R.id.menu_copy:

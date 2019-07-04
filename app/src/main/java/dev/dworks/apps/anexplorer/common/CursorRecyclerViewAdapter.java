@@ -15,7 +15,7 @@
  *
  */
 
-package dev.dworks.apps.anexplorer.adapter;
+package dev.dworks.apps.anexplorer.common;
 
 import android.content.Context;
 import android.database.Cursor;

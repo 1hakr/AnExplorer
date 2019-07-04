@@ -31,6 +31,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> phone = new ArrayList<>();
         final List<Item> recent = new ArrayList<>();
         final List<Item> connection = new ArrayList<>();
+        final List<Item> transfer = new ArrayList<>();
         final List<Item> rooted = new ArrayList<>();
         final List<Item> appbackup = new ArrayList<>();
         final List<Item> usb = new ArrayList<>();
@@ -45,6 +46,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> folders = new ArrayList<>();
         final List<Item> bookmarks = new ArrayList<>();
         final List<Item> messengers = new ArrayList<>();
+        final List<Item> share = new ArrayList<>();
 
         for (RootInfo root : roots) {
             if (root.isHome()) {
@@ -55,6 +57,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 }
             } else if (root.isConnections()) {
                 connection.add(new RootItem(root));
+            } else if (root.isTransfer()) {
+                share.add(new RootItem(root));
             } else if (root.isRootedStorage()) {
                 rooted.add(new RootItem(root));
             } else if (root.isPhoneStorage()) {
@@ -101,9 +105,16 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             groupRoots.add(new GroupInfo("Messengers Media", messengers));
         }
 
+        if(!share.isEmpty()){
+            groupRoots.add(new GroupInfo("Transfer", share));
+        }
+
         if(!network.isEmpty()){
+            network.addAll(transfer);
             network.addAll(connection);
             groupRoots.add(new GroupInfo("Network & Cloud", network));
+        } else if(!transfer.isEmpty()){
+            groupRoots.add(new GroupInfo("Network & Cloud", transfer));
         } else if(!connection.isEmpty()){
             groupRoots.add(new GroupInfo("Network & Cloud", connection));
         }

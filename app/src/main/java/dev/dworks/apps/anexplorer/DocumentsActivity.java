@@ -56,6 +56,16 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.cloudrail.si.CloudRail;
 import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.enums.Display;
@@ -72,15 +82,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.archive.DocumentArchiveHelper;
 import dev.dworks.apps.anexplorer.cast.CastUtils;
 import dev.dworks.apps.anexplorer.cast.Casty;
@@ -95,6 +96,7 @@ import dev.dworks.apps.anexplorer.fragment.PickFragment;
 import dev.dworks.apps.anexplorer.fragment.RecentsCreateFragment;
 import dev.dworks.apps.anexplorer.fragment.SaveFragment;
 import dev.dworks.apps.anexplorer.fragment.ServerFragment;
+import dev.dworks.apps.anexplorer.fragment.TransferFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.AppRate;
@@ -125,6 +127,7 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
 import dev.dworks.apps.anexplorer.ui.DrawerLayoutHelper;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
@@ -303,7 +306,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             } else {
             	if(isDownloadAuthority(getIntent())){
             		onRootPicked(getDownloadRoot(), true);
-            	} else if(ConnectionUtils.isServerAuthority(getIntent())){
+            	} else if(ConnectionUtils.isServerAuthority(getIntent())
+                || TransferHelper.isTransferAuthority(getIntent())){
                     RootInfo root = getIntent().getExtras().getParcelable(EXTRA_ROOT);
                     onRootPicked(root, true);
                 } else if(Utils.isQSTile(getIntent())){
@@ -1218,7 +1222,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         DocumentInfo cwd = getCurrentDirectory();
 
         //TODO : this has to be done nicely
-        if(cwd == null && (null != root && !root.isServerStorage())){
+        if(cwd == null && (null != root && !root.isServerStorage() && !root.isTransfer())){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
 	                root.authority, root.documentId);
 	        DocumentInfo result;
@@ -1246,6 +1250,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                     HomeFragment.show(fm);
                 } else if(null != root && root.isConnections()){
                     ConnectionsFragment.show(fm);
+                } else if(null != root && root.isTransfer()){
+                    TransferFragment.show(fm);
                 } else if(null != root && root.isServerStorage()){
                     ServerFragment.show(fm, root);
                 } else {

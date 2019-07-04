@@ -3,6 +3,7 @@ package dev.dworks.apps.anexplorer.common;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.ui.RecyclerViewPlus;
 
 
@@ -209,9 +211,10 @@ public class RecyclerFragment extends BaseFragment {
             return;
         }
         mStandardEmptyView.setText(text);
+        mStandardEmptyView.setVisibility(Utils.getVisibility(!TextUtils.isEmpty(text)));
         mEmptyText = text;
     }
-    
+
     private void setLoadingText(CharSequence text) {
         ensureList();
         if (mLoadingView == null) {
@@ -219,13 +222,13 @@ public class RecyclerFragment extends BaseFragment {
         }
         mLoadingView.setText(text);
     }
-    
+
     public void setHasFixedSize(boolean fixedSize){
         if (mList != null) {
             mList.setHasFixedSize(fixedSize);
         }
     }
-    
+
     public void setItemAnimator(ItemAnimator animator){
         mItemAnimator = animator;
         if (mList != null) {
@@ -259,7 +262,7 @@ public class RecyclerFragment extends BaseFragment {
             }
         }
     }
-    
+
     public void setListShown(boolean shown, String loading) {
     	setLoadingText(loading);
         setListShown(shown, true);

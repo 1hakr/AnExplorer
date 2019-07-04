@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cloud.CloudConnection;
+import dev.dworks.apps.anexplorer.common.CursorRecyclerViewAdapter;
 import dev.dworks.apps.anexplorer.misc.IconColorUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;

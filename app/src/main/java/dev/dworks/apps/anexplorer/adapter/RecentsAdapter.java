@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.CursorRecyclerViewAdapter;
 import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentsContract;
