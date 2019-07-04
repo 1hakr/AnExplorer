@@ -56,7 +56,7 @@
                 android:textAlignment="viewStart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="?android:attr/textColorPrimary"
-                tools:text="Transfer to Pc" />
+                tools:text="FTP" />
 
         </LinearLayout>
 

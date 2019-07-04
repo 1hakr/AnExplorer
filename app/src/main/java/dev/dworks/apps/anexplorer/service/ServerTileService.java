@@ -16,7 +16,7 @@ import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_START_FTPSE
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_STOP_FTPSERVER;
 
 @TargetApi(Build.VERSION_CODES.N)
-public class ServerService extends TileService {
+public class ServerTileService extends TileService {
 
     @Override
     public void onCreate() {

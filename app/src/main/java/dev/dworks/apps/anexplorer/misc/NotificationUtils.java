@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import dev.dworks.apps.anexplorer.BuildConfig;
@@ -29,6 +31,9 @@ import static dev.dworks.apps.anexplorer.misc.Utils.isWatch;
 public class NotificationUtils {
 
     public static final String SERVER_CHANNEL = "server_channel";
+    public static final String TRANSFER_CHANNEL = "transfer_channel";
+    public static final String RECEIVE_CHANNEL = "receive_channel";
+
     public static final int FTP_NOTIFICATION_ID = 916;
 
     public static void createFtpNotification(Context context, Intent intent, int notification_id){
@@ -104,9 +109,27 @@ public class NotificationUtils {
     }
 
     public static void createNotificationChannels(Context context){
+        createServerNotificationChannels(context);
+        createTransferChannels(context);
+        createReceiveChannels(context);
+    }
+
+    public static void createServerNotificationChannels(Context context){
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel(manager, SERVER_CHANNEL, "Info",
-                "Server Notification from AnExplorer", Color.BLUE);
+                "Server Notification", Color.BLUE);
+    }
+
+    public static void createTransferChannels(Context context){
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        createNotificationChannel(manager, TRANSFER_CHANNEL, context.getString(R.string.channel_transfer_name),
+                "Transfer Notifications", Color.GREEN);
+    }
+
+    public static void createReceiveChannels(Context context){
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        createNotificationChannel(manager, RECEIVE_CHANNEL, context.getString(R.string.channel_service_name),
+                "Receive Files Notification", Color.YELLOW);
     }
 
     private static void createNotificationChannel(NotificationManager manager, String id,
@@ -126,6 +149,7 @@ public class NotificationUtils {
             channel.enableLights(true);
             channel.setLightColor(color);
             channel.enableVibration(true);
+            channel.setShowBadge(true);
             manager.createNotificationChannel(channel);
         }
     }

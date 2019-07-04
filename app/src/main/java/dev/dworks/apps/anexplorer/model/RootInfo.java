@@ -25,13 +25,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.core.content.ContextCompat;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.ProtocolException;
 
-import androidx.core.content.ContextCompat;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
@@ -47,6 +48,8 @@ import dev.dworks.apps.anexplorer.provider.NonMediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
+import dev.dworks.apps.anexplorer.transfer.TransferHelper;
+import dev.dworks.apps.anexplorer.transfer.model.Transfer;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -309,6 +312,9 @@ public class RootInfo implements Durable, Parcelable {
                 derivedIcon = R.drawable.ic_root_telegram;
                 derivedColor = R.color.item_telegramx;
             }
+        } else if (isTransfer()) {
+            derivedIcon = R.drawable.ic_root_transfer;
+            derivedColor = R.color.item_transfer;
         }
     }
 
@@ -325,6 +331,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isConnections() {
         return authority == null && "connections".equals(rootId);
+    }
+
+    public boolean isTransfer() {
+        return TransferHelper.AUTHORITY.equals(authority)  && "transfer".equals(rootId);
     }
 
     public boolean isRecents() {
@@ -705,7 +715,8 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isOtherRoot(RootInfo root){
-        return null != root && (root.isHome() || root.isConnections() || root.isNetworkStorage());
+        return null != root && (root.isHome() || root.isConnections() || root.isTransfer()
+                || root.isNetworkStorage());
     }
 
     public static boolean isMedia(RootInfo root){

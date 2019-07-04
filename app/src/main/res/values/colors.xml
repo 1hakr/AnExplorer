@@ -93,5 +93,7 @@
     <color name="item_telegram">#0088cc</color>
     <color name="item_telegramx">#6c8099</color>
 
+    <color name="item_transfer">#03A9F4</color>
+
     <color name="material_black_protected">#88000000</color>
 </resources>

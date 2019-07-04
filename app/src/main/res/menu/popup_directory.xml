@@ -62,5 +62,10 @@
         android:icon="@drawable/ic_menu_share"
         support:showAsAction="ifRoom"
         android:title="@string/menu_share"/>
+    <item
+        android:id="@+id/menu_transfer"
+        android:icon="@drawable/ic_menu_transfer"
+        support:showAsAction="always"
+        android:title="@string/menu_transfer"/>
 
 </menu>

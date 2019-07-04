@@ -76,6 +76,11 @@
         support:showAsAction="always"
         android:title="@string/menu_share"/>
     <item
+        android:id="@+id/menu_transfer"
+        android:icon="@drawable/ic_menu_transfer"
+        support:showAsAction="always"
+        android:title="@string/menu_transfer"/>
+    <item
         android:id="@+id/menu_select_all"
         android:icon="@drawable/ic_menu_select_all"
         support:showAsAction="always"

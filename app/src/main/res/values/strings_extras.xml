@@ -14,7 +14,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"
+    xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <!-- Menu item title that compress the selected documents [CHAR LIMIT=24] -->
     <string name="menu_compress" translatable="false">Compress</string>
@@ -28,6 +29,7 @@
     <string name="menu_properties">Properties</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_add">Add</string>
+    <string name="menu_transfer">Transfer</string>
 
     <string name="root_images">Images</string>
     <string name="root_audio">Audio</string>
@@ -51,6 +53,7 @@
     <string name="root_whatsapp">WhatsApp</string>
     <string name="root_telegram">Telegram</string>
     <string name="root_telegramx">Telegram X</string>
+    <string name="root_transfer">Receive Files</string>
     <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
     <string name="pref_advanced_devices">Display advanced</string>
     <!-- Title for setting that will show file sizes for all documents [CHAR LIMIT=32] -->
@@ -157,11 +160,11 @@
     <string name="ftp_status_running">Running</string>
     <string name="ftp_status_not_running">Not Running</string>
     <string name="local_no_connection">Not connected to any Network like WIFI, Ethernet or WIFI API</string>
-    <string name="ftp_notif_starting">Transfer to PC is starting</string>
-    <string name="ftp_notif_title">Transfer to PC started</string>
-    <string name="ftp_notif_text">at %s</string>
+    <string name="ftp_notif_starting">FTP Server is starting</string>
+    <string name="ftp_notif_title">FTP Server Started</string>
+    <string name="ftp_notif_text">%s</string>
     <string name="ftp_notif_stop_server">STOP</string>
-    <string name="toggle_messages">Transfer to PC</string>
+    <string name="toggle_messages">FTP Server</string>
 
     <string-array name="connection_types">
         <item>FTP</item>

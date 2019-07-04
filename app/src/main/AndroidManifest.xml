@@ -199,6 +199,8 @@
                 <action android:name="${applicationId}.action.STOP_FTPSERVER" />
                 <action android:name="${applicationId}.action.FTPSERVER_STARTED" />
                 <action android:name="${applicationId}.action.FTPSERVER_STOPPED" />
+                <action android:name="${applicationId}.action.START_LISTENING" />
+                <action android:name="${applicationId}.action.STOP_LISTENING" />
             </intent-filter>
         </receiver>
 
@@ -207,9 +209,19 @@
             android:enabled="true"
             android:exported="false" />
         <service
-            android:name=".service.ServerService"
+            android:name=".service.ServerTileService"
             android:icon="@drawable/ic_root_server"
             android:label="@string/toggle_messages"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.TransferTileService"
+            android:icon="@drawable/ic_root_transfer"
+            android:label="@string/transfer_toggle_messages"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -382,6 +394,25 @@
             android:name=".queue.QueueActivity"
             android:label="@string/queue_list"
             android:theme="@style/DocumentsTheme.Document" />
+
+        <activity
+            android:name=".ShareDeviceActivity"
+            android:label="@string/activity_share"
+            android:theme="@style/DocumentsTheme.Note">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="*/*"/>
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.TransferService"
+            android:enabled="true"
+            android:exported="false"/>
 
     </application>
 

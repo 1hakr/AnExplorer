@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="No connections yet!"
+            android:text="No data"
             android:visibility="gone"
             app:drawableTop="@drawable/ic_empty_file" />
     </FrameLayout>

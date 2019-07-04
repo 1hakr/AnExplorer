@@ -7,12 +7,16 @@ import android.content.Intent;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.NotificationUtils;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
+import dev.dworks.apps.anexplorer.service.TransferService;
+import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STARTED;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STOPPED;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_START_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_STOP_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.NotificationUtils.FTP_NOTIFICATION_ID;
+import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_START_LISTENING;
+import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_STOP_LISTENING;
 
 public class ConnectionsReceiver extends BroadcastReceiver {
 
@@ -38,7 +42,16 @@ public class ConnectionsReceiver extends BroadcastReceiver {
             NotificationUtils.createFtpNotification(context, intent, FTP_NOTIFICATION_ID);
         } else if (ACTION_FTPSERVER_STOPPED.equals(action)) {
             NotificationUtils.removeNotification(context, FTP_NOTIFICATION_ID);
+        } else if (ACTION_START_LISTENING.equals(action)) {
+            Intent serverService = new Intent(context, TransferService.class);
+            serverService.setAction(action);
+            if (!TransferHelper.isServerRunning(context)) {
+                context.startService(serverService);
+            }
+        } else if (ACTION_STOP_LISTENING.equals(action)) {
+            Intent serverService = new Intent(context, TransferService.class);
+            serverService.setAction(action);
+            context.startService(serverService);
         }
-
     }
 }
