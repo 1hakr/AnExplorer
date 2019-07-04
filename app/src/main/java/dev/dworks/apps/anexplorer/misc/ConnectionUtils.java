@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +24,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import dev.dworks.apps.anexplorer.BuildConfig;
+import dev.dworks.apps.anexplorer.fragment.CreateConnectionFragment;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.server.WebServer;
 import dev.dworks.apps.anexplorer.service.ConnectionsService;
@@ -252,4 +255,16 @@ public class ConnectionUtils {
         }
         return false;
     }
+
+
+    public static void addConnection(AppCompatActivity activity) {
+        CreateConnectionFragment.show(activity.getSupportFragmentManager());
+        AnalyticsManager.logEvent("connection_add");
+    }
+
+    public static void editConnection(AppCompatActivity activity, int connection_id) {
+        CreateConnectionFragment.show(activity.getSupportFragmentManager(), connection_id);
+        AnalyticsManager.logEvent("connection_edit");
+    }
+
 }

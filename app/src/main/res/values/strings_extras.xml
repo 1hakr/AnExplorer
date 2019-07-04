@@ -30,6 +30,7 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_add">Add</string>
     <string name="menu_transfer">Transfer</string>
+    <string name="menu_edit_server">Edit Server</string>
 
     <string name="root_images">Images</string>
     <string name="root_audio">Audio</string>

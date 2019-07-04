@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.loader.app.LoaderManager;
@@ -46,6 +47,8 @@ import dev.dworks.apps.anexplorer.ui.fabs.FabSpeedDial;
 import static android.widget.LinearLayout.VERTICAL;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.addConnection;
+import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.editConnection;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.network.NetworkConnection.SERVER;
 import static dev.dworks.apps.anexplorer.provider.CloudStorageProvider.TYPE_BOX;
@@ -216,7 +219,7 @@ public class ConnectionsFragment extends RecyclerFragment
     public void onClick(final View view) {
         switch (view.getId()){
             case R.id.fab:
-                addConnection();
+                addConnection(getAppCompatActivity());
                 break;
         }
     }
@@ -242,7 +245,7 @@ public class ConnectionsFragment extends RecyclerFragment
         switch (id) {
             case R.id.menu_edit:
                 if(!networkConnection.type.startsWith(TYPE_CLOUD)) {
-                    editConnection(connection_id);
+                    editConnection(getAppCompatActivity(), connection_id);
                 } else {
                     Utils.showSnackBar(getActivity(), "Cloud storage connection can't be edited");
                 }
@@ -257,16 +260,6 @@ public class ConnectionsFragment extends RecyclerFragment
             default:
                 return false;
         }
-    }
-
-    private void addConnection() {
-        CreateConnectionFragment.show(getAppCompatActivity().getSupportFragmentManager());
-        AnalyticsManager.logEvent("connection_add");
-    }
-
-    private void editConnection(int connection_id) {
-        CreateConnectionFragment.show(getAppCompatActivity().getSupportFragmentManager(), connection_id);
-        AnalyticsManager.logEvent("connection_edit");
     }
 
     private void deleteConnection(final int connection_id) {
@@ -353,7 +346,7 @@ public class ConnectionsFragment extends RecyclerFragment
                 break;
 
             case R.id.network_ftp:
-                addConnection();
+                addConnection(getAppCompatActivity());
                 AnalyticsManager.logEvent("add_ftp");
                 break;
         }

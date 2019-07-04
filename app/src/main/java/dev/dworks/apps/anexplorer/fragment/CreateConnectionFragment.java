@@ -133,6 +133,7 @@ public class CreateConnectionFragment extends DialogFragment {
             password.setText(connection.getPassword());
             anonymous.setChecked(connection.isAnonymousLogin());
             if(SERVER.equals(connection.getType())){
+                scheme.setVisibility(View.GONE);
                 hostContainer.setVisibility(View.GONE);
                 pathContainer.setVisibility(View.VISIBLE);
             }
@@ -159,7 +160,8 @@ public class CreateConnectionFragment extends DialogFragment {
     }
 
     private NetworkConnection getNetworkConnection(){
-        NetworkConnection networkConnection = new NetworkConnection();
+        NetworkConnection networkConnection =
+                NetworkConnection.fromConnectionId(getActivity(), connection_id);
         networkConnection.name = name.getText().toString();
         networkConnection.host = host.getText().toString();
         String portNumber = port.getText().toString();
@@ -168,10 +170,14 @@ public class CreateConnectionFragment extends DialogFragment {
         }
         networkConnection.username = username.getText().toString();
         networkConnection.password = password.getText().toString();
+        networkConnection.path = path.getText().toString();
         networkConnection.scheme = scheme.getSelectedItem().toString().toLowerCase();
-        networkConnection.type = CLIENT;
+
         networkConnection.setAnonymous(anonymous.isChecked());
-        networkConnection.build();
+        if(connection_id == 0) {
+            networkConnection.type = CLIENT;
+            networkConnection.build();
+        }
         return networkConnection;
     }
 
@@ -180,7 +186,7 @@ public class CreateConnectionFragment extends DialogFragment {
         if(TextUtils.isEmpty(networkConnection.name)){
             return false;
         }
-        if(TextUtils.isEmpty(networkConnection.host)){
+        if(TextUtils.isEmpty(networkConnection.host) && !SERVER.equals(networkConnection.getType())){
             return false;
         }
         if(networkConnection.port == 0){
@@ -222,11 +228,14 @@ public class CreateConnectionFragment extends DialogFragment {
             if (result) {
                 RootsCache.updateRoots(mActivity, NetworkStorageProvider.AUTHORITY);
                 ConnectionsFragment connectionsFragment = ConnectionsFragment.get(mActivity.getSupportFragmentManager());
+                ServerFragment serverFragment = ServerFragment.get(mActivity.getSupportFragmentManager());
                 if(null != connectionsFragment){
                     connectionsFragment.reload();
                     if(connection_id == 0) {
                         connectionsFragment.openConnectionRoot(mNetworkConnection);
                     }
+                } else if(null != serverFragment){
+                    serverFragment.reload();
                 }
             }
         }

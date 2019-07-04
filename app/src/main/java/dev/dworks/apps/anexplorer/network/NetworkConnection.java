@@ -39,6 +39,7 @@ public class NetworkConnection  implements Durable, Parcelable {
     public static final String SERVER = "server";
     public static final String CLIENT = "client";
 
+    public int id;
     public String name;
     public String scheme;
     public String type;
@@ -263,6 +264,7 @@ public class NetworkConnection  implements Durable, Parcelable {
 
         NetworkConnection networkConnection
                 = NetworkConnection.create(scheme, host, port, username, password);
+        networkConnection.id = getCursorInt(cursor, BaseColumns._ID);
         networkConnection.name = getCursorString(cursor, ConnectionColumns.NAME);
         networkConnection.type = getCursorString(cursor, ConnectionColumns.TYPE);
         networkConnection.path = getCursorString(cursor, ConnectionColumns.PATH);
@@ -295,6 +297,10 @@ public class NetworkConnection  implements Durable, Parcelable {
     public static NetworkConnection fromConnectionId(Context context, int id) {
         Cursor cursor = null;
         NetworkConnection networkConnection = null;
+        if(id == 0) {
+            networkConnection = new NetworkConnection();
+            return networkConnection;
+        }
         try {
             cursor = context.getContentResolver()
                     .query(ExplorerProvider.buildConnection(), null,

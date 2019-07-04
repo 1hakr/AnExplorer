@@ -8,6 +8,9 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,13 +19,19 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.loader.app.LoaderManager;
+
 import dev.dworks.apps.anexplorer.BuildConfig;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.ShareDeviceActivity;
 import dev.dworks.apps.anexplorer.common.BaseFragment;
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.network.NetworkConnection;
+import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
+import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_FAILEDTOSTART;
@@ -30,9 +39,12 @@ import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_S
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_FTPSERVER_STOPPED;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_START_FTPSERVER;
 import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.ACTION_STOP_FTPSERVER;
+import static dev.dworks.apps.anexplorer.misc.ConnectionUtils.editConnection;
 import static dev.dworks.apps.anexplorer.misc.Utils.EXTRA_ROOT;
 
 public class ServerFragment extends BaseFragment implements View.OnClickListener {
+
+    public static final String TAG = "ServerFragment";
 
     private TextView status;
     private TextView username;
@@ -42,6 +54,7 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
     private Button action;
     private TextView warning;
     private RootInfo root;
+    private int connection_id;
 
     public static void show(FragmentManager fm, RootInfo root) {
         final ServerFragment fragment = new ServerFragment();
@@ -49,14 +62,18 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
         args.putParcelable(EXTRA_ROOT, root);
         fragment.setArguments(args);
         final FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.container_directory, fragment);
+        ft.replace(R.id.container_directory, fragment, TAG);
         ft.commitAllowingStateLoss();
+    }
+
+    public static ServerFragment get(FragmentManager fm) {
+        return (ServerFragment) fm.findFragmentByTag(TAG);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -77,7 +94,6 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
         warning = (TextView) view.findViewById(R.id.warning);
         action = (Button) view.findViewById(R.id.action);
         action.setOnClickListener(this);
-
     }
 
     @Override
@@ -85,8 +101,15 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
         root = getArguments().getParcelable(EXTRA_ROOT);
-
         NetworkConnection connection = NetworkConnection.fromRootInfo(getActivity(), root);
+        connection_id = connection.id;
+        showData(connection);
+    }
+
+    private void showData(NetworkConnection connection) {
+        if (null == connection){
+            return;
+        }
         path.setText(connection.getPath());
         username.setText(connection.getUserName());
         password.setText(connection.getPassword());
@@ -117,6 +140,30 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
     @Override
     public  void onDestroy(){
         super.onDestroy();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_server, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_edit_server:
+                editConnection(getAppCompatActivity(), connection_id);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void reload(){
+        NetworkConnection networkConnection =
+                NetworkConnection.fromConnectionId(getActivity(), connection_id);
+        RootsCache.updateRoots(getActivity(), NetworkStorageProvider.AUTHORITY);
+        RootsCache.updateRoots(getActivity(), CloudStorageProvider.AUTHORITY);
+        showData(networkConnection);
     }
 
     private void startServer() {
