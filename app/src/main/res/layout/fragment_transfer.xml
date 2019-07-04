@@ -16,7 +16,6 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -145,8 +144,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/activity_transfer_empty_text"
-                android:visibility="visible"
-                app:drawableTop="@drawable/ic_empty_file" />
+                android:visibility="visible" />
         </FrameLayout>
     </dev.dworks.apps.anexplorer.ui.DirectoryView>
 </LinearLayout>

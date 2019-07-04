@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -33,8 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ProtocolException;
 
+import dev.dworks.apps.anexplorer.DocumentsActivity;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.libcore.util.Objects;
+import dev.dworks.apps.anexplorer.misc.AnalyticsManager;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
 import dev.dworks.apps.anexplorer.model.DocumentsContract.Root;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
@@ -49,7 +52,6 @@ import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.transfer.TransferHelper;
-import dev.dworks.apps.anexplorer.transfer.model.Transfer;
 
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorInt;
 import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorLong;
@@ -315,6 +317,9 @@ public class RootInfo implements Durable, Parcelable {
         } else if (isTransfer()) {
             derivedIcon = R.drawable.ic_root_transfer;
             derivedColor = R.color.item_transfer;
+        }  else if (isCast()) {
+            derivedIcon = R.drawable.ic_root_cast;
+            derivedColor = R.color.item_cast;
         }
     }
 
@@ -335,6 +340,10 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isTransfer() {
         return TransferHelper.AUTHORITY.equals(authority)  && "transfer".equals(rootId);
+    }
+
+    public boolean isCast() {
+        return authority == null && "cast".equals(rootId);
     }
 
     public boolean isRecents() {
@@ -673,6 +682,11 @@ public class RootInfo implements Durable, Parcelable {
                 + "}";
     }
 
+    public static void openRoot(DocumentsActivity activity, RootInfo rootInfo, RootInfo parentRootInfo){
+        activity.onRootPicked(rootInfo, parentRootInfo);
+        AnalyticsManager.logEvent("open_shortcuts", rootInfo ,new Bundle());
+    }
+
     public static boolean isStorage(RootInfo root){
         return root.isHome() || root.isPhoneStorage() || root.isStorage() || root.isUsbStorage();
     }
@@ -716,7 +730,7 @@ public class RootInfo implements Durable, Parcelable {
 
     public static boolean isOtherRoot(RootInfo root){
         return null != root && (root.isHome() || root.isConnections() || root.isTransfer()
-                || root.isNetworkStorage());
+                || root.isNetworkStorage()) || root.isCast();
     }
 
     public static boolean isMedia(RootInfo root){
@@ -728,7 +742,7 @@ public class RootInfo implements Durable, Parcelable {
     }
 
     public static boolean isChromecastFeature(RootInfo root){
-        return RootInfo.isMedia(root) || root.isHome() || root.isStorage();
+        return RootInfo.isMedia(root) || root.isHome() || root.isStorage() || root.isCast();
     }
 
 }

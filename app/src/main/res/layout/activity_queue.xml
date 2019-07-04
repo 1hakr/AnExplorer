@@ -18,7 +18,7 @@
         app:theme="?attr/actionBarTheme" />
 
     <FrameLayout
-        android:id="@+id/container"
+        android:id="@+id/container_directory"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

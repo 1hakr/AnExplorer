@@ -71,6 +71,7 @@ import static dev.dworks.apps.anexplorer.adapter.HomeAdapter.TYPE_MAIN;
 import static dev.dworks.apps.anexplorer.adapter.HomeAdapter.TYPE_RECENT;
 import static dev.dworks.apps.anexplorer.adapter.HomeAdapter.TYPE_SHORTCUT;
 import static dev.dworks.apps.anexplorer.misc.AnalyticsManager.FILE_TYPE;
+import static dev.dworks.apps.anexplorer.model.RootInfo.openRoot;
 import static dev.dworks.apps.anexplorer.provider.AppsProvider.getRunningAppProcessInfo;
 
 /**
@@ -248,7 +249,8 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
                 if(item.commonInfo.rootInfo.rootId.equals("clean")){
                     cleanRAM();
                 } else {
-                    openRoot(item.commonInfo.rootInfo);
+                    DocumentsActivity activity = ((DocumentsActivity)getActivity());
+                    openRoot(activity, item.commonInfo.rootInfo, mHomeRoot);
                 }
                 break;
             case TYPE_RECENT:
@@ -269,7 +271,8 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
     public void onItemViewClick(HomeAdapter.ViewHolder item, View view, int position) {
         switch (view.getId()) {
             case R.id.recents:
-                openRoot(roots.getRecentsRoot());
+                DocumentsActivity activity = ((DocumentsActivity)getActivity());
+                openRoot(activity, roots.getRecentsRoot(), mHomeRoot);
                 break;
 
             case R.id.action:
@@ -353,12 +356,6 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
 
     private static BaseActivity.State getDisplayState(Fragment fragment) {
         return ((BaseActivity) fragment.getActivity()).getDisplayState();
-    }
-
-    private void openRoot(RootInfo rootInfo){
-        DocumentsActivity activity = ((DocumentsActivity)getActivity());
-        activity.onRootPicked(rootInfo, mHomeRoot);
-        AnalyticsManager.logEvent("open_shortcuts", rootInfo ,new Bundle());
     }
 
     public void cleanupMemory(Context context){

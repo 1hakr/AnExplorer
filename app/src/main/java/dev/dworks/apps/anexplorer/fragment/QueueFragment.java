@@ -1,4 +1,4 @@
-package dev.dworks.apps.anexplorer.queue;
+package dev.dworks.apps.anexplorer.fragment;
 
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -18,14 +18,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
+
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.cast.CastUtils;
 import dev.dworks.apps.anexplorer.cast.Casty;
+import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment.OnItemClickListener;
 import dev.dworks.apps.anexplorer.directory.DividerItemDecoration;
 import dev.dworks.apps.anexplorer.misc.IconHelper;
+import dev.dworks.apps.anexplorer.adapter.QueueAdapter;
 
 import static android.widget.LinearLayout.VERTICAL;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
@@ -41,7 +44,7 @@ public class QueueFragment extends RecyclerFragment implements OnItemClickListen
     public static void show(FragmentManager fm) {
         final QueueFragment fragment = new QueueFragment();
         final FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.container, fragment, TAG);
+        ft.replace(R.id.container_directory, fragment, TAG);
         ft.commitAllowingStateLoss();
     }
 
@@ -100,15 +103,15 @@ public class QueueFragment extends RecyclerFragment implements OnItemClickListen
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(null == casty) {
+        updateMediaQueue();
+        setListShown(true);
+        if(null == casty || !casty.isConnected()) {
             return;
         }
         IconHelper iconHelper = new IconHelper(getActivity(), MODE_GRID);
         mAdapter = new QueueAdapter(casty.getMediaQueue(), iconHelper);
         mAdapter.setOnItemClickListener(this);
         setListAdapter(mAdapter);
-        updateMediaQueue();
-        setListShown(true);
     }
 
     @Override
@@ -153,7 +156,7 @@ public class QueueFragment extends RecyclerFragment implements OnItemClickListen
             count = getResources().getQuantityString(R.plurals.queue_count, queueCount, queueCount);
             setEmptyText("");
         }
-        ((QueueActivity)getActivity()).getSupportActionBar().setSubtitle(count);
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle(count);
     }
 
     private void registerDataObserver() {
@@ -200,5 +203,11 @@ public class QueueFragment extends RecyclerFragment implements OnItemClickListen
             default:
                 return false;
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle(null);
+        super.onDestroyView();
     }
 }

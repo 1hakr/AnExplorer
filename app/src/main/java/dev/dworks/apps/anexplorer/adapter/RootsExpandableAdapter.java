@@ -17,6 +17,8 @@ import dev.dworks.apps.anexplorer.fragment.RootsFragment.RootItem;
 import dev.dworks.apps.anexplorer.model.GroupInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
+
 public class RootsExpandableAdapter extends BaseExpandableListAdapter {
 
     final List<GroupInfo> group = new ArrayList<>();
@@ -46,7 +48,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> folders = new ArrayList<>();
         final List<Item> bookmarks = new ArrayList<>();
         final List<Item> messengers = new ArrayList<>();
-        final List<Item> share = new ArrayList<>();
+        final List<Item> cast = new ArrayList<>();
 
         for (RootInfo root : roots) {
             if (root.isHome()) {
@@ -58,7 +60,9 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             } else if (root.isConnections()) {
                 connection.add(new RootItem(root));
             } else if (root.isTransfer()) {
-                share.add(new RootItem(root));
+                transfer.add(new RootItem(root));
+            } else if (root.isCast()) {
+                cast.add(new RootItem(root));
             } else if (root.isRootedStorage()) {
                 rooted.add(new RootItem(root));
             } else if (root.isPhoneStorage()) {
@@ -105,19 +109,12 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             groupRoots.add(new GroupInfo("Messengers Media", messengers));
         }
 
-        if(!share.isEmpty()){
-            groupRoots.add(new GroupInfo("Transfer", share));
+        network.addAll(transfer);
+        if (!isSpecialDevice()) {
+            network.addAll(cast);
         }
-
-        if(!network.isEmpty()){
-            network.addAll(transfer);
-            network.addAll(connection);
-            groupRoots.add(new GroupInfo("Network & Cloud", network));
-        } else if(!transfer.isEmpty()){
-            groupRoots.add(new GroupInfo("Network & Cloud", transfer));
-        } else if(!connection.isEmpty()){
-            groupRoots.add(new GroupInfo("Network & Cloud", connection));
-        }
+        network.addAll(connection);
+        groupRoots.add(new GroupInfo("Network & Cloud", network));
 
         if(!apps.isEmpty()){
             if(!appbackup.isEmpty()) {

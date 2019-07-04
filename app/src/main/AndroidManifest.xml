@@ -391,11 +391,6 @@
             android:theme="@style/DocumentsTheme.Cast" />
 
         <activity
-            android:name=".queue.QueueActivity"
-            android:label="@string/queue_list"
-            android:theme="@style/DocumentsTheme.Document" />
-
-        <activity
             android:name=".ShareDeviceActivity"
             android:label="@string/activity_share"
             android:theme="@style/DocumentsTheme.Note">

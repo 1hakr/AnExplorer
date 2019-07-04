@@ -1,4 +1,4 @@
-package dev.dworks.apps.anexplorer.queue;
+package dev.dworks.apps.anexplorer.adapter;
 
 import android.content.Context;
 import android.net.Uri;

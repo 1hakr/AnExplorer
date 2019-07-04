@@ -45,20 +45,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import dev.dworks.apps.anexplorer.cast.Casty;
 import dev.dworks.apps.anexplorer.common.ActionBarActivity;
 import dev.dworks.apps.anexplorer.misc.PermissionUtil;
+import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 import dev.dworks.apps.anexplorer.model.DocumentStack;
 import dev.dworks.apps.anexplorer.model.DurableUtils;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
-import dev.dworks.apps.anexplorer.queue.QueueActivity;
 import dev.dworks.apps.anexplorer.server.WebServer;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+import static dev.dworks.apps.anexplorer.model.RootInfo.openRoot;
 
 public abstract class BaseActivity extends ActionBarActivity {
     public static final String TAG = "Documents";
+    private RootsCache mRoots;
 
     public abstract State getDisplayState();
     public abstract RootInfo getCurrentRoot();
@@ -282,6 +284,7 @@ public abstract class BaseActivity extends ActionBarActivity {
                 WebServer.getServer().stopServer();
             }
         });
+        mRoots = DocumentsApplication.getRootsCache(this);
     }
 
     @CallSuper
@@ -316,8 +319,9 @@ public abstract class BaseActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_show_queue){
-            Intent intent = new Intent(BaseActivity.this, QueueActivity.class);
-            startActivity(intent);
+            final RootInfo root = getCurrentRoot();
+            DocumentsActivity activity = ((DocumentsActivity)this);
+            openRoot(activity, mRoots.getCastRoot(), root);
             return true;
         }
         return super.onOptionsItemSelected(item);

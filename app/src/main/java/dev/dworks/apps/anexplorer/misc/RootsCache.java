@@ -58,6 +58,7 @@ import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.provider.CloudStorageProvider;
 import dev.dworks.apps.anexplorer.provider.DocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.ExternalStorageProvider;
+import dev.dworks.apps.anexplorer.provider.ExtraDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.NetworkStorageProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
@@ -65,6 +66,7 @@ import dev.dworks.apps.anexplorer.provider.RootedStorageProvider;
 import dev.dworks.apps.anexplorer.provider.UsbStorageProvider;
 import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.fragment.HomeFragment.ROOTS_CHANGED;
 
 /**
@@ -84,6 +86,7 @@ public class RootsCache {
     private final RootInfo mConnectionsRoot = new RootInfo();
     private final RootInfo mRecentsRoot = new RootInfo();
     private final RootInfo mTransferRoot = new RootInfo();
+    private final RootInfo mCastRoot = new RootInfo();
 
     private final Object mLock = new Object();
     private final CountDownLatch mFirstLoad = new CountDownLatch(1);
@@ -157,6 +160,15 @@ public class RootsCache {
         mTransferRoot.availableBytes = -1;
         mTransferRoot.deriveFields();
 
+        // Special root for cast queue
+        mCastRoot.authority = null;
+        mCastRoot.rootId = "cast";
+        mCastRoot.icon = R.drawable.ic_root_cast;
+        mCastRoot.flags = Root.FLAG_LOCAL_ONLY;
+        mCastRoot.title = mContext.getString(R.string.root_cast);
+        mCastRoot.availableBytes = -1;
+        mCastRoot.deriveFields();
+
         new UpdateTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -228,6 +240,7 @@ public class RootsCache {
             mTaskRoots.put(mHomeRoot.authority, mHomeRoot);
             mTaskRoots.put(mConnectionsRoot.authority, mConnectionsRoot);
             mTaskRoots.put(mTransferRoot.authority, mTransferRoot);
+            mTaskRoots.put(mCastRoot.authority, mCastRoot);
             mTaskRoots.put(mRecentsRoot.authority, mRecentsRoot);
 
             final ContentResolver resolver = mContext.getContentResolver();
@@ -532,10 +545,21 @@ public class RootsCache {
         ArrayList<RootInfo> list = new ArrayList<>();
         if(Utils.hasWiFi(mContext)) {
             list.add(getServerRoot());
+            list.add(getTransferRoot());
+        }
+        if(!isSpecialDevice()) {
+            list.add(getCastRoot());
         }
         list.add(getAppRoot());
         for (RootInfo root : mRoots.get(MediaDocumentsProvider.AUTHORITY)) {
-            if (RootInfo.isLibraryMedia(root)) {
+            final boolean empty = (root.flags & DocumentsContract.Root.FLAG_EMPTY) != 0;
+            if (RootInfo.isLibraryMedia(root) && !empty) {
+                list.add(root);
+            }
+        }
+        for (RootInfo root : mRoots.get(ExtraDocumentsProvider.AUTHORITY)) {
+            final boolean empty = (root.flags & DocumentsContract.Root.FLAG_EMPTY) != 0;
+            if (!empty) {
                 list.add(root);
             }
         }
@@ -556,6 +580,10 @@ public class RootsCache {
 
     public RootInfo getTransferRoot() {
         return mTransferRoot;
+    }
+
+    public RootInfo getCastRoot() {
+        return mCastRoot;
     }
 
     public boolean isHomeRoot(RootInfo root) {

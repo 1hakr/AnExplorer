@@ -126,6 +126,7 @@ import dev.dworks.apps.anexplorer.provider.MediaDocumentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.RecentColumns;
 import dev.dworks.apps.anexplorer.provider.RecentsProvider.ResumeColumns;
+import dev.dworks.apps.anexplorer.fragment.QueueFragment;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 import dev.dworks.apps.anexplorer.ui.DirectoryContainerView;
@@ -1222,7 +1223,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         DocumentInfo cwd = getCurrentDirectory();
 
         //TODO : this has to be done nicely
-        if(cwd == null && (null != root && !root.isServerStorage() && !root.isTransfer())){
+        boolean isExtra = (null != root && !root.isServerStorage() && !root.isTransfer());
+        if(cwd == null && isExtra){
 	        final Uri uri = DocumentsContract.buildDocumentUri(
 	                root.authority, root.documentId);
 	        DocumentInfo result;
@@ -1252,6 +1254,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                     ConnectionsFragment.show(fm);
                 } else if(null != root && root.isTransfer()){
                     TransferFragment.show(fm);
+                } else if(null != root && root.isCast()){
+                    QueueFragment.show(fm);
                 } else if(null != root && root.isServerStorage()){
                     ServerFragment.show(fm, root);
                 } else {
