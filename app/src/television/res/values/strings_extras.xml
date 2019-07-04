@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="root_phone_storage">Television</string>
+    <string name="root_device_storage">Television Storage</string>
 </resources>

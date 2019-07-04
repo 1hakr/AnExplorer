@@ -106,7 +106,7 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_HOME = "home";
     public static final String ROOT_ID_PRIMARY_EMULATED = "primary";
     public static final String ROOT_ID_SECONDARY = "secondary";
-    public static final String ROOT_ID_PHONE = "phone";
+    public static final String ROOT_ID_DEVICE = "device";
     public static final String ROOT_ID_DOWNLOAD = "download";
     public static final String ROOT_ID_BLUETOOTH = "bluetooth";
     public static final String ROOT_ID_APP_BACKUP = "app_backup";
@@ -314,7 +314,7 @@ public class ExternalStorageProvider extends StorageProvider {
 
     private void includeOtherRoot() {
     	try {
-            final String rootId = ROOT_ID_PHONE;
+            final String rootId = ROOT_ID_DEVICE;
             final File path = Utils.hasNougat() ? Environment.getRootDirectory() : new File(DIR_ROOT);
 
             final RootInfo root = new RootInfo();
@@ -326,7 +326,7 @@ public class ExternalStorageProvider extends StorageProvider {
             if (isEmpty(path)) {
                 root.flags |= Root.FLAG_EMPTY;
             }
-            root.title = getContext().getString(R.string.root_phone_storage);
+            root.title = getContext().getString(R.string.root_device_storage);
             root.path = path;
             root.docId = getDocIdForFile(path);
         } catch (FileNotFoundException e) {
@@ -660,8 +660,8 @@ public class ExternalStorageProvider extends StorageProvider {
                 row.add(Root.COLUMN_PATH, root.path);
                 if(ROOT_ID_PRIMARY_EMULATED.equals(root.rootId)
                         || root.rootId.startsWith(ROOT_ID_SECONDARY)
-                        || root.rootId.startsWith(ROOT_ID_PHONE)) {
-                    final File file = root.rootId.startsWith(ROOT_ID_PHONE)
+                        || root.rootId.startsWith(ROOT_ID_DEVICE)) {
+                    final File file = root.rootId.startsWith(ROOT_ID_DEVICE)
                             ? Environment.getRootDirectory() : root.path;
                     row.add(Root.COLUMN_AVAILABLE_BYTES, file.getFreeSpace());
                     row.add(Root.COLUMN_CAPACITY_BYTES, file.getTotalSpace());

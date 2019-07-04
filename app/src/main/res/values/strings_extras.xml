@@ -36,7 +36,7 @@
     <string name="root_videos">Video</string>
     <string name="root_internal_storage">Internal Storage</string>
     <string name="root_external_storage">External Storage</string>
-    <string name="root_phone_storage">Phone</string>
+    <string name="root_device_storage">Phone Storage</string>
     <string name="root_root_storage">Root</string>
     <string name="root_bluetooth">Bluetooth</string>
     <string name="root_downloads">Downloads</string>

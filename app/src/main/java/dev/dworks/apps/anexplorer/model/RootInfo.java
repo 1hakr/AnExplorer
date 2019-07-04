@@ -206,7 +206,7 @@ public class RootInfo implements Durable, Parcelable {
             derivedIcon = R.drawable.ic_root_root;
             derivedTag = "root";
         } else if (isPhoneStorage()) {
-            derivedIcon = R.drawable.ic_root_phone;
+            derivedIcon = R.drawable.ic_root_device;
             derivedTag = "phone";
         } else if (isSecondaryStorage()) {
             derivedIcon = R.drawable.ic_root_sdcard;
@@ -370,7 +370,7 @@ public class RootInfo implements Durable, Parcelable {
 
     public boolean isPhoneStorage() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
-                && ExternalStorageProvider.ROOT_ID_PHONE.equals(rootId);
+                && ExternalStorageProvider.ROOT_ID_DEVICE.equals(rootId);
     }
     
     public boolean isSecondaryStorage() {
