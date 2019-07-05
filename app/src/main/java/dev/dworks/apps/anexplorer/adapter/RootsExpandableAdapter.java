@@ -90,7 +90,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             } else if (RootInfo.isNetwork(root)) {
                 network.add(new RootItem(root));
             } else if (RootInfo.isCloud(root)) {
-                network.add(new RootItem(root));
+                cloud.add(new RootItem(root));
             } else if (RootInfo.isLibraryExtra(root)) {
                 messengers.add(new RootItem(root));
             }
@@ -114,6 +114,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             network.addAll(cast);
         }
         network.addAll(connection);
+        network.addAll(cloud);
         groupRoots.add(new GroupInfo("Network & Cloud", network));
 
         if(!apps.isEmpty()){
