@@ -65,6 +65,8 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static android.content.Intent.ACTION_SENDTO;
 import static android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_INDEFINITE;
+import static com.google.android.material.snackbar.Snackbar.LENGTH_LONG;
 import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 
 public class Utils extends UtilsFlavour{
@@ -401,8 +403,12 @@ public class Utils extends UtilsFlavour{
         showSnackBar(activity, activity.getString(msg), LENGTH_SHORT, "ERROR", null);
     }
 
+    public static void showPermanentRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
+        showSnackBar(activity, text, LENGTH_INDEFINITE , "RETRY", listener);
+    }
+
     public static void showRetrySnackBar(Activity activity, String text, View.OnClickListener listener){
-        showSnackBar(activity, text, LENGTH_SHORT , "RETRY", listener);
+        showSnackBar(activity, text, LENGTH_LONG , "RETRY", listener);
     }
 
     public static void showSnackBar(Activity activity, String message){

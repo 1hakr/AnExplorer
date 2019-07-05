@@ -30,6 +30,7 @@ import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.misc.Utils.getSuffix;
 import static dev.dworks.apps.anexplorer.misc.Utils.openFeedback;
 import static dev.dworks.apps.anexplorer.misc.Utils.openPlaystore;
@@ -94,7 +95,7 @@ public class AboutActivity extends AboutVariantFlavour implements View.OnClickLi
 		if(Utils.isOtherBuild()){
 			action_rate.setVisibility(View.GONE);
 			action_support.setVisibility(View.GONE);
-		} else if(DocumentsApplication.isTelevision()){
+		} else if(isTelevision()){
 			action_share.setVisibility(View.GONE);
 			action_feedback.setVisibility(View.GONE);
 		}

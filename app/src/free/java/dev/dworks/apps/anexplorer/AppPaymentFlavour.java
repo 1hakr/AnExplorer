@@ -160,8 +160,8 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 		}
 	}
 
-	public boolean isBillingSupported() {
-		return BillingProcessor.isIabServiceAvailable(getApplicationContext());
+	public static boolean isBillingSupported() {
+		return BillingProcessor.isIabServiceAvailable(DocumentsApplication.getInstance().getApplicationContext());
 	}
 
 	public void purchase(Activity activity, String productId){

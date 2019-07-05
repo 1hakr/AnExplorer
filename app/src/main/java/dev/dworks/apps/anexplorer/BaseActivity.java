@@ -230,7 +230,7 @@ public abstract class BaseActivity extends ActionBarActivity {
             again();
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Utils.showRetrySnackBar(this, "Storage permissions are needed for Exploring.", new View.OnClickListener() {
+                Utils.showPermanentRetrySnackBar(this, "Storage permissions are needed for Exploring.", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ActivityCompat.requestPermissions(BaseActivity.this, storagePermissions, REQUEST_STORAGE);
