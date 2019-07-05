@@ -21,29 +21,42 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/list_item_padding"
+        android:paddingLeft="@dimen/list_item_padding"
+        android:paddingEnd="@dimen/list_item_padding"
+        android:paddingRight="@dimen/list_item_padding">
 
         <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="40dp">
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp">
 
             <dev.dworks.apps.anexplorer.ui.CircleImage
+                android:id="@+id/icon_mime_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                app:background="@color/item_transfer" />
+                app:background="@color/item_transfer"
+                android:visibility="visible" />
 
             <ImageView
-                android:id="@+id/icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:id="@android:id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:contentDescription="@null"
-                app:srcCompat="@drawable/ic_root_transfer" />
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_root_transfer"
+                android:scaleType="centerInside" />
 
         </FrameLayout>
 
@@ -64,7 +77,7 @@
                 android:textSize="16sp"
                 android:paddingEnd="10dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/status"
@@ -83,6 +96,7 @@
             android:id="@+id/action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/defaultThemeColor"
             android:text="@string/start_ftp" />
     </LinearLayout>
 

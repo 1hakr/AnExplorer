@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -27,11 +29,13 @@ import dev.dworks.apps.anexplorer.adapter.TransferAdapter;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment;
 import dev.dworks.apps.anexplorer.directory.DividerItemDecoration;
 import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.service.TransferService;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import dev.dworks.apps.anexplorer.ShareDeviceActivity;
 import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 import dev.dworks.apps.anexplorer.transfer.model.TransferStatus;
+import dev.dworks.apps.anexplorer.ui.CircleImage;
 
 import static android.widget.LinearLayout.VERTICAL;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
@@ -100,9 +104,13 @@ public class TransferFragment extends RecyclerFragment
         itemTouchHelper.attachToRecyclerView(getListView());
 
 
-        ImageView icon = view.findViewById(R.id.icon);
-        icon.setImageDrawable(IconUtils.applyTintAttr(getContext(), R.drawable.ic_root_transfer,
-                android.R.attr.textColorPrimaryInverse));
+        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
+        View background = view.findViewById(R.id.background);
+        background.setBackgroundColor(color);
+        CircleImage iconBackground = view.findViewById(R.id.icon_mime_background);
+        iconBackground.setBackgroundColor(SettingsActivity.getPrimaryColor());
+        ImageView icon = view.findViewById(android.R.id.icon);
+        icon.setImageDrawable(IconUtils.applyTint(getContext(), R.drawable.ic_root_transfer, Color.WHITE));
         status = (TextView) view.findViewById(R.id.status);
         action = (Button) view.findViewById(R.id.action);
         action.setOnClickListener(this);
@@ -231,11 +239,11 @@ public class TransferFragment extends RecyclerFragment
 
     private void setStatus(boolean running){
         if(running){
-            status.setTextColor(SettingsActivity.getPrimaryColor());
+            status.setTextColor(SettingsActivity.getAccentColor());
             status.setText(getString(R.string.ftp_status_running));
             action.setText(R.string.stop_ftp);
         } else {
-            status.setTextColor(SettingsActivity.getAccentColor());
+            status.setTextColor(ContextCompat.getColor(getContext(), R.color.item_doc_grid_overlay_disabled));
             status.setText(getString(R.string.ftp_status_not_running));
             action.setText(R.string.start_ftp);
         }
