@@ -1,5 +1,7 @@
 package dev.dworks.apps.anexplorer.directory;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
@@ -15,6 +17,7 @@ import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 
 public abstract class DocumentHolder extends BaseHolder implements View.OnClickListener{
 
@@ -70,6 +73,10 @@ public abstract class DocumentHolder extends BaseHolder implements View.OnClickL
         iconView = itemView.findViewById(android.R.id.icon);
         popupButton.setOnClickListener(this);
         popupButton.setVisibility(isSpecialDevice() ? View.INVISIBLE : View.VISIBLE);
+
+        if (isTelevision()) {
+            itemView.setOnFocusChangeListener(focusChangeListener);
+        }
     }
 
     public void setData(Cursor cursor, int position) {
@@ -122,5 +129,37 @@ public abstract class DocumentHolder extends BaseHolder implements View.OnClickL
                 setEnabledRecursive(vg.getChildAt(i), enabled);
             }
         }
+    }
+
+    private View.OnFocusChangeListener focusChangeListener =new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                focusIn(v);
+            } else {
+                focusOut(v);
+            }
+            ViewGroup parent = (ViewGroup) v.getParent();
+            if (parent != null) {
+                parent.requestLayout();
+                parent.postInvalidate();
+            }
+        }
+    };
+
+    protected void focusOut(View v) {
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(v, "scaleX", 1.05f, 1.0f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(v, "scaleY", 1.05f, 1.0f);
+        AnimatorSet set = new AnimatorSet();
+        set.play(scaleX).with(scaleY);
+        set.start();
+    }
+
+    protected void focusIn(View v) {
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(v, "scaleX", 1.0f, 1.05f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(v, "scaleY", 1.0f, 1.05f);
+        AnimatorSet set = new AnimatorSet();
+        set.play(scaleX).with(scaleY);
+        set.start();
     }
 }
