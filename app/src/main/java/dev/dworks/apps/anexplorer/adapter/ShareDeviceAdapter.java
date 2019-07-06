@@ -61,8 +61,8 @@ public class ShareDeviceAdapter extends ArrayListAdapter<Device, ArrayListAdapte
         public ViewHolder(View itemView) {
             super(itemView);
             icon = (ImageView) itemView.findViewById(android.R.id.icon);
-            name = (TextView) itemView.findViewById(android.R.id.text1);
-            address = (TextView) itemView.findViewById(android.R.id.text2);
+            name = (TextView) itemView.findViewById(android.R.id.title);
+            address = (TextView) itemView.findViewById(android.R.id.summary);
         }
 
         @Override

@@ -73,14 +73,12 @@ public class TransferHelper {
     }
 
     public void startTransferServer(){
-        //TransferService.startStopService(mContext, true);
         Intent intent = new Intent(ACTION_START_LISTENING);
         intent.setPackage(BuildConfig.APPLICATION_ID);
         mContext.sendBroadcast(intent);
     }
 
     public void stopTransferServer(){
-        // TransferService.startStopService(mContext, false);
         Intent intent = new Intent(ACTION_STOP_LISTENING);
         intent.setPackage(BuildConfig.APPLICATION_ID);
         mContext.sendBroadcast(intent);
