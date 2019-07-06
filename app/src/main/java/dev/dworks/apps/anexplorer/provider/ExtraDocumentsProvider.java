@@ -422,10 +422,8 @@ public class ExtraDocumentsProvider extends StorageProvider {
         final MatrixCursor result = new MatrixCursor(
                 resolveDocumentProjection(projection));
         for (File file : parent.listFiles()) {
-            if (parentDocumentId.startsWith(ROOT_ID_TELEGRAMX)) {
-                if (file.getName().startsWith("temp")){
-                    continue;
-                }
+            if (file.getName().startsWith("temp") || isEmptyFolder(file)){
+                continue;
             }
             includeFile(result, null, file);
         }
@@ -433,11 +431,17 @@ public class ExtraDocumentsProvider extends StorageProvider {
     }
 
     @Override
-    public Cursor queryRecentDocuments(String rootId, String[] projection)
+    public Cursor querySearchDocuments(String rootId, String query, String[] projection)
             throws FileNotFoundException {
-        final ContentResolver resolver = getContext().getContentResolver();
         final MatrixCursor result = new MatrixCursor(resolveDocumentProjection(projection));
 
+        final File parent;
+        synchronized (mRootsLock) {
+            parent = mRoots.get(rootId).path;
+        }
+        for (File file : FileUtils.searchDirectory(parent.getPath(), query)) {
+            includeFile(result, null, file);
+        }
         return result;
     }
 
@@ -546,6 +550,22 @@ public class ExtraDocumentsProvider extends StorageProvider {
 
     private boolean isEmpty(File file) {
         return null != file  && (!file.isDirectory() || null == file.list() || file.list().length == 0);
+    }
+
+    private boolean isEmptyFolder(File file) {
+        if(null != file  && file.isDirectory()){
+            String[] list = file.list();
+            if (null == file.list()){
+              return true;
+            }
+            int count  = list.length;
+            if (count == 0){
+                return true;
+            } else if (count == 1){
+                return list[0].compareToIgnoreCase(".nomedia") == 0;
+            }
+        }
+        return false;
     }
 
     public static String toString(String[] list) {
