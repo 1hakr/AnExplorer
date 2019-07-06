@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.transfer.model.TransferStatus;
 import dev.dworks.apps.anexplorer.ui.CircleImage;
 
 import static android.widget.LinearLayout.VERTICAL;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_BROADCAST;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_REMOVE_TRANSFER;
@@ -106,7 +107,9 @@ public class TransferFragment extends RecyclerFragment
 
         int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
         View background = view.findViewById(R.id.background);
-        background.setBackgroundColor(color);
+        if (!isTelevision()) {
+            background.setBackgroundColor(color);
+        }
         CircleImage iconBackground = view.findViewById(R.id.icon_mime_background);
         iconBackground.setBackgroundColor(SettingsActivity.getPrimaryColor());
         ImageView icon = view.findViewById(android.R.id.icon);
