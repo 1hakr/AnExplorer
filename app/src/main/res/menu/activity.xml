@@ -71,6 +71,12 @@
         </menu>
     </item>
     <item
+        android:id="@+id/menu_support"
+        android:icon="@drawable/ic_support_color"
+        support:showAsAction="always"
+        android:visible="false"
+        android:title="@string/support_app"/>
+    <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_menu_settings"
         support:showAsAction="never"

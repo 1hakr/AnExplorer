@@ -133,6 +133,8 @@ import dev.dworks.apps.anexplorer.ui.DrawerLayoutHelper;
 import dev.dworks.apps.anexplorer.ui.FloatingActionsMenu;
 import dev.dworks.apps.anexplorer.ui.fabs.SimpleMenuListenerAdapter;
 
+import static dev.dworks.apps.anexplorer.AppPaymentFlavour.isPurchased;
+import static dev.dworks.apps.anexplorer.AppPaymentFlavour.openPurchaseActivity;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_BROWSE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_CREATE;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.ACTION_GET_CONTENT;
@@ -785,7 +787,11 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         final MenuItem grid = menu.findItem(R.id.menu_grid);
         final MenuItem list = menu.findItem(R.id.menu_list);
         final MenuItem settings = menu.findItem(R.id.menu_settings);
+        final MenuItem support = menu.findItem(R.id.menu_support);
 
+        if(!isPurchased()){
+            support.setVisible(true);
+        }
         // Open drawer means we hide most actions
         if (isRootsDrawerOpen()) {
             search.setVisible(false);
@@ -927,6 +933,10 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             Bundle params = new Bundle();
             AnalyticsManager.logEvent("app_exit");
             android.os.Process.killProcess(android.os.Process.myPid());
+            return true;
+        }  else if (id == R.id.menu_support) {
+            openPurchaseActivity(this);
+            AnalyticsManager.logEvent("support_open");
             return true;
         }
         return false;
