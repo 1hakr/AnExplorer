@@ -2,29 +2,39 @@ package dev.dworks.apps.anexplorer.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.ArrayRecyclerAdapter;
+import dev.dworks.apps.anexplorer.misc.IconUtils;
+import dev.dworks.apps.anexplorer.misc.Utils;
 import dev.dworks.apps.anexplorer.service.TransferService;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import dev.dworks.apps.anexplorer.transfer.TransferHelper;
 import dev.dworks.apps.anexplorer.transfer.model.TransferStatus;
+import dev.dworks.apps.anexplorer.ui.CircleImage;
 import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
-import dev.dworks.apps.anexplorer.adapter.TransferAdapter.ViewHolder;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_STOP_TRANSFER;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.EXTRA_TRANSFER;
 
 public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHolder> {
 
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
     private Context mContext;
     private OnItemClickListener onItemClickListener;
 
@@ -33,14 +43,52 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transfer, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+        if (viewType == TYPE_HEADER) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transfer_header, parent, false);
+            HeaderViewHolder viewHolder = new HeaderViewHolder(view);
+            return  viewHolder;
+        }
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_transfer, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.setData(position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+         if (holder instanceof ViewHolder) {
+            ViewHolder viewHolder = (ViewHolder) holder;
+            viewHolder.setData(position);
+        } else if (holder instanceof HeaderViewHolder) {
+             HeaderViewHolder viewHolder = (HeaderViewHolder) holder;
+            viewHolder.setData(position);
+        }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        if (position == 0) {
+            return TYPE_HEADER;
+        }
+        return get(position).getId();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_HEADER;
+        }
+        return TYPE_ITEM;
+    }
+
+    @Override
+    public int getItemCount() {
+        return super.getItemCount() + 1;
+    }
+
+    @Override
+    public TransferStatus get(int location) {
+        return super.get(location - 1);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -52,14 +100,9 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
     }
 
     public interface OnItemClickListener {
-        void onItemClick(ViewHolder item, View view, int position);
-        void onItemLongClick(ViewHolder item, View view, int position);
-        void onItemViewClick(ViewHolder item, View view, int position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return get(position).getId();
+        void onItemClick(RecyclerView.ViewHolder item, View view, int position);
+        void onItemLongClick(RecyclerView.ViewHolder item, View view, int position);
+        void onItemViewClick(RecyclerView.ViewHolder item, View view, int position);
     }
 
     public void update(TransferStatus transferStatus) {
@@ -92,7 +135,6 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
             mBytes = itemView.findViewById(android.R.id.summary);
             mStop = itemView.findViewById(R.id.action);
 
-            // This never changes
             // mStop.setIcon(R.drawable.ic_action_stop);
             mStop.setText(R.string.adapter_transfer_stop);
         }
@@ -159,6 +201,53 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
                     mState.setTextColor(ContextCompat.getColor(mContext, R.color.md_red_500));
                     mStop.setVisibility(View.INVISIBLE);
                     break;
+            }
+        }
+    }
+
+    public class HeaderViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView status;
+        private Button action;
+
+        public HeaderViewHolder(View itemView) {
+            super(itemView);
+            int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
+            View background = itemView.findViewById(R.id.background);
+            if (!isTelevision()) {
+                background.setBackgroundColor(color);
+            }
+            CircleImage iconBackground = itemView.findViewById(R.id.icon_mime_background);
+            iconBackground.setBackgroundColor(SettingsActivity.getPrimaryColor());
+            ImageView icon = itemView.findViewById(android.R.id.icon);
+            icon.setImageDrawable(IconUtils.applyTint(itemView.getContext(), R.drawable.ic_root_transfer, Color.WHITE));
+            status = (TextView) itemView.findViewById(R.id.status);
+            action = (Button) itemView.findViewById(R.id.action);
+            action.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(null != onItemClickListener){
+                        onItemClickListener.onItemViewClick(HeaderViewHolder.this, action, 0);
+                    }
+                }
+            });
+
+        }
+
+        public void setData(int position) {
+            setStatus(TransferHelper.isServerRunning(DocumentsApplication.getInstance().getApplicationContext()));
+        }
+
+        public void setStatus(boolean running){
+            Context context = status.getContext();
+            if(running){
+                status.setTextColor(SettingsActivity.getAccentColor());
+                status.setText(context.getString(R.string.ftp_status_running));
+                action.setText(R.string.stop_ftp);
+            } else {
+                status.setTextColor(ContextCompat.getColor(context, R.color.item_doc_grid_overlay_disabled));
+                status.setText(context.getString(R.string.ftp_status_not_running));
+                action.setText(R.string.start_ftp);
             }
         }
     }

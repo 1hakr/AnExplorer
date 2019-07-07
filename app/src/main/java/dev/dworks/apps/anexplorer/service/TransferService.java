@@ -50,7 +50,6 @@ public class TransferService extends Service {
 
     private NotificationHelper mNotificationHelper;
     private TransferServer mTransferServer;
-
     private TransferHelper mTransferHelper;
 
     @Override

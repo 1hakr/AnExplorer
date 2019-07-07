@@ -47,15 +47,13 @@ import static dev.dworks.apps.anexplorer.transfer.TransferHelper.EXTRA_TRANSFER;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.TRANSFER_UPDATED;
 
 public class TransferFragment extends RecyclerFragment
-        implements TransferAdapter.OnItemClickListener, View.OnClickListener  {
+        implements TransferAdapter.OnItemClickListener {
 
     private static final String TAG = "TransferFragment";
 
     private TransferAdapter mAdapter;
     private String emptyText;
     private TransferHelper mTransferHelper;
-    private TextView status;
-    private Button action;
 
     public static void show(FragmentManager fm) {
         final TransferFragment fragment = new TransferFragment();
@@ -103,22 +101,6 @@ public class TransferFragment extends RecyclerFragment
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createItemTouchHelper());
         itemTouchHelper.attachToRecyclerView(getListView());
-
-
-        int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
-        View background = view.findViewById(R.id.background);
-        if (!isTelevision()) {
-            background.setBackgroundColor(color);
-        }
-        CircleImage iconBackground = view.findViewById(R.id.icon_mime_background);
-        iconBackground.setBackgroundColor(SettingsActivity.getPrimaryColor());
-        ImageView icon = view.findViewById(android.R.id.icon);
-        icon.setImageDrawable(IconUtils.applyTint(getContext(), R.drawable.ic_root_transfer, Color.WHITE));
-        status = (TextView) view.findViewById(R.id.status);
-        action = (Button) view.findViewById(R.id.action);
-        action.setOnClickListener(this);
-
-        setStatus(TransferHelper.isServerRunning(getActivity()));
     }
 
     @Override
@@ -128,8 +110,20 @@ public class TransferFragment extends RecyclerFragment
 
         mAdapter = new TransferAdapter(context);
         mAdapter.setOnItemClickListener(this);
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                if(isWatch()) {
+                    Utils.setItemsCentered(getListView(), mAdapter.getItemCount() > 1);
+                }
+                super.onChanged();
+            }
+        });
         setListAdapter(mAdapter);
         showRecyclerView();
+        if(isWatch()) {
+            Utils.setItemsCentered(getListView(), mAdapter.getItemCount() > 1);
+        }
     }
 
     @Override
@@ -139,9 +133,9 @@ public class TransferFragment extends RecyclerFragment
         intentFilter.addAction(TRANSFER_UPDATED);
         getActivity().registerReceiver(mBroadcastReceiver, intentFilter);
 
-        Intent broadcastIntent = new Intent(getActivity(), TransferService.class);
-        broadcastIntent.setAction(ACTION_BROADCAST);
-        getActivity().startService(broadcastIntent);
+        // Intent broadcastIntent = new Intent(getActivity(), TransferService.class);
+        // broadcastIntent.setAction(ACTION_BROADCAST);
+        // getActivity().startService(broadcastIntent);
     }
 
     @Override
@@ -177,22 +171,36 @@ public class TransferFragment extends RecyclerFragment
     }
 
     @Override
-    public void onItemClick(TransferAdapter.ViewHolder item, View view, int position) {
+    public void onItemClick(RecyclerView.ViewHolder item, View view, int position) {
 
     }
 
     @Override
-    public void onItemLongClick(TransferAdapter.ViewHolder item, View view, int position) {
+    public void onItemLongClick(RecyclerView.ViewHolder item, View view, int position) {
 
     }
 
     @Override
-    public void onItemViewClick(TransferAdapter.ViewHolder item, View view, int position) {
-
+    public void onItemViewClick(RecyclerView.ViewHolder item, View view, int position) {
+        if(!TransferHelper.isServerRunning(getActivity())){
+            ((TransferAdapter.HeaderViewHolder)item).setStatus(true);
+            mTransferHelper.startTransferServer();
+        }
+        else{
+            ((TransferAdapter.HeaderViewHolder)item).setStatus(false);
+            mTransferHelper.stopTransferServer();
+        }
     }
 
     private ItemTouchHelper.Callback createItemTouchHelper() {
         ItemTouchHelper.Callback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.START | ItemTouchHelper.END) {
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if (viewHolder instanceof TransferAdapter.HeaderViewHolder) return 0;
+                return super.getSwipeDirs(recyclerView, viewHolder);
+            }
+
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -201,8 +209,11 @@ public class TransferFragment extends RecyclerFragment
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
+                if(position == 0){
+                    return;
+                }
                 TransferStatus transferStatus = mAdapter.get(position);
-                mAdapter.remove(position);
+                mAdapter.remove(position - 1);
                 showRecyclerView();
 
                 // Remove the item from the service
@@ -223,32 +234,4 @@ public class TransferFragment extends RecyclerFragment
             showRecyclerView();
         }
     };
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.action:
-                if(!TransferHelper.isServerRunning(getActivity())){
-                    setStatus(true);
-                    mTransferHelper.startTransferServer();
-                }
-                else{
-                    setStatus(false);
-                    mTransferHelper.stopTransferServer();
-                }
-                break;
-        }
-    }
-
-    private void setStatus(boolean running){
-        if(running){
-            status.setTextColor(SettingsActivity.getAccentColor());
-            status.setText(getString(R.string.ftp_status_running));
-            action.setText(R.string.stop_ftp);
-        } else {
-            status.setTextColor(ContextCompat.getColor(getContext(), R.color.item_doc_grid_overlay_disabled));
-            status.setText(getString(R.string.ftp_status_not_running));
-            action.setText(R.string.start_ftp);
-        }
-    }
 }
