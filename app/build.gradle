@@ -116,7 +116,7 @@ dependencies {
     implementation 'commons-net:commons-net:3.6'
     implementation 'com.zsoltsafrany:needle:1.0.0'
     implementation 'com.cloudrail:cloudrail-si-android:2.22.4'
-    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.0.0'
@@ -124,6 +124,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-cast-framework:17.0.0'
     implementation 'com.github.javiersantos:AppUpdater:2.6.5'
     implementation 'com.nanohttpd:nanohttpd:2.2.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     freeImplementation 'com.google.firebase:firebase-core:17.0.0'
