@@ -166,7 +166,7 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
             iconMime.setImageResource(R.drawable.ic_stat_download);
             iconMimeBackground.setVisibility(View.VISIBLE);
             iconMimeBackground.setBackgroundColor(ContextCompat.getColor(mContext, R.color.item_transfer));
-            mDevice.setText(transferStatus.getRemoteDeviceName() + transferStatus.getId());
+            mDevice.setText(transferStatus.getRemoteDeviceName());
             mProgress.setMax(0);
             mProgress.setProgress(transferStatus.getProgress());
             mProgress.setColor(SettingsActivity.getAccentColor());

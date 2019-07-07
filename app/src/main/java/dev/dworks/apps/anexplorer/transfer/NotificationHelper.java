@@ -1,5 +1,6 @@
 package dev.dworks.apps.anexplorer.transfer;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -45,12 +46,10 @@ import static dev.dworks.apps.anexplorer.transfer.TransferHelper.EXTRA_TRANSFER;
  */
 public class NotificationHelper {
 
-    private static final String TAG = "TransferNotificationMgr";
+    private static final String TAG = "NotificationHelper";
 
     private static final int NOTIFICATION_ID = 1;
-
     private Service mService;
-
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
     private PendingIntent mIntent;
@@ -71,6 +70,7 @@ public class NotificationHelper {
         RootsCache roots = DocumentsApplication.getRootsCache(mService);
         RootInfo root = roots.getTransferRoot();
 
+        long when = System.currentTimeMillis();
         CharSequence stopText = mService.getString(R.string.ftp_notif_stop_server);
         Bundle args = new Bundle();
         args.putParcelable(EXTRA_ROOT, root);
@@ -86,7 +86,15 @@ public class NotificationHelper {
                 .setContentIntent(mIntent)
                 .setContentTitle(mService.getString(R.string.service_transfer_server_title))
                 .setColor(SettingsActivity.getPrimaryColor())
-                .setSmallIcon(R.drawable.ic_stat_server);
+                .setSmallIcon(R.drawable.ic_stat_server)
+                .setLocalOnly(true)
+                .setWhen(when)
+                .setOngoing(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setShowWhen(false);
 
         Intent stopIntent = new Intent(ACTION_STOP_LISTENING);
         stopIntent.setPackage(BuildConfig.APPLICATION_ID);
@@ -111,8 +119,6 @@ public class NotificationHelper {
 
         NotificationCompat.Action stopAction = actionBuilder.build();
         mBuilder.addAction(stopAction);
-
-        mBuilder.setPriority(NotificationManagerCompat.IMPORTANCE_MAX);
     }
 
     /**
@@ -280,6 +286,7 @@ public class NotificationHelper {
                             .setOngoing(true)
                             .setProgress(100, transferStatus.getProgress(), false)
                             .setSmallIcon(icon)
+                            .setCategory(NotificationCompat.CATEGORY_PROGRESS)
                             .addAction(
                                     new NotificationCompat.Action.Builder(
                                             R.drawable.ic_action_stop,
