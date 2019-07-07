@@ -789,7 +789,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         final MenuItem settings = menu.findItem(R.id.menu_settings);
         final MenuItem support = menu.findItem(R.id.menu_support);
 
-        if(!isPurchased()){
+        if(!isPurchased() && !isSpecialDevice()){
             support.setVisible(true);
         }
         // Open drawer means we hide most actions
