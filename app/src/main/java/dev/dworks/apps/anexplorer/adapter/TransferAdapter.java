@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,6 @@ import dev.dworks.apps.anexplorer.ui.CircleImage;
 import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
-import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_STOP_TRANSFER;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.EXTRA_TRANSFER;
 
@@ -71,7 +71,7 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
         if (position == 0) {
             return TYPE_HEADER;
         }
-        return get(position).getId();
+        return getItem(position).getId();
     }
 
     @Override
@@ -88,8 +88,8 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
     }
 
     @Override
-    public TransferStatus get(int location) {
-        return super.get(location - 1);
+    public TransferStatus getItem(int position) {
+        return super.getItem(position - 1);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -108,6 +108,7 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
 
     public void update(TransferStatus transferStatus) {
         int index = indexOf(transferStatus);
+        Log.i("yoyi", String.valueOf(index));
         if (index < 0) {
             add(transferStatus);
         } else {
@@ -148,8 +149,7 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
         }
 
         public void setData(int position) {
-
-            TransferStatus transferStatus = get(position);
+            TransferStatus transferStatus = getItem(position);
             // Generate transfer byte string
             final CharSequence bytesText;
             if (transferStatus.getBytesTotal() == 0) {

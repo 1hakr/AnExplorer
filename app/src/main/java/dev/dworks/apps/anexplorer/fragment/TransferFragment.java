@@ -213,7 +213,7 @@ public class TransferFragment extends RecyclerFragment
                 if(position == 0){
                     return;
                 }
-                TransferStatus transferStatus = mAdapter.get(position);
+                TransferStatus transferStatus = mAdapter.getItem(position);
                 mAdapter.remove(position - 1);
                 showRecyclerView();
 

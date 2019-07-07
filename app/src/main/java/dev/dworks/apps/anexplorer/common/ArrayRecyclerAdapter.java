@@ -7,193 +7,65 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder>
-        extends RecyclerView.Adapter<VH> implements List<E> {
+public abstract class ArrayRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
+        extends RecyclerView.Adapter<VH> {
 
-    private final List<E> list;
+    protected final ArrayList<T> mData = new ArrayList<T>();
 
-    public ArrayRecyclerAdapter() {
-        list = new ArrayList<E>();
+    public void add(final T item) {
+        if (item == null) return;
+        mData.add(item);
+        notifyDataSetChanged();
     }
 
-    public ArrayRecyclerAdapter(int capacity) {
-        list = new ArrayList<E>(capacity);
+    public void addAll(final Collection<? extends T> collection) {
+        mData.addAll(collection);
+        notifyDataSetChanged();
     }
 
-    public ArrayRecyclerAdapter(Collection<? extends E> collection) {
-        list = new ArrayList<E>(collection);
+    public T set(int location, T object) {
+        T origin = mData.set(location, object);
+        notifyItemChanged(location  + 1);
+        return origin;
     }
 
-    @Override
-    public int getItemCount() {
-        return size();
+    public int indexOf(Object object) {
+        return mData.indexOf(object);
     }
 
-    @Override
-    public void add(int location, E object) {
-        list.set(location, object);
-        notifyItemInserted(location);
-    }
-
-    @Override
-    public boolean add(E object) {
-        if (list.add(object)) {
-            notifyItemInserted(list.size() - 1);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean addAll(int location, Collection<? extends E> collection) {
-        if (list.addAll(location, collection)) {
-            notifyItemRangeInserted(location, collection.size());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends E> collection) {
-        if (list.addAll(collection)) {
-            notifyItemRangeInserted(list.size() - 1, collection.size());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public void clear() {
-        list.clear();
+        mData.clear();
         notifyDataSetChanged();
     }
 
     @Override
-    public boolean contains(Object object) {
-        return list.contains(object);
+    public int getItemCount() {
+        return mData.size();
     }
 
-    @Override
-    public boolean containsAll(@NonNull Collection<?> collection) {
-        return list.containsAll(collection);
+    public T getItem(final int position) {
+        return mData.get(position);
     }
 
-    @Override
-    public E get(int location) {
-        return list.get(location);
+    public boolean remove(final int position) {
+        final boolean ret = mData.remove(position) != null;
+        notifyDataSetChanged();
+        return ret;
     }
 
-    @Override
-    public int indexOf(Object object) {
-        return list.indexOf(object);
+    public void removeAll(final List<T> collection) {
+        mData.removeAll(collection);
+        notifyDataSetChanged();
     }
 
-    @Override
-    public boolean isEmpty() {
-        return list.isEmpty();
-    }
-
-    @NonNull
-    @Override
-    public Iterator<E> iterator() {
-        return list.iterator();
-    }
-
-    @Override
-    public int lastIndexOf(Object object) {
-        return list.lastIndexOf(object);
-    }
-
-    @NonNull
-    @Override
-    public ListIterator<E> listIterator() {
-        return list.listIterator();
-    }
-
-    @NonNull
-    @Override
-    public ListIterator<E> listIterator(int location) {
-        return list.listIterator(location);
-    }
-
-    @Override
-    public E remove(int location) {
-        E item = list.remove(location);
-        notifyItemRemoved(location);
-        return item;
-    }
-
-    @Override
-    public boolean remove(Object object) {
-        int index = list.indexOf(object);
-        if (list.remove(object)) {
-            notifyItemRemoved(index);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean removeAll(@NonNull Collection<?> collection) {
-        boolean modified = false;
-        for (int i = 0; i < list.size(); i++) {
-            if (collection.contains(list.get(i))) {
-                list.remove(i);
-                notifyItemRemoved(i);
-                modified = true;
-            }
-        }
-        return modified;
-    }
-
-    @Override
-    public boolean retainAll(@NonNull Collection<?> collection) {
-        boolean modified = false;
-        for (int i = 0; i < list.size(); i++) {
-            if (!collection.contains(list.get(i))) {
-                list.remove(i);
-                notifyItemRemoved(i);
-                modified = true;
-            }
-        }
-        return modified;
-    }
-
-    @Override
-    public E set(int location, E object) {
-        E origin = list.set(location, object);
-        notifyItemChanged(location);
-        return origin;
-    }
-
-    @Override
-    public int size() {
-        return list.size();
-    }
-
-    @NonNull
-    @Override
-    public List<E> subList(int start, int end) {
-        return list.subList(start, end);
-    }
-
-    @NonNull
-    @Override
-    public Object[] toArray() {
-        return list.toArray();
-    }
-
-    @NonNull
-    @Override
-    public <T> T[] toArray(@NonNull T[] array) {
-        return list.toArray(array);
+    public void sort(final Comparator<? super T> comparator) {
+        Collections.sort(mData, comparator);
+        notifyDataSetChanged();
     }
 }
