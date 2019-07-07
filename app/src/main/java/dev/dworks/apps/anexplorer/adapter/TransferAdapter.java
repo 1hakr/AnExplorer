@@ -27,6 +27,7 @@ import dev.dworks.apps.anexplorer.transfer.model.TransferStatus;
 import dev.dworks.apps.anexplorer.ui.CircleImage;
 import dev.dworks.apps.anexplorer.ui.NumberProgressBar;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_STOP_TRANSFER;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.EXTRA_TRANSFER;
@@ -221,7 +222,7 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
             super(itemView);
             int color = Utils.getStatusBarColor(SettingsActivity.getPrimaryColor());
             View background = itemView.findViewById(R.id.background);
-            if (!isTelevision()) {
+            if (!isSpecialDevice()) {
                 background.setBackgroundColor(color);
             }
             CircleImage iconBackground = itemView.findViewById(R.id.icon_mime_background);

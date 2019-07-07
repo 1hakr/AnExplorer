@@ -74,8 +74,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="No connections yet!"
-            android:visibility="gone"
-            app:drawableTop="@drawable/ic_empty_file" />
+            android:visibility="gone" />
     </FrameLayout>
 
 </dev.dworks.apps.anexplorer.ui.DirectoryView>

@@ -11,6 +11,7 @@ import java.util.List;
 import androidx.wear.widget.drawer.WearableNavigationDrawerView;
 
 import dev.dworks.apps.anexplorer.fragment.RootsFragment;
+import dev.dworks.apps.anexplorer.model.GroupInfo;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 
 
@@ -36,6 +37,7 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
         final List<RootInfo> recent = new ArrayList<>();
         final List<RootInfo> connection = new ArrayList<>();
         final List<RootInfo> transfer = new ArrayList<>();
+        final List<RootInfo> receive = new ArrayList<>();
         final List<RootInfo> rooted = new ArrayList<>();
         final List<RootInfo> appbackup = new ArrayList<>();
         final List<RootInfo> usb = new ArrayList<>();
@@ -61,6 +63,8 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
                 // connection.add(root);
             } else if (root.isTransfer()) {
                 transfer.add(root);
+            }  else if (root.isReceiveFolder()) {
+                receive.add(root);
             } else if (root.isRootedStorage()) {
                 rooted.add(root);
             } else if (root.isPhoneStorage()) {
@@ -99,6 +103,11 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
             home.addAll(phone);
             home.addAll(rooted);
             groupRoots.addAll(home);
+        }
+
+        if(!transfer.isEmpty()){
+            transfer.addAll(receive);
+            groupRoots.addAll(transfer);
         }
 
         if(!network.isEmpty()){

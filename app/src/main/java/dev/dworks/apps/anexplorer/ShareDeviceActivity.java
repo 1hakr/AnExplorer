@@ -78,6 +78,7 @@ public class ShareDeviceActivity extends ActionBarActivity implements AdapterVie
             bar.setDisplayHomeAsUpEnabled(true);
             if(isWatch()) {
                 bar.setHomeAsUpIndicator(R.drawable.ic_dummy_icon);
+                bar.hide();
             }
             bar.setTitle("Nearby devices");
         }

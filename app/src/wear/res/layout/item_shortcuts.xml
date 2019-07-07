@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackgroundBorderless"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="center"
+        android:minHeight="@dimen/home_item_height"
+        android:orientation="vertical"
+        android:padding="@dimen/home_item_padding">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:duplicateParentState="true">
+
+            <dev.dworks.apps.anexplorer.ui.CircleImage
+                android:id="@+id/icon_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                app:background="@color/accentColor" />
+
+            <ImageView
+                android:id="@android:id/icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:contentDescription="@null"
+                android:duplicateParentState="true"
+                android:padding="15dp"
+                android:layout_gravity="center"
+                tools:src="@drawable/ic_root_server" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="start"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="FTP" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
