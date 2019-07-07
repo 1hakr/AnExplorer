@@ -156,7 +156,7 @@ public class TransferService extends Service {
             Transfer transfer = new Transfer(device, TransferHelper.deviceName(), bundle);
             transfer.setId(nextId);
             mTransferHelper.addTransfer(transfer, intent);
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
 
             mNotificationHelper.stopService();

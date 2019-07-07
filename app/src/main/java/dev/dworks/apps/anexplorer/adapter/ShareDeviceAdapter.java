@@ -13,6 +13,8 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.ArrayListAdapter;
 import dev.dworks.apps.anexplorer.transfer.model.Device;
 
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+
 public class ShareDeviceAdapter extends ArrayListAdapter<Device, ArrayListAdapter.ViewHolder> {
 
     private static final String TAG = "ShareDeviceAdapter";
@@ -60,6 +62,9 @@ public class ShareDeviceAdapter extends ArrayListAdapter<Device, ArrayListAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
+            if(isTelevision()) {
+                itemView.setFocusable(true);
+            }
             icon = (ImageView) itemView.findViewById(android.R.id.icon);
             name = (TextView) itemView.findViewById(android.R.id.title);
             address = (TextView) itemView.findViewById(android.R.id.summary);
