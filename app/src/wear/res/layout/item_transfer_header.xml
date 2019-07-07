@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="middle"
             android:singleLine="true"
-            android:text="Transfer Server"
+            android:text="Receive Files"
             android:textSize="16sp"
             android:paddingEnd="10dp"
             android:gravity="center_horizontal"

@@ -307,19 +307,27 @@ public class RootInfo implements Durable, Parcelable {
             if (isWhatsApp()) {
                 derivedIcon = R.drawable.ic_root_whatsapp;
                 derivedColor = R.color.item_whatsapp;
+                derivedTag = "whatsapp";
             } else if (isTelegram()) {
                 derivedIcon = R.drawable.ic_root_telegram;
                 derivedColor = R.color.item_telegram;
+                derivedTag = "telegram";
             } else if (isTelegramX()) {
                 derivedIcon = R.drawable.ic_root_telegram;
                 derivedColor = R.color.item_telegramx;
+                derivedTag = "telegramx";
             }
         } else if (isTransfer()) {
             derivedIcon = R.drawable.ic_root_transfer;
             derivedColor = R.color.item_transfer;
+            derivedTag = "transfer";
         }  else if (isCast()) {
             derivedIcon = R.drawable.ic_root_cast;
             derivedColor = R.color.item_cast;
+            derivedTag = "cast";
+        }  else if (isReceiveFolder()) {
+            derivedIcon = R.drawable.ic_stat_download;
+            derivedTag = "receivefiles";
         }
     }
 
@@ -398,6 +406,11 @@ public class RootInfo implements Durable, Parcelable {
     public boolean isAppBackupFolder() {
         return ExternalStorageProvider.AUTHORITY.equals(authority)
                 && ExternalStorageProvider.ROOT_ID_APP_BACKUP.equals(rootId);
+    }
+
+    public boolean isReceiveFolder() {
+        return ExternalStorageProvider.AUTHORITY.equals(authority)
+                && ExternalStorageProvider.ROOT_ID_RECIEVE_FLES.equals(rootId);
     }
 
     public boolean isBluetoothFolder() {

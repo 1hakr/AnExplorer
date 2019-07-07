@@ -63,7 +63,7 @@
                 android:ellipsize="middle"
                 android:paddingEnd="10dp"
                 android:singleLine="true"
-                android:text="Transfer Server:"
+                android:text="Receive Files:"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@android:color/white"
                 android:textSize="16sp" />

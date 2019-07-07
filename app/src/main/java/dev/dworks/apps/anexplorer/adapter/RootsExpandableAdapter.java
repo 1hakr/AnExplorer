@@ -34,6 +34,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         final List<Item> recent = new ArrayList<>();
         final List<Item> connection = new ArrayList<>();
         final List<Item> transfer = new ArrayList<>();
+        final List<Item> receive = new ArrayList<>();
         final List<Item> rooted = new ArrayList<>();
         final List<Item> appbackup = new ArrayList<>();
         final List<Item> usb = new ArrayList<>();
@@ -61,6 +62,8 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
                 connection.add(new RootItem(root));
             } else if (root.isTransfer()) {
                 transfer.add(new RootItem(root));
+            } else if (root.isReceiveFolder()) {
+                receive.add(new RootItem(root));
             } else if (root.isCast()) {
                 cast.add(new RootItem(root));
             } else if (root.isRootedStorage()) {
@@ -109,7 +112,11 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
             groupRoots.add(new GroupInfo("Messengers Media", messengers));
         }
 
-        network.addAll(transfer);
+        if(!transfer.isEmpty()){
+            transfer.addAll(receive);
+            groupRoots.add(new GroupInfo("Transfer", transfer));
+        }
+
         if (!isSpecialDevice()) {
             network.addAll(cast);
         }

@@ -110,6 +110,7 @@ public class ExternalStorageProvider extends StorageProvider {
     public static final String ROOT_ID_DOWNLOAD = "download";
     public static final String ROOT_ID_BLUETOOTH = "bluetooth";
     public static final String ROOT_ID_APP_BACKUP = "app_backup";
+    public static final String ROOT_ID_RECIEVE_FLES = "receive_files";
     public static final String ROOT_ID_HIDDEN = "hidden";
     public static final String ROOT_ID_BOOKMARK = "bookmark";
 
@@ -397,6 +398,26 @@ public class ExternalStorageProvider extends StorageProvider {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
+        try {
+            final String rootId = ROOT_ID_RECIEVE_FLES;
+            final File path = Environment.getExternalStoragePublicDirectory("Download/AnExplorer");
+
+            final RootInfo root = new RootInfo();
+            mRoots.put(rootId, root);
+
+            root.rootId = rootId;
+            root.flags = Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_EDIT | Root.FLAG_LOCAL_ONLY | Root.FLAG_ADVANCED
+                    | Root.FLAG_SUPPORTS_SEARCH;
+            if (isEmpty(path)) {
+                root.flags |= Root.FLAG_EMPTY;
+            }
+            root.title = getContext().getString(R.string.root_receive);
+            root.path = path;
+            root.docId = getDocIdForFile(path);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 	}
 
     private boolean isEmpty(File file) {
