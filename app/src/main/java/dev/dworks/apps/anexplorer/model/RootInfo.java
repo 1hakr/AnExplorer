@@ -598,7 +598,7 @@ public class RootInfo implements Durable, Parcelable {
     public Drawable loadNavDrawerIcon(Context context) {
         if (derivedIcon != 0) {
             return IconUtils.applyTint(context, derivedIcon,
-                    ContextCompat.getColor(context, derivedColor));
+                    ContextCompat.getColor(context, android.R.color.white));
         } else {
             return IconUtils.loadPackageIcon(context, authority, icon);
         }

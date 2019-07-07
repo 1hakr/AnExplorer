@@ -20,13 +20,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/item_transfer_header" />
-
     <dev.dworks.apps.anexplorer.ui.DirectoryView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?android:attr/windowBackground">
-
 
         <LinearLayout
             android:id="@+id/progressContainer"
@@ -69,6 +66,7 @@
                 android:drawSelectorOnTop="true"
                 android:horizontalSpacing="@dimen/grid_item_padding"
                 android:scrollbars="vertical"
+                android:paddingBottom="@dimen/document_list_padding"
                 app:gridColumnWidth="@dimen/grid_item_width"
                 app:type="list" />
 
@@ -79,6 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:layout_marginTop="20dp"
                 android:text="@string/activity_transfer_empty_text"
                 android:visibility="visible" />
         </FrameLayout>

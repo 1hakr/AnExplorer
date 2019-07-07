@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 
 import androidx.wear.widget.drawer.WearableNavigationDrawerView;
+
+import dev.dworks.apps.anexplorer.fragment.RootsFragment;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 
 
@@ -33,6 +35,7 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
         final List<RootInfo> phone = new ArrayList<>();
         final List<RootInfo> recent = new ArrayList<>();
         final List<RootInfo> connection = new ArrayList<>();
+        final List<RootInfo> transfer = new ArrayList<>();
         final List<RootInfo> rooted = new ArrayList<>();
         final List<RootInfo> appbackup = new ArrayList<>();
         final List<RootInfo> usb = new ArrayList<>();
@@ -56,6 +59,8 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
                 }
             } else if (root.isConnections()) {
                 // connection.add(root);
+            } else if (root.isTransfer()) {
+                transfer.add(root);
             } else if (root.isRootedStorage()) {
                 rooted.add(root);
             } else if (root.isPhoneStorage()) {
@@ -83,7 +88,7 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
             } else if (RootInfo.isNetwork(root)) {
                 network.add(root);
             } else if (RootInfo.isCloud(root)) {
-                network.add(root);
+                cloud.add(root);
             }
         }
 
@@ -98,6 +103,8 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
 
         if(!network.isEmpty()){
             network.addAll(connection);
+            network.addAll(transfer);
+            network.addAll(cloud);
             groupRoots.addAll(network);
         } else if(!connection.isEmpty()){
             groupRoots.addAll(connection);
@@ -126,7 +133,6 @@ public class RootsCommonAdapter extends WearableNavigationDrawerView.WearableNav
         group.clear();
         group.addAll(groupRoots);
     }
-
 
     @Override
     public String getItemText(int i) {

@@ -163,7 +163,7 @@ public class TransferFragment extends RecyclerFragment
 
     public void showRecyclerView(){
         setListShown(true);
-        if (mAdapter.getItemCount() == 0) {
+        if (mAdapter.getItemCount() == 1) {
             setEmptyText(emptyText);
         } else {
             setEmptyText("");
