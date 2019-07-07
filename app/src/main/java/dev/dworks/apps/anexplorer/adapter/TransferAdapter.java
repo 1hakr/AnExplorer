@@ -126,7 +126,14 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
 
         public ViewHolder(View itemView) {
             super(itemView);
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(null != onItemClickListener) {
+                        onItemClickListener.onItemClick(ViewHolder.this, v, getLayoutPosition());
+                    }
+                }
+            });
             iconMime = (ImageView) itemView.findViewById(R.id.icon_mime);
             iconMimeBackground = itemView.findViewById(R.id.icon_mime_background);
             mDevice = itemView.findViewById(android.R.id.title);
@@ -227,7 +234,7 @@ public class TransferAdapter extends ArrayRecyclerAdapter<TransferStatus, ViewHo
                 @Override
                 public void onClick(View v) {
                     if(null != onItemClickListener){
-                        onItemClickListener.onItemViewClick(HeaderViewHolder.this, action, 0);
+                        onItemClickListener.onItemViewClick(HeaderViewHolder.this, action, getLayoutPosition());
                     }
                 }
             });

@@ -38,6 +38,7 @@ import dev.dworks.apps.anexplorer.transfer.model.TransferStatus;
 import dev.dworks.apps.anexplorer.ui.CircleImage;
 
 import static android.widget.LinearLayout.VERTICAL;
+import static dev.dworks.apps.anexplorer.DocumentsApplication.isSpecialDevice;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
 import static dev.dworks.apps.anexplorer.transfer.TransferHelper.ACTION_BROADCAST;
@@ -96,11 +97,11 @@ public class TransferFragment extends RecyclerFragment
         if(!isWatch()) {
             getListView().addItemDecoration(decoration);
         }
-        setLayoutManager(new LinearLayoutManager(view.getContext()));
-        setHasFixedSize(true);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createItemTouchHelper());
-        itemTouchHelper.attachToRecyclerView(getListView());
+        if(!isSpecialDevice()) {
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createItemTouchHelper());
+            itemTouchHelper.attachToRecyclerView(getListView());
+        }
     }
 
     @Override

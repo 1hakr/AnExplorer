@@ -13,73 +13,66 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.dworks.apps.anexplorer.ui.DirectoryView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="?android:attr/windowBackground">
 
-    <dev.dworks.apps.anexplorer.ui.DirectoryView
+    <LinearLayout
+        android:id="@+id/progressContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?android:attr/windowBackground">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/progressContainer"
+        <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
+            android:id="@+id/progressBar"
+            style="@style/ListProgress"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:paddingTop="4dip"
+            android:singleLine="true"
+            android:text="@string/loading"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/listContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
+            android:id="@id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:drawSelectorOnTop="true"
+            android:horizontalSpacing="@dimen/grid_item_padding"
+            android:paddingBottom="@dimen/document_list_padding"
+            android:scrollbars="vertical"
+            app:gridColumnWidth="@dimen/grid_item_width"
+            app:type="list" />
+
+        <dev.dworks.apps.anexplorer.ui.CompatTextView
+            android:id="@android:id/empty"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
             android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <dev.dworks.apps.anexplorer.ui.MaterialProgressBar
-                android:id="@+id/progressBar"
-                style="@style/ListProgress"
-                android:layout_width="@dimen/progress_bar_size"
-                android:layout_height="@dimen/progress_bar_size"
-                android:layout_gravity="center"
-                android:indeterminate="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif"
-                android:paddingTop="4dip"
-                android:singleLine="true"
-                android:text="@string/loading"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:visibility="gone" />
-        </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/listContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <dev.dworks.apps.anexplorer.ui.RecyclerViewPlus
-                android:id="@id/recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:drawSelectorOnTop="true"
-                android:horizontalSpacing="@dimen/grid_item_padding"
-                android:scrollbars="vertical"
-                android:paddingBottom="@dimen/document_list_padding"
-                app:gridColumnWidth="@dimen/grid_item_width"
-                app:type="list" />
-
-            <dev.dworks.apps.anexplorer.ui.CompatTextView
-                android:id="@android:id/empty"
-                style="@style/TextAppearance.AppCompat.Subhead"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_marginTop="20dp"
-                android:text="@string/activity_transfer_empty_text"
-                android:visibility="visible" />
-        </FrameLayout>
-    </dev.dworks.apps.anexplorer.ui.DirectoryView>
-</LinearLayout>
+            android:text="@string/activity_transfer_empty_text"
+            android:visibility="visible" />
+    </FrameLayout>
+</dev.dworks.apps.anexplorer.ui.DirectoryView>

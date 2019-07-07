@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-
     <style name="DialogEnterNoAnimation">
         <item name="android:windowEnterAnimation">@anim/no_animation</item>
     </style>
@@ -59,6 +58,9 @@
         <item name="android:layout">@layout/preference_category_material</item>
         <item name="android:shouldDisableView">false</item>
         <item name="android:selectable">false</item>
+    </style>
+
+    <style name="ButtonTheme" parent="@style/Widget.AppCompat.Button">
     </style>
 
 </resources>

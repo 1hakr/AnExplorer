@@ -1,130 +1,138 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/item_root"
-    android:baselineAligned="false"
-    android:gravity="center_vertical"
-    android:minHeight="48dp"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/list_item_padding"
-    android:paddingLeft="@dimen/list_item_padding"
-    android:paddingEnd="@dimen/list_item_padding"
-    android:paddingRight="@dimen/list_item_padding">
-
-    <FrameLayout
-        android:id="@android:id/icon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp">
-
-        <dev.dworks.apps.anexplorer.ui.CircleImage
-            android:id="@+id/icon_mime_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/icon_mime"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:contentDescription="@null"
-            android:padding="5dp"
-            android:scaleType="centerInside" />
-
-        <ImageView
-            android:id="@+id/icon_thumb"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:contentDescription="@null"
-            android:cropToPadding="true"
-            android:scaleType="centerCrop" />
-
-    </FrameLayout>
+    android:background="@drawable/item_doc_list_background"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:baselineAligned="false"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/list_item_padding"
+        android:paddingLeft="@dimen/list_item_padding"
+        android:paddingEnd="@dimen/list_item_padding"
+        android:paddingRight="@dimen/list_item_padding">
+
+        <FrameLayout
+            android:id="@android:id/icon"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp">
+
+            <dev.dworks.apps.anexplorer.ui.CircleImage
+                android:id="@+id/icon_mime_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/icon_mime"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:padding="5dp"
+                android:scaleType="centerInside" />
+
+            <ImageView
+                android:id="@+id/icon_thumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                android:cropToPadding="true"
+                android:scaleType="centerCrop" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-        <TextView
-            android:id="@android:id/title"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:singleLine="true"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="?android:attr/textColorPrimary"
-            tools:text="Pixel 3 Device" />
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-        <TextView
-            android:id="@+id/state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Succeed"/>
-        </LinearLayout>
-
-
-        <dev.dworks.apps.anexplorer.ui.NumberProgressBar
-            android:id="@android:id/progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:textAlignment="viewStart"
-            android:visibility="visible" />
-
-        <LinearLayout
-            android:id="@+id/line2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:baselineAligned="false"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@android:id/summary"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:gravity="start"
-                android:singleLine="true"
-                android:textAlignment="viewStart"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="12sp"
-                tools:text="8.2 MB" />
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/action"
+                <TextView
+                    android:id="@android:id/title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:singleLine="true"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="?android:attr/textColorPrimary"
+                    tools:text="Pixel 3 Device" />
+
+                <TextView
+                    android:id="@+id/state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Succeed" />
+            </LinearLayout>
+
+
+            <dev.dworks.apps.anexplorer.ui.NumberProgressBar
+                android:id="@android:id/progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textAlignment="viewEnd"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="?android:attr/textColorSecondary"
-                tools:text="stop" />
+                android:gravity="start"
+                android:textAlignment="viewStart"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/line2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@android:id/summary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:singleLine="true"
+                    android:textAlignment="viewStart"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="12sp"
+                    tools:text="8.2 MB" />
+
+                <TextView
+                    android:id="@+id/action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textAlignment="viewEnd"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="stop" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>

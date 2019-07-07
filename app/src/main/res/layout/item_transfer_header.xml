@@ -1,84 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/background"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:gravity="center_vertical"
-    android:minHeight="48dp"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/list_item_padding"
-    android:paddingLeft="@dimen/list_item_padding"
-    android:paddingEnd="@dimen/list_item_padding"
-    android:paddingRight="@dimen/list_item_padding"
-    android:background="@color/primaryColor"
-    tools:showIn="@layout/fragment_transfer">
-
-    <FrameLayout
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp">
-
-        <dev.dworks.apps.anexplorer.ui.CircleImage
-            android:id="@+id/icon_mime_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            app:background="@color/item_transfer"
-            android:visibility="visible" />
-
-        <ImageView
-            android:id="@android:id/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:contentDescription="@null"
-            android:padding="10dp"
-            app:srcCompat="@drawable/ic_root_transfer"
-            android:scaleType="centerInside" />
-
-    </FrameLayout>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/item_doc_list_background"
+    android:descendantFocusability="beforeDescendants"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/background"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:orientation="horizontal">
+        android:background="@color/primaryColor"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/list_item_padding"
+        android:paddingLeft="@dimen/list_item_padding"
+        android:paddingTop="10dp"
+        android:paddingEnd="@dimen/list_item_padding"
+        android:paddingRight="@dimen/list_item_padding"
+        android:paddingBottom="10dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="middle"
-            android:singleLine="true"
-            android:text="Transfer Server:"
-            android:textSize="16sp"
-            android:paddingEnd="10dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="@android:color/white" />
+        <FrameLayout
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp">
 
-        <TextView
-            android:id="@+id/status"
+            <dev.dworks.apps.anexplorer.ui.CircleImage
+                android:id="@+id/icon_mime_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="visible"
+                app:background="@color/item_transfer" />
+
+            <ImageView
+                android:id="@android:id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/ic_root_transfer" />
+
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="@color/accentColor"
-            android:textIsSelectable="true"
-            android:textStyle="bold"
-            android:text="Stopped" />
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
 
-    <Button
-        android:id="@+id/action"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/defaultThemeColor"
-        android:text="@string/start_ftp" />
-</LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:text="Transfer Server:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:text="Stopped"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/accentColor"
+                android:textIsSelectable="true"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/action"
+            style="@style/ButtonTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_ftp"
+            android:textColor="@color/defaultThemeColor" />
+    </LinearLayout>
+</FrameLayout>
