@@ -54,6 +54,7 @@ import dev.dworks.apps.anexplorer.BaseActivity;
 import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
+import dev.dworks.apps.anexplorer.common.ListFragment;
 import dev.dworks.apps.anexplorer.libcore.io.IoUtils;
 import dev.dworks.apps.anexplorer.loader.UriDerivativeLoader;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;

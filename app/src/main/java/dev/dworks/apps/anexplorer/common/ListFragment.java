@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package dev.dworks.apps.anexplorer.fragment;
+package dev.dworks.apps.anexplorer.common;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,7 +55,7 @@ public class ListFragment extends BaseFragment {
         }
         View root = getView();
         if (root == null) {
-            throw new IllegalStateException("Content view not yet created");
+            return;
         }
         if (root instanceof ListView) {
             mList = (ListView) root;
