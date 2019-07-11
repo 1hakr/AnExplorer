@@ -125,18 +125,19 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
             mAdapter = new HomeAdapter(getActivity(), data, mIconHelper);
             mAdapter.setOnItemClickListener(this);
         }
+        setListShown(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         showData();
-        registerReceiver();
+        // registerReceiver();
     }
 
     @Override
     public void onPause() {
-        unRegisterReceiver();
+        // unRegisterReceiver();
         super.onPause();
     }
 

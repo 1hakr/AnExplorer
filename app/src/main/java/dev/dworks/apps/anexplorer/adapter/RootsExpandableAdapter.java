@@ -109,7 +109,7 @@ public class RootsExpandableAdapter extends BaseExpandableListAdapter {
         }
 
         if(!messengers.isEmpty()){
-            groupRoots.add(new GroupInfo("Messengers Media", messengers));
+            groupRoots.add(new GroupInfo("Apps Media", messengers));
         }
 
         if(!transfer.isEmpty()){

@@ -105,7 +105,7 @@ public class ExplorerProvider extends ContentProvider {
 
         private void addDefaultServer(SQLiteDatabase db){
             NetworkConnection connection = new NetworkConnection();
-            connection.name = "FTP Server";
+            connection.name = "Transfer to PC";
             connection.host = "";
             connection.port = 2211;
             connection.scheme = "ftp";

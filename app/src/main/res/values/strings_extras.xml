@@ -54,7 +54,7 @@
     <string name="root_whatsapp">WhatsApp</string>
     <string name="root_telegram">Telegram</string>
     <string name="root_telegramx">Telegram X</string>
-    <string name="root_transfer">Transfer Files</string>
+    <string name="root_transfer">WiFi Share</string>
     <string name="root_receive">Received Files</string>
     <string name="root_cast">Cast Queue</string>
     <!-- Title for setting that will show all advanced storage devices [CHAR LIMIT=32] -->
@@ -205,4 +205,11 @@
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>
     </plurals>
+
+    <string name="ftp_server_help">Transfer to PC Help</string>
+    <string name="ftp_server_help_description">
+        1. Tap Start button to start FTP server.\n
+        2. You will see a FTP url, enter this url in the browser of PC.\n
+        3. Now you can view all your files on PC without any cables
+    </string>
 </resources>
