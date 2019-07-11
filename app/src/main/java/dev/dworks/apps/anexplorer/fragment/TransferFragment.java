@@ -1,7 +1,9 @@
 package dev.dworks.apps.anexplorer.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -17,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -158,6 +161,9 @@ public class TransferFragment extends RecyclerFragment
                 Intent shareIntent = new Intent(getContext(), ShareDeviceActivity.class);
                 getActivity().startActivity(shareIntent);
                 break;
+            case R.id.action_transfer_help:
+                showTransferHelp();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -235,4 +241,13 @@ public class TransferFragment extends RecyclerFragment
             showRecyclerView();
         }
     };
+
+    public void showTransferHelp(){
+        new AlertDialog.Builder(getActivity(),
+                R.style.AlertDialogStyle)
+                .setTitle("How to use WiFi Share")
+                .setMessage(R.string.transfer_help_description)
+                .setPositiveButton("Got it!", null)
+                .show();
+    }
 }

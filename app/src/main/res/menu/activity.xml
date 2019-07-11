@@ -74,22 +74,26 @@
         android:id="@+id/menu_support"
         android:icon="@drawable/ic_support_color"
         support:showAsAction="always"
+        android:orderInCategory="99"
         android:visible="false"
         android:title="@string/support_app"/>
     <item
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_menu_settings"
         support:showAsAction="never"
+        android:orderInCategory="100"
         android:title="@string/menu_settings"/>
     <item
         android:id="@+id/menu_about"
         android:icon="@drawable/ic_dialog_info"
         support:showAsAction="never"
+        android:orderInCategory="101"
         android:title="About"/>
 
     <item
         android:id="@+id/menu_exit"
         support:showAsAction="never"
+        android:orderInCategory="102"
         android:title="Exit"/>
 
 </menu>

@@ -6,10 +6,12 @@
         android:icon="@drawable/ic_playlist"
         android:title="@string/show_queue"
         android:visible="false"
+        android:orderInCategory="9"
         app:showAsAction="always" />
     <item
         android:id="@+id/casty_media_route_menu_item"
         android:title="Cast"
+        android:orderInCategory="10"
         app:actionProviderClass="dev.dworks.apps.anexplorer.cast.CastActionProvider"
         app:showAsAction="always" />
 </menu>

@@ -4,6 +4,7 @@
     <item
         android:id="@+id/action_edit_server"
         android:icon="@drawable/ic_menu_edit"
+        android:orderInCategory="9"
         android:title="@string/menu_edit_server"
         android:visible="true"
         app:showAsAction="always" />

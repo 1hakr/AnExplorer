@@ -48,4 +48,22 @@
     <string name="show_devices">Show Devices</string>
 
     <string name="transfer_toggle_messages">Receive Files</string>
+
+    <string name="transfer_help">WiFi Share Help</string>
+
+    <string name="transfer_help_description">
+        To use WiFi Share, AnExplorer app should be present on both the devices\n\n
+        Transfer Files:\n
+        Got to Internal Storage / SD Card:\n
+        1. Select file / files and tap transfer.\n
+        2. Nearby devices screen shows, Wait for nearby devices to Start Receive file server.\n
+        3. You will see list of devices
+        4. Choose a device to share the files.\n
+        \n\n
+        Receive Files:\n
+        Go to WiFi Share section:\n
+        1. Tap on Start button to receive files.\n
+        2. From the other device select the files to transfer.\n
+        3. Get the files shared in Received files section.\n
+    </string>
 </resources>

@@ -65,4 +65,8 @@
         <item name="colorControlActivated">@color/defaultThemeColor</item>
         <item name="colorControlHighlight">@color/defaultThemeColor</item>
     </style>
+
+    <style name="AlertDialogStyle" parent="@style/Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/accentColor</item>
+    </style>
 </resources>
