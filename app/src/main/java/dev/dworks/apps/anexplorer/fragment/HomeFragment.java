@@ -63,6 +63,8 @@ import dev.dworks.apps.anexplorer.model.DocumentsContract;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 import dev.dworks.apps.anexplorer.provider.AppsProvider;
 import dev.dworks.apps.anexplorer.setting.SettingsActivity;
+import needle.Needle;
+import needle.UiRelatedTask;
 
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
@@ -123,9 +125,6 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
             mAdapter = new HomeAdapter(getActivity(), data, mIconHelper);
             mAdapter.setOnItemClickListener(this);
         }
-
-        roots = DocumentsApplication.getRootsCache(getActivity());
-        mHomeRoot = roots.getHomeRoot();
     }
 
     @Override
@@ -142,18 +141,26 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
     }
 
     public void showData(){
+        if(!Utils.isActivityAlive(getActivity())){
+            return;
+        }
         roots = DocumentsApplication.getRootsCache(getActivity());
+        if (null == roots){
+            return;
+        }
+        setListShown(false);
         mIconHelper.setThumbnailsEnabled(mActivity.getDisplayState().showThumbnail);
         getMainData();
         getShortcutsData();
-        getRecentsData();
         ArrayList<CommonInfo> data = new ArrayList<>();
         data.addAll(mainData);
         data.addAll(shortcutsData);
         mAdapter.setData(data);
+        getRecentsData();
     }
 
     private void getMainData(){
+        mHomeRoot = roots.getHomeRoot();
         mainData = new ArrayList<>();
         final RootInfo primaryRoot = roots.getPrimaryRoot();
         final RootInfo secondaryRoot = roots.getSecondaryRoot();
@@ -214,11 +221,13 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
                 if(null != result.cursor && result.cursor.getCount() != 0) {
                     mAdapter.setRecentData(new LimitCursorWrapper(result.cursor, MAX_RECENT_COUNT));
                 }
+                setListShown(true);
             }
 
             @Override
             public void onLoaderReset(Loader<DirectoryResult> loader) {
                 mAdapter.setRecentData(null);
+                setListShown(true);
             }
         };
         if(SettingsActivity.getDisplayRecentMedia()) {
@@ -362,7 +371,9 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningProcessesList = getRunningAppProcessInfo(context);
         for (ActivityManager.RunningAppProcessInfo processInfo : runningProcessesList) {
-            activityManager.killBackgroundProcesses(processInfo.processName);
+            try {
+                activityManager.killBackgroundProcesses(processInfo.processName);
+            } catch (Exception e) {}
         }
     }
 
@@ -379,12 +390,6 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         super.onActivityCreated(savedInstanceState);
 
         setListAdapter(mAdapter);
-        showData();
-        if (isResumed()) {
-            setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
-        }
 
         ((GridLayoutManager)getListView().getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
