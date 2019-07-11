@@ -30,7 +30,7 @@ ext {
     minSdkVersion = 21
     versionMajor = 4
     versionMinor = 1
-    versionPatch = 1
+    versionPatch = 2
 }
 
 task clean(type: Delete) {

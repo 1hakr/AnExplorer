@@ -132,12 +132,12 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
     public void onResume() {
         super.onResume();
         showData();
-        // registerReceiver();
+        registerReceiver();
     }
 
     @Override
     public void onPause() {
-        // unRegisterReceiver();
+        unRegisterReceiver();
         super.onPause();
     }
 

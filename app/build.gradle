@@ -85,8 +85,8 @@ android {
         amazon {
             dimension "release"
             targetSdkVersion 25
-            versionName "3.9"
-            versionCode 59
+            versionName "4.1"
+            versionCode 60
         }
         other {
             dimension "release"
