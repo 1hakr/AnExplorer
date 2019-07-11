@@ -421,7 +421,9 @@ public class ExternalStorageProvider extends StorageProvider {
 	}
 
     private boolean isEmpty(File file) {
-        return null != file  && (!file.isDirectory() || null == file.list() || file.list().length == 0);
+        return null != file  && (!file.isDirectory()
+                || null == file.list()
+                || (null != file.list() && file.list().length == 0));
     }
 
     private void includeBookmarkRoot() {

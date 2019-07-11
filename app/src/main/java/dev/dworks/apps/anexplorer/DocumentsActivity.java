@@ -1109,7 +1109,9 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
             if (position == 0) {
                 final RootInfo root = getCurrentRoot();
-                title.setText(root.title);
+                if(null != root){
+                    title.setText(root.title);
+                }
             } else {
                 title.setText(doc.displayName);
             }

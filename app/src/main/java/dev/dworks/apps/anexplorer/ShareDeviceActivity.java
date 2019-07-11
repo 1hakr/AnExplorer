@@ -118,6 +118,9 @@ public class ShareDeviceActivity extends ActionBarActivity implements AdapterVie
     }
 
     public void showData(){
+        if(!Utils.isActivityAlive(ShareDeviceActivity.this)){
+            return;
+        }
         findViewById(R.id.progressContainer).setVisibility(View.GONE);
         int count = mShareDeviceAdapter.getCount();
         if (count == 0){
@@ -183,6 +186,9 @@ public class ShareDeviceActivity extends ActionBarActivity implements AdapterVie
     }
 
     public void stopDisovery() {
+        if (null == mNsdManager){
+            return;
+        }
         mNsdManager.stopServiceDiscovery(mDiscoveryListener);
     }
 

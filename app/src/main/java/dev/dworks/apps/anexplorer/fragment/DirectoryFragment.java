@@ -268,7 +268,7 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 		doc = getArguments().getParcelable(EXTRA_DOC);
 
 		if(null != root && root.isSecondaryStorage() && state.action == ACTION_BROWSE){
-			if(!doc.isWriteSupported() && !context.getSAFPermissionRequested()){
+			if((null != doc && !doc.isWriteSupported()) && !context.getSAFPermissionRequested()){
 				context.setSAFPermissionRequested(true);
 				SAFManager.takeCardUriPermission(getActivity(), root, doc);
 			}

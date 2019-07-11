@@ -255,6 +255,9 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         switch (item.commonInfo.type) {
             case TYPE_MAIN:
             case TYPE_SHORTCUT:
+                if(null == item.commonInfo.rootInfo){
+                    return;
+                }
                 if(item.commonInfo.rootInfo.rootId.equals("clean")){
                     cleanRAM();
                 } else {
