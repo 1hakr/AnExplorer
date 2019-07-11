@@ -11,6 +11,7 @@ import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.Constants;
 import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
+import com.github.lykmapipo.localburst.LocalBurst;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +21,7 @@ import dev.dworks.apps.anexplorer.misc.PreferenceUtils;
 import dev.dworks.apps.anexplorer.misc.Utils;
 import io.fabric.sdk.android.services.common.BackgroundPriorityRunnable;
 import needle.Needle;
+import needle.UiRelatedTask;
 
 /**
  * Created by HaKr on 16/05/17.
@@ -30,6 +32,7 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
     public static final String PURCH_ID = BuildConfig.APPLICATION_ID + ".purch";
     public static final String PURCHASED = "purchased";
     private static final int IAP_ID_CODE = 1;
+	public static final String BILLING_ACTION = "BillingInitialized";
 
 	private BillingProcessor bp;
 	private ConcurrentHashMap<String, SkuDetails> skuDetails = new ConcurrentHashMap<>();
@@ -37,6 +40,7 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 
 	@Override
 	public void onCreate() {
+		LocalBurst.initialize(getApplicationContext());
 		super.onCreate();
 	}
 
@@ -68,12 +72,18 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 			return;
 		}
 
-		Needle.onBackgroundThread().execute(new BackgroundPriorityRunnable() {
+		Needle.onBackgroundThread().execute(new UiRelatedTask<Void>() {
 			@Override
-			protected void onRun() {
+			protected Void doWork() {
 				getPurchSkuDetails();
 				boolean isPurchased = getBillingProcessor().isPurchased(getPurchasedProductId());
 				PreferenceUtils.set(PURCHASED, isPurchased);
+				return null;
+			}
+
+			@Override
+			protected void thenDoUiRelatedWork(Void aVoid) {
+				LocalBurst.getInstance().emit(BILLING_ACTION);
 			}
 		});
 	}
@@ -84,6 +94,15 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 			return;
 		}
 		skuDetails.put(details.productId, details);
+	}
+
+	public String getPurchasePrice(String productId){
+		String priceValue = "";
+		SkuDetails sku = skuDetails.get(productId);
+		if(null != sku){
+			priceValue  = sku.priceText;
+		}
+		return priceValue;
 	}
 
 	public static String getPurchaseId(){
@@ -107,10 +126,6 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 	@Override
 	public void onPurchaseHistoryRestored() {
 		reloadPurchase();
-	}
-
-	private static boolean isProVersion() {
-		return isPurchased();
 	}
 
 	@Override

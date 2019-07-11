@@ -2,9 +2,11 @@ package dev.dworks.apps.anexplorer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 
+import com.github.lykmapipo.localburst.LocalBurst;
 import com.google.android.material.appbar.AppBarLayout;
 
 import androidx.appcompat.widget.Toolbar;
@@ -15,11 +17,15 @@ import dev.dworks.apps.anexplorer.setting.SettingsActivity;
 import needle.Needle;
 import needle.UiRelatedTask;
 
+import static dev.dworks.apps.anexplorer.AppPaymentFlavour.BILLING_ACTION;
 import static dev.dworks.apps.anexplorer.DocumentsActivity.getStatusBarHeight;
 
-public class PurchaseActivity extends ActionBarActivity {
+public class PurchaseActivity extends ActionBarActivity implements LocalBurst.OnBroadcastListener {
 
     public static final String TAG = PurchaseActivity.class.getSimpleName();
+    protected LocalBurst broadcast;
+    private Button purchaseButton;
+    private String purchaseText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +46,9 @@ public class PurchaseActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(getString(R.string.support_app));
         setUpDefaultStatusBar();
 
+        purchaseText = getString(R.string.purchase);
+        broadcast = LocalBurst.getInstance();
+
         initControls();
         DocumentsApplication.getInstance().initializeBilling();
     }
@@ -47,7 +56,7 @@ public class PurchaseActivity extends ActionBarActivity {
     private void initControls() {
 
         Button restoreButton = (Button) findViewById(R.id.restore_button);
-        Button purchaseButton = (Button) findViewById(R.id.purchase_button);
+        purchaseButton = (Button) findViewById(R.id.purchase_button);
         restoreButton.setEnabled(true);
         purchaseButton.setEnabled(true);
 
@@ -56,7 +65,7 @@ public class PurchaseActivity extends ActionBarActivity {
         }
 
         purchaseButton.setTextColor(SettingsActivity.getAccentColor());
-
+        updatePrice();
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,6 +92,18 @@ public class PurchaseActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+
+    private void updatePrice() {
+        if(!AppPaymentFlavour.isBillingSupported()){
+            return;
+        }
+        String purchaseId = DocumentsApplication.getPurchaseId();
+        String price = DocumentsApplication.getInstance().getPurchasePrice(purchaseId);
+        if (!TextUtils.isEmpty(price)) {
+            purchaseButton.setText(purchaseText + " with " + price);
+        }
+
     }
 
     @Override
@@ -124,8 +145,22 @@ public class PurchaseActivity extends ActionBarActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        broadcast.removeListeners(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        broadcast.on(BILLING_ACTION, this);
+        broadcast.on(LocalBurst.DEFAULT_ACTION, this);
+    }
+
+    @Override
     public void onDestroy() {
         DocumentsApplication.getInstance().releaseBillingProcessor();
+        broadcast.removeListeners(this);
         super.onDestroy();
     }
 
@@ -139,5 +174,10 @@ public class PurchaseActivity extends ActionBarActivity {
             systemBarTintManager.setTintColor(Utils.getStatusBarColor(color));
             systemBarTintManager.setStatusBarTintEnabled(true);
         }
+    }
+
+    @Override
+    public void onBroadcast(String action, Bundle extras) {
+        updatePrice();
     }
 }

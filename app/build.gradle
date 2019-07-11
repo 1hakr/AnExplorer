@@ -131,6 +131,7 @@ dependencies {
     freeImplementation 'com.google.firebase:firebase-ads:18.0.0'
     freeImplementation 'com.google.firebase:firebase-inappmessaging-display:18.0.1'
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
+    freeImplementation 'com.github.lykmapipo:local-burst:v0.2.0'
 
     wearImplementation 'com.google.android.support:wearable:2.4.0'
     wearImplementation 'com.google.android.gms:play-services-wearable:17.0.0'
