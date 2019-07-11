@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.loader.app.LoaderManager;
@@ -154,6 +155,9 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
             case R.id.action_edit_server:
                 editConnection(getAppCompatActivity(), connection_id);
                 break;
+            case R.id.action_transfer_help:
+                showHelp();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -254,5 +258,14 @@ public class ServerFragment extends BaseFragment implements View.OnClickListener
     private void setText(TextView textView, String text){
         textView.setText(text);
         textView.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
+    }
+
+    public void showHelp(){
+        new AlertDialog.Builder(getActivity(),
+                R.style.AlertDialogStyle)
+                .setTitle("How to use Transfer to PC")
+                .setMessage(R.string.ftp_server_help_description)
+                .setPositiveButton("Got it!", null)
+                .show();
     }
 }

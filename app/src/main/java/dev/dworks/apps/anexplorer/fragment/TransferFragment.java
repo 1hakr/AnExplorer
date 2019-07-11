@@ -162,7 +162,7 @@ public class TransferFragment extends RecyclerFragment
                 getActivity().startActivity(shareIntent);
                 break;
             case R.id.action_transfer_help:
-                showTransferHelp();
+                showHelp();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -242,7 +242,7 @@ public class TransferFragment extends RecyclerFragment
         }
     };
 
-    public void showTransferHelp(){
+    public void showHelp(){
         new AlertDialog.Builder(getActivity(),
                 R.style.AlertDialogStyle)
                 .setTitle("How to use WiFi Share")
