@@ -7,11 +7,6 @@
         <activity
             android:name="dev.dworks.apps.anexplorer.PurchaseActivity"
             android:theme="@style/DocumentsTheme.Document" />
-        <!-- AdMob -->
-        <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:theme="@android:style/Theme.Translucent"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
             android:value="false" />
