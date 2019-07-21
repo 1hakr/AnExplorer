@@ -57,33 +57,33 @@ android {
         free {
             applicationId "dev.dworks.apps.anexplorer"
             dimension "variant"
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_CLIENT_ID"
         }
         pro {
             applicationId "dev.dworks.apps.anexplorer.pro"
             dimension "variant"
+            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         mobile {
             dimension "default"
             versionCode rootProject.generateVersionCode(1)
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         wear {
             dimension "default"
             minSdkVersion 23
             versionCode rootProject.generateVersionCode(2)
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         television {
             dimension "default"
             minSdkVersion 25
             versionCode rootProject.generateVersionCode(3)
-            buildConfigField "String", "GOOGLE_DRIVE_CLIENT_ID",  "$props.GOOGLE_DRIVE_PRO_CLIENT_ID"
         }
         google {
             dimension "release"
         }
         amazon {
             dimension "release"
+            minSdkVersion 17
             targetSdkVersion 25
             versionName "4.1"
             versionCode 60
