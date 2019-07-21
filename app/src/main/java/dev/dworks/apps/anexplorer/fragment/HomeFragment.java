@@ -157,7 +157,12 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
         data.addAll(mainData);
         data.addAll(shortcutsData);
         mAdapter.setData(data);
-        getRecentsData();
+        if(SettingsActivity.getDisplayRecentMedia()) {
+            getRecentsData();
+        } else {
+            mAdapter.setRecentData(null);
+            setListShown(true);
+        }
     }
 
     private void getMainData(){
@@ -231,9 +236,7 @@ public class HomeFragment extends RecyclerFragment implements HomeAdapter.OnItem
                 setListShown(true);
             }
         };
-        if(SettingsActivity.getDisplayRecentMedia()) {
-            LoaderManager.getInstance(getActivity()).restartLoader(mLoaderId, null, mCallbacks);
-        }
+        LoaderManager.getInstance(getActivity()).restartLoader(mLoaderId, null, mCallbacks);
     }
 
     public void reloadData(){
