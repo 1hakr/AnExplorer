@@ -344,6 +344,7 @@ public class ExtraDocumentsProvider extends StorageProvider {
                 flags |= Document.FLAG_SUPPORTS_MOVE;
                 flags |= Document.FLAG_SUPPORTS_COPY;
                 flags |= Document.FLAG_SUPPORTS_EDIT;
+                flags |= Document.FLAG_DIR_PREFERS_LAST_MODIFIED;
             }
             flags |= Document.FLAG_SUPPORTS_BOOKMARK;
             flags |= Document.FLAG_DIR_PREFERS_GRID;

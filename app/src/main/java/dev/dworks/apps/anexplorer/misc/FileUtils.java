@@ -28,6 +28,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -941,6 +942,12 @@ public class FileUtils {
             @Override
             public boolean accept(File pathname) {
                 return !pathname.isDirectory();
+            }
+        });
+        Arrays.sort(files, new Comparator<File>(){
+            @Override
+            public int compare(File f1, File f2) {
+                return Long.compare(f2.lastModified(), f1.lastModified());
             }
         });
         if (files.length == 0){
