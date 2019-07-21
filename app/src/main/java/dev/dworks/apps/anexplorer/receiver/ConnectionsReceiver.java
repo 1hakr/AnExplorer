@@ -3,6 +3,7 @@ package dev.dworks.apps.anexplorer.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import dev.dworks.apps.anexplorer.misc.ConnectionUtils;
 import dev.dworks.apps.anexplorer.misc.NotificationUtils;
@@ -30,13 +31,19 @@ public class ConnectionsReceiver extends BroadcastReceiver {
         final String action = intent.getAction();
         if (ACTION_START_FTPSERVER.equals(action)) {
             Intent serverService = new Intent(context, ConnectionsService.class);
-            serverService.putExtras(intent.getExtras());
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                serverService.putExtras(extras);
+            }
             if (!ConnectionUtils.isServerRunning(context)) {
                 context.startService(serverService);
             }
         } else if (ACTION_STOP_FTPSERVER.equals(action)) {
             Intent serverService = new Intent(context, ConnectionsService.class);
-            serverService.putExtras(intent.getExtras());
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                serverService.putExtras(extras);
+            }
             context.stopService(serverService);
         } else if (ACTION_FTPSERVER_STARTED.equals(action)) {
             NotificationUtils.createFtpNotification(context, intent, FTP_NOTIFICATION_ID);

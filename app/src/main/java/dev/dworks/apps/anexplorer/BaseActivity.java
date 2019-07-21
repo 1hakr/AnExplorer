@@ -297,7 +297,9 @@ public abstract class BaseActivity extends ActionBarActivity {
             }
         }
         if(!isSpecialDevice() && (null != root && RootInfo.isChromecastFeature(root))) {
-            casty.addMediaRouteMenuItem(menu);
+            try {
+                casty.addMediaRouteMenuItem(menu);
+            } catch (Exception ignored){}
         }
         return super.onCreateOptionsMenu(menu);
     }

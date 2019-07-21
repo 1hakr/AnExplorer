@@ -122,6 +122,9 @@ public class ShareDeviceActivity extends ActionBarActivity implements AdapterVie
             return;
         }
         findViewById(R.id.progressContainer).setVisibility(View.GONE);
+        if(null == mShareDeviceAdapter){
+            return;
+        }
         int count = mShareDeviceAdapter.getCount();
         if (count == 0){
             findViewById(android.R.id.empty).setVisibility(View.VISIBLE);

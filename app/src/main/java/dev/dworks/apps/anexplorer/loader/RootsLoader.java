@@ -19,10 +19,11 @@ package dev.dworks.apps.anexplorer.loader;
 
 import android.content.Context;
 
+import androidx.loader.content.AsyncTaskLoader;
+
 import java.util.Collection;
 
 import dev.dworks.apps.anexplorer.BaseActivity.State;
-import dev.dworks.apps.anexplorer.misc.AsyncTaskLoader;
 import dev.dworks.apps.anexplorer.misc.RootsCache;
 import dev.dworks.apps.anexplorer.model.RootInfo;
 

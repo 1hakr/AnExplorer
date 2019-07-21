@@ -22,7 +22,10 @@ public class DirectoryCommonView extends SwipeDismissFrameLayout {
             @Override
             public void onDismissed(SwipeDismissFrameLayout layout) {
                 super.onDismissed(layout);
-                activity.onBackPressed();
+                try {
+                    activity.onBackPressed();
+                } catch (Exception e) {}
+
             }
         });
     }

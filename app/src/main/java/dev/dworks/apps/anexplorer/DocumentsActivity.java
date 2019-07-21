@@ -1089,6 +1089,9 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
         @Override
         public DocumentInfo getItem(int position) {
+            if(mState.stack.size() == 0){
+                return new DocumentInfo();
+            }
             return mState.stack.get(mState.stack.size() - position - 1);
         }
 
@@ -1134,8 +1137,10 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
             if (position == 0) {
                 final RootInfo root = getCurrentRoot();
-                title.setText(root.title);
-                subdir.setVisibility(View.GONE);
+                if(null != root) {
+                    title.setText(root.title);
+                    subdir.setVisibility(View.GONE);
+                }
             } else {
                 title.setText(doc.displayName);
                 subdir.setVisibility(View.VISIBLE);

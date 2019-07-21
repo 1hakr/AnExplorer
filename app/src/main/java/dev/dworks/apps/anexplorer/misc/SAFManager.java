@@ -134,11 +134,13 @@ public class SAFManager {
         if(useStorageAccess && null != doc.path){
             StorageManager storageManager = (StorageManager) activity.getSystemService(Context.STORAGE_SERVICE);
             StorageVolume storageVolume = storageManager.getStorageVolume(new File(doc.path));
-            Intent intent = storageVolume.createAccessIntent(null);
-            try {
-                activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
-            } catch (ActivityNotFoundException e){
-                CrashReportingManager.logException(e, true);
+            if (storageVolume != null) {
+                Intent intent = storageVolume.createAccessIntent(null);
+                try {
+                    activity.startActivityForResult(intent, ADD_STORAGE_REQUEST_CODE);
+                } catch (ActivityNotFoundException e){
+                    CrashReportingManager.logException(e, true);
+                }
             }
         } else if(Utils.hasLollipop()){
             DialogBuilder builder = new DialogBuilder(activity);

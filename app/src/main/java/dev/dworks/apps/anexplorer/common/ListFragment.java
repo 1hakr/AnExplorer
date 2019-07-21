@@ -158,8 +158,7 @@ public class ListFragment extends BaseFragment {
     public void setEmptyText(CharSequence text) {
         ensureList();
         if (mStandardEmptyView == null) {
-//            throw new IllegalStateException(
-//                    "Can't be used with a custom content view");
+            return;
         }
         mStandardEmptyView.setText(text);
         if (mEmptyText == null) {
@@ -171,8 +170,6 @@ public class ListFragment extends BaseFragment {
     private void setLoadingText(CharSequence text) {
         ensureList();
         if (mLoadingView == null) {
-//            throw new IllegalStateException(
-//                    "Can't be used with a custom content view");
         	return;
         }
         mLoadingView.setText(text);
@@ -203,8 +200,7 @@ public class ListFragment extends BaseFragment {
     private void setListShown(boolean shown, boolean animate) {
         ensureList();
         if (mProgressContainer == null) {
-            throw new IllegalStateException(
-                    "Can't be used with a custom content view");
+            return;
         }
         if (mListShown == shown) {
             return;

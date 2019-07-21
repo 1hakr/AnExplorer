@@ -36,10 +36,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.RestrictTo;
-
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
-
 /**
  * Copy of the required parts of {@link android.os.AsyncTask} from Android 3.0 that is
  * needed to support AsyncTaskLoader.  We use this rather than the one from the platform
@@ -120,8 +116,6 @@ public abstract class AsyncTask<Params, Progress, Result> {
         }
     }
 
-    /** @hide */
-    @RestrictTo(LIBRARY_GROUP)
     public static void setDefaultExecutor(Executor exec) {
         sDefaultExecutor = exec;
     }
