@@ -61,6 +61,7 @@ public class DocumentsApplication extends AppPaymentFlavour {
     private ThumbnailCache mThumbnailCache;
     private static boolean isTelevision;
     private static boolean isWatch;
+    private static boolean isChromebook;
     private SimpleWebServer simpleWebServer;
     private boolean isStarted;
     private Casty mCasty;
@@ -134,6 +135,7 @@ public class DocumentsApplication extends AppPaymentFlavour {
 
         isTelevision = Utils.isTelevision(this);
         isWatch = Utils.isWatch(this);
+        isChromebook = Utils.isChromeBook(this);
         if((isTelevision || isWatch) && Integer.valueOf(SettingsActivity.getThemeStyle())
                 != AppCompatDelegate.MODE_NIGHT_YES){
             SettingsActivity.setThemeStyle(AppCompatDelegate.MODE_NIGHT_YES);
@@ -176,7 +178,7 @@ public class DocumentsApplication extends AppPaymentFlavour {
     };
 
     public static boolean isSpecialDevice() {
-        return isTelevision() || isWatch();
+        return isTelevision() || isWatch() || isChromebook();
     }
 
     public static boolean isTelevision() {
@@ -185,5 +187,9 @@ public class DocumentsApplication extends AppPaymentFlavour {
 
     public static boolean isWatch() {
         return isWatch;
+    }
+
+    public static boolean isChromebook() {
+        return isChromebook;
     }
 }

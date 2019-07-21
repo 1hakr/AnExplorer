@@ -84,6 +84,7 @@ public class Utils extends UtilsFlavour{
     public static final String EXTRA_IGNORE_STATE = "ignoreState";
 
     public static String AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv";
+    public static final String FEATURE_PC = "android.hardware.type.pc";
 
     static final String[] BinaryPlaces = { "/data/bin/", "/system/bin/", "/system/xbin/", "/sbin/",
         "/data/local/xbin/", "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/",
@@ -399,6 +400,10 @@ public class Utils extends UtilsFlavour{
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_WATCH;
     }
 
+    public static boolean isChromeBook(Context context) {
+        return hasFeature(context, FEATURE_PC);
+    }
+
     public static void showError(Activity activity, int msg){
         showSnackBar(activity, activity.getString(msg), LENGTH_SHORT, "ERROR", null);
     }
@@ -524,6 +529,8 @@ public class Utils extends UtilsFlavour{
             suffix = " for Android TV";
         } else if(DocumentsApplication.isWatch()){
             suffix = " for Wear OS";
+        } else if(DocumentsApplication.isChromebook()){
+            suffix = " for Chromebook";
         }
         return Utils.isProVersion() ? " Pro" : "" + suffix;
     }
