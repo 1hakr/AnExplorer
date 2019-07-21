@@ -127,9 +127,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 
     freeImplementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    freeImplementation 'com.google.firebase:firebase-core:17.0.0'
-    freeImplementation 'com.google.firebase:firebase-ads:18.0.0'
-    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:18.0.1'
+    freeImplementation 'com.google.firebase:firebase-core:17.0.1'
+    freeImplementation 'com.google.firebase:firebase-ads:18.1.0'
+    freeImplementation 'com.google.firebase:firebase-inappmessaging-display:18.0.2'
     freeImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
     freeImplementation 'com.github.lykmapipo:local-burst:v0.2.0'
 
