@@ -274,7 +274,7 @@ public class NetworkConnection  implements Durable, Parcelable {
 
     public static NetworkConnection fromRootInfo(Context context, RootInfo root) {
         Cursor cursor = null;
-        NetworkConnection networkConnection = null;
+        NetworkConnection networkConnection = new NetworkConnection();;
         try {
             cursor = context.getContentResolver()
                     .query(ExplorerProvider.buildConnection(), null,

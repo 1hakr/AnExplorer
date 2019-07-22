@@ -396,7 +396,10 @@ public class AppsProvider extends DocumentsProvider {
 				flags |= Document.FLAG_DIR_PREFERS_GRID;
 			}
 
-	        final long size = new File(appInfo.sourceDir).length();
+			long size = 0;
+			if(!TextUtils.isEmpty(path)){
+				size = new File(path).length();
+			}
 	        final long lastModified = packageInfo.lastUpdateTime;
 	        final RowBuilder row = result.newRow();
 	        row.add(Document.COLUMN_DOCUMENT_ID, getDocIdForApp(docId, packageName));
