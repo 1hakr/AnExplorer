@@ -17,6 +17,7 @@ import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.misc.CrashReportingManager;
 
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isTelevision;
+import static dev.dworks.apps.anexplorer.misc.Utils.INTERSTITIAL_APP_UNIT_ID;
 
 
 /**
@@ -54,7 +55,7 @@ public class AdWrapper extends FrameLayout {
     }
 
     public void initInterstitialAd(){
-        mInterstitialAd.setAdUnitId("ca-app-pub-6407484780907805/9134520474");
+        mInterstitialAd.setAdUnitId(INTERSTITIAL_APP_UNIT_ID);
         requestNewInterstitial();
     }
 

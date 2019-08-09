@@ -65,7 +65,7 @@ public class NonMediaDocumentsProvider extends StorageProvider {
 
     private static final String[] DEFAULT_DOCUMENT_PROJECTION = new String[] {
             Document.COLUMN_DOCUMENT_ID, Document.COLUMN_MIME_TYPE, Document.COLUMN_PATH, Document.COLUMN_DISPLAY_NAME,
-            Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE,
+            Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS, Document.COLUMN_SIZE, Document.COLUMN_SUMMARY,
     };
 
     private static final String[] DOCUMENT_MIMES =

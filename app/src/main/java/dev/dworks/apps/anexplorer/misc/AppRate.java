@@ -34,7 +34,7 @@ public class AppRate implements View.OnClickListener{
     private Activity activity;
     private ViewGroup viewGroup;
     private String text;
-    private int initialLaunchCount = 10;
+    private int initialLaunchCount = 30;
     private RetryPolicy policy = RetryPolicy.EXPONENTIAL;
     private OnShowListener onShowListener;
     private SharedPreferences settings;

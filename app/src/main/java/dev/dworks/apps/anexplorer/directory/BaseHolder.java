@@ -14,7 +14,7 @@ public class BaseHolder extends MultiChoiceHelper.ViewHolder  {
     public static final int CHECK_ANIMATION_DURATION = 100;
 
     public BaseHolder(Context context, ViewGroup parent, int layout) {
-        this(context, inflateLayout(context, parent, layout));
+        this(inflateLayout(context, parent, layout));
     }
 
     public BaseHolder(Context context, View item) {

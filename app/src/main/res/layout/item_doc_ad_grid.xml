@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/grid_item_height"
+    android:background="@color/item_doc_grid_background"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
+
+    <com.google.android.gms.ads.formats.UnifiedNativeAdView
+        android:id="@+id/ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <com.google.android.gms.ads.formats.MediaView
+                            android:id="@+id/ad_media"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_horizontal"
+                            android:scaleType="centerCrop" />
+
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:gravity="center_vertical">
+
+                        <FrameLayout
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginRight="16dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/ad_icon"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:adjustViewBounds="true"
+                                android:contentDescription="@null"
+                                android:cropToPadding="true"
+                                android:scaleType="centerCrop" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp">
+
+                            <TextView
+                                android:id="@+id/ad_headline"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:ellipsize="middle"
+                                android:singleLine="true"
+                                android:textAlignment="viewStart"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                                android:textColor="?android:attr/textColorPrimary"
+                                tools:text="Ad Header" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:baselineAligned="false"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/ad_advertiser"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="bottom"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    tools:text="Advertiser" />
+
+                                <RatingBar
+                                    android:id="@+id/ad_stars"
+                                    style="?android:attr/ratingBarStyleSmall"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:isIndicator="true"
+                                    android:numStars="5"
+                                    android:stepSize="0.5" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/ad_body"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:textSize="12sp"
+                                android:visibility="gone"
+                                tools:text="Ad body" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/ad_call_to_action"
+                            style="@style/Widget.AppCompat.Button.Colored"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:textSize="12sp"
+                            tools:text="Ad CTA" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/ad_attribution"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:width="15dp"
+                android:height="15dp"
+                android:background="#FFCC66"
+                android:text="Ad"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp" />
+        </FrameLayout>
+    </com.google.android.gms.ads.formats.UnifiedNativeAdView>
+
+</FrameLayout>

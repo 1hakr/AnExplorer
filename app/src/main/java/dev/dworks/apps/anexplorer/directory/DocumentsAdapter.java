@@ -3,6 +3,7 @@ package dev.dworks.apps.anexplorer.directory;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.ViewGroup;
 
@@ -14,6 +15,7 @@ import dev.dworks.apps.anexplorer.BaseActivity.State;
 import dev.dworks.apps.anexplorer.DocumentsApplication;
 import dev.dworks.apps.anexplorer.R;
 import dev.dworks.apps.anexplorer.common.RecyclerFragment.RecyclerItemClickListener.OnItemClickListener;
+import dev.dworks.apps.anexplorer.cursor.RootCursorWrapper;
 import dev.dworks.apps.anexplorer.misc.IconHelper;
 import dev.dworks.apps.anexplorer.model.DirectoryResult;
 import dev.dworks.apps.anexplorer.model.DocumentInfo;
@@ -23,10 +25,13 @@ import dev.dworks.apps.anexplorer.model.RootInfo;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_GRID;
 import static dev.dworks.apps.anexplorer.BaseActivity.State.MODE_LIST;
 import static dev.dworks.apps.anexplorer.DocumentsApplication.isWatch;
+import static dev.dworks.apps.anexplorer.model.DocumentInfo.getCursorString;
 
 public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
     public static final int ITEM_TYPE_LIST = 1;
     public static final int ITEM_TYPE_GRID = 2;
+    public static final int ITEM_TYPE_AD_LIST = 3;
+    public static final int ITEM_TYPE_AD_GRID = 4;
 
     public static final int ITEM_TYPE_LOADING = Integer.MAX_VALUE;
     public static final int ITEM_TYPE_INFO = Integer.MAX_VALUE - 1;
@@ -101,7 +106,7 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
     }
 
     public Cursor getItem(int position) {
-        if (position - offsetPosition< mCursorCount) {
+        if (position - offsetPosition < mCursorCount) {
             mCursor.moveToPosition(position - offsetPosition);
             return mCursor;
         } else {
@@ -126,6 +131,10 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
                 return new GridDocumentHolder(mEnv.getContext(), parent, mOnItemClickListener,
                         mEnv);
             }
+            case ITEM_TYPE_AD_LIST:
+            case ITEM_TYPE_AD_GRID: {
+                return new NativeAdViewHolder(mEnv, mEnv.getContext(), parent);
+            }
             case ITEM_TYPE_LOADING: {
                 return new LoadingHolder(mEnv, mEnv.getContext(), parent);
             }
@@ -147,8 +156,13 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
             holder.itemView.setEnabled(false);
         }
         else if (position - offsetPosition < mCursorCount) {
-            Cursor cursor = getItem(position );
-            holder.setData(cursor, position);
+            Cursor cursor = getItem(position);
+            String authority = getCursorString(cursor, RootCursorWrapper.COLUMN_AUTHORITY);
+            if (TextUtils.isEmpty(authority)){
+                holder.setData(cursor, position);
+            } else {
+                holder.setData(cursor, position);
+            }
         } else {
             position -= mCursorCount + offsetPosition;
             Footer footer = mFooters.get(position);
@@ -166,7 +180,12 @@ public class DocumentsAdapter extends RecyclerView.Adapter<BaseHolder> {
             return mHeader.getItemViewType();
         }
         else if (position - offsetPosition < mCursorCount) {
+            Cursor cursor = getItem(position);
+            String authority = getCursorString(cursor, RootCursorWrapper.COLUMN_AUTHORITY);
             final State state = mEnv.getDisplayState();
+            if (TextUtils.isEmpty(authority)){
+                return state.derivedMode == MODE_GRID ? ITEM_TYPE_AD_GRID : ITEM_TYPE_AD_LIST;
+            }
             switch (state.derivedMode) {
                 case MODE_GRID:
                     return ITEM_TYPE_GRID;

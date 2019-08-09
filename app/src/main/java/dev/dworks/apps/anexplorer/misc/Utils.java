@@ -72,7 +72,10 @@ import static com.google.android.material.snackbar.Snackbar.LENGTH_SHORT;
 public class Utils extends UtilsFlavour{
 
     public static final long KB_IN_BYTES = 1024;
+    private static final String ADMOB_TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110";
     public static final String INTERSTITIAL_APP_UNIT_ID = "ca-app-pub-6407484780907805/9134520474";
+    public static final String NATIVE_APP_UNIT_ID = BuildConfig.DEBUG ? ADMOB_TEST_AD_UNIT_ID : "ca-app-pub-6407484780907805/5595623254";
+    public static final String NATIVE_BIG_APP_UNIT_ID = BuildConfig.DEBUG ? ADMOB_TEST_AD_UNIT_ID : "ca-app-pub-6407484780907805/7834488376";
 
     public static final String DIRECTORY_APPBACKUP = "AppBackup";
 

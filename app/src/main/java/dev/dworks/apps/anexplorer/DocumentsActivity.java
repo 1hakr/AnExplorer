@@ -196,6 +196,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private FrameLayout mRateContainer;
     private boolean mActionMode;
     private FloatingActionsMenu mActionMenu;
+    private View mAdWrapper;
     private RootInfo mParentRoot;
     private boolean SAFPermissionRequested;
 
@@ -1259,9 +1260,11 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             anim = 0;
         }
 
+        boolean showBannerAds = true;
         if (cwd == null) {
             // No directory means recents
         	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
+                showBannerAds = false;
                 RecentsCreateFragment.show(fm);
             } else {
                 if(null != root && root.isHome()){
@@ -1275,6 +1278,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 } else if(null != root && root.isServerStorage()){
                     ServerFragment.show(fm, root);
                 } else {
+                    showBannerAds = false;
                     DirectoryFragment.showRecentsOpen(fm, anim, root);
 
                     // Start recents in grid when requesting visual things
@@ -1284,6 +1288,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 }
             }
         } else {
+            showBannerAds = false;
             if (mState.currentSearch != null && mSearchResultShown) {
                 // Ongoing search
                 DirectoryFragment.showSearch(fm, root, cwd, mState.currentSearch, anim);
@@ -1293,6 +1298,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 DirectoryFragment.showNormal(fm, root, cwd, anim);
             }
         }
+        showBannerAd(showBannerAds);
 
         // Forget any replacement target
         if (mState.action == ACTION_CREATE) {
@@ -1979,6 +1985,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private void initControls() {
         mActionMenu = (FloatingActionsMenu) findViewById(R.id.fabs);
         mActionMenu.setMenuListener(mMenuListener);
+        mAdWrapper = findViewById(R.id.ad_wrapper);
     }
 
     public void upadateActionItems(RecyclerView currentView) {
@@ -2006,6 +2013,12 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 isCreateSupported() &&
                 (null != root && (!root.isRootedStorage() || Utils.isRooted()))
                 && mState.currentSearch == null;
+    }
+
+    private void showBannerAd(boolean show){
+        if (null != mAdWrapper) {
+            mAdWrapper.setVisibility(Utils.getVisibility(show));
+        }
     }
 
     private SimpleMenuListenerAdapter mMenuListener = new SimpleMenuListenerAdapter() {
