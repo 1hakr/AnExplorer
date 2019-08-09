@@ -9,4 +9,5 @@
 
     <color name="defaultThemeColor">#FFFFFF</color>
     <color name="splashColor">?android:attr/colorBackground</color>
+    <color name="navBarColor">@android:color/transparent</color>
 </resources>

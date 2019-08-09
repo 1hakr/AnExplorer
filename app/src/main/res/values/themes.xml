@@ -5,6 +5,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:navigationBarColor" tools:targetApi="26">@android:color/transparent</item>
     </style>
 
     <style name="DocumentsTheme.Document">
@@ -44,7 +45,7 @@
 
         <item name="actionModeStyle">@style/Custom.Widget.ActionMode</item>
         <item name="actionModeCloseButtonStyle">@style/Custom.Widget.ActionButton.CloseMode</item>
-        <item name="android:navigationBarColor" tools:targetApi="26">#303030</item>
+        <item name="android:navigationBarColor" tools:targetApi="26">@color/navBarColor</item>
     </style>
 
     <style name="DocumentsTheme.DailogPIN">

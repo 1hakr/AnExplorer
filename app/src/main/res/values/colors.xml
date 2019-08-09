@@ -97,4 +97,5 @@
     <color name="item_cast">#FFFF7537</color>
 
     <color name="material_black_protected">#88000000</color>
+    <color name="navBarColor">#FFFFFF</color>
 </resources>
