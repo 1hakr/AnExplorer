@@ -1,0 +1,3 @@
+<resources>
+    <color name="navBarColor">@android:color/transparent</color>
+</resources>
