@@ -50,7 +50,7 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 	}
 
 	public static boolean isPurchased() {
-		return BuildConfig.DEBUG || Utils.isProVersion() || PreferenceUtils.getBooleanPrefs(PURCHASED);
+		return Utils.isProVersion() || PreferenceUtils.getBooleanPrefs(PURCHASED);
 	}
 
 	@Override

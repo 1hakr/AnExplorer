@@ -350,7 +350,9 @@ public class DirectoryFragment extends RecyclerFragment implements MenuItem.OnMe
 					saveDisplayState();
 				}
 
-				if (AppPaymentFlavour.isPurchased() || isSpecialDevice()) {
+				boolean showData = mType == TYPE_RECENT_OPEN || AppPaymentFlavour.isPurchased()
+						|| isSpecialDevice();
+				if (showData) {
 					showData(result);
 				} else {
 					loadNativeAds(result);
