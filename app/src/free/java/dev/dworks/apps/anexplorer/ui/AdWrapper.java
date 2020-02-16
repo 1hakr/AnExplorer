@@ -3,12 +3,14 @@ package dev.dworks.apps.anexplorer.ui;
 import android.content.Context;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
@@ -61,6 +63,8 @@ public class AdWrapper extends FrameLayout {
 
     public void initAd(){
         mAdView = (AdView) findViewById(R.id.adView);
+//        AdSize adSize = getAdSize();
+//        mAdView.setAdSize(adSize);
         mAdView.setAdListener(adListener);
     }
 
@@ -132,4 +136,13 @@ public class AdWrapper extends FrameLayout {
             mAdView.setVisibility(View.GONE);
         }
     };
+
+    private AdSize getAdSize() {
+        DisplayMetrics outMetrics = getContext().getResources().getDisplayMetrics();
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
+        int adWidth = (int) (widthPixels / density);
+        AdSize adSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(getContext(), adWidth);
+        return adSize;
+    }
 }

@@ -12,6 +12,7 @@ import com.anjlab.android.iab.v3.Constants;
 import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.github.lykmapipo.localburst.LocalBurst;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +42,7 @@ public abstract class AppPaymentFlavour extends Application implements BillingPr
 	@Override
 	public void onCreate() {
 		LocalBurst.initialize(getApplicationContext());
+		MobileAds.initialize(getApplicationContext());
 		super.onCreate();
 	}
 
