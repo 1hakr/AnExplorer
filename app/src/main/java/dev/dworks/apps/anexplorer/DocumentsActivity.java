@@ -169,6 +169,8 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private static final int CODE_FORWARD = 42;
     private static final int CODE_SETTINGS = 92;
 
+    private static final boolean SHOW_NATIVE_ADS = false;
+
     private boolean mShowAsDialog;
 
     private SearchView mSearchView;
@@ -199,6 +201,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     private View mAdWrapper;
     private RootInfo mParentRoot;
     private boolean SAFPermissionRequested;
+    public boolean showBannerAds = true;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -1260,11 +1263,10 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             anim = 0;
         }
 
-        boolean showBannerAds = true;
         if (cwd == null) {
             // No directory means recents
         	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
-                showBannerAds = false;
+                showBannerAds = !SHOW_NATIVE_ADS;
                 RecentsCreateFragment.show(fm);
             } else {
                 if(null != root && root.isHome()){
@@ -1278,7 +1280,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 } else if(null != root && root.isServerStorage()){
                     ServerFragment.show(fm, root);
                 } else {
-                    showBannerAds = false;
+                    showBannerAds = !SHOW_NATIVE_ADS;
                     DirectoryFragment.showRecentsOpen(fm, anim, root);
 
                     // Start recents in grid when requesting visual things
@@ -1288,7 +1290,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 }
             }
         } else {
-            showBannerAds = false;
+            showBannerAds = !SHOW_NATIVE_ADS;
             if (mState.currentSearch != null && mSearchResultShown) {
                 // Ongoing search
                 DirectoryFragment.showSearch(fm, root, cwd, mState.currentSearch, anim);
