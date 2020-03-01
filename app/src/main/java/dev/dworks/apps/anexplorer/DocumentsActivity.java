@@ -194,14 +194,14 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
     private RootsCache mRoots;
     private State mState;
-	private boolean mAuthenticated;
+	  private boolean mAuthenticated;
     private FrameLayout mRateContainer;
     private boolean mActionMode;
     private FloatingActionsMenu mActionMenu;
     private View mAdWrapper;
     private RootInfo mParentRoot;
     private boolean SAFPermissionRequested;
-    public boolean showBannerAds = true;
+    public boolean showBannerAds = !isPurchased();
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -213,7 +213,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             setTheme(R.style.DocumentsTheme_Translucent);
         }
         setUpStatusBar();
-    	
+
 /*		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll()
 				.penaltyLog()
 				.build());
@@ -450,7 +450,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
             mState.allowMultiple = intent.getBooleanExtra(IntentUtils.EXTRA_ALLOW_MULTIPLE, false);
         }
-        
+
         if (mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
             mState.acceptMimes = new String[] { "*/*" };
             mState.allowMultiple = true;
@@ -465,7 +465,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         mState.forceAdvanced = intent.getBooleanExtra(DocumentsContract.EXTRA_SHOW_ADVANCED	, false);
         mState.showAdvanced = mState.forceAdvanced
                 | SettingsActivity.getDisplayAdvancedDevices(this);
-        
+
         mState.rootMode = SettingsActivity.getRootMode(this);
     }
 
@@ -634,7 +634,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             }
         }
     }
-    
+
     public void setInfoDrawerOpen(boolean open) {
     	if(!mShowAsDialog){
     		setRootsDrawerOpen(false);
@@ -1182,7 +1182,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             return mState.action == ACTION_BROWSE ? mRoots.getDefaultRoot() : mRoots.getStorageRoot();
         }
     }
-    
+
     public RootInfo getDownloadRoot() {
     	return mRoots.getDownloadRoot();
     }
@@ -1216,7 +1216,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
     public State getDisplayState() {
         return mState;
     }
-    
+
     public boolean isShowAsDialog() {
     	return mShowAsDialog;
     }
@@ -1234,7 +1234,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onCurrentDirectoryChanged(int anim) {
-    	//FIX for java.lang.IllegalStateException ("Activity has been destroyed") 
+    	//FIX for java.lang.IllegalStateException ("Activity has been destroyed")
         if(!Utils.isActivityAlive(DocumentsActivity.this)){
             return;
         }
@@ -1266,7 +1266,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         if (cwd == null) {
             // No directory means recents
         	if (mState.action == ACTION_CREATE || mState.action == ACTION_OPEN_TREE) {
-                showBannerAds = !SHOW_NATIVE_ADS;
+        	      enableBannerAds();
                 RecentsCreateFragment.show(fm);
             } else {
                 if(null != root && root.isHome()){
@@ -1280,7 +1280,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 } else if(null != root && root.isServerStorage()){
                     ServerFragment.show(fm, root);
                 } else {
-                    showBannerAds = !SHOW_NATIVE_ADS;
+                    enableBannerAds();
                     DirectoryFragment.showRecentsOpen(fm, anim, root);
 
                     // Start recents in grid when requesting visual things
@@ -1290,7 +1290,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 }
             }
         } else {
-            showBannerAds = !SHOW_NATIVE_ADS;
+            enableBannerAds();
             if (mState.currentSearch != null && mSearchResultShown) {
                 // Ongoing search
                 DirectoryFragment.showSearch(fm, root, cwd, mState.currentSearch, anim);
@@ -1336,6 +1336,10 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
         if(!Utils.isOtherBuild() && !isSpecialDevice()){
             AppRate.with(this, mRateContainer).listener(mOnShowListener).checkAndShow();
         }
+    }
+
+    private void enableBannerAds(){
+      showBannerAds = !isPurchased() && !SHOW_NATIVE_ADS;
     }
 
     private AppRate.OnShowListener mOnShowListener = new AppRate.OnShowListener() {
@@ -1621,7 +1625,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             }
         }
     }
-	
+
     public void onDocumentsPicked(List<DocumentInfo> docs) {
         if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT || mState.action == ACTION_BROWSE) {
             final int size = docs.size();
@@ -1686,7 +1690,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
                 clipData.addItem(new ClipData.Item(uris[i]));
             }
             if(Utils.hasJellyBean()){
-                intent.setClipData(clipData);	
+                intent.setClipData(clipData);
             }
             else{
             	intent.setData(uris[0]);
@@ -1804,7 +1808,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
             onFinished(mUri);
         }
     }
-    
+
     private class MoveTask extends AsyncTask<Void, Void, Boolean> {
         private final DocumentInfo toDoc;
         private final ArrayList<DocumentInfo> docs;
@@ -1917,7 +1921,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 
         setUpStatusBar();
 	}
-	
+
 	private Drawable.Callback drawableCallback = new Drawable.Callback() {
 		@Override
 		public void invalidateDrawable(Drawable who) {
@@ -1934,7 +1938,7 @@ public class DocumentsActivity extends BaseActivity implements MenuItem.OnMenuIt
 			handler.removeCallbacks(what);
 		}
 	};
-	
+
 	public boolean getActionMode() {
 		return mActionMode;
 	}
