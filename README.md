@@ -38,7 +38,7 @@ Other Features
 * Acts as a Standalone File Picker from other applications such as attaching document files from gmail
 * Has high quality thumbnail support in list / gridview for all types of file like images, videos, album art for music files and applications
 
-Feedback is greatly appreciated. Any issues please report through [website]("https://anexplorer.io")
+Feedback is greatly appreciated. Any issues please report through [website](https://anexplorer.io)
 
 
 Discussion
@@ -46,8 +46,10 @@ Discussion
 
 App Links
 ============
-[<img alt="Get it on Google Play" height="80" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=dev.dworks.apps.anexplorer&referrer=github)
-[<img alt="Get it on Amazon" height="60" style="margin-left: 8px;" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-underground-app-us-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=dev.dworks.apps.anexplorer)
+[<img alt="Get it on Google Play" height="80" src="https://images.squarespace-cdn.com/content/v1/5a8c7f451f318d680f04db40/1536164406372-IMIW32D4K5FOM7O92T97/google-play-badge-padding.png">](https://play.google.com/store/apps/details?id=dev.dworks.apps.anexplorer&referrer=github)
+[<img alt="Get it on Amazon" height="80" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png" />](https://www.amazon.com/gp/mas/dl/android?p=dev.dworks.apps.anexplorer)
+[<img alt="Get it on Samsung Galaxy Store" height="80" src="https://d3unf4s5rp9dfh.cloudfront.net/SDP/GalaxyStore_English.png">](https://www.samsungapps.com/appquery/appDetail.as?appId=dev.dworks.apps.anexplorer&referrer=github)
+[<img alt="Get it on Aptoide" height="80" src="https://cdn6.aptoide.com/includes/themes/2014/images/aptoide_badge.svg">](https://d-works-file-manager.en.aptoide.com/app&referrer=github)
 
 Developed By
 ============
