@@ -38,12 +38,11 @@ Other Features
 * Acts as a Standalone File Picker from other applications such as attaching document files from gmail
 * Has high quality thumbnail support in list / gridview for all types of file like images, videos, album art for music files and applications
 
-Feedback is greatly appreciated. Any issues please report through mail only to hakr@dworks.in
+Feedback is greatly appreciated. Any issues please report through [website]("https://anexplorer.io")
 
 
 Discussion
 ============
-Join [G+ community](https://plus.google.com/communities/104595695007143504224) for discussions
 
 App Links
 ============
@@ -53,13 +52,13 @@ App Links
 Developed By
 ============
 
-* Hari Krishna Dulipudi - <hakr@dworks.in>
+* Hari Krishna Dulipudi
 
 
 License
 =======
 
-    Copyright 2014 - 2017 Hari Krishna Dulipudi
+    Copyright 2014 - 2024 Hari Krishna Dulipudi
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
