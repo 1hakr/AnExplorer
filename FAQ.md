@@ -46,8 +46,6 @@ Click the menu button at the top left side of the screen, then select either "Us
 
 You can contact us via the following:
 
-Email: hakr@dworks.io
-
 Github: https://github.com/1hakr/AnExplorer
 
-Website: https://anexplorer.co
+Website: https://anexplorer.io
